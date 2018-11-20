@@ -1,3 +1,26 @@
-# EmergingJetsAnalysis
+# EmergingJetsAnalysis: EJs Analysis Framework
 
-New Emerging Jets analysis framework (based on xAODAnaHelpers)
+> last modified 20 November 2018 by colleen.jennifer.treado@cern.ch
+
+Welcome to the event-loop analysis code framework for the Run 2 Emerging Jets
+search.
+
+Based on the xAODAnaHelpers framework...
+
+Questions can be sent to **colleen.jennifer.treado@cern.ch** or
+**j.beacham@cern.ch**.
+
+For more information on xAODAnaHelpers, see the documentation here: https://xaodanahelpers.readthedocs.io/en/master/
+For more information on using git or AnalysisBase, see the software
+tutorials here: https://atlassoftwaredocs.web.cern.ch
+
+## Installation and Setup:
+
+For first-time setup and installation, clone the EmergingJetsAnalysis
+repository into a fresh work area:
+
+```bash
+git clone
+https://:@gitlab.cern.ch:8443/EmergingJets/EmergingJetsAnalysis.git
+```
+

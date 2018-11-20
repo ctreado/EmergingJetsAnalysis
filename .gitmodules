@@ -1,0 +1,3 @@
+[submodule "EJsAnalysis/dep/xAODAnaHelpers"]
+	path = EJsAnalysis/dep/xAODAnaHelpers
+	url = https://github.com/UCATLAS/xAODAnaHelpers.git
