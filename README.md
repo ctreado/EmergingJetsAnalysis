@@ -25,3 +25,16 @@ repository into a fresh work area:
 git clone --recursive https://:@gitlab.cern.ch:8443/EmergingJets/EmergingJetsAnalysis.git
 ```
 
+Then cd into the repository and run the install script:
+
+```bash
+cd EmergingJetsAnalysis
+source install.sh
+```
+
+This will setup ATLAS, rucio, panda, and git, setup the release
+(AnalysisBase, 21.2.51), make 'build' and 'run' directories, compile
+the package (```cmake ../EmergingJetsAnalysis; make```) and setup the
+new environment (```source x86*/setup.sh```) from the build directory,
+and return to the parent directory that houses the repository.
+
