@@ -20,7 +20,8 @@ For first-time setup and installation, clone the EmergingJetsAnalysis
 repository into a fresh work area:
 
 ```bash
-git clone
-https://:@gitlab.cern.ch:8443/EmergingJets/EmergingJetsAnalysis.git
+# the '--recursive' option automatically unpacks the nested xAODAnaHelpers repo
+# the https url is easiest for cloning on lxplus, but we can alternatively use the http or ssh url 
+git clone --recursive https://:@gitlab.cern.ch:8443/EmergingJets/EmergingJetsAnalysis.git
 ```
 
