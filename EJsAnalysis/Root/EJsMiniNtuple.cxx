@@ -1,6 +1,11 @@
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
+#include <EventLoop/OutputStream.h>
+
+#include <xAODEventInfo/EventInfo.h>
+
+#include <xAODAnaHelpers/HelperFunctions.h>
 
 #include "EJsAnalysis/EJsMiniNtuple.h"
 
@@ -26,8 +31,15 @@ EL::StatusCode EJsMiniNtuple :: setupJob ( EL::Job& job )
   // code here automatically activated/deactivated when alg
   // added/removed from job
 
+  ANA_MSG_INFO( "setupJob(): calling setupJob" );
+  
   // initialize alg to use xAODRootAccess package
   job.useXAOD();
+  
+  xAOD::Init( "EJsMiniNtuple" ).ignore(); // call before opening first file
+
+  EL::OutputStream outforTree( m_filename.c_str() );
+  job.outputAdd( outforTree );
 
   return EL::StatusCode::SUCCESS;
 }
@@ -75,6 +87,16 @@ EL::StatusCode EJsMiniNtuple :: initialize ()
   // doesn't get called if no events processed, so objects created
   // here won't be available in output if no input events
 
+  ANA_MSG_INFO( "initialize(): initializing EJsMiniNtuple algorithm" );
+
+  m_event = wk()->xaodEvent();
+  m_store = wk()->xaodStore();
+
+  // set isMC flag
+  const xAOD::EventInfo* eventInfo = 0;
+  ANA_CHECK( HelperFunctions::retrieve( eventInfo, "EventInfo", m_event, m_store ) );
+  m_isMC = eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION );
+
   return EL::StatusCode::SUCCESS;
 }
 
@@ -85,6 +107,8 @@ EL::StatusCode EJsMiniNtuple :: execute ()
   // everything that needs to be done on every single event,
   // e.g. read input variables, apply cuts, fill histos + trees;
   // here is where most of actual analysis will go...
+
+  ANA_MSG_INFO( "execute(): executing EJsMiniNtuple algorithm" );
 
   return EL::StatusCode::SUCCESS;
 }
