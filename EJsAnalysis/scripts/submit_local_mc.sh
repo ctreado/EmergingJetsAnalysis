@@ -8,3 +8,5 @@ jo="$EJ_PATH/EJsAnalysis/config/EJsConfig.py"
 subdir="local.MC16d.EJ_ModelA_1400_20"
 
 xAH_run.py --files ${input} --config ${jo} --submitDir ${subdir} --nevents 10 --isMC direct
+# --isMC option doesn't seem wholly necessary -->
+# --> if not set, xAH::Algorithm will check eventInfo object to determine if data or mc

@@ -5,7 +5,8 @@
 Welcome to the event-loop analysis code framework for the Run 2 Emerging Jets
 search.
 
-Based on the ```xAODAnaHelpers``` framework...
+Based on the ```xAODAnaHelpers``` framework, with some code
+inspiration taken from the BLChargino, Xhh, and Xbb groups...
 
 Questions can be sent to **colleen.jennifer.treado@cern.ch** or
 **j.beacham@cern.ch**.
