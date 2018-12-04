@@ -53,7 +53,7 @@ source setup.sh
 To re-compile after changes are made to the code:
 
 ```bash
-cd build                     # assuming you're initially in the parent directory
+cd build        # assuming you're initially in the parent directory
 cmake $EJ_PATH        # or "cmake ../EmergingJetsAnalysis"
 make
 source x86*/setup.sh
@@ -70,17 +70,18 @@ Jobs are run using the xAODAnaHelpers steering code,
 
 ```bash
 xAH_run.py --files ... file [file ...]
-                         --config path/to/file.py
-                         [options]
-                         driver [driver options]
+	--config path/to/file.py
+	[options]
+	driver [driver options]
 ```
 
-, where `--files` is a list of input root files to run over,
+where `--files` is a list of input root files to run over,
 `--config` is a configuration file for all algorithms to be run,
 `driver` is the driver dictating where to run the code
 (i.e. `direct` to run locally or `prun` to run on the grid), and
 `[(driver) options]` are additional, not required, steering
-options. Make sure to ini
+options. Make sure you have a valid voms proxy set up
+(`voms-proxy-init -voms atlas`) before attempting to run on the grid. 
 
 
 ### Ntuple-Making
