@@ -1,17 +1,21 @@
 #ifndef EJsAnalysis_EJsMiniNtuple_H
 #define EJsAnalysis_EJsMiniNtuple_H
 
+#include <vector>
+#include <string>
+
+#include <TTree.h>
+
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Algorithm.h>
 
 #include <xAODAnaHelpers/Algorithm.h>
-#include <xAODAnaHelpers/HelpTreeBase.h>
 
 #include <xAODRootAccess/Init.h>
 #include <xAODRootAccess/TEvent.h>
 #include <xAODRootAccess/TStore.h>
 
-#include "TTree.h"
+#include "EJsAnalysis/EJsHelpTreeBase.h"
 
 
 class EJsMiniNtuple : public xAH::Algorithm
@@ -28,15 +32,36 @@ class EJsMiniNtuple : public xAH::Algorithm
   std::string m_evtDetailStr = "";
   std::string m_trigDetailStr = "";
   std::string m_jetDetailStr = "";
+  std::string m_trigJetDetailStr = "";
+  std::string m_truthJetDetailStr = "";
+  std::string m_truthPartDetailStr = "";
+  std::string m_trackPartDetailStr = "";
 
   // input containers
   std::string m_jetContainerName = "";
+  std::string m_trigJetContainerName = "";
+  std::string m_truthJetContainerName = "";
+  std::string m_truthPartContainerName = "";
+  std::string m_trackPartContainerName = "";
+  std::string m_truthVertexContainerName = "";
+  std::string m_secondaryVertexContainerName = "";
+
+  // input branch names
   std::string m_jetBranchName = "";
+  std::string m_trigJetBranchName = "";
+  std::string m_truthJetBranchName = "";
+  std::string m_truthPartBranchName = "";
+  std::string m_trackPartBranchName = "";
+  std::string m_truthVertexBranchName = "";
+  std::string m_secondaryVertexBranchName = "";
 
   bool m_retrievePV = true;
 
-  // systematics being processed over (empty string 
-  std::string m_systsVec = "";
+  // systematics being processed over
+  std::string m_systsVec = ""; // consider adding separate strings for separate objects
+
+  // unit conversion from MeV; default is GeV
+  float m_units = 1e3;
   
 
   // variables not filled at submission time
@@ -50,11 +75,19 @@ class EJsMiniNtuple : public xAH::Algorithm
 
 
  protected:
-  std::map< std::string, HelpTreeBase* > m_trees; //!
-  
   std::vector<std::string> m_jetDetails; //!
+  std::vector<std::string> m_trigJetDetails; //!
+  std::vector<std::string> m_truthJetDetails; //!
+  
   std::vector<std::string> m_jetContainers; //!
+  std::vector<std::string> m_trigJetContainers; //!
+  std::vector<std::string> m_truthJetContainers; //!
+  
   std::vector<std::string> m_jetBranches; //!
+  std::vector<std::string> m_trigJetBranches; //!
+  std::vector<std::string> m_truthJetBranches; //!
+
+  std::map< std::string, EJsHelpTreeBase* > m_trees; //!
 
 
  public:

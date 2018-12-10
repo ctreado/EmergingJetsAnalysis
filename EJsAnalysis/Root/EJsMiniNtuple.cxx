@@ -6,9 +6,13 @@
 #include <xAODAnaHelpers/HelperFunctions.h>
 
 #include <xAODEventInfo/EventInfo.h>
+#include <xAODJet/JetContainer.h>
+#include <xAODTracking/TrackParticleContainer.h>
+#include <xAODTracking/VertexContainer.h>
+#include <xAODTruth/TruthParticleContainer.h>
+#include <xAODTruth/TruthVertexContainer.h>
 
 #include "EJsAnalysis/EJsMiniNtuple.h"
-#include "EJsAnalysis/EJsHelpTreeBase.h"
 
 // needed to distribute algorithm to workers
 ClassImp ( EJsMiniNtuple )
@@ -96,33 +100,84 @@ EL::StatusCode EJsMiniNtuple :: initialize ()
   TFile* treeFile = wk()->getOutputFile( "tree" );
   treeFile->mkdir( m_name.c_str() );
 
-  // to handle more than jet collection
+  
+  // to handle more than one jet collection (reco, trig, truth)
   std::string token;
+  // reco jets
   std::istringstream ss_reco_containers( m_jetContainerName );
   while ( std::getline( ss_reco_containers, token, ' ' ) )
     m_jetContainers.push_back( token );
   std::istringstream ss_reco_names( m_jetBranchName );
-  if ( !m_jetBranchName.empty() ) {
-    while ( std::getline( ss_reco_names, token, ' ' ) )
-      m_jetBranches.push_back( token );
-    if ( !m_jetContainerName.empty() &&
-	 m_jetContainers.size() != m_jetBranches.size() ) {
-      ANA_MSG_ERROR( "Number of jet containers must be equal " <<
-		     "to number of jet branch names. Exiting." );
-      return EL::StatusCode::FAILURE;
-    }
-  }
-  else // default to use jet container names as jet branch names
+  while ( std::getline( ss_reco_names, token, ' ' ) )
+    m_jetBranches.push_back( token );
+  if ( m_jetBranches.empty() )
     for ( size_t i = 0; i != m_jetContainers.size(); ++i )
       m_jetBranches.push_back( m_jetContainers.at(i) );
-
+  if ( !m_jetContainerName.empty() &&
+       m_jetContainers.size() != m_jetBranches.size() ) {
+    ANA_MSG_ERROR( "Number of jet containers must be equal " <<
+		   "to number of jet branch names. Exiting." );
+    return EL::StatusCode::FAILURE;
+  }
+  // trig jets
+  std::istringstream ss_trig_containers( m_trigJetContainerName );
+  while ( std::getline( ss_trig_containers, token, ' ' ) )
+    m_trigJetContainers.push_back( token );
+  std::istringstream ss_trig_names( m_trigJetBranchName );
+  while ( std::getline( ss_trig_names, token, ' ' ) )
+    m_trigJetBranches.push_back( token );
+  if ( m_trigJetBranches.empty() )
+    for ( size_t i = 0; i != m_trigJetContainers.size(); ++i )
+      m_trigJetBranches.push_back( m_trigJetContainers.at(i) );
+  if ( !m_trigJetContainerName.empty() &&
+       m_trigJetContainers.size() != m_trigJetBranches.size() ) {
+    ANA_MSG_ERROR( "Number of trig jet containers must be equal " <<
+		   "to number of trig jet branch names. Exiting." );
+    return EL::StatusCode::FAILURE;
+  }
+  // truth jets
+  std::istringstream ss_truth_containers( m_truthJetContainerName );
+  while ( std::getline( ss_truth_containers, token, ' ' ) )
+    m_truthJetContainers.push_back( token );
+  std::istringstream ss_truth_names( m_truthJetBranchName );
+  while ( std::getline( ss_truth_names, token, ' ' ) )
+    m_truthJetBranches.push_back( token );
+  if ( m_truthJetBranches.empty() )
+    for ( size_t i = 0; i != m_truthJetContainers.size(); ++i )
+      m_truthJetBranches.push_back( m_truthJetContainers.at(i) );
+  if ( !m_truthJetContainerName.empty() &&
+       m_truthJetContainers.size() != m_truthJetBranches.size() ) {
+    ANA_MSG_ERROR( "Number of truth jet containers must be equal " <<
+		   "to number of truth jet branch names. Exiting." );
+    return EL::StatusCode::FAILURE;
+  }
+  
   // allow to store different variables for each jet collection (default: store the same)
   std::istringstream ss( m_jetDetailStr );
   while ( std::getline( ss, token, '|' ) )
     m_jetDetails.push_back( token );
-  if ( m_jetDetails.size() != 1 && m_jetContainers.size() != m_jetDetails.size() ) {
+  if ( m_jetDetails.size() != 1 &&
+       m_jetContainers.size() != m_jetDetails.size() ) {
     ANA_MSG_ERROR( "Size of 'm_jetContainers' should be equal " <<
-		   "to size of 'm_jetDetailStr'. Exiting" );
+		   "to size of 'm_jetDetailStr'. Exiting." );
+    return EL::StatusCode::FAILURE;
+  }
+  std::istringstream ss_trig( m_trigJetDetailStr );
+  while ( std::getline( ss_trig, token, '|' ) )
+    m_trigJetDetails.push_back( token );
+  if ( m_trigJetDetails.size() != 1 &&
+       m_trigJetContainers.size() != m_trigJetDetails.size() ) {
+    ANA_MSG_ERROR( "Size of 'm_trigJetContainers' should be equal " <<
+		   "to size of 'm_trigJetDetailStr'. Exiting." );
+    return EL::StatusCode::FAILURE;
+  }
+  std::istringstream ss_truth( m_truthJetDetailStr );
+  while ( std::getline( ss_truth, token, '|' ) )
+    m_truthJetDetails.push_back( token );
+  if ( m_truthJetDetails.size() != 1 &&
+       m_truthJetContainers.size() != m_truthJetDetails.size() ) {
+    ANA_MSG_ERROR( "Size of 'm_truthJetContainers' should be equal " <<
+		   "to size of 'm_truthJetDetailStr'. Exiting." );
     return EL::StatusCode::FAILURE;
   }
 
@@ -148,11 +203,7 @@ EL::StatusCode EJsMiniNtuple :: addTree ( std::string syst )
     return EL::StatusCode::FAILURE;
   }
 
-  // this yields unchecked status code -->
-  // --> probably from HelperFunctions::retrieve(eventInfo...) in class instantiation
-  // --> is there a way to check this other than modifying HelpTreeBase code ???
   m_trees[syst] = new EJsHelpTreeBase( m_event, outTree, treeFile, 1e3, msgLvl(MSG::DEBUG), m_store );
-  //new HelpTreeBase( m_event, outTree, treeFile, 1e3, msgLvl(MSG::DEBUG), m_store );
   const auto& helpTree = m_trees[syst];
   helpTree->m_vertexContainerName = m_vertexContainerName;
 
@@ -174,13 +225,43 @@ EL::StatusCode EJsMiniNtuple :: addTree ( std::string syst )
     helpTree->AddTrigger( m_trigDetailStr );
   
   if ( !m_jetContainerName.empty() ) {
-    for ( unsigned i = 0; i != m_jetContainers.size(); ++i ) {
+    for ( size_t i = 0; i != m_jetContainers.size(); ++i ) {
       if ( m_jetDetails.size() == 1 )
 	helpTree->AddJets( m_jetDetails.at(0), m_jetBranches.at(i).c_str() );
       else
 	helpTree->AddJets( m_jetDetails.at(i), m_jetBranches.at(i).c_str() );
     }
   }
+
+  if ( !m_trigJetContainerName.empty() ) {
+    for ( size_t i = 0; i != m_trigJetContainers.size(); ++i ) {
+      if ( m_trigJetDetails.size() == 1 )
+	helpTree->AddJets( m_trigJetDetails.at(0), m_trigJetBranches.at(i).c_str() );
+      else
+	helpTree->AddJets( m_trigJetDetails.at(i), m_trigJetBranches.at(i).c_str() );
+    }
+  }
+
+  if ( !m_truthJetContainerName.empty() ) {
+    for ( size_t i = 0; i != m_truthJetContainers.size(); ++i ) {
+      if ( m_truthJetDetails.size() == 1 )
+	helpTree->AddJets( m_truthJetDetails.at(0), m_truthJetBranches.at(i).c_str() );
+      else
+	helpTree->AddJets( m_truthJetDetails.at(i), m_truthJetBranches.at(i).c_str() );
+    }
+  }
+
+  if ( !m_truthPartContainerName.empty() )
+    helpTree->AddTruthParts( m_truthPartBranchName, m_truthPartDetailStr );
+
+  if ( !m_trackPartContainerName.empty() )
+    helpTree->AddTrackParts( m_trackPartBranchName, m_trackPartDetailStr );
+
+  if ( !m_truthVertexContainerName.empty() )
+    helpTree->AddTruthVerts( m_truthVertexBranchName );
+
+  if ( !m_secondaryVertexContainerName.empty() )
+    helpTree->AddSecondaryVerts( m_secondaryVertexBranchName );
   
   return EL::StatusCode::SUCCESS;
 }
@@ -267,20 +348,139 @@ EL::StatusCode EJsMiniNtuple :: executeSyst ( std::string syst )
   }
   
 
-  // fill jet
+  // fill jets
   if ( !m_jetContainerName.empty() ) {
     for ( unsigned i = 0; i != m_jetContainers.size(); ++i ) {
+      // skip jet container if not available
+      if ( !HelperFunctions::isAvailable<xAOD::JetContainer>( m_jetContainers.at(i) + jetSuffix,
+							      m_event, m_store, msg() ) )
+	{ ANA_MSG_DEBUG( "Jet container, '" << m_jetContainers.at(i) + jetSuffix <<
+			 ", is not available. Skipping..." ); continue; }
+      // get container + fill branches
       ANA_MSG_DEBUG( "Retrieving '" << m_jetContainers.at(i) << "' jet container" );
       const xAOD::JetContainer* inJets = 0;
       ANA_CHECK( HelperFunctions::retrieve( inJets, m_jetContainers.at(i) + jetSuffix,
 					    m_event, m_store, msg() ) );
-      ANA_MSG_DEBUG( "Filling '" << m_jetBranches.at(i) << "' jet branch" );
+      ANA_MSG_DEBUG( "Filling '" << m_jetBranches.at(i) << "' jet branches" );
       helpTree->FillJets( inJets, HelperFunctions::getPrimaryVertexLocation( vertices, msg() ),
 			  m_jetBranches.at(i) );
     }
   }
-  
-  
+
+
+  // fill trig jets
+  if ( !m_trigJetContainerName.empty() ) {
+    for ( unsigned i = 0; i != m_trigJetContainers.size(); ++i ) {
+      // skip trig jet container if not available
+      if ( !HelperFunctions::isAvailable<xAOD::JetContainer>( m_trigJetContainers.at(i),
+							      m_event, m_store, msg() ) )
+	{ ANA_MSG_DEBUG( "Trig jet container, '" << m_trigJetContainers.at(i) <<
+			 ", is not available. Skipping..." ); continue; }
+      // get container + fill branches
+      ANA_MSG_DEBUG( "Retrieving '" << m_trigJetContainers.at(i) << "' trig jet container" );
+      const xAOD::JetContainer* inTrigJets = 0;
+      ANA_CHECK( HelperFunctions::retrieve( inTrigJets, m_trigJetContainers.at(i),
+					    m_event, m_store, msg() ) );
+      ANA_MSG_DEBUG( "Filling '" << m_trigJetBranches.at(i) << "' trig jet branches" );
+      helpTree->FillJets( inTrigJets, HelperFunctions::getPrimaryVertexLocation( vertices, msg() ),
+			  m_trigJetBranches.at(i) );
+    }
+  }
+
+
+  // fill truth jets
+  if ( !m_truthJetContainerName.empty() ) {
+    for ( unsigned i = 0; i != m_truthJetContainers.size(); ++i ) {
+      // skip truth jet container if not available
+      if ( !HelperFunctions::isAvailable<xAOD::JetContainer>( m_truthJetContainers.at(i),
+							      m_event, m_store, msg() ) )
+	{ ANA_MSG_DEBUG( "Truth jet container, '" << m_truthJetContainers.at(i) <<
+			 ", is not available. Skipping..." ); continue; }
+      // get container + fill branches
+      ANA_MSG_DEBUG( "Retrieving '" << m_truthJetContainers.at(i) << "' truth jet container" );
+      const xAOD::JetContainer* inTruthJets = 0;
+      ANA_CHECK( HelperFunctions::retrieve( inTruthJets, m_truthJetContainers.at(i),
+					    m_event, m_store, msg() ) );
+      ANA_MSG_DEBUG( "Filling '" << m_truthJetBranches.at(i) << "' truth jet branches" );
+      helpTree->FillJets( inTruthJets, HelperFunctions::getPrimaryVertexLocation( vertices, msg() ),
+			  m_truthJetBranches.at(i) );
+    }
+  }
+
+
+  // fill truth particles
+  if ( !m_truthPartContainerName.empty() ) {
+    // get container + fill branches if available
+    if ( HelperFunctions::isAvailable<xAOD::TruthParticleContainer>( m_truthPartContainerName,
+								      m_event, m_store, msg() ) ) {
+      ANA_MSG_DEBUG( "Retrieving '" << m_truthPartContainerName << "' truth particle container" );
+      const xAOD::TruthParticleContainer* inTruthParts = 0;
+      ANA_CHECK( HelperFunctions::retrieve( inTruthParts, m_truthPartContainerName,
+					    m_event, m_store, msg() ) );
+      ANA_MSG_DEBUG( "Filling '" << m_truthPartBranchName << "' truth particle branches" );
+      helpTree->FillTruth( m_truthPartBranchName, inTruthParts );
+    }
+    // otherwise, skip
+    else ANA_MSG_DEBUG( "Truth particle container, '" << m_truthPartContainerName <<
+		       ", is not available. Skipping..." );
+  }
+
+
+  // fill tracks
+  if ( !m_trackPartContainerName.empty() ) { 
+    // get container + fill branches if available
+    if ( HelperFunctions::isAvailable<xAOD::TrackParticleContainer>( m_trackPartContainerName,
+								     m_event, m_store, msg() ) ) {
+      ANA_MSG_DEBUG( "Retrieving '" << m_trackPartContainerName << "' track particle container" );
+      const xAOD::TrackParticleContainer* inTrackParts = 0;
+      ANA_CHECK( HelperFunctions::retrieve( inTrackParts, m_trackPartContainerName,
+					    m_event, m_store, msg() ) );
+      ANA_MSG_DEBUG( "Filling '" << m_trackPartBranchName << "' track particle branches" );
+      helpTree->FillTracks( m_trackPartBranchName, inTrackParts );
+    }
+    // otherwise, skip
+    else ANA_MSG_DEBUG( "Track particle container, '" << m_trackPartContainerName <<
+			", is not available. Skipping..." );
+  }
+
+
+  // fill truth vertices
+  if ( !m_truthVertexContainerName.empty() ) {
+    // get container + fill branches if available
+    if ( HelperFunctions::isAvailable<xAOD::TruthVertexContainer>( m_truthVertexContainerName,
+								   m_event, m_store, msg() ) ) {
+      ANA_MSG_DEBUG( "Retrieving '" << m_truthVertexContainerName << "' truth vertex container" );
+      const xAOD::TruthVertexContainer* inTruthVerts = 0;
+      ANA_CHECK( HelperFunctions::retrieve( inTruthVerts, m_truthVertexContainerName,
+					    m_event, m_store, msg() ) );
+      ANA_MSG_DEBUG( "Filling '" << m_truthVertexBranchName << "' truth vertex branches" );
+      helpTree->FillTruthVerts( inTruthVerts, m_truthVertexBranchName );
+    }
+    // otherwise, skip
+    else ANA_MSG_DEBUG( "Truth vertex container, '" << m_truthVertexContainerName <<
+			", is not available. Skipping..." );
+  }
+
+
+  // fill secondary vertices
+  if ( !m_secondaryVertexContainerName.empty() ) {
+    // get container + fill branches if available
+    if ( HelperFunctions::isAvailable<xAOD::VertexContainer>( m_secondaryVertexContainerName,
+							      m_event, m_store, msg() ) ) {
+      ANA_MSG_DEBUG( "Retrieving '" << m_secondaryVertexContainerName <<
+		     "' secondary vertex container" );
+      const xAOD::VertexContainer* inSecVerts = 0;
+      ANA_CHECK( HelperFunctions::retrieve( inSecVerts, m_secondaryVertexContainerName,
+					    m_event, m_store, msg() ) );
+      ANA_MSG_DEBUG( "Filling '" << m_secondaryVertexBranchName << "' secondary vertex branches" );
+      helpTree->FillSecondaryVerts( inSecVerts, m_secondaryVertexBranchName );
+    }
+    // otherwise, skip
+    else ANA_MSG_DEBUG( "Secondary vertex container, '" << m_secondaryVertexContainerName <<
+			", is not available. Skipping..." );
+  }
+
+
   // fill the tree
   helpTree->Fill();
   

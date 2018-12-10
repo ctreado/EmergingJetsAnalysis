@@ -5,6 +5,10 @@ import sys, os
 c = xAH_config()
 
 
+## NOTE: everything set up for nominal case right now (no systematics) -->
+## --> all "m_outputAlgo" vectors are empty for now...
+
+
 
 ## --- trigger lists --- ##
 
@@ -72,48 +76,87 @@ Dict_BasicEventSelection = {
     "m_applyPrimaryVertexCut" : True,  # False ??
     "m_useMetaData"           : False, # True ??
     #"m_printBranchList"       : True   # TEST
-    }
+}
 
     
-# object calibration
+# object calibration --> everything pretty much set to defaults for now; may need to modify...
 Dict_JetCalibrator_EMTopo = { 
     "m_name"                : "JetCalib_AntiKt4EMTopo",
+    "m_msgLevel"            : "info",
     "m_inContainerName"     : "AntiKt4EMTopoJets",
     "m_outContainerName"    : "AntiKt4EMTopoJets_Calib",
     "m_jetAlgo"             : "AntiKt4EMTopo",
-    "m_outputAlgo"          : "AntiKt4EMTopo_Calib_Algo",
+    "m_outputAlgo"          : "AntiKt4EMTopoJets_Calib_Algo",
     "m_calibConfigData"     : "JES_data2017_2016_2015_Consolidated_EMTopo_2018_Rel21.config",
     "m_calibConfigFullSim"  : "JES_data2017_2016_2015_Consolidated_EMTopo_2018_Rel21.config",
-    "m_uncertConfig"        : "rel21/Fall2018/R4_CategoryReduction_FullJER.config" # test
-    # everything pretty much set to defaults for now; may need to modify...
+    "m_uncertConfig"        : "rel21/Fall2018/R4_CategoryReduction_FullJER.config" # test --> does nothing w/o systematics (need to set "m_systName" to non-empty string to run systematics ("All" to run all available systematics))
 }
 
 Dict_JetCalibrator_PFlow = { 
     "m_name"                : "JetCalib_AntiKt4EMPFlow",
+    "m_msgLevel"            : "info",
     "m_inContainerName"     : "AntiKt4EMPFlowJets",
     "m_outContainerName"    : "AntiKt4EMPFlowJets_Calib",
     "m_jetAlgo"             : "AntiKt4EMPFlow",
-    "m_outputAlgo"          : "AntiKt4EMPFlow_Calib_Algo",
+    "m_outputAlgo"          : "AntiKt4EMPFlowJets_Calib_Algo",
     "m_calibConfigData"     : "JES_data2017_2016_2015_Consolidated_PFlow_2018_Rel21.config",
     "m_calibConfigFullSim"  : "JES_data2017_2016_2015_Consolidated_PFlow_2018_Rel21.config",
-    "m_uncertConfig"        : "rel21/Fall2018/R4_CategoryReduction_FullJER.config" # test
-    # everything pretty much set to defaults for now; may need to modify...
+    "m_uncertConfig"        : "rel21/Fall2018/R4_CategoryReduction_FullJER.config"
 }
 
     
 # object selection
+Dict_JetSelector_EMTopo = {
+    "m_name"                    : "JetSelect_AntiKt4EMTopo",
+    "m_msgLevel"                : "info",
+    "m_inContainerName"         : "AntiKt4EMTopoJets_Calib",
+    "m_outContainerName"        : "AntiKt4EMTopoJets_Calib_Select",
+    "m_inputAlgo"               : "AntiKt4EMTopoJets_Calib_Algo",
+    "m_outputAlgo"              : "AntiKt4EMTopoJets_Calib_Select_Algo",
+    "m_decorateSelectedObjects" : False,
+    "m_createSelectedContainer" : True,
+    "m_useCutFlow"              : True,
+    #"m_pT_min"                  : 50e3,
+    #"m_eta_max"                 : 2.7,
+}
 
+Dict_JetSelector_PFlow = {
+    "m_name"                    : "JetSelect_AntiKt4EMPFlow",
+    "m_msgLevel"                : "info",
+    "m_inContainerName"         : "AntiKt4EMPFlowJets_Calib",
+    "m_outContainerName"        : "AntiKt4EMPFlowJets_Calib_Select",
+    "m_inputAlgo"               : "AntiKt4EMPFlowJets_Calib_Algo",
+    "m_outputAlgo"              : "AntiKt4EMPFlowJets_Calib_Select_Algo",
+    "m_decorateSelectedObjects" : True,
+    "m_createSelectedContainer" : True,
+    "m_useCutFlow"              : False,
+    #"m_pT_min"                  : 50e3,
+    #"m_eta_max"                 : 2.7,
+}
+
+
+# analysis
+Dict_EJsxAODAnalysis = {
+    "m_name"     : "EJsAnaly",
+    "m_msgLevel" : "info",
+}
+
+  
 # output
 Dict_EJsMiniNtuple = {
     "m_name"             : "EJsMiniNtuple",
     "m_msgLevel"         : "info",
     "m_evtDetailStr"     : "pileup",
-    "m_trigDetailStr"    : "passTriggers",
+    "m_trigDetailStr"    : "basic passTriggers",
     "m_jetDetailStr"     : "kinematic",
-    "m_jetContainerName" : "AntiKt4EMTopoJets AntiKt4EMPFlowJets", # use calib jets ??
-    "m_jetBranchName"    : "jet pflowJet",
-    "m_systsVec"         : "" # empty string = nominal case
-    }
+    #"m_jetContainerName" : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
+    #"m_jetBranchName"    : "jet pflowJet",
+    "m_jetContainerName" : "AntiKt4EMTopoJets",
+    "m_jetBranchName"    : "jet",
+    "m_systsVec"         : "" # empty string = nominal case --> will need to replace w/ final 'm_outputAlgo' from above...
+    #"m_systsVec"         : "AntiKt4EMTopoJets_Calib_Algo"
+}
+
 
     
 ## --- algorithms --- ##
@@ -121,12 +164,24 @@ Dict_EJsMiniNtuple = {
 # Basic Setup
 c.algorithm ( "BasicEventSelection", Dict_BasicEventSelection )
 
-# Jet Calibration
-c.algorithm ( "JetCalibrator", Dict_JetCalibrator_EMTopo )
-c.algorithm ( "JetCalibrator", Dict_JetCalibrator_PFlow )
+## Jet Calibration
+#c.algorithm ( "JetCalibrator", Dict_JetCalibrator_EMTopo )
+#c.algorithm ( "JetCalibrator", Dict_JetCalibrator_PFlow )
+
+## Jet Selection
+#c.algorithm ( "JetSelector", Dict_JetSelector_EMTopo )
+#c.algorithm ( "JetSelector", Dict_JetSelector_PFlow )
+
+# Vertex / Track Selection
+
+# Analysis
+c.algorithm ( "EJsxAODAnalysis", Dict_EJsxAODAnalysis )
 
 # EJs Ntuple
 c.algorithm ( "EJsMiniNtuple", Dict_EJsMiniNtuple )
+
+
+
 
 ### NOTE: probably can't put histo alg here, since event-loop loops through entire
 ### algorithm chain every event (so we won't have written out our tree before
