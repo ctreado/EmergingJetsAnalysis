@@ -3,18 +3,26 @@
 
 #include <vector>
 #include <string>
+#include <cstdint>
+#include <limits>
 
 #include <TTree.h>
 
+#include "EJsAnalysis/EJsHelperClasses.h"
+
 namespace EJs {
 
+  template < class T_INFOSWITCH >
   class VertexContainer
   {
   public:
-    VertexContainer ( const std::string& name, float units = 1e3 )
-      : m_name  ( name ),
-        m_units ( units ),
-        m_debug ( false )
+    VertexContainer ( const std::string& name,
+		      const std::string& detailStr = "",
+		      float units = 1e3 )
+      : m_name       ( name ),
+        m_infoSwitch ( detailStr ),
+        m_units      ( units ),
+        m_debug      ( false )
     {
       m_n = 0;
     }
@@ -34,7 +42,7 @@ namespace EJs {
     virtual void setBranches ( TTree* tree )
     {
       std::string counterName  = "n" + m_name;
-      tree->Branch( counterName.c_str(), &m_n, (counterName+"/I").c_str() );
+      tree->Branch( counterName.c_str(), &m_n, (counterName+"/i").c_str() );
     }
 
     
@@ -89,11 +97,16 @@ namespace EJs {
 
     
   public:
-    int   m_n;
-    float m_units; 
-    bool  m_debug; 
+    T_INFOSWITCH m_infoSwitch; 
+    float    m_units; 
+    bool     m_debug;   
+    uint32_t m_n;
 
   };
+
+  #define AUXDYN( obj, type, varname ) \
+  ( obj->isAvailable<type>(varname) ? obj->auxdataConst<type>(varname) : \
+    std::numeric_limits<type>::quiet_NaN() )
 
 } // EJs
 

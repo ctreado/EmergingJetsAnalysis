@@ -164,5 +164,7 @@ EL::StatusCode EJsxAODAnalysis :: histFinalize ()
   // histInitialize() before they're written to disk; gets called on
   // all worker nodes regardless of whether they processed input events
 
+  ANA_CHECK( xAH::Algorithm::algFinalize() );
+
   return EL::StatusCode::SUCCESS;
 }

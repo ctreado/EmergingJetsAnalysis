@@ -4,8 +4,6 @@
 #include <vector>
 #include <string>
 
-#include <TTree.h>
-
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Algorithm.h>
 
@@ -29,30 +27,32 @@ class EJsMiniNtuple : public xAH::Algorithm
 
   // parsed to bools to control which branches are filled -->
   // --> see *InfoSwitch classes in xAH::HelperClasses for details...
-  std::string m_evtDetailStr = "";
-  std::string m_trigDetailStr = "";
-  std::string m_jetDetailStr = "";
-  std::string m_trigJetDetailStr = "";
-  std::string m_truthJetDetailStr = "";
-  std::string m_truthPartDetailStr = "";
-  std::string m_trackPartDetailStr = "";
+  std::string m_evtDetailStr             = "";
+  std::string m_trigDetailStr            = "";
+  std::string m_jetDetailStr             = "";
+  std::string m_trigJetDetailStr         = "";
+  std::string m_truthJetDetailStr        = "";
+  std::string m_truthPartDetailStr       = "";
+  std::string m_trackPartDetailStr       = "";
+  std::string m_truthVertexDetailStr     = "";
+  std::string m_secondaryVertexDetailStr = "";
 
   // input containers
-  std::string m_jetContainerName = "";
-  std::string m_trigJetContainerName = "";
-  std::string m_truthJetContainerName = "";
-  std::string m_truthPartContainerName = "";
-  std::string m_trackPartContainerName = "";
-  std::string m_truthVertexContainerName = "";
+  std::string m_jetContainerName             = "";
+  std::string m_trigJetContainerName         = "";
+  std::string m_truthJetContainerName        = "";
+  std::string m_truthPartContainerName       = "";
+  std::string m_trackPartContainerName       = "";
+  std::string m_truthVertexContainerName     = "";
   std::string m_secondaryVertexContainerName = "";
 
   // input branch names
-  std::string m_jetBranchName = "";
-  std::string m_trigJetBranchName = "";
-  std::string m_truthJetBranchName = "";
-  std::string m_truthPartBranchName = "";
-  std::string m_trackPartBranchName = "";
-  std::string m_truthVertexBranchName = "";
+  std::string m_jetBranchName             = "";
+  std::string m_trigJetBranchName         = "";
+  std::string m_truthJetBranchName        = "";
+  std::string m_truthPartBranchName       = "";
+  std::string m_trackPartBranchName       = "";
+  std::string m_truthVertexBranchName     = "";
   std::string m_secondaryVertexBranchName = "";
 
   bool m_retrievePV = true;
@@ -70,8 +70,8 @@ class EJsMiniNtuple : public xAH::Algorithm
   // TTree *myTree; //!
   // TH1 *myHist; //!
 
-  xAOD::TEvent *m_event; //!
-  xAOD::TStore *m_store; //!
+  xAOD::TEvent* m_event; //!
+  xAOD::TStore* m_store; //!
 
 
  protected:

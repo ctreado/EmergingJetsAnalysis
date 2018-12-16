@@ -223,6 +223,8 @@ EL::StatusCode EJsMiniNtuple :: addTree ( std::string syst )
   
   if ( !m_trigDetailStr.empty() )
     helpTree->AddTrigger( m_trigDetailStr );
+
+  helpTree->AddPV( );
   
   if ( !m_jetContainerName.empty() ) {
     for ( size_t i = 0; i != m_jetContainers.size(); ++i ) {
@@ -258,10 +260,10 @@ EL::StatusCode EJsMiniNtuple :: addTree ( std::string syst )
     helpTree->AddTrackParts( m_trackPartBranchName, m_trackPartDetailStr );
 
   if ( !m_truthVertexContainerName.empty() )
-    helpTree->AddTruthVerts( m_truthVertexBranchName );
+    helpTree->AddTruthVerts( m_truthVertexDetailStr, m_truthVertexBranchName );
 
   if ( !m_secondaryVertexContainerName.empty() )
-    helpTree->AddSecondaryVerts( m_secondaryVertexBranchName );
+    helpTree->AddSecondaryVerts( m_secondaryVertexDetailStr, m_secondaryVertexBranchName );
   
   return EL::StatusCode::SUCCESS;
 }
@@ -339,6 +341,11 @@ EL::StatusCode EJsMiniNtuple :: executeSyst ( std::string syst )
   // fill event info
   ANA_MSG_DEBUG( "Filling event info branches" );
   helpTree->FillEvent( eventInfo );
+
+
+  // fill primary vertex info
+  ANA_MSG_DEBUG( "Filling primary vertex branches" );
+  helpTree->FillPV( primaryVertex );
 
   
   // fill trigger
@@ -523,6 +530,8 @@ EL::StatusCode EJsMiniNtuple :: histFinalize ()
   // processed on worker node; allows finishing up objects created in
   // histInitialize() before they're written to disk; gets called on
   // all worker nodes regardless of whether they processed input events
+
+  ANA_CHECK( xAH::Algorithm::algFinalize() );
 
   return EL::StatusCode::SUCCESS;
 }

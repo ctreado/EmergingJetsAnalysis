@@ -9,13 +9,17 @@
 #include <xAODTruth/TruthVertex.h>
 
 #include "EJsAnalysis/VertexContainer.h"
+#include "EJsAnalysis/EJsHelperClasses.h"
 
 namespace EJs {
 
-  class TruthVertexContainer : public VertexContainer
+  class TruthVertexContainer :
+    public VertexContainer < EJsHelperClasses::TruthVertexInfoSwitch >
   {
   public:
-    TruthVertexContainer ( const std::string& name = "truthVtx", float units = 1e3 );
+    TruthVertexContainer ( const std::string& name = "truthVtx",
+			   const std::string& detailStr = "",
+			   float units = 1e3 );
     virtual ~TruthVertexContainer ();
 
     virtual void setTree         ( TTree* tree );
@@ -25,6 +29,7 @@ namespace EJs {
 
     // updateVertex ...
 
+    
   private:
     // vector branches
 

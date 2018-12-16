@@ -74,6 +74,12 @@ Dict_BasicEventSelection = {
     "m_applyPrimaryVertexCut" : False, # True ??
     "m_useMetaData"           : False, # True ??
 }
+
+# secondary vertex selection
+Dict_SecondaryVertexSelector = {
+    "m_name"     : "SecVtxSel",
+    "m_msgLevel" : "info",
+}
   
 # output
 Dict_EJsMiniNtuple = {
@@ -83,8 +89,9 @@ Dict_EJsMiniNtuple = {
     #"m_trigDetailStr"                : "basic passTriggers",
     #"m_jetContainerName"             : "AntiKt4EMTopoJets",
     #"m_jetBranchName"                : "jet",
-    #"m_jetDetailStr"                 : "kinematic trigger energy scales trackAll allTrack "
-    #                                    "allTrackDetail constituent constituentAll truth",
+    #"m_jetDetailStr"                 : "kinematic",
+    ##"m_jetDetailStr"                 : "kinematic trigger energy scales trackAll allTrack "
+    ##                                    "allTrackDetail constituent constituentAll truth",
     #"m_trigJetContainerName"         : "HLT_xAOD__JetContainer_a4tcemsubjesFS",
     #"m_trigJetBranchName"            : "trigJet",
     #"m_trigJetDetailStr"             : "kinematic",
@@ -95,16 +102,17 @@ Dict_EJsMiniNtuple = {
     #"m_truthPartBranchName"          : "truthPart",
     #"m_truthPartDetailStr"           : "kinematic parents children",
     "m_trackPartContainerName"       : "InDetTrackParticles",
-    "m_trackPartBranchName"          : "tracks",
+    "m_trackPartBranchName"          : "track",
     "m_trackPartDetailStr"           : "kinematic numbers vertex",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
     "m_secondaryVertexBranchName"    : "secVtx",
+    "m_secondaryVertexDetailStr"     : "tracks",
     "m_systsVec"                     : "" # empty string = nominal case
 }
 
-## will need to manually add truth-jet width, track chi2,d0,numberDoF
+## will need to manually add truth-jet width
 
 
     
@@ -112,6 +120,9 @@ Dict_EJsMiniNtuple = {
 
 # Basic Setup
 c.algorithm ( "BasicEventSelection", Dict_BasicEventSelection )
+
+# Secondary Vertex Cuts
+c.algorithm ( "SecondaryVertexSelector", Dict_SecondaryVertexSelector )
 
 # EJs Ntuple
 c.algorithm ( "EJsMiniNtuple", Dict_EJsMiniNtuple )

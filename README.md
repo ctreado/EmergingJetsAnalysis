@@ -100,7 +100,8 @@ configure and run the following set of algorithms:
   vertices, tracks, truth) for analysis
 * **TruthMatching** -- matches physics objects to truth-level quantitites
 * **EJsxAODAnalysis** -- performs relevant analysis selections
-* **EJsMiniNtuple** -- creates output TTree using **EJsHelpTreeBase** class
+* **EJsMiniNtuple** -- creates output TTree using **EJsHelpTreeBase**
+  class, which fills branches according to object container classes
 
 Example
 configuration files for EJsMiniNtuple-making can be found under

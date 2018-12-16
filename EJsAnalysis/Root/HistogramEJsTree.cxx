@@ -49,7 +49,7 @@ EL::StatusCode HistogramEJsTree :: histInitialize ()
 
   // book hists
   TTree* tree = wk()->tree();
-  h_jet_pt = HM->book( m_name, "jet_pt", "jet p_{T} [GeV]", 100, 0, 1400 );
+  h_jet_pt = HM->book( m_name, "jet_pt", "jet p_{T} [GeV]", 100, 0, 3000 );
 
   // record hists to EventLoop output
   HM->record( wk() );
