@@ -4,14 +4,7 @@
 #include <vector>
 #include <string>
 
-#include <EventLoop/StatusCode.h>
-#include <EventLoop/Algorithm.h>
-
 #include <xAODAnaHelpers/Algorithm.h>
-
-#include <xAODRootAccess/Init.h>
-#include <xAODRootAccess/TEvent.h>
-#include <xAODRootAccess/TStore.h>
 
 #include "EJsAnalysis/EJsHelpTreeBase.h"
 
@@ -46,7 +39,7 @@ class EJsMiniNtuple : public xAH::Algorithm
   std::string m_truthVertexContainerName     = "";
   std::string m_secondaryVertexContainerName = "";
 
-  // input branch names
+  // output branch names
   std::string m_jetBranchName             = "";
   std::string m_trigJetBranchName         = "";
   std::string m_truthJetBranchName        = "";

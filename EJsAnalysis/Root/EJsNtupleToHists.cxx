@@ -1,21 +1,19 @@
+#include <TTree.h>
+
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
 #include <EventLoop/Worker.h>
 #include <EventLoop/OutputStream.h>
 
-#include <xAODAnaHelpers/HistogramManager.h>
+#include "EJsAnalysis/EJsNtupleToHists.h"
 
-#include "EJsAnalysis/HistogramEJsTree.h"
-
-#include "TTree.h"
 
 // needed to distribute algorithm to workers
-ClassImp ( HistogramEJsTree )
+ClassImp ( EJsNtupleToHists )
 
 
 
-HistogramEJsTree :: HistogramEJsTree () : Algorithm ( "HistogramEJsTree" ),
-  m_jet_pt(0)
+EJsNtupleToHists :: EJsNtupleToHists () : Algorithm ( "EJsNtupleToHists" )
 {
   // code for base initialization of variables, e.g. initialize
   // all pointers to zero; note this method called on submission +
@@ -25,7 +23,7 @@ HistogramEJsTree :: HistogramEJsTree () : Algorithm ( "HistogramEJsTree" ),
 
 
 
-EL::StatusCode HistogramEJsTree :: setupJob ( EL::Job& job )
+EL::StatusCode EJsNtupleToHists :: setupJob ( EL::Job& job )
 {
   // code to set up job on submission object so it's ready to work
   // w/ alg, e.g. request D3PDReader service or add output files;
@@ -37,7 +35,7 @@ EL::StatusCode HistogramEJsTree :: setupJob ( EL::Job& job )
 
 
 
-EL::StatusCode HistogramEJsTree :: histInitialize ()
+EL::StatusCode EJsNtupleToHists :: histInitialize ()
 {
   // everything that needs to be done at the beginning on each
   // worker node, e.g. create histos + output trees;
@@ -45,23 +43,17 @@ EL::StatusCode HistogramEJsTree :: histInitialize ()
   
   ANA_CHECK( xAH::Algorithm::algInitialize() );
 
-  HistogramManager* HM = new HistogramManager ( "HistManager", "HistManager" );
-
-  // book hists
-  TTree* tree = wk()->tree();
-  h_jet_pt = HM->book( m_name, "jet_pt", "jet p_{T} [GeV]", 100, 0, 3000 );
-
-  // record hists to EventLoop output
-  HM->record( wk() );
-
-  ANA_MSG_INFO( "Histograms initialized!" );
+  // declare classes and add histograms to output
+  m_plots = new EJsHistogramManager ( m_name, m_detailStr );
+  ANA_CHECK( m_plots ->initialize( m_secondaryVertexDetailStr ) );
+  m_plots ->record( wk() );
 
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode HistogramEJsTree :: fileExecute ()
+EL::StatusCode EJsNtupleToHists :: fileExecute ()
 {
   // everything that needs to be done exactly once for every
   // single file, e.g. collect list of all lumi-blocks processed
@@ -71,7 +63,7 @@ EL::StatusCode HistogramEJsTree :: fileExecute ()
 
 
 
-EL::StatusCode HistogramEJsTree :: changeInput ( bool /*firstFile*/ )
+EL::StatusCode EJsNtupleToHists :: changeInput ( bool /*firstFile*/ )
 {
   // everything that needs to be done when input files change,
   // e.g. resetting branch addresses on trees; not needed if
@@ -81,15 +73,15 @@ EL::StatusCode HistogramEJsTree :: changeInput ( bool /*firstFile*/ )
   TTree* tree = wk()->tree();
   tree->SetBranchStatus( "*", 0 ); // disables all branches
 
-  tree->SetBranchStatus  ( "jet_pt", 1 );
-  tree->SetBranchAddress ( "jet_pt", &m_jet_pt );
-  
+  ANA_CHECK( m_plots ->connectSecVerts ( tree, m_secondaryVertexBranchName,
+					 m_secondaryVertexDetailStr ) );
+
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode HistogramEJsTree :: initialize ()
+EL::StatusCode EJsNtupleToHists :: initialize ()
 {
   // everything that needs to be done after first input file
   // connected and before first event processed, e.g. create
@@ -97,33 +89,36 @@ EL::StatusCode HistogramEJsTree :: initialize ()
   // can also create all histograms + trees here, but note this method
   // doesn't get called if no events processed, so objects created
   // here won't be available in output if no input events
-
-  ANA_MSG_INFO( "Initializing HistogramEJsTree..." );
+  
+  ANA_MSG_INFO( "Initializing EJsNtupleToHists..." );
 
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode HistogramEJsTree :: execute ()
+EL::StatusCode EJsNtupleToHists :: execute ()
 {
   // everything that needs to be done on every single event,
   // e.g. read input variables, apply cuts, fill histos + trees;
   // here is where most of actual analysis will go...
 
-  ANA_MSG_DEBUG( "Executing HistogramEJsTree algorithm" );
+  ANA_MSG_DEBUG( "Executing EJsNtupleToHists algorithm" );
 
-  wk()->tree()->GetEntry ( wk()->treeEntry() );
+  // do any more necessary analysis
+  
+  // execute plots (fill histograms, calling "m_*Plots->execute(...))
 
-  for ( size_t i = 0; i != m_jet_pt->size(); ++i )
-    h_jet_pt->Fill( m_jet_pt->at(i) );
+  TTree* tree = wk()->tree();
+  ANA_CHECK( m_plots ->execute( tree, wk()->treeEntry(), m_secondaryVertexDetailStr ) );
+  
 
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode HistogramEJsTree :: postExecute ()
+EL::StatusCode EJsNtupleToHists :: postExecute ()
 {
   // everything that need to be done after main event processing;
   // mainly used in implementing NTupleSvc
@@ -133,7 +128,7 @@ EL::StatusCode HistogramEJsTree :: postExecute ()
 
 
 
-EL::StatusCode HistogramEJsTree :: finalize ()
+EL::StatusCode EJsNtupleToHists :: finalize ()
 {
   // mirror image of initialize(); gets called after last event
   // processed on worker node; allows finishing up objects created
@@ -145,7 +140,7 @@ EL::StatusCode HistogramEJsTree :: finalize ()
 
 
 
-EL::StatusCode HistogramEJsTree :: histFinalize ()
+EL::StatusCode EJsNtupleToHists :: histFinalize ()
 {
   // mirror image of histInitialize(); gets called after last event
   // processed on worker node; allows finishing up objects created in
@@ -153,6 +148,9 @@ EL::StatusCode HistogramEJsTree :: histFinalize ()
   // all worker nodes regardless of whether they processed input events
 
   ANA_CHECK( xAH::Algorithm::algFinalize() );
+
+  // clean up memory
+  if ( m_plots ) delete m_plots;
 
   return EL::StatusCode::SUCCESS;
 }

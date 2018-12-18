@@ -2,14 +2,11 @@
 #include "EJsAnalysis/AlgConsts.h"
 
 
-using namespace asg::msgUserCode;
-
-
 EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* file,
 				     const float units, bool debug, xAOD::TStore* store ) :
   HelpTreeBase ( event, tree, file, units, debug, store )
 {
-  ANA_MSG_DEBUG( "Creating output EJs TTree" );
+  if ( m_debug ) Info( "EJsHelpTreeBase()", "creating output EJs TTree" );
 
   m_x       = 0;
   m_y       = 0;
@@ -31,6 +28,8 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
 
 EJsHelpTreeBase :: ~EJsHelpTreeBase()
 {
+  if ( m_debug ) Info( "EJsHelpTreeBase()", "deleting" );
+  
   // truth vertices
   for ( auto truthVtx : m_truthVerts )
     delete truthVtx.second;
@@ -48,7 +47,7 @@ EJsHelpTreeBase :: ~EJsHelpTreeBase()
 
 void EJsHelpTreeBase :: AddTruthVerts ( const std::string detailStr, const std::string truthVtxName )
 {
-  if ( m_debug ) Info( "EJsHelpTreeBase::AddTruthVerts()", "Adding truth vertex variables" );
+  if ( m_debug ) Info( "EJsHelpTreeBase::AddTruthVerts()", "adding truth vertex variables" );
   
   m_truthVerts[ truthVtxName ] = new EJs::TruthVertexContainer( truthVtxName, detailStr, m_units );
   EJs::TruthVertexContainer* thisTruthVtx = m_truthVerts[ truthVtxName ];
@@ -85,7 +84,7 @@ void EJsHelpTreeBase :: ClearTruthVerts ( const std::string truthVtxName )
 
 void EJsHelpTreeBase :: AddSecondaryVerts ( const std::string detailStr, const std::string secVtxName )
 {
-  if ( m_debug ) Info( "EJsHelpTreeBase::AddSecondaryVerts()", "Adding secondary vertex variables" );
+  if ( m_debug ) Info( "EJsHelpTreeBase::AddSecondaryVerts()", "adding secondary vertex variables" );
 
   m_secVerts[ secVtxName ] = new EJs::SecondaryVertexContainer( secVtxName, detailStr, m_units );
   EJs::SecondaryVertexContainer* thisSecVtx = m_secVerts[ secVtxName ];
@@ -123,7 +122,7 @@ void EJsHelpTreeBase :: ClearSecondaryVerts ( const std::string secVtxName )
 void EJsHelpTreeBase :: AddPV ( )
 {
 
-  if ( m_debug ) Info( "EJsHelpTreeBase::AddPV()", "Adding primary vertex variables" );
+  if ( m_debug ) Info( "EJsHelpTreeBase::AddPV()", "adding primary vertex variables" );
 
   m_tree->Branch( "PV_x",       &m_x,       "PV_x/F"       );
   m_tree->Branch( "PV_y",       &m_y,       "PV_y/F"       );
@@ -187,7 +186,7 @@ void EJsHelpTreeBase :: ClearJetsUser ( const std::string jetName )
  ***************/
 void EJsHelpTreeBase :: AddTracksUser ( const std::string trackName, const std::string detailStr )
 {
-  if ( m_debug ) Info( "EJsHelpTreeBase::AddTracksUser()", "Adding EJs-user track variables" );
+  if ( m_debug ) Info( "EJsHelpTreeBase::AddTracksUser()", "adding EJs-user track variables" );
 
   setBranch<float>    ( trackName, "d0",           m_d0 );
   setBranch<float>    ( trackName, "errd0",        m_errd0 );

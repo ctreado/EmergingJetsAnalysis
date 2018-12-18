@@ -1,14 +1,7 @@
 #ifndef EJsAnalysis_EJsxAODAnalysis_H
 #define EJsAnalysis_EJsxAODAnalysis_H
 
-#include <EventLoop/StatusCode.h>
-#include <EventLoop/Algorithm.h>
-
 #include <xAODAnaHelpers/Algorithm.h>
-
-#include <xAODRootAccess/Init.h>
-#include <xAODRootAccess/TEvent.h>
-#include <xAODRootAccess/TStore.h>
 
 
 class EJsxAODAnalysis : public xAH::Algorithm

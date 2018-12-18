@@ -1,14 +1,7 @@
 #ifndef EJsAnalysis_SecondaryVertexSelector_H
 #define EJsAnalysis_SecondaryVertexSelector_H
 
-#include <EventLoop/StatusCode.h>
-#include <EventLoop/Algorithm.h>
-
 #include <xAODAnaHelpers/Algorithm.h>
-
-#include <xAODRootAccess/Init.h>
-#include <xAODRootAccess/TEvent.h>
-#include <xAODRootAccess/TStore.h>
 
 #include <xAODTracking/Vertex.h>
 

@@ -9,4 +9,4 @@ subdir="hists.local.MC16d.EJ_ModelA_1400_20"
 
 tree="EJsMiniNtuple/nominal"
 
-xAH_run.py --files ${input} --config ${jo} --submitDir ${subdir} --nevents -1 --treeName ${tree} direct
+xAH_run.py --files ${input} --config ${jo} --submitDir ${subdir} --nevents 10 --treeName ${tree} direct

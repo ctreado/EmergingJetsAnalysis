@@ -112,15 +112,39 @@ files providing lists of input samples for both data and MC can be
 found here: `EJsAnalysis/scripts/samples.*.txt`.
 
 
+### Retrieving Ntuple Output from the Grid
+The xAODAnaHelpers script `downloadAndMerge.py` is used to download
+and merge output datasets produced on the Grid for further analysis,
+histogramming, and plotting. It includes the
+following options:
+
+* **--container** -- name of dataset to be downloaded; may include wildcards
+* **--file** -- text file containing names of datasets to be downloaded
+* **--ndownloader** -- number of parallel download threads (default = 4)
+* **--types** -- comma-separated list of file types to download; may
+  include tree, hist, cutflow, logs, metadata, and/or rawDownload
+* **--maxSize** -- attempted maximum size [GB] of output files
+  (default = -1 (no limit)); files
+  larger than this will not be merged
+* **--outPath** -- output path (default = "./gridOutput/") where files
+are downloaded
+
+See `EJsAnalysis/scripts/get_*sh` example getting scripts for
+reference on running `downloadAndMerge.py` to retrieve analysis output from the grid.
+
+
 ### Histogramming
 Histogramming is performed through the xAH::Algorithm `HistogramEJsTree`,
 which runs over the output EJsMiniNtuple from the ntuple-making step.
 
 Example configuration files for histogramming can be found under
-`EJsAnalysis/config/EJsHistoConfig*.py`, and example submission scrips
+`EJsAnalysis/config/EJsHistoConfig*.py`, and example submission scripts
 for running ntuple-to-histogram jobs can be found at
 `EJsAnalysis/scripts/run_histos*.sh`.
 
 > NOTE: right now, this is only setup to run locally and over a single
 > input TTree file at a time
+
+
+
 

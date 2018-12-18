@@ -6,7 +6,6 @@
 
 #include <TTree.h>
 
-//#include <xAODTracking/Vertex.h>
 #include <xAODTracking/TrackParticleContainer.h>
 #include <xAODTracking/VertexContainer.h>
 

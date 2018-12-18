@@ -11,6 +11,8 @@ TruthVertexContainer :: TruthVertexContainer ( const std::string& name,
 					       float units ) :
   VertexContainer ( name, detailStr, units )
 {
+  if ( m_debug ) Info( "TruthVertexContainer()", "setting up" );
+  
   m_x               = new std::vector<float>;
   m_y               = new std::vector<float>;
   m_z               = new std::vector<float>;
@@ -35,7 +37,7 @@ TruthVertexContainer :: TruthVertexContainer ( const std::string& name,
 
 TruthVertexContainer :: ~TruthVertexContainer ()
 {
-  if ( m_debug ) std::cout << "Deleting TruthVertexContainer" << std::endl;
+  if ( m_debug ) Info( "TruthVertexContainer()", "deleting" );
 
   delete m_x;
   delete m_y;
@@ -61,6 +63,8 @@ TruthVertexContainer :: ~TruthVertexContainer ()
 
 void TruthVertexContainer :: setTree ( TTree* tree )
 {
+  if ( m_debug ) Info( "TruthVertexContainer::setTree()", "setting tree" );
+  
   VertexContainer::setTree ( tree );
 
   connectBranch<float>              ( tree, "x",               &m_x               );
@@ -89,6 +93,8 @@ void TruthVertexContainer :: setTree ( TTree* tree )
 
 void TruthVertexContainer :: setBranches ( TTree* tree )
 {
+  if ( m_debug ) Info( "TruthVertexContainer::setBranches()", "setting branches" );
+  
   VertexContainer::setBranches ( tree );
 
   setBranch<float>              ( tree, "x",               m_x               );
@@ -115,6 +121,8 @@ void TruthVertexContainer :: setBranches ( TTree* tree )
 
 void TruthVertexContainer :: clear ()
 {
+  if ( m_debug ) Info( "TruthVertexContainer::clear()", "clearing branches" );
+  
   VertexContainer::clear ();
 
   m_x               ->clear();
@@ -141,6 +149,8 @@ void TruthVertexContainer :: clear ()
 
 void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx )
 {
+  if ( m_debug ) Info( "TruthVertexContainer::FillTruthVertex()", "filling branches" );
+  
   VertexContainer::FillVertex ();
 
   m_x   ->push_back( truthVtx->x()    );

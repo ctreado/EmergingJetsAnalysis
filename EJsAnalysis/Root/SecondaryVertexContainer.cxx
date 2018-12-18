@@ -11,6 +11,8 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name,
 						       float units ) :
   VertexContainer ( name, detailStr, units )
 {
+  if ( m_debug ) Info( "SecondaryVertexContainer()", "setting up" );
+  
   m_x             = new std::vector<float>;
   m_y             = new std::vector<float>;
   m_z             = new std::vector<float>;
@@ -88,7 +90,7 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name,
 
 SecondaryVertexContainer :: ~SecondaryVertexContainer ()
 {
-  if ( m_debug ) std::cout << "Deleting SecondaryVertexContainer" << std::endl;
+  if ( m_debug ) Info( "SecondaryVertexContainer()", "deleting" );
 
   delete m_x;
   delete m_y;
@@ -166,6 +168,8 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
 
 void SecondaryVertexContainer :: setTree ( TTree* tree )
 {
+  if ( m_debug ) Info( "SecondaryVertexContainer::setTree()", "setting tree" );
+  
   VertexContainer::setTree ( tree );
 
   connectBranch<float>              ( tree, "x",             &m_x             );
@@ -244,6 +248,8 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
 
 void SecondaryVertexContainer :: setBranches ( TTree* tree )
 {
+  if ( m_debug ) Info( "SecondaryVertexContainer::setBranches()", "setting branches" );
+  
   VertexContainer::setBranches ( tree );
 
   setBranch<float>              ( tree, "x",             m_x             );
@@ -319,6 +325,8 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
 
 void SecondaryVertexContainer :: clear ()
 {
+  if ( m_debug ) Info( "SecondaryVertexContainer::clear()", "clearing branches" );
+  
   VertexContainer::clear ();
 
   m_x             ->clear();
@@ -397,6 +405,8 @@ void SecondaryVertexContainer :: clear ()
 
 void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVtx )
 {
+  if ( m_debug ) Info( "SecondaryVertexContainer::FillSecondaryVertex()", "filling branches" );
+  
   VertexContainer::FillVertex ();
 
   // // check if vertex passed selections ...
@@ -542,6 +552,8 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
 
 void SecondaryVertexContainer :: recordTracks ( std::vector< const xAOD::TrackParticle* >& filteredTracks )
 {
+  if ( m_debug ) Info( "SecondaryVertexContainer::recordTracks()", "filling vertex track branches" );
+  
   std::vector<float> trk_qOverP;
   std::vector<float> trk_pt;
   std::vector<float> trk_eta;
