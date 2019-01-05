@@ -1,6 +1,6 @@
 # EmergingJetsAnalysis: EJs Analysis Framework
 
-> last modified 4 December 2018 by colleen.jennifer.treado@cern.ch
+> last modified 4 January 2019 by colleen.jennifer.treado@cern.ch
 
 Welcome to the event-loop analysis code framework for the Run 2 Emerging Jets
 search.
@@ -87,7 +87,7 @@ options. Make sure you have a valid voms proxy set up
 ### Ntuple-Making
 The bulk of the analysis is performed in the ntuple-making step, which
 runs over xAODs (or DxAODs), doing basic event selection,
-object calibration/selection, and analysis selection, and producing an
+object calibration/selection, and analysis selection, and produces an
 EJsMiniNtuple output TTree (one for each systematic). A typical ntuple-making job should
 configure and run the following set of algorithms:
 
@@ -134,8 +134,10 @@ reference on running `downloadAndMerge.py` to retrieve analysis output from the 
 
 
 ### Histogramming
-Histogramming is performed through the xAH::Algorithm `HistogramEJsTree`,
-which runs over the output EJsMiniNtuple from the ntuple-making step.
+Histogramming is performed through the xAH::Algorithm `EJsNtupleToHists`,
+which runs over the output EJsMiniNtuple from the ntuple-making
+step. The algorithm uses the `EJsHistogramManager` class to book and
+fill histograms of interest using the information in the given tree.
 
 Example configuration files for histogramming can be found under
 `EJsAnalysis/config/EJsHistoConfig*.py`, and example submission scripts

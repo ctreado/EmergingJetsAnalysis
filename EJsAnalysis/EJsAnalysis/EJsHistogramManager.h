@@ -40,16 +40,19 @@ class EJsHistogramManager : public HistogramManager
  private:
 
   // branches -- secondary vertex
-  uint32_t            m_secVtx_n;             //!
-  std::vector<float>* m_secVtx_x;             //!
-  std::vector<float>* m_secVtx_y;             //!
-  std::vector<float>* m_secVtx_z;             //!
-  std::vector<float>* m_secVtx_r;             //!
-  std::vector<float>* m_secVtx_pt;            //!
-  std::vector<float>* m_secVtx_eta;           //!
-  std::vector<float>* m_secVtx_phi;           //!
-  std::vector<float>* m_secVtx_mass;          //!
-  std::vector<float>* m_secVtx_mass_nonAssoc; //!
+  uint32_t                         m_secVtx_n;               //!
+  std::vector<float>*              m_secVtx_x;               //!
+  std::vector<float>*              m_secVtx_y;               //!
+  std::vector<float>*              m_secVtx_z;               //!
+  std::vector<float>*              m_secVtx_r;               //!
+  std::vector<float>*              m_secVtx_pt;              //!
+  std::vector<float>*              m_secVtx_eta;             //!
+  std::vector<float>*              m_secVtx_phi;             //!
+  std::vector<float>*              m_secVtx_mass;            //!
+
+  std::vector<uint32_t>*           m_secVtx_ntrk;            //!
+  std::vector<uint32_t>*           m_secVtx_ntrk_sel;        //!
+  std::vector<uint32_t>*           m_secVtx_ntrk_assoc;      //!
 
   
   // histograms -- secondary vertex
@@ -62,7 +65,10 @@ class EJsHistogramManager : public HistogramManager
   TH1F* h_secVtx_eta;           //!
   TH1F* h_secVtx_phi;           //!
   TH1F* h_secVtx_mass;          //!
-  TH1F* h_secVtx_mass_nonAssoc; //!
+
+  TH1F* h_secVtx_ntrk;          //!
+  TH1F* h_secVtx_ntrk_sel;      //!
+  TH1F* h_secVtx_ntrk_assoc;    //!
   
 };
 
