@@ -129,7 +129,7 @@ following options:
 * **--outPath** -- output path (default = "./gridOutput/") where files
 are downloaded
 
-See `EJsAnalysis/scripts/get_*sh` example getting scripts for
+See `EJsAnalysis/scripts/download_*sh` example getting scripts for
 reference on running `downloadAndMerge.py` to retrieve analysis output from the grid.
 
 
@@ -142,7 +142,7 @@ fill histograms of interest using the information in the given tree.
 Example configuration files for histogramming can be found under
 `EJsAnalysis/config/EJsHistoConfig*.py`, and example submission scripts
 for running ntuple-to-histogram jobs can be found at
-`EJsAnalysis/scripts/run_histos*.sh`.
+`EJsAnalysis/scripts/histogram_*.sh`.
 
 > NOTE: right now, this is only setup to run locally and over a single
 > input TTree file at a time

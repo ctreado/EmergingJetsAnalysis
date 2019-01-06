@@ -9,4 +9,4 @@ subdir="test.data17"
 
 xAH_run.py --files ${input} --config ${jo} \
 	   --inputList --inputRucio \
-	   --submitDir ${subdir} --nevents 1000 direct
+	   --submitDir ${subdir} --nevents 10 direct

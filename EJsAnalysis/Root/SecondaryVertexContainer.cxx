@@ -419,11 +419,11 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
   std::vector< const xAOD::TrackParticle* > filteredTracks;
   for ( size_t itrk = 0; itrk != secVtx->nTrackParticles(); ++itrk ) {
     const auto* trk = secVtx->trackParticle( itrk );
-    bool trk_isFilt = trk->auxdataConst<char>( "isFiltered" );
+    bool trk_isFilt  = true;
+    if ( trk->isAvailable<char>("isFiltered") )
+      trk_isFilt = trk->auxdataConst<char>( "isFiltered" );
     if ( trk_isFilt ) filteredTracks.push_back( trk );
   }
-  //std::cout << "N SECONDARY VERTEX TRACKS: " << secVtx->nTrackParticles();
-  //std::cout << " " << filteredTracks.size() << std::endl;
   
   // re-calculate vertex kinematic variables using filtered tracks
   const TLorentzVector& sumP4       = VsiBonsai::sumP4       ( filteredTracks );
