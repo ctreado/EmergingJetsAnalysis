@@ -1,5 +1,8 @@
-data17_13TeV.00325713.physics_Main.deriv.DAOD_EXOT23.r10260_r10658_p3578_p3664
-data17_13TeV.00325790.physics_Main.deriv.DAOD_EXOT23.r10250_r10658_p3578_p3664
-data17_13TeV.00325789.physics_Main.deriv.DAOD_EXOT23.r10250_r10658_p3578_p3664
-data17_13TeV.00326439.physics_Main.deriv.DAOD_EXOT23.r10250_r10658_p3578_p3664
-data17_13TeV.00326446.physics_Main.deriv.DAOD_EXOT23.r10250_r10658_p3578_p3664
+data17_13TeV.periodB.physics_Main.PhysCont.DAOD_EXOT23.grp17_v01_p3664	
+data17_13TeV.periodC.physics_Main.PhysCont.DAOD_EXOT23.grp17_v01_p3664	
+data17_13TeV.periodD.physics_Main.PhysCont.DAOD_EXOT23.grp17_v01_p3664	
+data17_13TeV.periodE.physics_Main.PhysCont.DAOD_EXOT23.grp17_v01_p3664	
+data17_13TeV.periodF.physics_Main.PhysCont.DAOD_EXOT23.grp17_v01_p3664	
+data17_13TeV.periodH.physics_Main.PhysCont.DAOD_EXOT23.grp17_v01_p3664	
+data17_13TeV.periodI.physics_Main.PhysCont.DAOD_EXOT23.grp17_v01_p3664	
+data17_13TeV.periodK.physics_Main.PhysCont.DAOD_EXOT23.grp17_v01_p3664
