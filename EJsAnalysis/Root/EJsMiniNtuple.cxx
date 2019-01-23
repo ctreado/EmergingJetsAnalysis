@@ -340,7 +340,7 @@ EL::StatusCode EJsMiniNtuple :: executeSyst ( std::string syst )
   
   // fill event info
   ANA_MSG_DEBUG( "Filling event info branches" );
-  helpTree->FillEvent( eventInfo );
+  helpTree->FillEvent( eventInfo, m_event, vertices );
 
 
   // fill primary vertex info

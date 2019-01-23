@@ -1,6 +1,12 @@
 #ifndef EJsAnalysis_TruthVertexContainer_H
 #define EJsAnalysis_TruthVertexContainer_H
 
+/* TruthVertexContainer is the truth-vertex-specific derived class
+   of the VertexContainer base class, responsible for handling truth vertex
+   information (including LLP decay vertices of interest)
+   to fill output ntuples; based partially on VSI performance code
+   (https://gitlab.cern.ch/Atlas-Inner-Tracking/SecVtxPUBNote/tree/master/Code/VSIPerf) */
+
 #include <vector>
 #include <string>
 

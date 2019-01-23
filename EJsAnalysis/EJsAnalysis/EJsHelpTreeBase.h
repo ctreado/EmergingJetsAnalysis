@@ -1,6 +1,11 @@
 #ifndef EJsAnalysis_EJsHelpTreeBase_H
 #define EJsAnalysis_EJsHelpTreeBase_H
 
+/* EJsHelpTreeBase is a class derived from xAODAnaHelpers's HelpTreeBase class
+   that creates and fills an EJs-specific TTree; 
+   the *User functions override those defined in HelpTreeBase
+   to add extra branches not already included from xAODAnaHelpers */
+
 #include <vector>
 #include <string>
 #include <cstdint>
@@ -34,7 +39,7 @@ class EJsHelpTreeBase : public HelpTreeBase
 
   // branches for new EJs container objects
   void AddPV   ( );
-  void FillPV  ( const xAOD::Vertex* pv );
+  void FillPV  ( const xAOD::Vertex* pv ); // ADD INPUT PV-LOCATION; ADD PV-LOCATION BRANCH
   void ClearPV ( );
   
   void AddTruthVerts   ( const std::string detailStr = "",
@@ -56,7 +61,7 @@ class EJsHelpTreeBase : public HelpTreeBase
   
   // new branches for existing objects
   void AddJetsUser   ( const std::string detailStr = "", const std::string jetName = "jet" );
-  void FillJetsUser  ( const xAOD::Jet*,                 const std::string jetName = "jet" );
+  void FillJetsUser  ( const xAOD::Jet*,                 const std::string jetName = "jet" ); // ADD JET-CONSTITUENT BRANCHES
   void ClearJetsUser ( const std::string jetName = "jet"                                   );
   
   void AddTracksUser   ( const std::string trackName,     const std::string detailStr = "" );

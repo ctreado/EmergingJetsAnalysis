@@ -1,6 +1,9 @@
 #ifndef EJsAnalysis_AlgConsts_H
 #define EJsAnalysis_AlgConsts_H
 
+/* General constants 
+   --> taken from SUSY FactoryTools / SecVtxPUBNote */
+
 #include <limits>
 
 namespace PhysConsts {

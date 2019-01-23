@@ -1,6 +1,12 @@
 #ifndef EJsAnalysis_SecondaryVertexContainer_H
 #define EJsAnalysis_SecondaryVertexContainer_H
 
+/* SecondaryVertexContainer is the secondary-vertex-specific derived class
+   of the VertexContainer base class, responsible for handling VrtSecInclusive DV
+   information (including associated tracks, matched truth vertices, etc.)
+   to fill output ntuples; based partially on VSI performance code
+   (https://gitlab.cern.ch/Atlas-Inner-Tracking/SecVtxPUBNote/tree/master/Code/VSIPerf) */
+
 #include <vector>
 #include <string>
 

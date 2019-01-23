@@ -1,6 +1,12 @@
 #ifndef EJsAnalysis_EJsHistogramManager_H
 #define EJsAnalysis_EJsHistogramManager_H
 
+/* EJsHistogramManager is a class derived from xAODAnaHelpers's HistogramManager class
+   that books and fills EJs-specific histograms; 
+   EJsHistogramManager is designed to run after the ntuple-making step
+   and therefore contains connect-branch functions to read from an input TTree
+   (may want to eventually add functionality to run directly over xAODs as well...) */
+
 #include <string>
 #include <map>
 

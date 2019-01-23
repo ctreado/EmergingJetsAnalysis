@@ -1,6 +1,10 @@
 #ifndef EJsAnalysis_EJsNtupleToHists_H
 #define EJsAnalysis_EJsNtupleToHists_H
 
+/* EJsMiniNtuple is the algorithm responsible for histogram-making;
+   the algorithm runs over a tree (the output EJsMiniNtuple from the ntuple-making alg)
+   and books, fills, and outputs histograms using the EJsHistogramManager class */
+
 #include <string>
 
 #include <xAODAnaHelpers/Algorithm.h>

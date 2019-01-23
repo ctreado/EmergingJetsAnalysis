@@ -1,6 +1,12 @@
 #ifndef EJsAnalysis_VertexContainer_H
 #define EJsAnalysis_VertexContainer_H
 
+/* VertexContainer is the base class for handling vertex container
+   information to be used in making ntuples;
+   based on xAODAnaHelpers's ParticleContainer class, 
+   VertexContainer provides functions to add, clear, and fill branches
+   with variables common to all types of vertices (i.e. n) */
+
 #include <vector>
 #include <string>
 #include <cstdint>

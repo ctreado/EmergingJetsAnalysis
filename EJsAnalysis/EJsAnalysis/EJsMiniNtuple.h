@@ -1,6 +1,10 @@
 #ifndef EJsAnalysis_EJsMiniNtuple_H
 #define EJsAnalysis_EJsMiniNtuple_H
 
+/* EJsMiniNtuple is the algorithm responsible for tree-making;
+   based on xAODAnaHelpers's TreeAlgo, the algorithm creates, fills, and 
+   outputs a tree for each systematic using the EJsHelpTreeBase class */
+
 #include <vector>
 #include <string>
 
@@ -19,7 +23,7 @@ class EJsMiniNtuple : public xAH::Algorithm
   bool m_outHistDir = false; // choose whether to save tree to same dir as output hists
 
   // parsed to bools to control which branches are filled -->
-  // --> see *InfoSwitch classes in xAH::HelperClasses for details...
+  // --> see *InfoSwitch classes in xAH::HelperClasses / EJsHelperClasses for details...
   std::string m_evtDetailStr             = "";
   std::string m_trigDetailStr            = "";
   std::string m_jetDetailStr             = "";

@@ -1,6 +1,9 @@
 #ifndef EJsAnalysis_EJsxAODAnalysis_H
 #define EJsAnalysis_EJsxAODAnalysis_H
 
+/* EJsxAODAnalysis is the algorithm responsible for final EJs analysis selection
+   and signal/control/validation region definitions */
+
 #include <xAODAnaHelpers/Algorithm.h>
 
 

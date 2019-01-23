@@ -122,7 +122,7 @@ Dict_EJsMiniNtuple = {
 c.algorithm ( "BasicEventSelection", Dict_BasicEventSelection )
 
 # Secondary Vertex Cuts
-c.algorithm ( "SecondaryVertexSelector", Dict_SecondaryVertexSelector )
+#c.algorithm ( "SecondaryVertexSelector", Dict_SecondaryVertexSelector )
 
 # EJs Ntuple
 c.algorithm ( "EJsMiniNtuple", Dict_EJsMiniNtuple )
