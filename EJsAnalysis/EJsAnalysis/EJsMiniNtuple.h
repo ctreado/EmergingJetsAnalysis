@@ -52,13 +52,13 @@ class EJsMiniNtuple : public xAH::Algorithm
   std::string m_truthVertexBranchName     = "";
   std::string m_secondaryVertexBranchName = "";
 
-  bool m_retrievePV = true;
-
   // systematics being processed over
-  std::string m_systsVec = ""; // consider adding separate strings for separate objects
+  std::string m_jetSystsVec = "";
 
   // unit conversion from MeV; default is GeV
   float m_units = 1e3;
+
+  bool m_retrievePV = true;
   
 
   // variables not filled at submission time
@@ -66,9 +66,6 @@ class EJsMiniNtuple : public xAH::Algorithm
  public:
   // TTree *myTree; //!
   // TH1 *myHist; //!
-
-  xAOD::TEvent* m_event; //!
-  xAOD::TStore* m_store; //!
 
 
  protected:
@@ -104,7 +101,6 @@ class EJsMiniNtuple : public xAH::Algorithm
   virtual EL::StatusCode histFinalize ();
 
   virtual EL::StatusCode addTree ( std::string syst = "" );
-  virtual EL::StatusCode executeSyst ( std::string syst = "" );
 
   // needed to distribute algorithm to workers
   ClassDef ( EJsMiniNtuple, 1 );

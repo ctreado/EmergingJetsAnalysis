@@ -26,9 +26,6 @@ class EJsxAODAnalysis : public xAH::Algorithm
   // TTree *myTree; //!
   // TH1 *myHist; //!
 
-  xAOD::TEvent* m_event; //!
-  xAOD::TStore* m_store; //!
-
 
   // standard constructor
   EJsxAODAnalysis ();

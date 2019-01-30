@@ -5,10 +5,10 @@
 
 #include <AthContainers/ConstDataVector.h>
 
-#include <xAODAnaHelpers/HelperFunctions.h>
-
 #include <xAODTracking/TrackParticleContainer.h>
 #include <xAODTracking/VertexContainer.h>
+
+#include <xAODAnaHelpers/HelperFunctions.h>
 
 #include "EJsAnalysis/SecondaryVertexSelector.h"
 

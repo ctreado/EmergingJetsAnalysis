@@ -14,14 +14,14 @@
 #include <TTree.h>
 #include <TFile.h>
 
-#include <xAODAnaHelpers/HelpTreeBase.h>
-
 #include <xAODEventInfo/EventInfo.h>
 #include <xAODJet/JetContainer.h>
 #include <xAODTracking/TrackParticleContainer.h>
 #include <xAODTracking/VertexContainer.h>
 #include <xAODTruth/TruthParticleContainer.h>
 #include <xAODTruth/TruthVertexContainer.h>
+
+#include <xAODAnaHelpers/HelpTreeBase.h>
 
 #include "EJsAnalysis/TruthVertexContainer.h"
 #include "EJsAnalysis/SecondaryVertexContainer.h"
@@ -39,7 +39,7 @@ class EJsHelpTreeBase : public HelpTreeBase
 
   // branches for new EJs container objects
   void AddPV   ( );
-  void FillPV  ( const xAOD::Vertex* pv ); // ADD INPUT PV-LOCATION; ADD PV-LOCATION BRANCH
+  void FillPV  ( const xAOD::Vertex* pv, int pvLocation = -1 );
   void ClearPV ( );
   
   void AddTruthVerts   ( const std::string detailStr = "",
@@ -60,13 +60,19 @@ class EJsHelpTreeBase : public HelpTreeBase
 
   
   // new branches for existing objects
+
+  // event user ...
+  
   void AddJetsUser   ( const std::string detailStr = "", const std::string jetName = "jet" );
-  void FillJetsUser  ( const xAOD::Jet*,                 const std::string jetName = "jet" ); // ADD JET-CONSTITUENT BRANCHES
+  void FillJetsUser  ( const xAOD::Jet*,                 const std::string jetName = "jet" );
   void ClearJetsUser ( const std::string jetName = "jet"                                   );
+  // --> add jet-constituents
   
   void AddTracksUser   ( const std::string trackName,     const std::string detailStr = "" );
   void FillTracksUser  ( const std::string /*trackName*/, const xAOD::TrackParticle*       );
   void ClearTracksUser ( const std::string /*trackName*/                                   );
+
+  // truth user ...
 
 
  protected:
@@ -78,23 +84,24 @@ class EJsHelpTreeBase : public HelpTreeBase
   // extra (vector) branches
 
   // primary vertex
-  float    m_x;
-  float    m_y;
-  float    m_z;
-  float    m_r;
-  float    m_phi;
-  uint32_t m_nTracks;
+  float    m_pv_x;
+  float    m_pv_y;
+  float    m_pv_z;
+  float    m_pv_r;
+  float    m_pv_phi;
+  uint32_t m_pv_nTracks;
+  int      m_pv_location;
   
 
   // tracks
-  std::vector<float>*   m_d0;
-  std::vector<float>*   m_errd0;
-  std::vector<float>*   m_errz0;
-  std::vector<float>*   m_chi2;
-  std::vector<uint8_t>* m_isSelected;
-  std::vector<uint8_t>* m_isAssociated;
-  uint32_t m_nSelected;
-  uint32_t m_nAssociated;
+  std::vector<float>*   m_trk_d0;
+  std::vector<float>*   m_trk_errd0;
+  std::vector<float>*   m_trk_errz0;
+  std::vector<float>*   m_trk_chi2;
+  std::vector<uint8_t>* m_trk_isSelected;
+  std::vector<uint8_t>* m_trk_isAssociated;
+  uint32_t m_trk_nSelected;
+  uint32_t m_trk_nAssociated;
 
 };
 

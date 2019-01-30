@@ -7,8 +7,8 @@ c = xAH_config()
 
 ## --- systematics --- ##
 
-systName = "All"     # do systematics
-#systName = ""        # no systematics
+#systName = "All"     # do systematics
+systName = ""        # no systematics
 
 systematicsValue = 1
 systVal = 0
@@ -98,7 +98,7 @@ Dict_JetCalibrator_EMTopo = {
     "m_writeSystToMetadata"   : True,       # --> True for testing only; set to False
     "m_calibConfigData"       : "JES_data2017_2016_2015_Consolidated_EMTopo_2018_Rel21.config",
     "m_calibConfigFullSim"    : "JES_data2017_2016_2015_Consolidated_EMTopo_2018_Rel21.config",
-    "m_uncertConfig"          : "rel21/Fall2018/R4_CategoryReduction_FullJER.config", # --> randomly chosen for testing only; will (probably) need to change --> does nothing w/o systematics set (need to set "m_systName" to non-empty string to run systematics ("All" to run all available))
+    "m_uncertConfig"          : "rel21/Fall2018/R4_GlobalReduction_FullJER.config", # --> randomly chosen for testing only; will (probably) need to change --> does nothing w/o systematics set (need to set "m_systName" to non-empty string to run systematics ("All" to run all available))
     "m_doCleaning"            : True,
     "m_jetCleanCutLevel"      : "LooseBad", # --> consider using '(Very)LooseBadLLP' ...
     "m_jetCleanUgly"          : False,
@@ -126,19 +126,34 @@ Dict_JetSelector_EMTopo = {
     "m_markCleanEvent"          : True,  # --> --> but do we want to cut here or just decorate ??
     "m_pT_min"                  : 50e3,  # --> CHECK
     "m_eta_max"                 : 2.7,   # --> CHECK
-    "m_doJVF"                   : True,  # --> do we want to cut on this ?? if yes, use defaults ??
-    "m_doJVT"                   : True,  # --> do we want to cut on this ?? if yes, use defaults ??
-    "m_dofJVT"                  : True,  # --> do we want to cut on this ?? if yes, use defaults ??
+    "m_doJVF"                   : False, # --> do we want to cut on this ?? if yes, use defaults ??
+    "m_doJVT"                   : True,  # --> check JVT ... use defaults ??
+    "m_noJVTVeto"               : True,  # --> save JVT decision, but don't reject jet
     "m_SFFileJVT"               : "JetJvtEfficiency/Moriond2018/JvtSFFile_EMTopoJets.root",
+    "m_systNameJVT"             : "",    # --> do we need/want to do JVT systematics ??
+    "m_systValJVT"              : 0,     # --> --> ??
+    "m_dofJVT"                  : True,  # --> check fJVT ... use defaults ??
+    "m_dofJVTVeto"              : False, # --> save fJVT decision, but don't reject jet
     "m_SFFilefJVT"              : "JetJvtEfficiency/Moriond2018/fJvtSFFile.root",
+    "m_systNamefJVT"            : "",    # --> do we need/want to do fJVT systematics ??
+    "m_systValfJVT"             : 0,     # --> --> ??
     "m_singleJetTrigChains"     : "",    # --> DO WE WANT TO DO TRIGGER-JET MATCHING ??
     "m_diJetTrigChains"         : "",    # --> DO WE WANT TO DO TRIGGER-JET MATCHING ??
-    "m_systNameJVT"             : systName,
-    "m_systValJVT"              : systVal,
-    "m_systNamefJVT"            : systName,
-    "m_systValfJVT"             : systVal,
-    "m_systName"                : systName,
-    "m_systVal"                 : systVal,
+}
+
+# track selector ...
+
+# secondary vertex selector ...
+
+
+# object matching
+Dict_ObjectMatcher_AllObj_EMTopo = {
+    "m_name"                           : "ObjectMatch_AllObj_AntiKt4EMTopo",
+    "m_msgLevel"                       : "info",
+    "m_inJetContainerName"             : "AntiKt4EMTopoJets_Calib_Select",
+    "m_inTrackPartContainerName"       : "InDetTrackParticles",               # --> use selected tracks
+    "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected vertices
+    "m_inputAlgo"                      : "AntiKt4EMTopoJets_Calib_Select_Algo",
 }
     
 
@@ -148,23 +163,28 @@ Dict_EJsMiniNtuple = {
     "m_msgLevel"         : "info",
     "m_evtDetailStr"     : "pileup",
     "m_trigDetailStr"    : "basic passTriggers prescales",
-    "m_jetDetailStr"     : "kinematic energyLight truth truth_details trackAll JVT allTrack allTrackDetail constituent charge",
+    "m_jetDetailStr"     : "kinematic energyLight truth trackAll JVT allTrack allTrackDetail constituent charge",
     "m_jetContainerName" : "AntiKt4EMTopoJets AntiKt4EMTopoJets_Calib AntiKt4EMTopoJets_Calib_Select",
     "m_jetBranchName"    : "jet jetCalib jetCalibSelect",
+    "m_jetSystsVec"      : "AntiKt4EMTopoJets_Calib_Select_Algo",
 }
+# --> "truth_details" in jet-detail-string causes issue when running over data ("nonexistent aux data item `::GhostPartons'") --> need to add "isMC" check in JetContainer --> leave out for now (probably don't need anyway, and can always add manually in EJsHelpTreeBase, if necessary --> consider contacting xAODAnaHelpers experts about issue, though (not sure if I can develop myself)
 
 
 
 ## --- algorithms to run --- ##
 
 # Basic Setup
-c.algorithm ( "BasicEventSelection", Dict_BasicEventSelection )
+c.algorithm ( "BasicEventSelection", Dict_BasicEventSelection         )
 
 # Jet Calibration
-c.algorithm ( "JetCalibrator", Dict_JetCalibrator_EMTopo )
+c.algorithm ( "JetCalibrator",       Dict_JetCalibrator_EMTopo        )
 
 # Jet Selection
-c.algorithm ( "JetSelector", Dict_JetSelector_EMTopo )
+c.algorithm ( "JetSelector",         Dict_JetSelector_EMTopo          )
+
+# Object Matching
+c.algorithm ( "ObjectMatcher",       Dict_ObjectMatcher_AllObj_EMTopo )
 
 # EJs Ntuple
-c.algorithm ( "EJsMiniNtuple", Dict_EJsMiniNtuple )
+c.algorithm ( "EJsMiniNtuple",       Dict_EJsMiniNtuple               )

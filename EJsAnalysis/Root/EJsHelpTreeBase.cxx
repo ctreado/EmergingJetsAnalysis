@@ -8,22 +8,23 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
 {
   if ( m_debug ) Info( "EJsHelpTreeBase()", "creating output EJs TTree" );
 
-  m_x       = 0;
-  m_y       = 0;
-  m_z       = 0;
-  m_r       = 0;
-  m_phi     = 0;
-  m_nTracks = 0;
+  m_pv_x        = 0;
+  m_pv_y        = 0;
+  m_pv_z        = 0;
+  m_pv_r        = 0;
+  m_pv_phi      = 0;
+  m_pv_nTracks  = 0;
+  m_pv_location = 0;
   
-  m_nSelected   = 0;
-  m_nAssociated = 0;
+  m_trk_nSelected   = 0;
+  m_trk_nAssociated = 0;
   
-  m_d0           = new std::vector<float>;
-  m_errd0        = new std::vector<float>;
-  m_errz0        = new std::vector<float>;
-  m_chi2         = new std::vector<float>;
-  m_isSelected   = new std::vector<uint8_t>;
-  m_isAssociated = new std::vector<uint8_t>;
+  m_trk_d0           = new std::vector<float>;
+  m_trk_errd0        = new std::vector<float>;
+  m_trk_errz0        = new std::vector<float>;
+  m_trk_chi2         = new std::vector<float>;
+  m_trk_isSelected   = new std::vector<uint8_t>;
+  m_trk_isAssociated = new std::vector<uint8_t>;
 }
 
 EJsHelpTreeBase :: ~EJsHelpTreeBase()
@@ -124,32 +125,35 @@ void EJsHelpTreeBase :: AddPV ( )
 
   if ( m_debug ) Info( "EJsHelpTreeBase::AddPV()", "adding primary vertex variables" );
 
-  m_tree->Branch( "PV_x",       &m_x,       "PV_x/F"       );
-  m_tree->Branch( "PV_y",       &m_y,       "PV_y/F"       );
-  m_tree->Branch( "PV_z",       &m_z,       "PV_z/F"       );
-  m_tree->Branch( "PV_r",       &m_r,       "PV_r/F"       );
-  m_tree->Branch( "PV_phi",     &m_phi,     "PV_phi"       );
-  m_tree->Branch( "PV_nTracks", &m_nTracks, "PV_nTracks/i" );
+  m_tree->Branch( "PV_x",        &m_pv_x,        "PV_x/F"        );
+  m_tree->Branch( "PV_y",        &m_pv_y,        "PV_y/F"        );
+  m_tree->Branch( "PV_z",        &m_pv_z,        "PV_z/F"        );
+  m_tree->Branch( "PV_r",        &m_pv_r,        "PV_r/F"        );
+  m_tree->Branch( "PV_phi",      &m_pv_phi,      "PV_phi/F"      );
+  m_tree->Branch( "PV_nTracks",  &m_pv_nTracks,  "PV_nTracks/i"  );
+  m_tree->Branch( "PV_location", &m_pv_location, "PV_location/I" );
 }
 
-void EJsHelpTreeBase :: FillPV ( const xAOD::Vertex* pv )
+void EJsHelpTreeBase :: FillPV ( const xAOD::Vertex* pv, int pvLocation )
 {
-  m_x       = pv->x();
-  m_y       = pv->y();
-  m_z       = pv->z();
-  m_r       = pv->position().perp();
-  m_phi     = pv->position().phi();
-  m_nTracks = pv->nTrackParticles(); 
+  m_pv_x        = pv->x();
+  m_pv_y        = pv->y();
+  m_pv_z        = pv->z();
+  m_pv_r        = pv->position().perp();
+  m_pv_phi      = pv->position().phi();
+  m_pv_nTracks  = pv->nTrackParticles();
+  m_pv_location = pvLocation;
 }
 
 void EJsHelpTreeBase :: ClearPV ( )
 {
-  m_x       = 0;
-  m_y       = 0;
-  m_z       = 0;
-  m_r       = 0;
-  m_phi     = 0;
-  m_nTracks = 0;
+  m_pv_x        = 0;
+  m_pv_y        = 0;
+  m_pv_z        = 0;
+  m_pv_r        = 0;
+  m_pv_phi      = 0;
+  m_pv_nTracks  = 0;
+  m_pv_location = 0;
 }
 
 
@@ -188,17 +192,17 @@ void EJsHelpTreeBase :: AddTracksUser ( const std::string trackName, const std::
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddTracksUser()", "adding EJs-user track variables" );
 
-  setBranch<float>    ( trackName, "d0",           m_d0 );
-  setBranch<float>    ( trackName, "errd0",        m_errd0 );
-  setBranch<float>    ( trackName, "errz0",        m_errz0 );
-  setBranch<float>    ( trackName, "chi2",         m_chi2 );
-  setBranch<uint8_t>  ( trackName, "isSelected",   m_isSelected );
-  setBranch<uint8_t>  ( trackName, "isAssociated", m_isAssociated );
+  setBranch<float>    ( trackName, "d0",           m_trk_d0 );
+  setBranch<float>    ( trackName, "errd0",        m_trk_errd0 );
+  setBranch<float>    ( trackName, "errz0",        m_trk_errz0 );
+  setBranch<float>    ( trackName, "chi2",         m_trk_chi2 );
+  setBranch<uint8_t>  ( trackName, "isSelected",   m_trk_isSelected );
+  setBranch<uint8_t>  ( trackName, "isAssociated", m_trk_isAssociated );
 
   std::string selCounterName   = "n" + trackName + "Selected";
   std::string assocCounterName = "n" + trackName + "Associated";
-  m_tree->Branch( selCounterName  .c_str(), &m_nSelected,   (selCounterName  +"/i").c_str() );
-  m_tree->Branch( assocCounterName.c_str(), &m_nAssociated, (assocCounterName+"/i").c_str() );
+  m_tree->Branch( selCounterName  .c_str(), &m_trk_nSelected,   (selCounterName  +"/i").c_str() );
+  m_tree->Branch( assocCounterName.c_str(), &m_trk_nAssociated, (assocCounterName+"/i").c_str() );
 
 }
 
@@ -209,36 +213,34 @@ void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName,
   if ( track->isAvailable<char>("is_selected") ) {
     if ( track->auxdataConst<char>("is_selected") ) {
       is_selected = true;
-      m_nSelected++;
+      m_trk_nSelected++;
     }
   }
   bool is_associated = false;
   if ( track->isAvailable<char>("is_associated") ) {
     if ( track->auxdataConst<char>("is_associated") ) {
       is_associated = true;
-      m_nAssociated++;
+      m_trk_nAssociated++;
     }
   }
 
-  m_d0           ->push_back( track->d0() );
-  m_errd0        ->push_back( track->definingParametersCovMatrix()(0,0) );
-  m_errz0        ->push_back( track->definingParametersCovMatrix()(1,1) );
-  m_chi2         ->push_back( track->chiSquared() / (track->numberDoF() + AlgConsts::infinitesimal) );
-  m_isSelected   ->push_back( is_selected );
-  m_isAssociated ->push_back( is_associated );
+  m_trk_d0           ->push_back( track->d0() );
+  m_trk_errd0        ->push_back( track->definingParametersCovMatrix()(0,0) );
+  m_trk_errz0        ->push_back( track->definingParametersCovMatrix()(1,1) );
+  m_trk_chi2         ->push_back( track->chiSquared() / (track->numberDoF() + AlgConsts::infinitesimal) );
+  m_trk_isSelected   ->push_back( is_selected );
+  m_trk_isAssociated ->push_back( is_associated );
 }
 
 void EJsHelpTreeBase :: ClearTracksUser ( const std::string trackName )
 {
-  m_nSelected   = 0;
-  m_nAssociated = 0;
+  m_trk_nSelected   = 0;
+  m_trk_nAssociated = 0;
   
-  m_d0           ->clear();
-  m_errd0        ->clear();
-  m_errz0        ->clear();
-  m_chi2         ->clear();
-  m_isSelected   ->clear();
-  m_isAssociated ->clear();
+  m_trk_d0           ->clear();
+  m_trk_errd0        ->clear();
+  m_trk_errz0        ->clear();
+  m_trk_chi2         ->clear();
+  m_trk_isSelected   ->clear();
+  m_trk_isAssociated ->clear();
 }
-
-

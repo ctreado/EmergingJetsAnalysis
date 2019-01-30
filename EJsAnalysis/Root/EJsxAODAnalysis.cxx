@@ -101,11 +101,14 @@ EL::StatusCode EJsxAODAnalysis :: execute ()
 
   // if input comes from xAOD, or not running systematics...
   if ( m_inputAlgo.empty() ) {
-    ANA_CHECK( executeSyst ( "" ) ); 
+    
+    ANA_CHECK( executeSyst ( "" ) );
+    
   }
   // otherwise, get list of systematics to run over
-  else { 
-    // get vector of string giving syst names
+  else {
+    
+    // get vector of string giving syst names of upstream algo from TStore
     std::vector<std::string>* systNames = 0;
     ANA_CHECK( HelperFunctions::retrieve( systNames, m_inputAlgo, 0, m_store, msg() ) );
 
@@ -118,7 +121,8 @@ EL::StatusCode EJsxAODAnalysis :: execute ()
     }
 
     // save list of systs to be considered downstream
-    ANA_CHECK( m_store->record( vecOutContainerNames, m_outputAlgo ) );   
+    ANA_CHECK( m_store->record( vecOutContainerNames, m_outputAlgo ) );
+    
   }
 
   return EL::StatusCode::SUCCESS;

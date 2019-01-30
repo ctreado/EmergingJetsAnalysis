@@ -5,9 +5,9 @@
    selecting secondary vertices (primarily using the VsiBonsai toolkit);
    based on xAODAnaHelpers' *Selector algorithms */
 
-#include <xAODAnaHelpers/Algorithm.h>
-
 #include <xAODTracking/Vertex.h>
+
+#include <xAODAnaHelpers/Algorithm.h>
 
 
 class SecondaryVertexSelector : public xAH::Algorithm
@@ -33,9 +33,7 @@ class SecondaryVertexSelector : public xAH::Algorithm
  public:
   // TTree *myTree; //!
   // TH1 *myHist; //!
-
-  xAOD::TEvent* m_event; //!
-  xAOD::TStore* m_store; //!
+  
 
   // standard constructor
   SecondaryVertexSelector ();
