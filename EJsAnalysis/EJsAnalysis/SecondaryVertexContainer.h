@@ -37,19 +37,15 @@ namespace EJs {
 
   private:
     
-    void recordTracks        ( std::vector< const xAOD::TrackParticle* >& );
-    //void processDVJets       ( std::vector< const xAOD::TrackParticle* >& );
-    void processCloseTruth   ( const xAOD::Vertex* );
-    void processLinkedTruth  ( const xAOD::Vertex* );
+    void recordTracks        ( const std::vector<const xAOD::TrackParticle*>& );
+    //void processDVJets       ( const std::vector<const xAOD::TrackParticle*>& );
+    void processCloseTruth   ( const xAOD::Vertex*,
+			       const std::vector<const xAOD::TrackParticle*>& );
+    void processLinkedTruth  ( const xAOD::Vertex*,
+			       const std::vector<const xAOD::TrackParticle*>& );
 
     
     // vector branches
-
-    // do we want to save trimming info?
-    // --> i.e. whether trimming was applied and values of trimming cuts... 
-
-    // save p4 ??
-    
     std::vector<float>*              m_x;
     std::vector<float>*              m_y;
     std::vector<float>*              m_z;
@@ -78,6 +74,10 @@ namespace EJs {
     std::vector<uint32_t>*           m_ntrk;
     std::vector<uint32_t>*           m_ntrk_sel;
     std::vector<uint32_t>*           m_ntrk_assoc;
+
+    // do we want to save trimming info?
+    // --> i.e. whether trimming was applied and values of trimming cuts... 
+    // save p4 ??
 
     
     // tracks
@@ -117,11 +117,14 @@ namespace EJs {
     std::vector<std::vector<uint8_t>>*  m_trk_nIBLOverflowsdEdx;
     std::vector<std::vector<float>>*    m_trk_radiusOfFirstHit;
 
-    // STILL LEFT TO DO...
-    std::vector<std::vector<int>>*      m_trk_truthPid; // pdgId of truth link
-    std::vector<std::vector<uint8_t>>*  m_trk_truthIsFromClosestTV;
-    std::vector<std::vector<uint8_t>>*  m_trk_truthIsFromReprTV; 
-    // --> also want to check if track's truth-link is descended from LLP
+    std::vector<std::vector<float>>*    m_trk_truthMatchProb;
+    std::vector<std::vector<int>>*      m_trk_truthPid;
+    std::vector<std::vector<uint8_t>>*  m_trk_truthPointsToClosestTV;
+    std::vector<std::vector<uint8_t>>*  m_trk_truthPointsToMaxlinkTV;
+    std::vector<std::vector<uint8_t>>*  m_trk_truthParentPointsToMaxlinkPTV;
+    // do we want to look at other close / linked (P)TVs track points to (not necessary closest / max-linked) ??
+    // --> would need to also save which TV track points to (i.e. index in vector of matched TVs)
+    // also want to check if track's truth-link is descended from LLP
     // --> will need to account for truth pointing directly to TV/LLP or descending from...
     // --> --> i.e. trk_truthPVtxIs*TV vs trk_truthAncestorPVtxIs*TV ...
     // --> --> ... or trk_truthIsLLP vs trk_truthAncestorIsLLP

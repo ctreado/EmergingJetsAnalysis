@@ -827,10 +827,10 @@ void ObjectMatcher :: matchLinkedTruthToSecVerts ( const xAOD::VertexContainer* 
 
     // loop over filtered tracks --> get corresponding (parent) truth vertices + pt-weight
     for ( const auto& trk : filteredTracks ) {
-      const xAOD::TruthVertex* truthProdVtx = EJsHelper::getProdVtx( trk );
+      const auto* truthProdVtx = EJsHelper::getProdVtx( trk );
       if ( truthProdVtx )
 	linkedTruthVerts[truthProdVtx] += fabs( trk->pt() / secVtxSumPt );
-      const xAOD::TruthVertex* truthParentProdVtx = EJsHelper::getParentProdVtx( trk );
+      const auto* truthParentProdVtx = EJsHelper::getParentProdVtx( trk );
       if ( truthParentProdVtx )
 	linkedParentTruthVerts[truthParentProdVtx] += fabs( trk->pt() / secVtxSumPt );
     }
@@ -839,7 +839,7 @@ void ObjectMatcher :: matchLinkedTruthToSecVerts ( const xAOD::VertexContainer* 
     EJsHelper::TruthVertexLinkVector_t linkedTVLinks;
     std::vector<double> linkedTV_score;
     for ( const auto& linkedTV : linkedTruthVerts ) {
-      const xAOD::TruthVertex* tv = linkedTV.first;
+      const auto* tv = linkedTV.first;
       EJsHelper::TruthVertexLink_t tvlink( tv, *truthVerts );
       linkedTVLinks.push_back( tvlink );
       linkedTV_score.push_back( linkedTV.second );
@@ -861,7 +861,7 @@ void ObjectMatcher :: matchLinkedTruthToSecVerts ( const xAOD::VertexContainer* 
     EJsHelper::TruthVertexLinkVector_t linkedPTVLinks;
     std::vector<double> linkedPTV_score;
     for ( const auto& linkedPTV : linkedParentTruthVerts ) {
-      const xAOD::TruthVertex* ptv = linkedPTV.first;
+      const auto* ptv = linkedPTV.first;
       EJsHelper::TruthVertexLink_t ptvlink( ptv, *truthVerts );
       linkedPTVLinks.push_back( ptvlink );
       linkedPTV_score.push_back( linkedPTV.second );

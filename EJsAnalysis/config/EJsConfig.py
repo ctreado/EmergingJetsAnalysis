@@ -170,7 +170,7 @@ Dict_EJsMiniNtuple = {
     "m_truthVertexDetailStr"         : "",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
-    "m_secondaryVertexDetailStr"     : "truth",
+    "m_secondaryVertexDetailStr"     : "tracks truth",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
     "m_secondaryVertexBranchName"    : "secVtx",
 }

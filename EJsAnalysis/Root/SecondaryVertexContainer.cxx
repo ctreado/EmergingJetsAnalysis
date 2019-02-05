@@ -81,11 +81,18 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name,
     m_trk_nUsedHitsdEdx      = new std::vector<std::vector<uint8_t>>;
     m_trk_nIBLOverflowsdEdx  = new std::vector<std::vector<uint8_t>>;
     m_trk_radiusOfFirstHit   = new std::vector<std::vector<float>>;
-
+ 
     // do we want to require "truth" info switch too ??
-    m_trk_truthPid             = new std::vector<std::vector<int>>;
-    m_trk_truthIsFromClosestTV = new std::vector<std::vector<uint8_t>>;
-    m_trk_truthIsFromReprTV    = new std::vector<std::vector<uint8_t>>;
+    if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
+      m_trk_truthMatchProb                  = new std::vector<std::vector<float>>;
+      m_trk_truthPid                        = new std::vector<std::vector<int>>;
+      if ( m_infoSwitch.m_truth || m_infoSwitch.m_close )
+	m_trk_truthPointsToClosestTV        = new std::vector<std::vector<uint8_t>>;
+      if ( m_infoSwitch.m_truth || m_infoSwitch.m_linked ) {
+	m_trk_truthPointsToMaxlinkTV        = new std::vector<std::vector<uint8_t>>;
+	m_trk_truthParentPointsToMaxlinkPTV = new std::vector<std::vector<uint8_t>>;
+      }
+    }
   }
 
   // close matched truth vertices
@@ -247,10 +254,17 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
     delete m_trk_nUsedHitsdEdx;
     delete m_trk_nIBLOverflowsdEdx;
     delete m_trk_radiusOfFirstHit;
- 
-    delete m_trk_truthPid;
-    delete m_trk_truthIsFromClosestTV;
-    delete m_trk_truthIsFromReprTV;
+
+    if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
+      delete m_trk_truthMatchProb;
+      delete m_trk_truthPid;
+      if ( m_infoSwitch.m_truth || m_infoSwitch.m_close )
+	delete m_trk_truthPointsToClosestTV;
+      if ( m_infoSwitch.m_truth || m_infoSwitch.m_linked ) {
+	delete m_trk_truthPointsToMaxlinkTV;
+	delete m_trk_truthParentPointsToMaxlinkPTV;
+      }
+    }
   }
 
   // close matched truth vertices
@@ -414,10 +428,17 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
     connectBranch<std::vector<uint8_t>>  ( tree, "trk_nUsedHitsdEdx",      &m_trk_nUsedHitsdEdx      );
     connectBranch<std::vector<uint8_t>>  ( tree, "trk_nIBLOverflowsdEdx",  &m_trk_nIBLOverflowsdEdx  );
     connectBranch<std::vector<float>>    ( tree, "trk_radiusOfFirstHit",   &m_trk_radiusOfFirstHit   );
-    
-    connectBranch<std::vector<int>>     ( tree, "trk_truthPid",             &m_trk_truthPid             );
-    connectBranch<std::vector<uint8_t>> ( tree, "trk_truthIsFromClosestTV", &m_trk_truthIsFromClosestTV );
-    connectBranch<std::vector<uint8_t>> ( tree, "trk_truthIsFromReprTV",    &m_trk_truthIsFromReprTV    );
+
+    if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
+      connectBranch<std::vector<float>>     ( tree, "trk_truthMatchProb",                &m_trk_truthMatchProb                );
+      connectBranch<std::vector<int>>       ( tree, "trk_truthPid",                      &m_trk_truthPid                      );
+      if ( m_infoSwitch.m_truth || m_infoSwitch.m_close )
+	connectBranch<std::vector<uint8_t>> ( tree, "trk_truthPointsToClosestTV",        &m_trk_truthPointsToClosestTV        );
+      if ( m_infoSwitch.m_truth || m_infoSwitch.m_linked ) {
+	connectBranch<std::vector<uint8_t>> ( tree, "trk_truthPointsToMaxlinkTV",        &m_trk_truthPointsToMaxlinkTV        );
+	connectBranch<std::vector<uint8_t>> ( tree, "trk_truthParentPointsToMaxlinkPTV", &m_trk_truthParentPointsToMaxlinkPTV );
+      }
+    }
   }
 
   // close matched truth vertices
@@ -579,9 +600,16 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
     setBranch<std::vector<uint8_t>>  ( tree, "trk_nIBLOverflowsdEdx",  m_trk_nIBLOverflowsdEdx  );
     setBranch<std::vector<float>>    ( tree, "trk_radiusOfFirstHit",   m_trk_radiusOfFirstHit   );
 
-    setBranch<std::vector<int>>     ( tree, "trk_truthPid",             m_trk_truthPid             );
-    setBranch<std::vector<uint8_t>> ( tree, "trk_truthIsFromClosestTV", m_trk_truthIsFromClosestTV );
-    setBranch<std::vector<uint8_t>> ( tree, "trk_truthIsFromReprTV",    m_trk_truthIsFromReprTV    );
+    if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
+      setBranch<std::vector<float>>     ( tree, "trk_truthMatchProb",                m_trk_truthMatchProb                );
+      setBranch<std::vector<int>>       ( tree, "trk_truthPid",                      m_trk_truthPid                      );
+      if ( m_infoSwitch.m_truth || m_infoSwitch.m_close )
+	setBranch<std::vector<uint8_t>> ( tree, "trk_truthPointsToClosestTV",        m_trk_truthPointsToClosestTV        );
+      if ( m_infoSwitch.m_truth || m_infoSwitch.m_linked ) {
+	setBranch<std::vector<uint8_t>> ( tree, "trk_truthPointsToMaxlinkTV",        m_trk_truthPointsToMaxlinkTV        );
+	setBranch<std::vector<uint8_t>> ( tree, "trk_truthParentPointsToMaxlinkPTV", m_trk_truthParentPointsToMaxlinkPTV );
+      }
+    }
   }
 
   // close matched truth vertices
@@ -703,7 +731,7 @@ void SecondaryVertexContainer :: clear ()
   m_twoTracksMass          ->clear();
   m_twoTracksMassRest      ->clear();
   m_twoTracksCharge        ->clear();
-  
+
   m_ntrk       ->clear();
   m_ntrk_sel   ->clear();
   m_ntrk_assoc ->clear();
@@ -745,10 +773,17 @@ void SecondaryVertexContainer :: clear ()
     m_trk_nUsedHitsdEdx      ->clear();
     m_trk_nIBLOverflowsdEdx  ->clear();
     m_trk_radiusOfFirstHit   ->clear();
-    
-    m_trk_truthPid             ->clear();
-    m_trk_truthIsFromClosestTV ->clear();
-    m_trk_truthIsFromReprTV    ->clear();
+
+    if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
+      m_trk_truthMatchProb                  ->clear();
+      m_trk_truthPid                        ->clear();
+      if ( m_infoSwitch.m_truth || m_infoSwitch.m_close )
+	m_trk_truthPointsToClosestTV        ->clear();
+      if ( m_infoSwitch.m_truth || m_infoSwitch.m_linked ) {
+	m_trk_truthPointsToMaxlinkTV        ->clear();
+	m_trk_truthParentPointsToMaxlinkPTV ->clear();
+      }
+    }
   }
 
   // close matched truth vertices
@@ -966,16 +1001,16 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
   // truth matching //
   ////////////////////
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_close )  // distance-based
-    processCloseTruth( secVtx );
+    processCloseTruth( secVtx, filteredTracks );
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_linked ) // truth-track-link-based
-    processLinkedTruth( secVtx );
+    processLinkedTruth( secVtx, filteredTracks );
   // --> these cover the two cases (ClosestTruth + ReprTruth) in VsiPerf
   // --> --> may want to add another case using our own definition of "representative" truth...
   // --> --> --> see efficiency processor ...
 }
 
 
-void SecondaryVertexContainer :: recordTracks ( std::vector< const xAOD::TrackParticle* >& filteredTracks )
+void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::TrackParticle*>& filteredTracks )
 {
   if ( m_debug ) Info( "SecondaryVertexContainer::recordTracks()", "filling vertex track branches" );
   
@@ -1014,6 +1049,9 @@ void SecondaryVertexContainer :: recordTracks ( std::vector< const xAOD::TrackPa
   std::vector<uint8_t>  trk_nUsedHitsdEdx;
   std::vector<uint8_t>  trk_nIBLOverflowsdEdx;
   std::vector<float>    trk_radiusOfFirstHit;
+
+  std::vector<float> trk_truthMatchProb;
+  std::vector<int>   trk_truthPid;
 
   for ( const auto& trk : filteredTracks ) {
     if ( !trk ) continue;
@@ -1071,6 +1109,24 @@ void SecondaryVertexContainer :: recordTracks ( std::vector< const xAOD::TrackPa
     trk_nUsedHitsdEdx      .push_back( trk->numberOfUsedHitsdEdx()     );
     trk_nIBLOverflowsdEdx  .push_back( trk->numberOfIBLOverflowsdEdx() );
     trk_radiusOfFirstHit   .push_back( trk->radiusOfFirstHit()         );
+
+    const xAOD::TruthParticle* truthPart = 0;
+    static SG::AuxElement::ConstAccessor<EJsHelper::TruthParticleLink_t> truthAccess("truthParticleLink");
+    if ( truthAccess.isAvailable( *trk ) ) {
+      try {
+	const EJsHelper::TruthParticleLink_t& truthPartLink = truthAccess( *trk );
+	truthPart = *truthPartLink;
+      } catch(...) {}
+    }
+    if ( truthPart ) {
+      trk_truthMatchProb .push_back( trk->auxdataConst<float>("truthMatchProbability") );
+      trk_truthPid       .push_back( truthPart->pdgId()                                );
+    }
+    else {
+      trk_truthMatchProb .push_back( AlgConsts::invalidFloat );
+      trk_truthPid       .push_back( AlgConsts::invalidInt   );
+    }
+    
   }
 
   m_trk_qOverP ->push_back( trk_qOverP );
@@ -1109,19 +1165,24 @@ void SecondaryVertexContainer :: recordTracks ( std::vector< const xAOD::TrackPa
   m_trk_nIBLOverflowsdEdx  ->push_back( trk_nIBLOverflowsdEdx  );
   m_trk_radiusOfFirstHit   ->push_back( trk_radiusOfFirstHit   );
 
+  if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
+    m_trk_truthMatchProb ->push_back( trk_truthMatchProb );
+    m_trk_truthPid       ->push_back( trk_truthPid );
+  }
+
   // m_trk_truthPid, m_trk_truthIsFromClosestTV, m_trk_truthIsFromReprTV
 
 } // end recordTracks
 
 
-void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx )
+void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx,
+						     const std::vector<const xAOD::TrackParticle*>& filteredTracks )
 {
   if ( m_debug )
     Info( "SecondaryVertexContainer::processCloseTruth()", "filling close truth vertex branches" );
 
   const xAOD::TruthVertex* closestTruthVertex = 0;
-  static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t>
-    closestTVAccess("closestTruthVertexLink");
+  static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t> closestTVAccess("closestTruthVertexLink");
   if ( closestTVAccess.isAvailable( *secVtx ) ) {
     try {
       const EJsHelper::TruthVertexLink_t& closestTVLink = closestTVAccess( *secVtx );
@@ -1158,6 +1219,8 @@ void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx 
   std::vector<int>     outP_pid;
   std::vector<uint8_t> outP_isReco;
   std::vector<float>   outP_recoProb;
+
+  std::vector<uint8_t> trk_truthPointsToTV;
 
   if ( closestTruthVertex ) {
     isPid = EJsHelper::selectDarkPion( closestTruthVertex );
@@ -1206,7 +1269,15 @@ void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx 
       if ( outP->isAvailable<double>("trkMatchProb") )
 	outP_recoProb .push_back( outP->auxdataConst<double>("trkMatchProb") );
     }
+
+    for ( const auto& trk : filteredTracks ) {
+      const auto* truthProdVtx = EJsHelper::getProdVtx( trk );
+      bool truthPointsToTV = false;
+      if ( truthProdVtx ) truthPointsToTV = ( closestTruthVertex == truthProdVtx );
+      trk_truthPointsToTV .push_back( truthPointsToTV );
+    }
   }
+  else trk_truthPointsToTV .resize( filteredTracks.size(), false );
 
   m_closestTruth_distance        ->push_back( dist  );
   m_closestTruth_isDarkPionDecay ->push_back( isPid );
@@ -1234,18 +1305,21 @@ void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx 
   m_closestTruth_outP_pid      ->push_back( outP_pid      );
   m_closestTruth_outP_isReco   ->push_back( outP_isReco   );
   m_closestTruth_outP_recoProb ->push_back( outP_recoProb );
+
+  if ( m_infoSwitch.m_tracks )
+    m_trk_truthPointsToClosestTV ->push_back( trk_truthPointsToTV );
   
 } // end processCloseTruth
 
 
-void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx )
+void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx,
+						      const std::vector<const xAOD::TrackParticle*>& filteredTracks )
 {
   if ( m_debug )
     Info( "SecondaryVertexContainer::processLinkedTruth()", "filling linked truth vertex branches" );
   
   const xAOD::TruthVertex* maxlinkedTruthVertex = 0;
-  static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t>
-    maxlinkedTVAccess("maxlinkedTruthVertexLink");
+  static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t> maxlinkedTVAccess("maxlinkedTruthVertexLink");
   if ( maxlinkedTVAccess.isAvailable( *secVtx ) ) {
     try {
       const EJsHelper::TruthVertexLink_t& maxlinkedTVLink = maxlinkedTVAccess( *secVtx );
@@ -1282,6 +1356,8 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
   std::vector<int>     tv_outP_pid;
   std::vector<uint8_t> tv_outP_isReco;
   std::vector<float>   tv_outP_recoProb;
+
+  std::vector<uint8_t> trk_truthPointsToTV;
 
   if ( maxlinkedTruthVertex ) {
     tv_isPid = EJsHelper::selectDarkPion( maxlinkedTruthVertex );
@@ -1330,7 +1406,15 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
       if ( outP->isAvailable<double>("trkMatchProb") )
 	tv_outP_recoProb .push_back( outP->auxdataConst<double>("trkMatchProb") );
     }
+
+    for ( const auto& trk : filteredTracks ) {
+      const auto* truthProdVtx = EJsHelper::getProdVtx( trk );
+      bool truthPointsToTV = false;
+      if ( truthProdVtx ) truthPointsToTV = ( maxlinkedTruthVertex == truthProdVtx );
+      trk_truthPointsToTV .push_back( truthPointsToTV );
+    }
   }
+  else trk_truthPointsToTV .resize( filteredTracks.size(), false );
 
   m_maxlinkTruth_score           ->push_back( tv_score );
   m_maxlinkTruth_isDarkPionDecay ->push_back( tv_isPid );
@@ -1359,13 +1443,15 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
   m_maxlinkTruth_outP_isReco   ->push_back( tv_outP_isReco   );
   m_maxlinkTruth_outP_recoProb ->push_back( tv_outP_recoProb );
 
+  if ( m_infoSwitch.m_tracks )
+    m_trk_truthPointsToMaxlinkTV ->push_back( trk_truthPointsToTV );
+
 
   if ( m_debug )
     Info( "SecondaryVertexContainer::processLinkedTruth()", "filling linked parent truth vertex branches" );
   
   const xAOD::TruthVertex* maxlinkedParentTruthVertex = 0;
-  static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t>
-    maxlinkedPTVAccess("maxlinkedParentTruthVertexLink");
+  static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t> maxlinkedPTVAccess("maxlinkedParentTruthVertexLink");
   if ( maxlinkedPTVAccess.isAvailable( *secVtx ) ) {
     try {
       const EJsHelper::TruthVertexLink_t& maxlinkedPTVLink = maxlinkedPTVAccess( *secVtx );
@@ -1402,6 +1488,8 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
   std::vector<int>     ptv_outP_pid;
   std::vector<uint8_t> ptv_outP_isReco;
   std::vector<float>   ptv_outP_recoProb;
+
+  std::vector<uint8_t> trk_truthParentPointsToPTV;
 
   if ( maxlinkedParentTruthVertex ) {
     ptv_isPid = EJsHelper::selectDarkPion( maxlinkedParentTruthVertex );
@@ -1450,7 +1538,15 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
       if ( outP->isAvailable<double>("trkMatchProb") )
 	ptv_outP_recoProb .push_back( outP->auxdataConst<double>("trkMatchProb") );
     }
+
+    for ( const auto& trk : filteredTracks ) {
+      const auto* truthParentProdVtx = EJsHelper::getParentProdVtx( trk );
+      bool truthParentPointsToPTV = false;
+      if ( truthParentProdVtx ) truthParentPointsToPTV = ( maxlinkedParentTruthVertex == truthParentProdVtx );
+      trk_truthParentPointsToPTV .push_back( truthParentPointsToPTV );
+    }
   }
+  else trk_truthParentPointsToPTV .resize( filteredTracks.size(), false );
 
   m_maxlinkParentTruth_score           ->push_back( ptv_score );
   m_maxlinkParentTruth_isDarkPionDecay ->push_back( ptv_isPid );
@@ -1478,5 +1574,8 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
   m_maxlinkParentTruth_outP_pid      ->push_back( ptv_outP_pid      );
   m_maxlinkParentTruth_outP_isReco   ->push_back( ptv_outP_isReco   );
   m_maxlinkParentTruth_outP_recoProb ->push_back( ptv_outP_recoProb );
+
+  if ( m_infoSwitch.m_tracks )
+    m_trk_truthParentPointsToMaxlinkPTV ->push_back( trk_truthParentPointsToPTV );
   
 } // end processLinkedTruth
