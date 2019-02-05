@@ -38,6 +38,12 @@ namespace EJsHelper {
   
   // --- truth helper functions (taken from VsiPerf/VsiTruthHelper) --- //
 
+  // selects specified particle decay truth vertices
+  bool selectDarkPion ( const xAOD::TruthVertex* );
+  // other TVs for validation ??
+
+  // look for (reconstructible) descendants in (LLP) decay chain
+
   // returns (parent) truth particle corresponding to track
   const xAOD::TruthParticle* getTruthPart       ( const xAOD::TrackParticle* );
   const xAOD::TruthParticle* getParentTruthPart ( const xAOD::TrackParticle* );
@@ -45,7 +51,6 @@ namespace EJsHelper {
   // returns production vertex of (parent) truth particle corresponding to track
   const xAOD::TruthVertex* getProdVtx       ( const xAOD::TrackParticle* );
   const xAOD::TruthVertex* getParentProdVtx ( const xAOD::TrackParticle* );
-  
   
 }
 

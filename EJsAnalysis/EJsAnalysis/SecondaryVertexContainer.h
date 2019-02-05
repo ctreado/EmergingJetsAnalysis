@@ -38,11 +38,9 @@ namespace EJs {
   private:
     
     void recordTracks        ( std::vector< const xAOD::TrackParticle* >& );
-    void processDVJets       ( std::vector< const xAOD::TrackParticle* >& );
-    void processClosestTruth ( const xAOD::Vertex*, std::vector< const xAOD::TrackParticle* >&,
-			       const xAOD::TrackParticleContainer*, const xAOD::VertexContainer* );
-    void processLinkedTruth  ( const xAOD::Vertex*, std::vector< const xAOD::TrackParticle* >&,
-			       const xAOD::TrackParticleContainer*, const xAOD::VertexContainer* );
+    //void processDVJets       ( std::vector< const xAOD::TrackParticle* >& );
+    void processCloseTruth   ( const xAOD::Vertex* );
+    void processLinkedTruth  ( const xAOD::Vertex* );
 
     
     // vector branches
@@ -119,10 +117,10 @@ namespace EJs {
     std::vector<std::vector<uint8_t>>*  m_trk_nIBLOverflowsdEdx;
     std::vector<std::vector<float>>*    m_trk_radiusOfFirstHit;
 
+    // STILL LEFT TO DO...
     std::vector<std::vector<int>>*      m_trk_truthPid; // pdgId of truth link
     std::vector<std::vector<uint8_t>>*  m_trk_truthIsFromClosestTV;
-    std::vector<std::vector<uint8_t>>*  m_trk_truthIsFromReprTV;
-    
+    std::vector<std::vector<uint8_t>>*  m_trk_truthIsFromReprTV; 
     // --> also want to check if track's truth-link is descended from LLP
     // --> will need to account for truth pointing directly to TV/LLP or descending from...
     // --> --> i.e. trk_truthPVtxIs*TV vs trk_truthAncestorPVtxIs*TV ...
@@ -136,12 +134,98 @@ namespace EJs {
     // jets ... some alg that makes jets out of filtered tracks ?? probably don't need this...
 
 
-    // truth
-    // closest truth -----------> do matching in separate matching alg, decorate vertices accordingly,
-    // "representative" truth --> ... access closest/representative truth vertices here, and fill...
-    // --> still not sure how exactly we want to define this...
+    // close-matched truth vertices
+    // all close truth ??
+    // closest truth
+    std::vector<float>*   m_closestTruth_distance;
+    std::vector<uint8_t>* m_closestTruth_isDarkPionDecay;
+    
+    std::vector<float>* m_closestTruth_x;
+    std::vector<float>* m_closestTruth_y;
+    std::vector<float>* m_closestTruth_z;
+    std::vector<float>* m_closestTruth_r;
+    std::vector<float>* m_closestTruth_eta;
+    std::vector<float>* m_closestTruth_phi;
+
+    std::vector<float>* m_closestTruth_inE;
+    std::vector<float>* m_closestTruth_outE;
+    // --> anything else from sumP4 worth saving ??
+
+    std::vector<float>* m_closestTruth_parent_pt;
+    std::vector<float>* m_closestTruth_parent_eta;
+    std::vector<float>* m_closestTruth_parent_phi;
+    std::vector<float>* m_closestTruth_parent_charge;
+    std::vector<int>*   m_closestTruth_parent_pid;
+
+    std::vector<std::vector<float>>*   m_closestTruth_outP_pt;
+    std::vector<std::vector<float>>*   m_closestTruth_outP_eta;
+    std::vector<std::vector<float>>*   m_closestTruth_outP_phi;
+    std::vector<std::vector<float>>*   m_closestTruth_outP_charge;
+    std::vector<std::vector<int>>*     m_closestTruth_outP_pid;
+    std::vector<std::vector<uint8_t>>* m_closestTruth_outP_isReco;
+    std::vector<std::vector<float>>*   m_closestTruth_outP_recoProb;
+
+    
+    // track-truth-link-matched (parent) truth vertices
+    // all linked (parent) truth ??
+    // max-linked (parent) truth
+    std::vector<float>*   m_maxlinkTruth_score;
+    std::vector<uint8_t>* m_maxlinkTruth_isDarkPionDecay;
+    
+    std::vector<float>* m_maxlinkTruth_x;
+    std::vector<float>* m_maxlinkTruth_y;
+    std::vector<float>* m_maxlinkTruth_z;
+    std::vector<float>* m_maxlinkTruth_r;
+    std::vector<float>* m_maxlinkTruth_eta;
+    std::vector<float>* m_maxlinkTruth_phi;
+
+    std::vector<float>* m_maxlinkTruth_inE;
+    std::vector<float>* m_maxlinkTruth_outE;
+
+    std::vector<float>* m_maxlinkTruth_parent_pt;
+    std::vector<float>* m_maxlinkTruth_parent_eta;
+    std::vector<float>* m_maxlinkTruth_parent_phi;
+    std::vector<float>* m_maxlinkTruth_parent_charge;
+    std::vector<int>*   m_maxlinkTruth_parent_pid;
+
+    std::vector<std::vector<float>>*   m_maxlinkTruth_outP_pt;
+    std::vector<std::vector<float>>*   m_maxlinkTruth_outP_eta;
+    std::vector<std::vector<float>>*   m_maxlinkTruth_outP_phi;
+    std::vector<std::vector<float>>*   m_maxlinkTruth_outP_charge;
+    std::vector<std::vector<int>>*     m_maxlinkTruth_outP_pid;
+    std::vector<std::vector<uint8_t>>* m_maxlinkTruth_outP_isReco;
+    std::vector<std::vector<float>>*   m_maxlinkTruth_outP_recoProb;
+
+
+    std::vector<float>*   m_maxlinkParentTruth_score;
+    std::vector<uint8_t>* m_maxlinkParentTruth_isDarkPionDecay;
+    
+    std::vector<float>* m_maxlinkParentTruth_x;
+    std::vector<float>* m_maxlinkParentTruth_y;
+    std::vector<float>* m_maxlinkParentTruth_z;
+    std::vector<float>* m_maxlinkParentTruth_r;
+    std::vector<float>* m_maxlinkParentTruth_eta;
+    std::vector<float>* m_maxlinkParentTruth_phi;
+
+    std::vector<float>* m_maxlinkParentTruth_inE;
+    std::vector<float>* m_maxlinkParentTruth_outE;
+
+    std::vector<float>* m_maxlinkParentTruth_parent_pt;
+    std::vector<float>* m_maxlinkParentTruth_parent_eta;
+    std::vector<float>* m_maxlinkParentTruth_parent_phi;
+    std::vector<float>* m_maxlinkParentTruth_parent_charge;
+    std::vector<int>*   m_maxlinkParentTruth_parent_pid;
+
+    std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_pt;
+    std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_eta;
+    std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_phi;
+    std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_charge;
+    std::vector<std::vector<int>>*     m_maxlinkParentTruth_outP_pid;
+    std::vector<std::vector<uint8_t>>* m_maxlinkParentTruth_outP_isReco;
+    std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_recoProb;
 
   };
-}
+  
+} // EJs
 
 #endif // EJsAnalysis_SecondaryVertexContainer_H

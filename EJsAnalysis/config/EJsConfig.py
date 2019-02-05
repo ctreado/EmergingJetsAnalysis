@@ -159,14 +159,20 @@ Dict_ObjectMatcher_AllObj_EMTopo = {
 
 # tree output
 Dict_EJsMiniNtuple = {
-    "m_name"             : "EJsMiniNtuple",
-    "m_msgLevel"         : "info",
-    "m_evtDetailStr"     : "pileup",
-    "m_trigDetailStr"    : "basic passTriggers prescales",
-    "m_jetDetailStr"     : "kinematic energyLight truth trackAll JVT allTrack allTrackDetail constituent charge",
-    "m_jetContainerName" : "AntiKt4EMTopoJets AntiKt4EMTopoJets_Calib AntiKt4EMTopoJets_Calib_Select",
-    "m_jetBranchName"    : "jet jetCalib jetCalibSelect",
-    "m_jetSystsVec"      : "AntiKt4EMTopoJets_Calib_Select_Algo",
+    "m_name"                         : "EJsMiniNtuple",
+    "m_msgLevel"                     : "info",
+    "m_evtDetailStr"                 : "pileup",
+    "m_trigDetailStr"                : "basic passTriggers prescales",
+    "m_jetDetailStr"                 : "kinematic rapidity energy truth trackAll JVT allTrack allTrackDetail constituent charge",
+    "m_jetContainerName"             : "AntiKt4EMTopoJets AntiKt4EMTopoJets_Calib_Select",
+    "m_jetBranchName"                : "jet jetCalibSelect",
+    "m_jetSystsVec"                  : "AntiKt4EMTopoJets_Calib_Select_Algo",
+    "m_truthVertexDetailStr"         : "",
+    "m_truthVertexContainerName"     : "TruthVertices",
+    "m_truthVertexBranchName"        : "truthVtx",
+    "m_secondaryVertexDetailStr"     : "truth",
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
+    "m_secondaryVertexBranchName"    : "secVtx",
 }
 # --> "truth_details" in jet-detail-string causes issue when running over data ("nonexistent aux data item `::GhostPartons'") --> need to add "isMC" check in JetContainer --> leave out for now (probably don't need anyway, and can always add manually in EJsHelpTreeBase, if necessary --> consider contacting xAODAnaHelpers experts about issue, though (not sure if I can develop myself)
 

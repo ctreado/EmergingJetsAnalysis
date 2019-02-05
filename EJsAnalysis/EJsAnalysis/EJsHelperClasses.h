@@ -14,7 +14,7 @@ namespace EJsHelperClasses {
     bool m_tracks;
     bool m_jets;
     bool m_truth;
-    bool m_closest;
+    bool m_close;
     bool m_linked;
     
     SecondaryVertexInfoSwitch ( const std::string configStr ) :
