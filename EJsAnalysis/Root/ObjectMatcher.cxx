@@ -126,7 +126,6 @@ EL::StatusCode ObjectMatcher :: execute ()
   ANA_MSG_DEBUG( "Applying Jet-Object Matching..." );
 
   // retrieve containers
-  const xAOD::JetContainer*           inJets          = 0;
   const xAOD::JetContainer*           inTruthJets     = 0;
   const xAOD::JetContainer*           inTruthDarkJets = 0;
   const xAOD::TruthParticleContainer* inTruthParts    = 0;
@@ -135,29 +134,23 @@ EL::StatusCode ObjectMatcher :: execute ()
   const xAOD::VertexContainer*        inSecVerts      = 0;
   
   ANA_MSG_DEBUG( "Getting input track particle container: " << m_inTrackPartContainerName );
-  ANA_CHECK( HelperFunctions::retrieve( inTrackParts, m_inTrackPartContainerName,
-  					m_event, m_store, msg() ) );
+  ANA_CHECK( HelperFunctions::retrieve( inTrackParts, m_inTrackPartContainerName, m_event, m_store, msg() ) );
 
   ANA_MSG_DEBUG( "Getting input secondary vertex container: " << m_inSecondaryVertexContainerName );
-  ANA_CHECK( HelperFunctions::retrieve( inSecVerts, m_inSecondaryVertexContainerName,
-  					m_event, m_store, msg() ) );
+  ANA_CHECK( HelperFunctions::retrieve( inSecVerts, m_inSecondaryVertexContainerName, m_event, m_store, msg() ) );
   
   if ( isMC() ) {
     ANA_MSG_DEBUG( "Getting input truth jet container: " << m_inTruthJetContainerName );
-    ANA_CHECK( HelperFunctions::retrieve( inTruthJets, m_inTruthJetContainerName,
-					  m_event, m_store, msg() ) );
+    ANA_CHECK( HelperFunctions::retrieve( inTruthJets, m_inTruthJetContainerName, m_event, m_store, msg() ) );
   
     ANA_MSG_DEBUG( "Getting input truth dark jet container: " << m_inTruthDarkJetContainerName );
-    ANA_CHECK( HelperFunctions::retrieve( inTruthDarkJets, m_inTruthDarkJetContainerName,
-					  m_event, m_store, msg() ) );
+    ANA_CHECK( HelperFunctions::retrieve( inTruthDarkJets, m_inTruthDarkJetContainerName, m_event, m_store, msg() ) );
 
     ANA_MSG_DEBUG( "Getting input truth particle container: " << m_inTruthPartContainerName );
-    ANA_CHECK( HelperFunctions::retrieve( inTruthParts, m_inTruthPartContainerName,
-					  m_event, m_store, msg() ) );
+    ANA_CHECK( HelperFunctions::retrieve( inTruthParts, m_inTruthPartContainerName, m_event, m_store, msg() ) );
   
     ANA_MSG_DEBUG( "Getting input truth vertex container: " << m_inTruthVertexContainerName );
-    ANA_CHECK( HelperFunctions::retrieve( inTruthVerts, m_inTruthVertexContainerName,
-					  m_event, m_store, msg() ) );
+    ANA_CHECK( HelperFunctions::retrieve( inTruthVerts, m_inTruthVertexContainerName, m_event, m_store, msg() ) );
   }
 
 
@@ -308,30 +301,29 @@ EL::StatusCode ObjectMatcher :: execute ()
     // get jet container(s)
     for ( size_t i = 0; i != m_inJetContainers.size(); ++i ) {
 
+      const xAOD::JetContainer* inJets = 0;
+      
       // skip jet container if not available
-      if ( !HelperFunctions::isAvailable<xAOD::JetContainer>( m_inJetContainers.at(i),
-							      m_event, m_store, msg() ) )
-	{ ANA_MSG_DEBUG( "Input jet container, '" << m_inJetContainers.at(i) <<
-			 "', is not available. Skipping..." ); continue; }
-	
+      if ( !HelperFunctions::isAvailable<xAOD::JetContainer>( m_inJetContainers.at(i), m_event, m_store, msg() ) ) {
+	ANA_MSG_DEBUG( "Input jet container, '" << m_inJetContainers.at(i) << "', is not available. Skipping..." );
+	continue;
+      }	
       ANA_MSG_DEBUG( "Getting input jet container: " << m_inJetContainers.at(i) );
-      ANA_CHECK( HelperFunctions::retrieve( inJets, m_inJetContainers.at(i),
-					    m_event, m_store, msg() ) );
+      ANA_CHECK( HelperFunctions::retrieve( inJets, m_inJetContainers.at(i), m_event, m_store, msg() ) );
 
       if ( isMC() ) {
 	// match truth (dark) jets to reco jets
 	matchTruthJets( inJets, inTruthJets,     m_inJetContainers.at(i)       );
-	matchTruthJets( inJets, inTruthDarkJets, m_inJetContainers.at(i), true );
-	
+	matchTruthJets( inJets, inTruthDarkJets, m_inJetContainers.at(i), true );	
 	// match truth vertices to reco jets
 	matchTruthVertsToJets( inJets, inTruthVerts );
       }
     
       // match reco secondary vertices to reco jets
-      matchSecVertsToJets( inJets, inSecVerts );
-      
+      matchSecVertsToJets( inJets, inSecVerts );   
       // match tracks to reco jets
       matchTracksToJets( inJets, inTrackParts );
+      
     } // end loop over jet containers
     
   }
@@ -347,113 +339,116 @@ EL::StatusCode ObjectMatcher :: execute ()
 
       // get jet container(s)
       for ( size_t i = 0; i != m_inJetContainers.size(); ++i ) {
-	
-	// skip jet container if not available
-	if ( !HelperFunctions::isAvailable<xAOD::JetContainer>( m_inJetContainers.at(i) + systName,
-								m_event, m_store, msg() ) )
-	  { ANA_MSG_DEBUG( "Input jet container, '" << m_inJetContainers.at(i) + systName <<
-			   "', is not available. Skipping..." ); continue; }
-	
-	ANA_MSG_DEBUG( "Getting input jet container: " << m_inJetContainers.at(i) + systName );
-	ANA_CHECK( HelperFunctions::retrieve( inJets, m_inJetContainers.at(i) + systName,
-					      m_event, m_store, msg() ) );
+
+	const xAOD::JetContainer* inJets = 0;
+
+	if ( i == m_jetSystsContainerIndex || systName.empty() ) { // only run systs for specified container
+	  // skip jet container if not available
+	  if ( !HelperFunctions::isAvailable<xAOD::JetContainer>( m_inJetContainers.at(i) + systName, m_event, m_store, msg() ) ) {
+	    ANA_MSG_DEBUG( "Input jet container, '" << m_inJetContainers.at(i) + systName << "', is not available. Skipping..." );
+	    continue;
+	  }
+	  ANA_MSG_DEBUG( "Getting input jet container: " << m_inJetContainers.at(i) + systName );
+	  ANA_CHECK( HelperFunctions::retrieve( inJets, m_inJetContainers.at(i) + systName, m_event, m_store, msg() ) );	
       
-	if ( isMC() ) {
-	  // match truth (dark) jets to reco jets
-	  matchTruthJets( inJets, inTruthJets,     m_inJetContainers.at(i) + systName       );
-	  matchTruthJets( inJets, inTruthDarkJets, m_inJetContainers.at(i) + systName, true );
+	  if ( isMC() ) {
+	    // match truth (dark) jets to reco jets
+	    matchTruthJets( inJets, inTruthJets,     m_inJetContainers.at(i) + systName       );
+	    matchTruthJets( inJets, inTruthDarkJets, m_inJetContainers.at(i) + systName, true );
 
-	  // // test matched truth jet decorators
-	  // for ( const auto& jet : *inJets )
-	  //   ANA_MSG_INFO( "jets (to truth) -- " <<
-	  // 		jet->auxdataConst<char>("hasTruthJetMatch") << " " <<
-	  // 		jet->auxdataConst<int>("truthJetMatchID") << " " <<
-	  // 		jet->auxdataConst<double>("truthJetMatchDR") << " " <<
-	  // 		jet->auxdataConst<std::vector<int>>("truthJetNoMatchIDs").size() << " " <<
-	  // 		jet->auxdataConst<std::vector<double>>("truthJetNoMatchDRs").size() << " " << 
-	  // 		inTruthJets->size() << " ||| jets (to dark) -- " <<
-	  // 		jet->auxdataConst<char>("hasDarkJetMatch") << " " <<
-	  // 		jet->auxdataConst<int>("darkJetMatchID") << " " <<
-	  // 		jet->auxdataConst<double>("darkJetMatchDR") << " " <<
-	  // 		jet->auxdataConst<std::vector<int>>("darkJetNoMatchIDs").size() << " " <<
-	  // 		jet->auxdataConst<std::vector<double>>("darkJetNoMatchDRs").size() << " " <<
-	  // 		inTruthDarkJets->size() );
-	  // ANA_MSG_INFO( "" );
+	    // // test matched truth jet decorators
+	    // for ( const auto& jet : *inJets )
+	    //   ANA_MSG_INFO( "jets (to truth) -- " <<
+	    // 		jet->auxdataConst<char>("hasTruthJetMatch") << " " <<
+	    // 		jet->auxdataConst<int>("truthJetMatchID") << " " <<
+	    // 		jet->auxdataConst<double>("truthJetMatchDR") << " " <<
+	    // 		jet->auxdataConst<std::vector<int>>("truthJetNoMatchIDs").size() << " " <<
+	    // 		jet->auxdataConst<std::vector<double>>("truthJetNoMatchDRs").size() << " " << 
+	    // 		inTruthJets->size() << " ||| jets (to dark) -- " <<
+	    // 		jet->auxdataConst<char>("hasDarkJetMatch") << " " <<
+	    // 		jet->auxdataConst<int>("darkJetMatchID") << " " <<
+	    // 		jet->auxdataConst<double>("darkJetMatchDR") << " " <<
+	    // 		jet->auxdataConst<std::vector<int>>("darkJetNoMatchIDs").size() << " " <<
+	    // 		jet->auxdataConst<std::vector<double>>("darkJetNoMatchDRs").size() << " " <<
+	    // 		inTruthDarkJets->size() );
+	    // ANA_MSG_INFO( "" );
 	  
-	  // match truth vertices to reco jets
-	  matchTruthVertsToJets( inJets, inTruthVerts );
+	    // match truth vertices to reco jets
+	    matchTruthVertsToJets( inJets, inTruthVerts );
 
-	  // // test matched truth vertex element link decorators
-	  // static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLinkVector_t>
-	  //   matchTVAccess("matchedTruthVertexLinks");
+	    // // test matched truth vertex element link decorators
+	    // static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLinkVector_t>
+	    //   matchTVAccess("matchedTruthVertexLinks");
+	    // for ( const auto& jet : *inJets ) {
+	    //   if ( matchTVAccess.isAvailable( *jet ) ) {
+	    //     const EJsHelper::TruthVertexLinkVector_t& jetMatchedTVLinks =
+	    //       matchTVAccess( *jet );
+	    //     const std::vector<double>& jetMatchedTV_dR =
+	    //       jet->auxdataConst<std::vector<double>>("matchedTruthVertex_dR");	
+	    //     ANA_MSG_INFO( "vector sizes -- " <<
+	    // 		  jetMatchedTVLinks.size() << " " << jetMatchedTV_dR.size() );	
+	    //     for ( const auto& tvlink : jetMatchedTVLinks ) {
+	    //       if ( !tvlink.isValid() ) continue;
+	    //       ANA_MSG_INFO( "truth vertex position -- " << (*tvlink)->perp() << " " << (*tvlink)->z() );
+	    //     }
+	    //     for ( size_t i = 0; i != jetMatchedTV_dR.size(); ++i )
+	    //       ANA_MSG_INFO( "jet - truthVertex dR -- " << jetMatchedTV_dR.at(i) );
+	    //   }
+	    //   else ANA_MSG_INFO( "no truth vertices matched to reco jets !!!" );
+	    // }	
+	  }
+	
+	  // match reco secondary vertices to reco jets
+	  matchSecVertsToJets( inJets, inSecVerts );
+	
+	  // // test matched reco secondary vertex element link decorators
+	  // static SG::AuxElement::ConstAccessor<EJsHelper::VertexLinkVector_t>
+	  // 	matchDVAccess("matchedSecondaryVertexLinks");
 	  // for ( const auto& jet : *inJets ) {
-	  //   if ( matchTVAccess.isAvailable( *jet ) ) {
-	  //     const EJsHelper::TruthVertexLinkVector_t& jetMatchedTVLinks =
-	  //       matchTVAccess( *jet );
-	  //     const std::vector<double>& jetMatchedTV_dR =
-	  //       jet->auxdataConst<std::vector<double>>("matchedTruthVertex_dR");	
+	  // 	if ( matchDVAccess.isAvailable( *jet ) ) {
+	  // 	  const EJsHelper::VertexLinkVector_t& jetMatchedDVLinks =
+	  // 	    matchDVAccess( *jet );
+	  // 	  const std::vector<double>& jetMatchedDV_dR =
+	  // 	    jet->auxdataConst<std::vector<double>>("matchedSecondaryVertex_dR");	
+	  // 	  ANA_MSG_INFO( "vector sizes -- " <<
+	  // 			jetMatchedDVLinks.size() << " " << jetMatchedDV_dR.size() );	
+	  // 	  for ( const auto& dvlink : jetMatchedDVLinks ) {
+	  // 	    if ( !dvlink.isValid() ) continue;
+	  // 	    ANA_MSG_INFO( "secondary vertex position -- " << (*dvlink)->x() << " " <<
+	  // 			  (*dvlink)->y() << " " << (*dvlink)->z() );
+	  // 	  }
+	  // 	  for ( size_t i = 0; i != jetMatchedDV_dR.size(); ++i )
+	  // 	    ANA_MSG_INFO( "jet - secondaryVertex dR -- " << jetMatchedDV_dR.at(i) );
+	  // 	}
+	  // 	else ANA_MSG_INFO( "no secondary vertices matched to reco jets !!!" );
+	  // }
+	
+	  // match tracks to reco jets
+	  matchTracksToJets( inJets, inTrackParts );
+	  
+	  // // test matched track element link decorators
+	  // static SG::AuxElement::ConstAccessor<EJsHelper::TrackLinkVector_t>
+	  //   matchTrkAccess("matchedTrackLinks");
+	  // for ( const auto& jet : *inJets ) {
+	  //   if ( matchTrkAccess.isAvailable( *jet ) ) {
+	  //     const EJsHelper::TrackLinkVector_t& jetMatchedTrkLinks =
+	  //       matchTrkAccess( *jet );
+	  //     const std::vector<double>& jetMatchedTrk_dR =
+	  //       jet->auxdataConst<std::vector<double>>("matchedTrack_dR");	
 	  //     ANA_MSG_INFO( "vector sizes -- " <<
-	  // 		  jetMatchedTVLinks.size() << " " << jetMatchedTV_dR.size() );	
-	  //     for ( const auto& tvlink : jetMatchedTVLinks ) {
-	  //       if ( !tvlink.isValid() ) continue;
-	  //       ANA_MSG_INFO( "truth vertex position -- " << (*tvlink)->perp() << " " << (*tvlink)->z() );
+	  // 		  jetMatchedTrkLinks.size() << " " << jetMatchedTrk_dR.size() );	
+	  //     for ( const auto& trklink : jetMatchedTrkLinks ) {
+	  //       if ( !trklink.isValid() ) continue;
+	  //       ANA_MSG_INFO( "track pt,eta,phi -- " << (*trklink)->pt() << " " <<
+	  // 		    (*trklink)->eta() << " " << (*trklink)->phi() );
 	  //     }
-	  //     for ( size_t i = 0; i != jetMatchedTV_dR.size(); ++i )
-	  //       ANA_MSG_INFO( "jet - truthVertex dR -- " << jetMatchedTV_dR.at(i) );
+	  //     for ( size_t i = 0; i != jetMatchedTrk_dR.size(); ++i )
+	  //       ANA_MSG_INFO( "jet - track dR -- " << jetMatchedTrk_dR.at(i) );
 	  //   }
-	  //   else ANA_MSG_INFO( "no truth vertices matched to reco jets !!!" );
-	  // }	
+	  //   else ANA_MSG_INFO( "no tracks matched to reco jets !!!" );
+	  // }
+
 	}
-	
-	// match reco secondary vertices to reco jets
-	matchSecVertsToJets( inJets, inSecVerts );
-	
-	// // test matched reco secondary vertex element link decorators
-	// static SG::AuxElement::ConstAccessor<EJsHelper::VertexLinkVector_t>
-	// 	matchDVAccess("matchedSecondaryVertexLinks");
-	// for ( const auto& jet : *inJets ) {
-	// 	if ( matchDVAccess.isAvailable( *jet ) ) {
-	// 	  const EJsHelper::VertexLinkVector_t& jetMatchedDVLinks =
-	// 	    matchDVAccess( *jet );
-	// 	  const std::vector<double>& jetMatchedDV_dR =
-	// 	    jet->auxdataConst<std::vector<double>>("matchedSecondaryVertex_dR");	
-	// 	  ANA_MSG_INFO( "vector sizes -- " <<
-	// 			jetMatchedDVLinks.size() << " " << jetMatchedDV_dR.size() );	
-	// 	  for ( const auto& dvlink : jetMatchedDVLinks ) {
-	// 	    if ( !dvlink.isValid() ) continue;
-	// 	    ANA_MSG_INFO( "secondary vertex position -- " << (*dvlink)->x() << " " <<
-	// 			  (*dvlink)->y() << " " << (*dvlink)->z() );
-	// 	  }
-	// 	  for ( size_t i = 0; i != jetMatchedDV_dR.size(); ++i )
-	// 	    ANA_MSG_INFO( "jet - secondaryVertex dR -- " << jetMatchedDV_dR.at(i) );
-	// 	}
-	// 	else ANA_MSG_INFO( "no secondary vertices matched to reco jets !!!" );
-	// }
-	
-	// match tracks to reco jets
-	matchTracksToJets( inJets, inTrackParts );
-	
-	// // test matched track element link decorators
-	// static SG::AuxElement::ConstAccessor<EJsHelper::TrackLinkVector_t>
-	//   matchTrkAccess("matchedTrackLinks");
-	// for ( const auto& jet : *inJets ) {
-	//   if ( matchTrkAccess.isAvailable( *jet ) ) {
-	//     const EJsHelper::TrackLinkVector_t& jetMatchedTrkLinks =
-	//       matchTrkAccess( *jet );
-	//     const std::vector<double>& jetMatchedTrk_dR =
-	//       jet->auxdataConst<std::vector<double>>("matchedTrack_dR");	
-	//     ANA_MSG_INFO( "vector sizes -- " <<
-	// 		  jetMatchedTrkLinks.size() << " " << jetMatchedTrk_dR.size() );	
-	//     for ( const auto& trklink : jetMatchedTrkLinks ) {
-	//       if ( !trklink.isValid() ) continue;
-	//       ANA_MSG_INFO( "track pt,eta,phi -- " << (*trklink)->pt() << " " <<
-	// 		    (*trklink)->eta() << " " << (*trklink)->phi() );
-	//     }
-	//     for ( size_t i = 0; i != jetMatchedTrk_dR.size(); ++i )
-	//       ANA_MSG_INFO( "jet - track dR -- " << jetMatchedTrk_dR.at(i) );
-	//   }
-	//   else ANA_MSG_INFO( "no tracks matched to reco jets !!!" );
-	// }
 	
       } // end loop over input jet containers
       

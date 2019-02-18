@@ -12,5 +12,5 @@ subdir="local.data17.00328333"
 subdir_list="local.data"
 
 
-xAH_run.py --files ${input} --config ${jo} --submitDir ${subdir} --nevents 100 direct
-#xAH_run.py --files ${input_list} --config ${jo} --submitDir ${subdir_list} direct
+#xAH_run.py --files ${input} --config ${jo} --submitDir ${subdir} --nevents 100 direct
+xAH_run.py --files ${input_list} --config ${jo} --submitDir ${subdir_list} --nevents -1 direct

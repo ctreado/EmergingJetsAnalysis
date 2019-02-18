@@ -8,6 +8,7 @@
    (may want to eventually add functionality to run directly over xAODs as well...) */
 
 #include <string>
+#include <vector>
 #include <map>
 
 #include <xAODAnaHelpers/HistogramManager.h>
@@ -25,7 +26,7 @@ class EJsHistogramManager : public HistogramManager
   bool m_debug;
 
   StatusCode connectSecVerts ( TTree* tree, const std::string secVtxName = "secVtx",
-			       const std::string secVtxDetailStr = "" );
+			       const std::string secVtxDetailStr = "" ); // do we want to pass this by reference ??
   // add other connect functions for all types of objects ...
   StatusCode initialize      ( const std::string secVtxDetailStr = "" ); 
   StatusCode execute         ( TTree* tree, Long64_t treeEntry,
@@ -36,15 +37,12 @@ class EJsHistogramManager : public HistogramManager
   using HistogramManager::book;    // overload
   using HistogramManager::execute; // overload
 
-
  protected:
-  
   // holds bools to control which histograms to be filled
   EJsHelperClasses::SecondaryVertexInfoSwitch* m_secVtxInfoSwitch;
 
   
  private:
-
   // branches -- secondary vertex
   uint32_t                         m_secVtx_n;               //!
   std::vector<float>*              m_secVtx_x;               //!
@@ -62,19 +60,22 @@ class EJsHistogramManager : public HistogramManager
 
   
   // histograms -- secondary vertex
-  TH1F* h_secVtx_n;             //!
-  TH1F* h_secVtx_x;             //!
-  TH1F* h_secVtx_y;             //!
-  TH1F* h_secVtx_z;             //!
-  TH1F* h_secVtx_r;             //!
-  TH1F* h_secVtx_pt;            //!
-  TH1F* h_secVtx_eta;           //!
-  TH1F* h_secVtx_phi;           //!
-  TH1F* h_secVtx_mass;          //!
+  TH1F* h_secVtx_n;            //!
+  TH1F* h_secVtx_x;            //!
+  TH1F* h_secVtx_y;            //!
+  TH1F* h_secVtx_z;            //!
+  TH1F* h_secVtx_r;            //!
+  TH1F* h_secVtx_pt;           //!
+  TH1F* h_secVtx_eta;          //!
+  TH1F* h_secVtx_phi;          //!
+  TH1F* h_secVtx_mass;         //!
 
-  TH1F* h_secVtx_ntrk;          //!
-  TH1F* h_secVtx_ntrk_sel;      //!
-  TH1F* h_secVtx_ntrk_assoc;    //!
+  TH1F* h_secVtx_ntrk;         //!
+  TH1F* h_secVtx_ntrk_sel;     //!
+  TH1F* h_secVtx_ntrk_assoc;   //!
+
+  TH2F* h_secVtx_r_vs_ntrk;    //!
+  TH2F* h_secVtx_mass_vs_ntrk; //!
   
 };
 

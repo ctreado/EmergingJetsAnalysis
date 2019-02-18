@@ -35,7 +35,6 @@ namespace EJsHelper {
   typedef std::vector<ElementLink<xAOD::TruthVertexContainer>> TruthVertexLinkVector_t;
 
 
-  
   // --- truth helper functions (taken from VsiPerf/VsiTruthHelper) --- //
 
   // selects specified particle decay truth vertices

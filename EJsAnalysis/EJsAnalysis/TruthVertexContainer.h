@@ -19,13 +19,10 @@
 
 namespace EJs {
 
-  class TruthVertexContainer :
-    public VertexContainer < EJsHelperClasses::TruthVertexInfoSwitch >
+  class TruthVertexContainer : public VertexContainer < EJsHelperClasses::TruthVertexInfoSwitch >
   {
   public:
-    TruthVertexContainer ( const std::string& name = "truthVtx",
-			   const std::string& detailStr = "",
-			   float units = 1e3 );
+    TruthVertexContainer ( const std::string& name = "truthVtx", const std::string& detailStr = "", float units = 1e3 );
     virtual ~TruthVertexContainer ();
 
     virtual void setTree         ( TTree* tree );

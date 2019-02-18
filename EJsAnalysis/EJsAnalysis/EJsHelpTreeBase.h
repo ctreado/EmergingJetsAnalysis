@@ -29,13 +29,11 @@
 class EJsHelpTreeBase : public HelpTreeBase
 {  
  public:
-
   // create HelpTreeBase instance
   EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* file,
 		    const float units = 1e3, bool debug = false, xAOD::TStore* store = 0 );
   // standard destructor
   virtual ~EJsHelpTreeBase ();
-
 
   // branches for new EJs container objects
   void AddPV   ( );
@@ -58,7 +56,6 @@ class EJsHelpTreeBase : public HelpTreeBase
 			     const std::string secVtxName = "secVtx" );
   void ClearSecondaryVerts ( const std::string secVtxName = "secVtx" );
 
-  
   // new branches for existing objects
 
   // event user ...
@@ -74,11 +71,9 @@ class EJsHelpTreeBase : public HelpTreeBase
 
   // truth user ...
 
-
  protected:
   std::map<std::string, EJs::TruthVertexContainer*>     m_truthVerts;
   std::map<std::string, EJs::SecondaryVertexContainer*> m_secVerts;
-
 
  private:
   // extra (vector) branches
@@ -92,7 +87,6 @@ class EJsHelpTreeBase : public HelpTreeBase
   uint32_t m_pv_nTracks;
   int      m_pv_location;
   
-
   // tracks
   std::vector<float>*   m_trk_d0;
   std::vector<float>*   m_trk_errd0;

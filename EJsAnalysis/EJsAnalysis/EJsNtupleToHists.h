@@ -38,13 +38,11 @@ class EJsNtupleToHists : public xAH::Algorithm
   // TTree *myTree; //!
   // TH1 *myHist; //!
 
-
  private:
   EJsHistogramManager* m_plots = 0; //!
 
-
+  
  public:
-
   // standard constructor
   EJsNtupleToHists ();
 

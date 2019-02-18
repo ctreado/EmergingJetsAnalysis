@@ -5,6 +5,8 @@
    selecting secondary vertices (primarily using the VsiBonsai toolkit);
    based on xAODAnaHelpers' *Selector algorithms */
 
+#include <string>
+
 #include <xAODTracking/Vertex.h>
 
 #include <xAODAnaHelpers/Algorithm.h>

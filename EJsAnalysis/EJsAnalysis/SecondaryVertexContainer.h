@@ -20,13 +20,10 @@
 
 namespace EJs {
 
-  class SecondaryVertexContainer :
-    public VertexContainer < EJsHelperClasses::SecondaryVertexInfoSwitch >
+  class SecondaryVertexContainer : public VertexContainer < EJsHelperClasses::SecondaryVertexInfoSwitch >
   {
   public:
-    SecondaryVertexContainer ( const std::string& name = "secVtx",
-			       const std::string& detailStr = "",
-			       float units = 1e3 );
+    SecondaryVertexContainer ( const std::string& name = "secVtx", const std::string& detailStr = "", float units = 1e3 );
     virtual ~SecondaryVertexContainer ();
 
     virtual void setTree             ( TTree* tree );
@@ -35,8 +32,7 @@ namespace EJs {
     virtual void FillSecondaryVertex ( const xAOD::Vertex* secVtx );
 
 
-  private:
-    
+  private:   
     void recordTracks        ( const std::vector<const xAOD::TrackParticle*>& );
     //void processDVJets       ( const std::vector<const xAOD::TrackParticle*>& );
     void processCloseTruth   ( const xAOD::Vertex*,

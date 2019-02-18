@@ -96,7 +96,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string secVtxDetailStr
   // ... see if we can parse detailStr (maybe with range of indices) to separate
   // info switches by corresponding object type
 
-  h_secVtx_n    = book( m_name, "secVtx_n",    "n secondary vertices",         10,     0,   10 );
+  h_secVtx_n    = book( m_name, "secVtx_n",    "n secondary vertices",         10,     0,    10 );
   h_secVtx_x    = book( m_name, "secVtx_x",    "secondary vertex x-pos [mm]",  100, -1000, 1000 );
   h_secVtx_y    = book( m_name, "secVtx_y",    "secondary vertex y-pos [mm]",  100, -1000, 1000 );
   h_secVtx_z    = book( m_name, "secVtx_z",    "secondary vertex z-pos [mm]",  100, -1500, 1500 );
@@ -110,6 +110,10 @@ StatusCode EJsHistogramManager :: initialize ( const std::string secVtxDetailStr
   h_secVtx_ntrk_sel   = book( m_name, "secVtx_ntrk_sel",   "n secondary vertex selected tracks",   100, 0, 10 );
   h_secVtx_ntrk_assoc = book( m_name, "secVtx_ntrk_assoc", "n secondary vertex associated tracks", 100, 0, 10 );
 
+  h_secVtx_r_vs_ntrk    = book( m_name, "secVtx_r_vs_ntrk",    "n secondary vertex tracks",   100, 0,   10,
+				                               "secondary vertex r-pos [mm]", 100, 0, 1000 );
+  h_secVtx_mass_vs_ntrk = book( m_name, "secVtx_mass_vs_ntrk", "n secondary vertex tracks",   100, 0,   10,
+				                               "secondary vertex mass [GeV]", 100, 0,   50 );
   
   // delete info switch instances
   delete m_secVtxInfoSwitch;
@@ -146,6 +150,9 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry,
     h_secVtx_ntrk       ->Fill( m_secVtx_ntrk->at(i)       );
     h_secVtx_ntrk_sel   ->Fill( m_secVtx_ntrk_sel->at(i)   );
     h_secVtx_ntrk_assoc ->Fill( m_secVtx_ntrk_assoc->at(i) );
+
+    h_secVtx_r_vs_ntrk    ->Fill( m_secVtx_ntrk->at(i), m_secVtx_r->at(i)    );
+    h_secVtx_mass_vs_ntrk ->Fill( m_secVtx_ntrk->at(i), m_secVtx_mass->at(i) );
   }
 
   // delete info switch instances

@@ -7,11 +7,11 @@ c = xAH_config()
 
 ## --- systematics --- ##
 
-#systName = "All"     # do systematics
 systName = ""        # no systematics
+#systName = "All"     # do systematics
 
-systematicsValue = 1
 systVal = 0
+systematicsValue = 1
 if systName != "":
     systVal = systematicsValue
 
@@ -109,9 +109,30 @@ Dict_JetCalibrator_EMTopo = {
     "m_systVal"               : systVal,
 }
 
+Dict_JetCalibrator_PFlow = {
+    "m_name"                  : "JetCalib_AntiKt4EMPFlow",
+    "m_msgLevel"              : "info",
+    "m_inContainerName"       : "AntiKt4EMPFlowJets",
+    "m_outContainerName"      : "AntiKt4EMPFlowJets_Calib",
+    "m_jetAlgo"               : "AntiKt4EMPFlow",
+    "m_outputAlgo"            : "AntiKt4EMPFlowJets_Calib_Algo",
+    "m_writeSystToMetadata"   : True,
+    "m_calibConfigData"       : "JES_data2017_2016_2015_Consolidated_PFlow_2018_Rel21.config",
+    "m_calibConfigFullSim"    : "JES_data2017_2016_2015_Consolidated_PFlow_2018_Rel21.config",
+    "m_uncertConfig"          : "rel21/Fall2018/R4_GlobalReduction_FullJER.config",
+    "m_doCleaning"            : True,
+    "m_jetCleanCutLevel"      : "LooseBad",
+    "m_jetCleanUgly"          : False,
+    "m_saveAllCleanDecisions" : True,
+    "m_redoJVT"               : True,
+    "m_calculatefJVT"         : True,
+    "m_systName"              : systName,
+    "m_systVal"               : systVal,
+}
+
 
 # object selection
-Dict_JetSelector_EMTopo = {
+Dict_JetSelector_EMTopo = { # require two jets ??
     "m_name"                    : "JetSelect_AntiKt4EMTopo",
     "m_msgLevel"                : "info",
     "m_inContainerName"         : "AntiKt4EMTopoJets_Calib",
@@ -141,32 +162,79 @@ Dict_JetSelector_EMTopo = {
     "m_diJetTrigChains"         : "",    # --> DO WE WANT TO DO TRIGGER-JET MATCHING ??
 }
 
+Dict_JetSelector_PFlow = {
+    "m_name"                    : "JetSelect_AntiKt4EMPFlow",
+    "m_msgLevel"                : "info",
+    "m_inContainerName"         : "AntiKt4EMPFlowJets_Calib",
+    "m_outContainerName"        : "AntiKt4EMPFlowJets_Calib_Select",
+    "m_inputAlgo"               : "AntiKt4EMPFlowJets_Calib_Algo",
+    "m_outputAlgo"              : "AntiKt4EMPFlowJets_Calib_Select_Algo",
+    "m_writeSystToMetadata"     : True,
+    "m_decorateSelectedObjects" : True,
+    "m_createSelectedContainer" : True,
+    "m_cleanJets"               : True,
+    "m_cleanEvent"              : False,
+    "m_markCleanEvent"          : True,
+    "m_pT_min"                  : 50e3,
+    "m_eta_max"                 : 2.7,
+    "m_doJVF"                   : False,
+    "m_doJVT"                   : True,
+    "m_noJVTVeto"               : True,
+    "m_SFFileJVT"               : "JetJvtEfficiency/Moriond2018/JvtSFFile_EMTopoJets.root",
+    "m_systNameJVT"             : "",
+    "m_systValJVT"              : 0,
+    "m_dofJVT"                  : True,
+    "m_dofJVTVeto"              : False,
+    "m_SFFilefJVT"              : "JetJvtEfficiency/Moriond2018/fJvtSFFile.root",
+    "m_systNamefJVT"            : "",
+    "m_systValfJVT"             : 0,
+    "m_singleJetTrigChains"     : "",
+    "m_diJetTrigChains"         : "",
+}
+
 # track selector ...
 
 # secondary vertex selector ...
 
 
 # object matching
-Dict_ObjectMatcher_AllObj_EMTopo = {
-    "m_name"                           : "ObjectMatch_AllObj_AntiKt4EMTopo",
+Dict_ObjectMatcher = {
+    "m_name"                           : "ObjectMatch",
     "m_msgLevel"                       : "info",
-    "m_inJetContainerName"             : "AntiKt4EMTopoJets_Calib_Select",
-    "m_inTrackPartContainerName"       : "InDetTrackParticles",               # --> use selected tracks
-    "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected vertices
+    "m_inJetContainerName"             : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
+    "m_inTrackPartContainerName"       : "InDetTrackParticles",                 # --> use selected tracks
+    "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",   # --> use selected vertices
     "m_inputAlgo"                      : "AntiKt4EMTopoJets_Calib_Select_Algo",
+    "m_jetSystsContainerIndex"         : 0,
+}
+
+
+# analysis selection
+Dict_EJsxAODAnalysis = {
+    "m_name"                   : "EJsAna",
+    "m_msgLevel"               : "info",
+    "m_inJetContainerName"     : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
+    "m_inJetBinName"           : "EMTopo PFlow",
+    "m_inputAlgo"              : "AntiKt4EMTopoJets_Calib_Select_Algo",
+    "m_outputAlgo"             : "AntiKt4EMTopoJets_Calib_Select_EJsxAODAna_Algo",
+    "m_jetSystsContainerIndex" : 0,
+    "m_signalTrigList"         : fourJetTriggers,
+    "m_validTrigList"          : singleJetTriggers,
+    #"m_ctrlTrigList"           : singleJetTriggers, # --> change ...
 }
     
 
 # tree output
 Dict_EJsMiniNtuple = {
-    "m_name"                         : "EJsMiniNtuple",
+    "m_name"                         : "EJsMiniNtup",
     "m_msgLevel"                     : "info",
     "m_evtDetailStr"                 : "pileup",
     "m_trigDetailStr"                : "basic passTriggers prescales",
     "m_jetDetailStr"                 : "kinematic rapidity energy truth trackAll JVT allTrack allTrackDetail constituent charge",
-    "m_jetContainerName"             : "AntiKt4EMTopoJets AntiKt4EMTopoJets_Calib_Select",
-    "m_jetBranchName"                : "jet jetCalibSelect",
+    "m_jetContainerName"             : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
+    "m_jetBranchName"                : "jet pflowJet",
     "m_jetSystsVec"                  : "AntiKt4EMTopoJets_Calib_Select_Algo",
+    "m_jetSystsContainerIndex"       : 0,
     "m_truthVertexDetailStr"         : "",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
@@ -181,16 +249,21 @@ Dict_EJsMiniNtuple = {
 ## --- algorithms to run --- ##
 
 # Basic Setup
-c.algorithm ( "BasicEventSelection", Dict_BasicEventSelection         )
+c.algorithm ( "BasicEventSelection", Dict_BasicEventSelection  )
 
 # Jet Calibration
-c.algorithm ( "JetCalibrator",       Dict_JetCalibrator_EMTopo        )
+c.algorithm ( "JetCalibrator",       Dict_JetCalibrator_EMTopo )
+c.algorithm ( "JetCalibrator",       Dict_JetCalibrator_PFlow  )
 
 # Jet Selection
-c.algorithm ( "JetSelector",         Dict_JetSelector_EMTopo          )
+c.algorithm ( "JetSelector",         Dict_JetSelector_EMTopo   )
+c.algorithm ( "JetSelector",         Dict_JetSelector_PFlow    )
 
 # Object Matching
-c.algorithm ( "ObjectMatcher",       Dict_ObjectMatcher_AllObj_EMTopo )
+c.algorithm ( "ObjectMatcher",       Dict_ObjectMatcher        )
+
+# EJs Analysis Selection
+c.algorithm ( "EJsxAODAnalysis",     Dict_EJsxAODAnalysis      )
 
 # EJs Ntuple
-c.algorithm ( "EJsMiniNtuple",       Dict_EJsMiniNtuple               )
+c.algorithm ( "EJsMiniNtuple",       Dict_EJsMiniNtuple        )

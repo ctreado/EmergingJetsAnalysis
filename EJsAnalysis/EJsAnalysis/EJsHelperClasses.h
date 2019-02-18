@@ -4,12 +4,14 @@
 /* EJsHelperClasses is a helper class derived from xAODAnaHelpers's HelperClasses class
    that defines EJs-specific info switches (namely for our new vertex container classes) */
 
+#include <string>
+
 #include <xAODAnaHelpers/HelperClasses.h>
 
 namespace EJsHelperClasses {
 
-  
-  class SecondaryVertexInfoSwitch : public HelperClasses::InfoSwitch {
+  class SecondaryVertexInfoSwitch : public HelperClasses::InfoSwitch
+  {
   public:
     bool m_tracks;
     bool m_jets;
@@ -17,20 +19,19 @@ namespace EJsHelperClasses {
     bool m_close;
     bool m_linked;
     
-    SecondaryVertexInfoSwitch ( const std::string configStr ) :
-    HelperClasses::InfoSwitch( configStr ) { initialize(); };
+    SecondaryVertexInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
     
   protected:
     void initialize();
   };
 
   
-  class TruthVertexInfoSwitch : public HelperClasses::InfoSwitch {
+  class TruthVertexInfoSwitch : public HelperClasses::InfoSwitch
+  {
   public:
     // nothing here yet ...
     
-    TruthVertexInfoSwitch ( const std::string configStr ) :
-    HelperClasses::InfoSwitch( configStr ) { initialize(); };
+    TruthVertexInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
 
   protected:
     void initialize();

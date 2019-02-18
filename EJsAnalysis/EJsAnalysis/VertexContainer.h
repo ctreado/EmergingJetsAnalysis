@@ -22,9 +22,7 @@ namespace EJs {
   class VertexContainer
   {
   public:
-    VertexContainer ( const std::string& name,
-		      const std::string& detailStr = "",
-		      float units = 1e3 )
+    VertexContainer ( const std::string& name, const std::string& detailStr = "", float units = 1e3 )
       : m_name       ( name ),
         m_infoSwitch ( detailStr ),
         m_units      ( units ),
@@ -33,9 +31,7 @@ namespace EJs {
       m_n = 0;
     }
 
-    
     virtual ~VertexContainer() {};
-
     
     virtual void setTree ( TTree* tree )
     {
@@ -43,21 +39,18 @@ namespace EJs {
       tree->SetBranchStatus  ( counterName.c_str(), 1 );
       tree->SetBranchAddress ( counterName.c_str(), &m_n );  
     }
-
-    
+  
     virtual void setBranches ( TTree* tree )
     {
       std::string counterName  = "n" + m_name;
       tree->Branch( counterName.c_str(), &m_n, (counterName+"/i").c_str() );
     }
-
-    
+ 
     virtual void clear ()
     {
       m_n = 0;
     }
-
-    
+   
     virtual void FillVertex ()
     {
       m_n++;
@@ -72,10 +65,8 @@ namespace EJs {
       std::string name  = m_name + "_" + varName;
       return name;
     }
-
     
-    template <typename T_BR> void connectBranch ( TTree* tree, const std::string& branch,
-						 std::vector<T_BR> **variable )
+    template <typename T_BR> void connectBranch ( TTree* tree, const std::string& branch, std::vector<T_BR> **variable )
     {
       std::string name = branchName( branch );  
       if ( *variable ) { delete (*variable); (*variable) = 0; }
@@ -86,18 +77,14 @@ namespace EJs {
       }
     }
 
-    
-    template <typename T> void setBranch ( TTree* tree, std::string varName,
-					   std::vector<T>* localVectorPtr )
+    template <typename T> void setBranch ( TTree* tree, std::string varName, std::vector<T>* localVectorPtr )
     {
       std::string name = branchName( varName );
       tree->Branch( name.c_str(), localVectorPtr );
     }
 
-    
     // safe*Fill, updateParticle ... may want to add later...
-
-    
+ 
     std::string m_name;
     // m_vertices ...
 
@@ -111,8 +98,7 @@ namespace EJs {
   };
 
   #define AUXDYN( obj, type, varname ) \
-  ( obj->isAvailable<type>(varname) ? obj->auxdataConst<type>(varname) : \
-    std::numeric_limits<type>::quiet_NaN() )
+  ( obj->isAvailable<type>(varname) ? obj->auxdataConst<type>(varname) : std::numeric_limits<type>::quiet_NaN() )
 
 } // EJs
 

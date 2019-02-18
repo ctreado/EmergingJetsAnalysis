@@ -55,6 +55,9 @@ class EJsMiniNtuple : public xAH::Algorithm
   // systematics being processed over
   std::string m_jetSystsVec = "";
 
+  // index of jet container to run systematics over
+  unsigned m_jetSystsContainerIndex = 0;
+
   // unit conversion from MeV; default is GeV
   float m_units = 1e3;
 
@@ -66,7 +69,6 @@ class EJsMiniNtuple : public xAH::Algorithm
  public:
   // TTree *myTree; //!
   // TH1 *myHist; //!
-
 
  protected:
   std::vector<std::string> m_jetDetails; //!
@@ -85,7 +87,6 @@ class EJsMiniNtuple : public xAH::Algorithm
 
 
  public:
-
   // standard constructor
   EJsMiniNtuple ();
 

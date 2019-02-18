@@ -4,6 +4,9 @@
 /* ObjectMatcher is the algorithm responsible for matching between 
    physics objects, including truth-matching */
 
+#include <string>
+#include <vector>
+
 #include <xAODJet/JetContainer.h>
 #include <xAODTracking/TrackParticleContainer.h>
 #include <xAODTracking/VertexContainer.h>
@@ -32,6 +35,9 @@ class ObjectMatcher : public xAH::Algorithm
   // input type (from xAOD or xAH/EJs alg output) -- vector of syst names to run over
   std::string m_inputAlgo = "";
 
+  // index of jet container to run systematics over
+  unsigned m_jetSystsContainerIndex = 0;
+
   // truth - jet dR-matching radius
   double m_jet_matchRadius = 0.1;
   // truth - vertex matching distance
@@ -43,14 +49,12 @@ class ObjectMatcher : public xAH::Algorithm
  public:
   // TTree *myTree; //!
   // TH1 *myHist; //!
-
-  
+ 
  protected:
   std::vector<std::string> m_inJetContainers; //!
 
-
- public:
   
+ public:
   // standard constructor
   ObjectMatcher ();
 
@@ -80,7 +84,6 @@ class ObjectMatcher : public xAH::Algorithm
   void matchLinkedTruthToSecVerts ( const xAOD::VertexContainer*, const xAOD::TruthVertexContainer* );
 
   // reco to truth vertex matching (see VsiPerf efficiency processor) ...
-
 
   // needed to distribute algorithm to workers
   ClassDef ( ObjectMatcher, 1 );

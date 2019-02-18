@@ -30,7 +30,6 @@ atlas_install_python_modules ( python/*.py )
 atlas_install_python_modules ( config/*py )
 atlas_install_scripts ( scripts/*.py )
 atlas_install_scripts ( scripts/*.sh )
-atlas_install_scripts ( util/*.py )
 atlas_install_data ( data/* )
 
 #set ( CMAKE_CXX_STANDARD 11 )
