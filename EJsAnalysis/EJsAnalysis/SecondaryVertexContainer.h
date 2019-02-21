@@ -78,6 +78,9 @@ namespace EJs {
     
     // tracks
     std::vector<std::vector<float>>* m_trk_qOverP;
+    std::vector<std::vector<float>>* m_trk_theta;
+    std::vector<std::vector<float>>* m_trk_vz;
+    std::vector<std::vector<float>>* m_trk_E;
     std::vector<std::vector<float>>* m_trk_pt;
     std::vector<std::vector<float>>* m_trk_eta;
     std::vector<std::vector<float>>* m_trk_phi;

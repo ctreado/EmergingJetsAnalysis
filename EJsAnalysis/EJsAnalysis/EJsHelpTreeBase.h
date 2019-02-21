@@ -96,6 +96,7 @@ class EJsHelpTreeBase : public HelpTreeBase
   std::vector<uint8_t>* m_trk_isAssociated;
   uint32_t m_trk_nSelected;
   uint32_t m_trk_nAssociated;
+  // --> do we want to add more info here (i.e. VSI track info) ???
 
 };
 

@@ -47,6 +47,9 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name,
   // tracks
   if ( m_infoSwitch.m_tracks ) {
     m_trk_qOverP = new std::vector<std::vector<float>>;
+    m_trk_theta  = new std::vector<std::vector<float>>;
+    m_trk_vz     = new std::vector<std::vector<float>>;
+    m_trk_E      = new std::vector<std::vector<float>>;
     m_trk_pt     = new std::vector<std::vector<float>>;
     m_trk_eta    = new std::vector<std::vector<float>>;
     m_trk_phi    = new std::vector<std::vector<float>>;
@@ -220,6 +223,9 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
   // tracks
   if ( m_infoSwitch.m_tracks ) {
     delete m_trk_qOverP;
+    delete m_trk_theta;
+    delete m_trk_vz;
+    delete m_trk_E;
     delete m_trk_pt;
     delete m_trk_eta;
     delete m_trk_phi;
@@ -394,6 +400,9 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
   // tracks
   if ( m_infoSwitch.m_tracks ) {
     connectBranch<std::vector<float>> ( tree, "trk_qOverP", &m_trk_qOverP );
+    connectBranch<std::vector<float>> ( tree, "trk_theta",  &m_trk_theta  );
+    connectBranch<std::vector<float>> ( tree, "trk_vz",     &m_trk_vz     );
+    connectBranch<std::vector<float>> ( tree, "trk_E",      &m_trk_E      );
     connectBranch<std::vector<float>> ( tree, "trk_pt",     &m_trk_pt     );
     connectBranch<std::vector<float>> ( tree, "trk_eta",    &m_trk_eta    );
     connectBranch<std::vector<float>> ( tree, "trk_phi",    &m_trk_phi    );
@@ -568,6 +577,9 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
   // tracks
   if ( m_infoSwitch.m_tracks ) {
     setBranch<std::vector<float>> ( tree, "trk_qOverP", m_trk_qOverP );
+    setBranch<std::vector<float>> ( tree, "trk_theta",  m_trk_theta  );
+    setBranch<std::vector<float>> ( tree, "trk_vz",     m_trk_vz     );
+    setBranch<std::vector<float>> ( tree, "trk_E",      m_trk_E      );
     setBranch<std::vector<float>> ( tree, "trk_pt",     m_trk_pt     );
     setBranch<std::vector<float>> ( tree, "trk_eta",    m_trk_eta    );
     setBranch<std::vector<float>> ( tree, "trk_phi",    m_trk_phi    );
@@ -739,6 +751,9 @@ void SecondaryVertexContainer :: clear ()
   // tracks
   if ( m_infoSwitch.m_tracks ) {
     m_trk_qOverP ->clear();
+    m_trk_theta  ->clear();
+    m_trk_vz     ->clear();
+    m_trk_E      ->clear();
     m_trk_pt     ->clear();
     m_trk_eta    ->clear();
     m_trk_phi    ->clear();
@@ -1015,6 +1030,9 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
   if ( m_debug ) Info( "SecondaryVertexContainer::recordTracks()", "filling vertex track branches" );
   
   std::vector<float> trk_qOverP;
+  std::vector<float> trk_theta;
+  std::vector<float> trk_vz;
+  std::vector<float> trk_E;
   std::vector<float> trk_pt;
   std::vector<float> trk_eta;
   std::vector<float> trk_phi;
@@ -1057,6 +1075,9 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
     if ( !trk ) continue;
 
     trk_qOverP .push_back( trk->qOverP()                           );
+    trk_theta  .push_back( trk->theta()                            );
+    trk_vz     .push_back( trk->vz()                               );
+    trk_E      .push_back( trk->e()  / m_units                     );
     trk_pt     .push_back( trk->pt() / m_units                     );
     trk_eta    .push_back( trk->eta()                              );
     trk_phi    .push_back( trk->phi()                              );
@@ -1130,6 +1151,9 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
   }
 
   m_trk_qOverP ->push_back( trk_qOverP );
+  m_trk_theta  ->push_back( trk_theta  );
+  m_trk_vz     ->push_back( trk_vz     );
+  m_trk_E      ->push_back( trk_E      );
   m_trk_pt     ->push_back( trk_pt     );
   m_trk_eta    ->push_back( trk_eta    );
   m_trk_phi    ->push_back( trk_phi    );

@@ -194,6 +194,8 @@ Dict_JetSelector_PFlow = {
 
 # track selector ...
 
+# truth particle selector ...
+
 # secondary vertex selector ...
 
 
@@ -235,11 +237,20 @@ Dict_EJsMiniNtuple = {
     "m_jetBranchName"                : "jet pflowJet",
     "m_jetSystsVec"                  : "AntiKt4EMTopoJets_Calib_Select_Algo",
     "m_jetSystsContainerIndex"       : 0,
+    "m_truthJetDetailStr"            : "kinematic rapidity constituent",
+    "m_truthJetContainerName"        : "AntiKt4TruthJets AntiKt4TruthDarkJets",
+    "m_truthJetBranchName"           : "truthJet truthDarkJet",
+    "m_truthPartDetailStr"           : "kinematic parents children",
+    "m_truthPartContainerName"       : "TruthParticles",                    # --> use selected truth particles
+    "m_truthPartBranchName"          : "truthPart",
+    "m_trackPartDetailStr"           : "kinematic numbers vertex",
+    "m_trackPartContainerName"       : "InDetTrackParticles",               # --> use selected tracks
+    "m_trackPartBranchName"          : "track",
     "m_truthVertexDetailStr"         : "",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
     "m_secondaryVertexDetailStr"     : "tracks truth",
-    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices",
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
     "m_secondaryVertexBranchName"    : "secVtx",
 }
 # --> "truth_details" in jet-detail-string causes issue when running over data ("nonexistent aux data item `::GhostPartons'") --> need to add "isMC" check in JetContainer --> leave out for now (probably don't need anyway, and can always add manually in EJsHelpTreeBase, if necessary --> consider contacting xAODAnaHelpers experts about issue, though (not sure if I can develop myself)
