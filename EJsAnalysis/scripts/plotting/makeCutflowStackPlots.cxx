@@ -14,20 +14,20 @@
 
 #include <iostream>
 
-void makeCutflowStackPlots ( TString hname  = "cutflow",   TString htitle = "",
-			     TString xtitle = "",   TString ytitle = "",
-			     TString type   = "mc", TString hext = "pdf" )
+void makeCutflowStackPlots ( TString hname  = "cutflow",   TString htitle = "MC16d cutflow",
+			     TString xtitle = "",          TString ytitle = "",
+			     TString htype  = "mc16d",     TString hext = "pdf" )
 {
   std::cout << "in makeCutflowStackPlots()" << std::endl;
-
+  
   // set path and file names
   // --> paths + root file names may change ...
   TString path = "$EJ_PATH/../run/"; // make sure $EJ_PATH set to local repo dir; 'export EJ_PATH=$(pwd)'
   TString hpath = "";
-  TString hdir  = path + "/tmp_plots/" + type + "/";
+  
   std::vector<TString> fname;
   std::vector<TString> lname;
-  if ( type == "mc" ) {
+  if ( htype.Contains("mc16d") ) {
     hpath = "local.MC16d/data-cutflow/";
     TString pre1 = "mc16_13TeV.3103";
     TString pre2 = ".Pythia8EvtGen_A14NNPDF23LO_EJ_Model";
@@ -54,7 +54,7 @@ void makeCutflowStackPlots ( TString hname  = "cutflow",   TString htitle = "",
     for ( size_t i = 0; i != lname.size(); ++i )
       fname.push_back( pre1 + dsid.at(i) + pre2 + lname.at(i) + suf );
   }
-  else if ( type == "data" ) {
+  else if ( htype.Contains("data") ) {
     hpath = "local.data/data-cutflow/";
     TString suf1 = ".physics_Main.deriv.DAOD_EXOT23.";
     TString suf2 = "_p3578_p3664.root";
@@ -68,7 +68,7 @@ void makeCutflowStackPlots ( TString hname  = "cutflow",   TString htitle = "",
 
   // set line attributes
   std::vector<Color_t> hcolor;
-  if ( type == "mc" ) {
+  if ( htype.Contains("mc16d") ) {
     hcolor.push_back( kRed       ); // Xdm-1400
     hcolor.push_back( kRed       );
     hcolor.push_back( kRed       );
@@ -79,7 +79,7 @@ void makeCutflowStackPlots ( TString hname  = "cutflow",   TString htitle = "",
     hcolor.push_back( kGreen + 1 );
     hcolor.push_back( kGreen + 1 );
   }
-  else if ( type == "data" ) {
+  else if ( htype.Contains("data") ) {
     hcolor.push_back( kRed       ); // data17
     hcolor.push_back( kBlue      ); // data16
     hcolor.push_back( kGreen + 1 ); // data15
@@ -201,6 +201,7 @@ void makeCutflowStackPlots ( TString hname  = "cutflow",   TString htitle = "",
   lumiText ->Draw( "same" );
 
   // save plot
+  TString hdir  = path + "/tmp_plots/cutflow_plots/" + htype + "/";
   TString hout = hdir + hname;
   c1->SaveAs( hout + "." + hext );
   if ( doLogy ) {

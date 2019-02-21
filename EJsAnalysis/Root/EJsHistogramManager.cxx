@@ -96,23 +96,23 @@ StatusCode EJsHistogramManager :: initialize ( const std::string secVtxDetailStr
   // ... see if we can parse detailStr (maybe with range of indices) to separate
   // info switches by corresponding object type
 
-  h_secVtx_n    = book( m_name, "secVtx_n",    "n secondary vertices",         10,     0,    10 );
-  h_secVtx_x    = book( m_name, "secVtx_x",    "secondary vertex x-pos [mm]",  100, -1000, 1000 );
-  h_secVtx_y    = book( m_name, "secVtx_y",    "secondary vertex y-pos [mm]",  100, -1000, 1000 );
-  h_secVtx_z    = book( m_name, "secVtx_z",    "secondary vertex z-pos [mm]",  100, -1500, 1500 );
-  h_secVtx_r    = book( m_name, "secVtx_r",    "secondary vertex r-pos [mm]",  100,     0, 1000 );
+  h_secVtx_n    = book( m_name, "secVtx_n",    "n secondary vertices",         15,      0,   15 );
+  h_secVtx_x    = book( m_name, "secVtx_x",    "secondary vertex x-pos [mm]",  100,  -500,  500 );
+  h_secVtx_y    = book( m_name, "secVtx_y",    "secondary vertex y-pos [mm]",  100,  -500,  500 );
+  h_secVtx_z    = book( m_name, "secVtx_z",    "secondary vertex z-pos [mm]",  100, -1000, 1000 );
+  h_secVtx_r    = book( m_name, "secVtx_r",    "secondary vertex r-pos [mm]",  100,     0,  500 );
   h_secVtx_pt   = book( m_name, "secVtx_pt",   "secondary vertex p_{T} [GeV]", 100,     0,  100 );
   h_secVtx_eta  = book( m_name, "secVtx_eta",  "secondary vertex eta",         100,    -5,    5 );
   h_secVtx_phi  = book( m_name, "secVtx_phi",  "secondary vertex phi",         100,  -3.5,  3.5 );
   h_secVtx_mass = book( m_name, "secVtx_mass", "secondary vertex mass [GeV]",  100,     0,   50 );
 
-  h_secVtx_ntrk       = book( m_name, "secVtx_ntrk",       "n secondary vertex tracks",            100, 0, 10 );
-  h_secVtx_ntrk_sel   = book( m_name, "secVtx_ntrk_sel",   "n secondary vertex selected tracks",   100, 0, 10 );
-  h_secVtx_ntrk_assoc = book( m_name, "secVtx_ntrk_assoc", "n secondary vertex associated tracks", 100, 0, 10 );
+  h_secVtx_ntrk       = book( m_name, "secVtx_ntrk",       "n secondary vertex tracks",            10, 2, 12 );
+  h_secVtx_ntrk_sel   = book( m_name, "secVtx_ntrk_sel",   "n secondary vertex selected tracks",   10, 2, 12 );
+  h_secVtx_ntrk_assoc = book( m_name, "secVtx_ntrk_assoc", "n secondary vertex associated tracks", 10, 2, 12 );
 
-  h_secVtx_r_vs_ntrk    = book( m_name, "secVtx_r_vs_ntrk",    "n secondary vertex tracks",   100, 0,   10,
-				                               "secondary vertex r-pos [mm]", 100, 0, 1000 );
-  h_secVtx_mass_vs_ntrk = book( m_name, "secVtx_mass_vs_ntrk", "n secondary vertex tracks",   100, 0,   10,
+  h_secVtx_r_vs_ntrk    = book( m_name, "secVtx_r_vs_ntrk",    "n secondary vertex tracks",    10, 2,   12,
+				                               "secondary vertex r-pos [mm]", 100, 0,  500 );
+  h_secVtx_mass_vs_ntrk = book( m_name, "secVtx_mass_vs_ntrk", "n secondary vertex tracks",    10, 2,   12,
 				                               "secondary vertex mass [GeV]", 100, 0,   50 );
   
   // delete info switch instances

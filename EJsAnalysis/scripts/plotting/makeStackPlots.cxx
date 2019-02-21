@@ -14,9 +14,11 @@
 
 #include <iostream>
 
-void makeStackPlots ( TString hname = "secVtx_n", TString htitle = "",
-		      TString xtitle = "",        TString ytitle = "",
-		      TString type = "mc",        TString hext   = "pdf" )
+void makeStackPlots ( TString  hname  = "secVtx_n", TString  htitle = "MC16d",
+		      TString  xtitle = "n DVs",    TString  ytitle = "events / bin",
+		      TString  htype  = "mc16d",    TString  hext   = "pdf",
+		      Bool_t   doLogy = true,       Bool_t   doNorm = true,
+		      Double_t xmin   = 1.0,        Double_t xmax   = -1.0 )
 {
   std::cout << "in makeStackPlots()" << std::endl;
 
@@ -24,10 +26,10 @@ void makeStackPlots ( TString hname = "secVtx_n", TString htitle = "",
   // --> paths + root file names may change ...
   TString path = "$EJ_PATH/../run/"; // make sure $EJ_PATH set to local repo dir: 'export EJ_PATH=$(pwd)'
   TString hpath = "";
-  TString hdir  = path + "/tmp_plots/" + type + "/";
   TString hfile = "/hist-data-tree.root";
+  
   std::vector<TString> fname;
-  if ( type == "mc" ) {
+  if ( htype.Contains("mc16d") ) {
     hpath = "hists.local.MC16d.EJ_Model";
     fname.push_back( "A_1400_20"  );
     fname.push_back( "B_1400_20"  );
@@ -39,7 +41,7 @@ void makeStackPlots ( TString hname = "secVtx_n", TString htitle = "",
     fname.push_back( "D_600_300"  );
     fname.push_back( "E_600_75"   );
   }
-  else if ( type == "data" ) {
+  else if ( htype.Contains("data") ) {
     hpath = "hists.local.data";
     fname.push_back( "17.00328333" );
     fname.push_back( "16.00302872" );
@@ -48,7 +50,7 @@ void makeStackPlots ( TString hname = "secVtx_n", TString htitle = "",
 
   // set line attributes
   std::vector<Color_t> hcolor;
-  if ( type == "mc" ) {
+  if ( htype.Contains("mc16d") ) {
     hcolor.push_back( kRed       ); // Xdm-1400
     hcolor.push_back( kRed       );
     hcolor.push_back( kRed       );
@@ -59,7 +61,7 @@ void makeStackPlots ( TString hname = "secVtx_n", TString htitle = "",
     hcolor.push_back( kGreen + 1 );
     hcolor.push_back( kGreen + 1 );
   }
-  else if ( type == "data" ) {
+  else if ( htype.Contains("data") ) {
     hcolor.push_back( kRed       ); // data17
     hcolor.push_back( kBlue      ); // data16
     hcolor.push_back( kGreen + 1 ); // data15
@@ -104,10 +106,6 @@ void makeStackPlots ( TString hname = "secVtx_n", TString htitle = "",
   lumiText ->SetTextSize( ttxt );
   atlText  ->SetNDC( kTRUE );
   lumiText ->SetNDC( kTRUE );
-  
-  // set booleans
-  Bool_t doLogy    = true;
-  Bool_t normalize = true;
 
   // set normalization
   Double_t norm_factor = 1.;
@@ -138,7 +136,7 @@ void makeStackPlots ( TString hname = "secVtx_n", TString htitle = "",
 
     // normalize histogram
     Double_t norm = norm_factor / h->Integral();
-    if ( normalize ) h->Scale( norm );
+    if ( doNorm ) h->Scale( norm );
 
     // set line attributes
     h->SetLineWidth( 2 );
@@ -169,7 +167,7 @@ void makeStackPlots ( TString hname = "secVtx_n", TString htitle = "",
   hs->GetYaxis()->SetTitle( ytitle );
   hs->GetXaxis()->SetTitleOffset( xoff );
   hs->GetYaxis()->SetTitleOffset( yoff );
-  //hs->GetXaxis()->SetRangeUser( xmin, xmax );
+  hs->GetXaxis()->SetRangeUser( xmin, xmax );
   gPad->SetTickx(1);
   gPad->SetTicky(1);
   gPad->RedrawAxis();
@@ -182,6 +180,7 @@ void makeStackPlots ( TString hname = "secVtx_n", TString htitle = "",
   lumiText ->Draw( "same" );
 
   // save plot
+  TString hdir  = path + "/tmp_plots/stack_plots/" + htype + "/";
   TString hout = hdir + hname;
   c1->SaveAs( hout + "." + hext );
   if ( doLogy ) {

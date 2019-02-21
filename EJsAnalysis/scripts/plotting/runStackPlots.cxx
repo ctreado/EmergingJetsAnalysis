@@ -6,13 +6,12 @@
 void runStackPlots()
 {
   std::vector<TString> ptype;
-  ptype.push_back( "mc"   );
-  ptype.push_back( "data" );
-
+  ptype.push_back( "mc16d" );
+  ptype.push_back( "data"  );
+  
   std::vector<TString> ptitle;
-  ptitle.push_back( "mc16d" );
+  ptitle.push_back( "MC16d" );
   ptitle.push_back( "data"  );
-
 
   for ( size_t i = 0; i != ptype.size(); ++i ) {
     makeStackPlots( "secVtx_n",    ptitle.at(i), "n DVs",         "events / bin", ptype.at(i) );
