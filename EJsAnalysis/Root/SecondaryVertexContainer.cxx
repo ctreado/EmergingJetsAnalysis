@@ -8,13 +8,12 @@
 
 using namespace EJs;
 
-SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name,
-						       const std::string& detailStr,
-						       float units ) :
+SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, const std::string& detailStr, float units ) :
   VertexContainer ( name, detailStr, units )
 {
-  if ( m_debug ) Info( "SecondaryVertexContainer()", "setting up" );
+  if ( m_debug ) Info( "EJs::SecondaryVertexContainer()", "setting up" );
 
+  m_ID            = new std::vector<int>;
   m_x             = new std::vector<float>;
   m_y             = new std::vector<float>;
   m_z             = new std::vector<float>;
@@ -46,6 +45,7 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name,
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
+    m_trk_ID     = new std::vector<std::vector<int>>;
     m_trk_qOverP = new std::vector<std::vector<float>>;
     m_trk_theta  = new std::vector<std::vector<float>>;
     m_trk_vz     = new std::vector<std::vector<float>>;
@@ -88,6 +88,8 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name,
     // do we want to require "truth" info switch too ??
     if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
       m_trk_truthMatchProb                  = new std::vector<std::vector<float>>;
+      m_trk_truthID                         = new std::vector<std::vector<int>>;
+      m_trk_truthBarcode                    = new std::vector<std::vector<int>>;
       m_trk_truthPid                        = new std::vector<std::vector<int>>;
       if ( m_infoSwitch.m_truth || m_infoSwitch.m_close )
 	m_trk_truthPointsToClosestTV        = new std::vector<std::vector<uint8_t>>;
@@ -102,23 +104,29 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name,
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_close ) {
     m_closestTruth_distance        = new std::vector<float>;    
     m_closestTruth_isDarkPionDecay = new std::vector<uint8_t>;
-      
-    m_closestTruth_x   = new std::vector<float>;
-    m_closestTruth_y   = new std::vector<float>;
-    m_closestTruth_z   = new std::vector<float>;
-    m_closestTruth_r   = new std::vector<float>;
-    m_closestTruth_eta = new std::vector<float>;
-    m_closestTruth_phi = new std::vector<float>;
+
+    m_closestTruth_ID      = new std::vector<int>;
+    m_closestTruth_barcode = new std::vector<int>;
+    m_closestTruth_x       = new std::vector<float>;
+    m_closestTruth_y       = new std::vector<float>;
+    m_closestTruth_z       = new std::vector<float>;
+    m_closestTruth_r       = new std::vector<float>;
+    m_closestTruth_eta     = new std::vector<float>;
+    m_closestTruth_phi     = new std::vector<float>;
 
     m_closestTruth_inE  = new std::vector<float>;
     m_closestTruth_outE = new std::vector<float>;
 
-    m_closestTruth_parent_pt     = new std::vector<float>;
-    m_closestTruth_parent_eta    = new std::vector<float>;
-    m_closestTruth_parent_phi    = new std::vector<float>;
-    m_closestTruth_parent_charge = new std::vector<float>;
-    m_closestTruth_parent_pid    = new std::vector<int>;
+    m_closestTruth_parent_ID      = new std::vector<int>;
+    m_closestTruth_parent_barcode = new std::vector<int>;
+    m_closestTruth_parent_pt      = new std::vector<float>;
+    m_closestTruth_parent_eta     = new std::vector<float>;
+    m_closestTruth_parent_phi     = new std::vector<float>;
+    m_closestTruth_parent_charge  = new std::vector<float>;
+    m_closestTruth_parent_pid     = new std::vector<int>;
 
+    m_closestTruth_outP_ID       = new std::vector<std::vector<int>>;
+    m_closestTruth_outP_barcode  = new std::vector<std::vector<int>>;
     m_closestTruth_outP_pt       = new std::vector<std::vector<float>>;
     m_closestTruth_outP_eta      = new std::vector<std::vector<float>>;
     m_closestTruth_outP_phi      = new std::vector<std::vector<float>>;
@@ -131,23 +139,29 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name,
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_linked ) {
     m_maxlinkTruth_score           = new std::vector<float>;  
     m_maxlinkTruth_isDarkPionDecay = new std::vector<uint8_t>;
-    
-    m_maxlinkTruth_x   = new std::vector<float>;
-    m_maxlinkTruth_y   = new std::vector<float>;
-    m_maxlinkTruth_z   = new std::vector<float>;
-    m_maxlinkTruth_r   = new std::vector<float>;
-    m_maxlinkTruth_eta = new std::vector<float>;
-    m_maxlinkTruth_phi = new std::vector<float>;
+
+    m_maxlinkTruth_ID      = new std::vector<int>;
+    m_maxlinkTruth_barcode = new std::vector<int>;
+    m_maxlinkTruth_x       = new std::vector<float>;
+    m_maxlinkTruth_y       = new std::vector<float>;
+    m_maxlinkTruth_z       = new std::vector<float>;
+    m_maxlinkTruth_r       = new std::vector<float>;
+    m_maxlinkTruth_eta     = new std::vector<float>;
+    m_maxlinkTruth_phi     = new std::vector<float>;
 
     m_maxlinkTruth_inE  = new std::vector<float>;
     m_maxlinkTruth_outE = new std::vector<float>;
 
-    m_maxlinkTruth_parent_pt     = new std::vector<float>;
-    m_maxlinkTruth_parent_eta    = new std::vector<float>;
-    m_maxlinkTruth_parent_phi    = new std::vector<float>;
-    m_maxlinkTruth_parent_charge = new std::vector<float>;
-    m_maxlinkTruth_parent_pid    = new std::vector<int>;
+    m_maxlinkTruth_parent_ID      = new std::vector<int>;
+    m_maxlinkTruth_parent_barcode = new std::vector<int>;
+    m_maxlinkTruth_parent_pt      = new std::vector<float>;
+    m_maxlinkTruth_parent_eta     = new std::vector<float>;
+    m_maxlinkTruth_parent_phi     = new std::vector<float>;
+    m_maxlinkTruth_parent_charge  = new std::vector<float>;
+    m_maxlinkTruth_parent_pid     = new std::vector<int>;
 
+    m_maxlinkTruth_outP_ID       = new std::vector<std::vector<int>>;
+    m_maxlinkTruth_outP_barcode  = new std::vector<std::vector<int>>;
     m_maxlinkTruth_outP_pt       = new std::vector<std::vector<float>>;
     m_maxlinkTruth_outP_eta      = new std::vector<std::vector<float>>;
     m_maxlinkTruth_outP_phi      = new std::vector<std::vector<float>>;
@@ -159,23 +173,29 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name,
 
     m_maxlinkParentTruth_score           = new std::vector<float>;    
     m_maxlinkParentTruth_isDarkPionDecay = new std::vector<uint8_t>;
-    
-    m_maxlinkParentTruth_x   = new std::vector<float>;
-    m_maxlinkParentTruth_y   = new std::vector<float>;
-    m_maxlinkParentTruth_z   = new std::vector<float>;
-    m_maxlinkParentTruth_r   = new std::vector<float>;
-    m_maxlinkParentTruth_eta = new std::vector<float>;
-    m_maxlinkParentTruth_phi = new std::vector<float>;
+
+    m_maxlinkParentTruth_ID      = new std::vector<int>;
+    m_maxlinkParentTruth_barcode = new std::vector<int>;
+    m_maxlinkParentTruth_x       = new std::vector<float>;
+    m_maxlinkParentTruth_y       = new std::vector<float>;
+    m_maxlinkParentTruth_z       = new std::vector<float>;
+    m_maxlinkParentTruth_r       = new std::vector<float>;
+    m_maxlinkParentTruth_eta     = new std::vector<float>;
+    m_maxlinkParentTruth_phi     = new std::vector<float>;
 
     m_maxlinkParentTruth_inE  = new std::vector<float>;
     m_maxlinkParentTruth_outE = new std::vector<float>;
 
-    m_maxlinkParentTruth_parent_pt     = new std::vector<float>;
-    m_maxlinkParentTruth_parent_eta    = new std::vector<float>;
-    m_maxlinkParentTruth_parent_phi    = new std::vector<float>;
-    m_maxlinkParentTruth_parent_charge = new std::vector<float>;
-    m_maxlinkParentTruth_parent_pid    = new std::vector<int>;
+    m_maxlinkParentTruth_parent_ID      = new std::vector<int>;
+    m_maxlinkParentTruth_parent_barcode = new std::vector<int>;
+    m_maxlinkParentTruth_parent_pt      = new std::vector<float>;
+    m_maxlinkParentTruth_parent_eta     = new std::vector<float>;
+    m_maxlinkParentTruth_parent_phi     = new std::vector<float>;
+    m_maxlinkParentTruth_parent_charge  = new std::vector<float>;
+    m_maxlinkParentTruth_parent_pid     = new std::vector<int>;
 
+    m_maxlinkParentTruth_outP_ID       = new std::vector<std::vector<int>>;
+    m_maxlinkParentTruth_outP_barcode  = new std::vector<std::vector<int>>;
     m_maxlinkParentTruth_outP_pt       = new std::vector<std::vector<float>>;
     m_maxlinkParentTruth_outP_eta      = new std::vector<std::vector<float>>;
     m_maxlinkParentTruth_outP_phi      = new std::vector<std::vector<float>>;
@@ -189,8 +209,9 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name,
 
 SecondaryVertexContainer :: ~SecondaryVertexContainer ()
 {
-  if ( m_debug ) Info( "SecondaryVertexContainer()", "deleting" );
+  if ( m_debug ) Info( "EJs::SecondaryVertexContainer()", "deleting" );
 
+  delete m_ID;
   delete m_x;
   delete m_y;
   delete m_z;
@@ -222,6 +243,7 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
+    delete m_trk_ID;
     delete m_trk_qOverP;
     delete m_trk_theta;
     delete m_trk_vz;
@@ -263,6 +285,8 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
 
     if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
       delete m_trk_truthMatchProb;
+      delete m_trk_truthID;
+      delete m_trk_truthBarcode;
       delete m_trk_truthPid;
       if ( m_infoSwitch.m_truth || m_infoSwitch.m_close )
 	delete m_trk_truthPointsToClosestTV;
@@ -277,7 +301,9 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_close ) {
     delete m_closestTruth_distance;
     delete m_closestTruth_isDarkPionDecay;
-    
+
+    delete m_closestTruth_ID;
+    delete m_closestTruth_barcode;
     delete m_closestTruth_x;
     delete m_closestTruth_y;
     delete m_closestTruth_z;
@@ -287,13 +313,17 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
 
     delete m_closestTruth_inE;
     delete m_closestTruth_outE;
-    
+
+    delete m_closestTruth_parent_ID;
+    delete m_closestTruth_parent_barcode;
     delete m_closestTruth_parent_pt;
     delete m_closestTruth_parent_eta;
     delete m_closestTruth_parent_phi;
     delete m_closestTruth_parent_charge;
     delete m_closestTruth_parent_pid;
-    
+
+    delete m_closestTruth_outP_ID;
+    delete m_closestTruth_outP_barcode;
     delete m_closestTruth_outP_pt;
     delete m_closestTruth_outP_eta;
     delete m_closestTruth_outP_phi;
@@ -306,7 +336,9 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_linked ) {
     delete m_maxlinkTruth_score;   
     delete m_maxlinkTruth_isDarkPionDecay;
-    
+
+    delete m_maxlinkTruth_ID;
+    delete m_maxlinkTruth_barcode;
     delete m_maxlinkTruth_x;
     delete m_maxlinkTruth_y;
     delete m_maxlinkTruth_z;
@@ -316,13 +348,17 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
 
     delete m_maxlinkTruth_inE;
     delete m_maxlinkTruth_outE;
-    
+
+    delete m_maxlinkTruth_parent_ID;
+    delete m_maxlinkTruth_parent_barcode;
     delete m_maxlinkTruth_parent_pt;
     delete m_maxlinkTruth_parent_eta;
     delete m_maxlinkTruth_parent_phi;
     delete m_maxlinkTruth_parent_charge;
     delete m_maxlinkTruth_parent_pid;
-    
+
+    delete m_maxlinkTruth_outP_ID;
+    delete m_maxlinkTruth_outP_barcode;
     delete m_maxlinkTruth_outP_pt;
     delete m_maxlinkTruth_outP_eta;
     delete m_maxlinkTruth_outP_phi;
@@ -334,7 +370,9 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
 
     delete m_maxlinkParentTruth_score;   
     delete m_maxlinkParentTruth_isDarkPionDecay;
-    
+
+    delete m_maxlinkParentTruth_ID;
+    delete m_maxlinkParentTruth_barcode;
     delete m_maxlinkParentTruth_x;
     delete m_maxlinkParentTruth_y;
     delete m_maxlinkParentTruth_z;
@@ -344,13 +382,17 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
 
     delete m_maxlinkParentTruth_inE;
     delete m_maxlinkParentTruth_outE;
-    
+
+    delete m_maxlinkParentTruth_parent_ID;
+    delete m_maxlinkParentTruth_parent_barcode;
     delete m_maxlinkParentTruth_parent_pt;
     delete m_maxlinkParentTruth_parent_eta;
     delete m_maxlinkParentTruth_parent_phi;
     delete m_maxlinkParentTruth_parent_charge;
     delete m_maxlinkParentTruth_parent_pid;
-    
+
+    delete m_maxlinkParentTruth_outP_ID;
+    delete m_maxlinkParentTruth_outP_barcode;
     delete m_maxlinkParentTruth_outP_pt;
     delete m_maxlinkParentTruth_outP_eta;
     delete m_maxlinkParentTruth_outP_phi;
@@ -364,10 +406,11 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
 
 void SecondaryVertexContainer :: setTree ( TTree* tree )
 {
-  if ( m_debug ) Info( "SecondaryVertexContainer::setTree()", "setting tree" );
+  if ( m_debug ) Info( "EJs::SecondaryVertexContainer::setTree()", "setting tree" );
   
   VertexContainer::setTree ( tree );
 
+  connectBranch<int>                ( tree, "ID",            &m_ID            );
   connectBranch<float>              ( tree, "x",             &m_x             );
   connectBranch<float>              ( tree, "y",             &m_y             );
   connectBranch<float>              ( tree, "z",             &m_z             );
@@ -399,6 +442,7 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
+    connectBranch<std::vector<int>>   ( tree, "trk_ID",     &m_trk_ID     );
     connectBranch<std::vector<float>> ( tree, "trk_qOverP", &m_trk_qOverP );
     connectBranch<std::vector<float>> ( tree, "trk_theta",  &m_trk_theta  );
     connectBranch<std::vector<float>> ( tree, "trk_vz",     &m_trk_vz     );
@@ -440,6 +484,8 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
 
     if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
       connectBranch<std::vector<float>>     ( tree, "trk_truthMatchProb",                &m_trk_truthMatchProb                );
+      connectBranch<std::vector<int>>       ( tree, "trk_truthID",                       &m_trk_truthID                       );
+      connectBranch<std::vector<int>>       ( tree, "trk_truthBarcode",                  &m_trk_truthBarcode                  );
       connectBranch<std::vector<int>>       ( tree, "trk_truthPid",                      &m_trk_truthPid                      );
       if ( m_infoSwitch.m_truth || m_infoSwitch.m_close )
 	connectBranch<std::vector<uint8_t>> ( tree, "trk_truthPointsToClosestTV",        &m_trk_truthPointsToClosestTV        );
@@ -454,23 +500,29 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_close ) {
     connectBranch<float>   ( tree, "closestTruth_distance",        &m_closestTruth_distance        );
     connectBranch<uint8_t> ( tree, "closestTruth_isDarkPionDecay", &m_closestTruth_isDarkPionDecay );
-      
-    connectBranch<float> ( tree, "closestTruth_x",   &m_closestTruth_x   );
-    connectBranch<float> ( tree, "closestTruth_y",   &m_closestTruth_y   );
-    connectBranch<float> ( tree, "closestTruth_z",   &m_closestTruth_z   );
-    connectBranch<float> ( tree, "closestTruth_r",   &m_closestTruth_r   );
-    connectBranch<float> ( tree, "closestTruth_eta", &m_closestTruth_eta );
-    connectBranch<float> ( tree, "closestTruth_phi", &m_closestTruth_phi );
+
+    connectBranch<int>   ( tree, "closestTruth_ID",      &m_closestTruth_ID      );
+    connectBranch<int>   ( tree, "closestTruth_barcode", &m_closestTruth_barcode );
+    connectBranch<float> ( tree, "closestTruth_x",       &m_closestTruth_x       );
+    connectBranch<float> ( tree, "closestTruth_y",       &m_closestTruth_y       );
+    connectBranch<float> ( tree, "closestTruth_z",       &m_closestTruth_z       );
+    connectBranch<float> ( tree, "closestTruth_r",       &m_closestTruth_r       );
+    connectBranch<float> ( tree, "closestTruth_eta",     &m_closestTruth_eta     );
+    connectBranch<float> ( tree, "closestTruth_phi",     &m_closestTruth_phi     );
 
     connectBranch<float> ( tree, "closestTruth_inE",  &m_closestTruth_inE  );
     connectBranch<float> ( tree, "closestTruth_outE", &m_closestTruth_outE );
 
-    connectBranch<float> ( tree, "closestTruth_parent_pt",     &m_closestTruth_parent_pt     );
-    connectBranch<float> ( tree, "closestTruth_parent_eta",    &m_closestTruth_parent_eta    );
-    connectBranch<float> ( tree, "closestTruth_parent_phi",    &m_closestTruth_parent_phi    );
-    connectBranch<float> ( tree, "closestTruth_parent_charge", &m_closestTruth_parent_charge );
-    connectBranch<int>   ( tree, "closestTruth_parent_pid",    &m_closestTruth_parent_pid    );
+    connectBranch<int>   ( tree, "closestTruth_parent_ID",      &m_closestTruth_parent_ID      );
+    connectBranch<int>   ( tree, "closestTruth_parent_barcode", &m_closestTruth_parent_barcode );
+    connectBranch<float> ( tree, "closestTruth_parent_pt",      &m_closestTruth_parent_pt      );
+    connectBranch<float> ( tree, "closestTruth_parent_eta",     &m_closestTruth_parent_eta     );
+    connectBranch<float> ( tree, "closestTruth_parent_phi",     &m_closestTruth_parent_phi     );
+    connectBranch<float> ( tree, "closestTruth_parent_charge",  &m_closestTruth_parent_charge  );
+    connectBranch<int>   ( tree, "closestTruth_parent_pid",     &m_closestTruth_parent_pid     );
 
+    connectBranch<std::vector<int>>     ( tree, "closestTruth_outP_ID",       &m_closestTruth_outP_ID       );
+    connectBranch<std::vector<int>>     ( tree, "closestTruth_outP_barcode",  &m_closestTruth_outP_barcode  );
     connectBranch<std::vector<float>>   ( tree, "closestTruth_outP_pt",       &m_closestTruth_outP_pt       );
     connectBranch<std::vector<float>>   ( tree, "closestTruth_outP_eta",      &m_closestTruth_outP_eta      );
     connectBranch<std::vector<float>>   ( tree, "closestTruth_outP_phi",      &m_closestTruth_outP_phi      );
@@ -483,23 +535,29 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_linked ) {
     connectBranch<float>   ( tree, "maxlinkTruth_score",           &m_maxlinkTruth_score           ); 
     connectBranch<uint8_t> ( tree, "maxlinkTruth_isDarkPionDecay", &m_maxlinkTruth_isDarkPionDecay );
-    
-    connectBranch<float> ( tree, "maxlinkTruth_x",   &m_maxlinkTruth_x   );
-    connectBranch<float> ( tree, "maxlinkTruth_y",   &m_maxlinkTruth_y   );
-    connectBranch<float> ( tree, "maxlinkTruth_z",   &m_maxlinkTruth_z   );
-    connectBranch<float> ( tree, "maxlinkTruth_r",   &m_maxlinkTruth_r   );
-    connectBranch<float> ( tree, "maxlinkTruth_eta", &m_maxlinkTruth_eta );
-    connectBranch<float> ( tree, "maxlinkTruth_phi", &m_maxlinkTruth_phi );
+
+    connectBranch<int>   ( tree, "maxlinkTruth_ID",      &m_maxlinkTruth_ID      );
+    connectBranch<int>   ( tree, "maxlinkTruth_barcode", &m_maxlinkTruth_barcode );
+    connectBranch<float> ( tree, "maxlinkTruth_x",       &m_maxlinkTruth_x       );
+    connectBranch<float> ( tree, "maxlinkTruth_y",       &m_maxlinkTruth_y       );
+    connectBranch<float> ( tree, "maxlinkTruth_z",       &m_maxlinkTruth_z       );
+    connectBranch<float> ( tree, "maxlinkTruth_r",       &m_maxlinkTruth_r       );
+    connectBranch<float> ( tree, "maxlinkTruth_eta",     &m_maxlinkTruth_eta     );
+    connectBranch<float> ( tree, "maxlinkTruth_phi",     &m_maxlinkTruth_phi     );
 
     connectBranch<float> ( tree, "maxlinkTruth_inE",  &m_maxlinkTruth_inE  );
     connectBranch<float> ( tree, "maxlinkTruth_outE", &m_maxlinkTruth_outE );
 
-    connectBranch<float> ( tree, "maxlinkTruth_parent_pt",     &m_maxlinkTruth_parent_pt     );
-    connectBranch<float> ( tree, "maxlinkTruth_parent_eta",    &m_maxlinkTruth_parent_eta    );
-    connectBranch<float> ( tree, "maxlinkTruth_parent_phi",    &m_maxlinkTruth_parent_phi    );
-    connectBranch<float> ( tree, "maxlinkTruth_parent_charge", &m_maxlinkTruth_parent_charge );
-    connectBranch<int>   ( tree, "maxlinkTruth_parent_pid",    &m_maxlinkTruth_parent_pid    );
+    connectBranch<int>   ( tree, "maxlinkTruth_parent_ID",      &m_maxlinkTruth_parent_ID      );
+    connectBranch<int>   ( tree, "maxlinkTruth_parent_barcode", &m_maxlinkTruth_parent_barcode );
+    connectBranch<float> ( tree, "maxlinkTruth_parent_pt",      &m_maxlinkTruth_parent_pt      );
+    connectBranch<float> ( tree, "maxlinkTruth_parent_eta",     &m_maxlinkTruth_parent_eta     );
+    connectBranch<float> ( tree, "maxlinkTruth_parent_phi",     &m_maxlinkTruth_parent_phi     );
+    connectBranch<float> ( tree, "maxlinkTruth_parent_charge",  &m_maxlinkTruth_parent_charge  );
+    connectBranch<int>   ( tree, "maxlinkTruth_parent_pid",     &m_maxlinkTruth_parent_pid     );
 
+    connectBranch<std::vector<int>>     ( tree, "maxlinkTruth_outP_ID",       &m_maxlinkTruth_outP_ID       );
+    connectBranch<std::vector<int>>     ( tree, "maxlinkTruth_outP_barcode",  &m_maxlinkTruth_outP_barcode  );
     connectBranch<std::vector<float>>   ( tree, "maxlinkTruth_outP_pt",       &m_maxlinkTruth_outP_pt       );
     connectBranch<std::vector<float>>   ( tree, "maxlinkTruth_outP_eta",      &m_maxlinkTruth_outP_eta      );
     connectBranch<std::vector<float>>   ( tree, "maxlinkTruth_outP_phi",      &m_maxlinkTruth_outP_phi      );
@@ -512,22 +570,28 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
     connectBranch<float>   ( tree, "maxlinkParentTruth_score",           &m_maxlinkParentTruth_score           );   
     connectBranch<uint8_t> ( tree, "maxlinkParentTruth_isDarkPionDecay", &m_maxlinkParentTruth_isDarkPionDecay );
 
-    connectBranch<float> ( tree, "maxlinkParentTruth_x",   &m_maxlinkParentTruth_x   );
-    connectBranch<float> ( tree, "maxlinkParentTruth_y",   &m_maxlinkParentTruth_y   );
-    connectBranch<float> ( tree, "maxlinkParentTruth_z",   &m_maxlinkParentTruth_z   );
-    connectBranch<float> ( tree, "maxlinkParentTruth_r",   &m_maxlinkParentTruth_r   );
-    connectBranch<float> ( tree, "maxlinkParentTruth_eta", &m_maxlinkParentTruth_eta );
-    connectBranch<float> ( tree, "maxlinkParentTruth_phi", &m_maxlinkParentTruth_phi );
+    connectBranch<int>   ( tree, "maxlinkParentTruth_ID",      &m_maxlinkParentTruth_ID      );
+    connectBranch<int>   ( tree, "maxlinkParentTruth_barcode", &m_maxlinkParentTruth_barcode );
+    connectBranch<float> ( tree, "maxlinkParentTruth_x",       &m_maxlinkParentTruth_x       );
+    connectBranch<float> ( tree, "maxlinkParentTruth_y",       &m_maxlinkParentTruth_y       );
+    connectBranch<float> ( tree, "maxlinkParentTruth_z",       &m_maxlinkParentTruth_z       );
+    connectBranch<float> ( tree, "maxlinkParentTruth_r",       &m_maxlinkParentTruth_r       );
+    connectBranch<float> ( tree, "maxlinkParentTruth_eta",     &m_maxlinkParentTruth_eta     );
+    connectBranch<float> ( tree, "maxlinkParentTruth_phi",     &m_maxlinkParentTruth_phi     );
 
     connectBranch<float> ( tree, "maxlinkParentTruth_inE",  &m_maxlinkParentTruth_inE  );
     connectBranch<float> ( tree, "maxlinkParentTruth_outE", &m_maxlinkParentTruth_outE );
 
-    connectBranch<float> ( tree, "maxlinkParentTruth_parent_pt",     &m_maxlinkParentTruth_parent_pt     );
-    connectBranch<float> ( tree, "maxlinkParentTruth_parent_eta",    &m_maxlinkParentTruth_parent_eta    );
-    connectBranch<float> ( tree, "maxlinkParentTruth_parent_phi",    &m_maxlinkParentTruth_parent_phi    );
-    connectBranch<float> ( tree, "maxlinkParentTruth_parent_charge", &m_maxlinkParentTruth_parent_charge );
-    connectBranch<int>   ( tree, "maxlinkParentTruth_parent_pid",    &m_maxlinkParentTruth_parent_pid    );
+    connectBranch<int>   ( tree, "maxlinkParentTruth_parent_ID",      &m_maxlinkParentTruth_parent_ID      );
+    connectBranch<int>   ( tree, "maxlinkParentTruth_parent_barcode", &m_maxlinkParentTruth_parent_barcode );
+    connectBranch<float> ( tree, "maxlinkParentTruth_parent_pt",      &m_maxlinkParentTruth_parent_pt      );
+    connectBranch<float> ( tree, "maxlinkParentTruth_parent_eta",     &m_maxlinkParentTruth_parent_eta     );
+    connectBranch<float> ( tree, "maxlinkParentTruth_parent_phi",     &m_maxlinkParentTruth_parent_phi     );
+    connectBranch<float> ( tree, "maxlinkParentTruth_parent_charge",  &m_maxlinkParentTruth_parent_charge  );
+    connectBranch<int>   ( tree, "maxlinkParentTruth_parent_pid",     &m_maxlinkParentTruth_parent_pid     );
 
+    connectBranch<std::vector<int>>     ( tree, "maxlinkParentTruth_outP_ID",       &m_maxlinkParentTruth_outP_ID       );
+    connectBranch<std::vector<int>>     ( tree, "maxlinkParentTruth_outP_barcode",  &m_maxlinkParentTruth_outP_barcode  );
     connectBranch<std::vector<float>>   ( tree, "maxlinkParentTruth_outP_pt",       &m_maxlinkParentTruth_outP_pt       );
     connectBranch<std::vector<float>>   ( tree, "maxlinkParentTruth_outP_eta",      &m_maxlinkParentTruth_outP_eta      );
     connectBranch<std::vector<float>>   ( tree, "maxlinkParentTruth_outP_phi",      &m_maxlinkParentTruth_outP_phi      );
@@ -541,10 +605,11 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
 
 void SecondaryVertexContainer :: setBranches ( TTree* tree )
 {
-  if ( m_debug ) Info( "SecondaryVertexContainer::setBranches()", "setting branches" );
+  if ( m_debug ) Info( "EJs::SecondaryVertexContainer::setBranches()", "setting branches" );
   
   VertexContainer::setBranches ( tree );
 
+  setBranch<int>                ( tree, "ID",            m_ID            );
   setBranch<float>              ( tree, "x",             m_x             );
   setBranch<float>              ( tree, "y",             m_y             );
   setBranch<float>              ( tree, "z",             m_z             );
@@ -576,6 +641,7 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
+    setBranch<std::vector<int>>   ( tree, "trk_ID",     m_trk_ID     );
     setBranch<std::vector<float>> ( tree, "trk_qOverP", m_trk_qOverP );
     setBranch<std::vector<float>> ( tree, "trk_theta",  m_trk_theta  );
     setBranch<std::vector<float>> ( tree, "trk_vz",     m_trk_vz     );
@@ -614,6 +680,8 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
 
     if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
       setBranch<std::vector<float>>     ( tree, "trk_truthMatchProb",                m_trk_truthMatchProb                );
+      setBranch<std::vector<int>>       ( tree, "trk_truthID",                       m_trk_truthID                       );
+      setBranch<std::vector<int>>       ( tree, "trk_truthBarcode",                  m_trk_truthBarcode                  );
       setBranch<std::vector<int>>       ( tree, "trk_truthPid",                      m_trk_truthPid                      );
       if ( m_infoSwitch.m_truth || m_infoSwitch.m_close )
 	setBranch<std::vector<uint8_t>> ( tree, "trk_truthPointsToClosestTV",        m_trk_truthPointsToClosestTV        );
@@ -628,23 +696,29 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_close ) {
     setBranch<float>   ( tree, "closestTruth_distance",        m_closestTruth_distance        ); 
     setBranch<uint8_t> ( tree, "closestTruth_isDarkPionDecay", m_closestTruth_isDarkPionDecay );
-      
-    setBranch<float> ( tree, "closestTruth_x",   m_closestTruth_x   );
-    setBranch<float> ( tree, "closestTruth_y",   m_closestTruth_y   );
-    setBranch<float> ( tree, "closestTruth_z",   m_closestTruth_z   );
-    setBranch<float> ( tree, "closestTruth_r",   m_closestTruth_r   );
-    setBranch<float> ( tree, "closestTruth_eta", m_closestTruth_eta );
-    setBranch<float> ( tree, "closestTruth_phi", m_closestTruth_phi );
+
+    setBranch<int>   ( tree, "closestTruth_ID",      m_closestTruth_ID      );
+    setBranch<int>   ( tree, "closestTruth_barcode", m_closestTruth_barcode );
+    setBranch<float> ( tree, "closestTruth_x",       m_closestTruth_x       );
+    setBranch<float> ( tree, "closestTruth_y",       m_closestTruth_y       );
+    setBranch<float> ( tree, "closestTruth_z",       m_closestTruth_z       );
+    setBranch<float> ( tree, "closestTruth_r",       m_closestTruth_r       );
+    setBranch<float> ( tree, "closestTruth_eta",     m_closestTruth_eta     );
+    setBranch<float> ( tree, "closestTruth_phi",     m_closestTruth_phi     );
 
     setBranch<float> ( tree, "closestTruth_inE",  m_closestTruth_inE  );
     setBranch<float> ( tree, "closestTruth_outE", m_closestTruth_outE );
 
-    setBranch<float> ( tree, "closestTruth_parent_pt",     m_closestTruth_parent_pt     );
-    setBranch<float> ( tree, "closestTruth_parent_eta",    m_closestTruth_parent_eta    );
-    setBranch<float> ( tree, "closestTruth_parent_phi",    m_closestTruth_parent_phi    );
-    setBranch<float> ( tree, "closestTruth_parent_charge", m_closestTruth_parent_charge );
-    setBranch<int>   ( tree, "closestTruth_parent_pid",    m_closestTruth_parent_pid    );
+    setBranch<int>   ( tree, "closestTruth_parent_ID",      m_closestTruth_parent_ID      );
+    setBranch<int>   ( tree, "closestTruth_parent_barcode", m_closestTruth_parent_barcode );
+    setBranch<float> ( tree, "closestTruth_parent_pt",      m_closestTruth_parent_pt      );
+    setBranch<float> ( tree, "closestTruth_parent_eta",     m_closestTruth_parent_eta     );
+    setBranch<float> ( tree, "closestTruth_parent_phi",     m_closestTruth_parent_phi     );
+    setBranch<float> ( tree, "closestTruth_parent_charge",  m_closestTruth_parent_charge  );
+    setBranch<int>   ( tree, "closestTruth_parent_pid",     m_closestTruth_parent_pid     );
 
+    setBranch<std::vector<int>>     ( tree, "closestTruth_outP_ID",       m_closestTruth_outP_ID       );
+    setBranch<std::vector<int>>     ( tree, "closestTruth_outP_barcode",  m_closestTruth_outP_barcode  );
     setBranch<std::vector<float>>   ( tree, "closestTruth_outP_pt",       m_closestTruth_outP_pt       );
     setBranch<std::vector<float>>   ( tree, "closestTruth_outP_eta",      m_closestTruth_outP_eta      );
     setBranch<std::vector<float>>   ( tree, "closestTruth_outP_phi",      m_closestTruth_outP_phi      );
@@ -657,23 +731,29 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_linked ) {
     setBranch<float>   ( tree, "maxlinkTruth_score",           m_maxlinkTruth_score           );
     setBranch<uint8_t> ( tree, "maxlinkTruth_isDarkPionDecay", m_maxlinkTruth_isDarkPionDecay );
-    
-    setBranch<float> ( tree, "maxlinkTruth_x",   m_maxlinkTruth_x   );
-    setBranch<float> ( tree, "maxlinkTruth_y",   m_maxlinkTruth_y   );
-    setBranch<float> ( tree, "maxlinkTruth_z",   m_maxlinkTruth_z   );
-    setBranch<float> ( tree, "maxlinkTruth_r",   m_maxlinkTruth_r   );
-    setBranch<float> ( tree, "maxlinkTruth_eta", m_maxlinkTruth_eta );
-    setBranch<float> ( tree, "maxlinkTruth_phi", m_maxlinkTruth_phi );
+
+    setBranch<int>   ( tree, "maxlinkTruth_ID",      m_maxlinkTruth_ID      );
+    setBranch<int>   ( tree, "maxlinkTruth_barcode", m_maxlinkTruth_barcode );
+    setBranch<float> ( tree, "maxlinkTruth_x",       m_maxlinkTruth_x       );
+    setBranch<float> ( tree, "maxlinkTruth_y",       m_maxlinkTruth_y       );
+    setBranch<float> ( tree, "maxlinkTruth_z",       m_maxlinkTruth_z       );
+    setBranch<float> ( tree, "maxlinkTruth_r",       m_maxlinkTruth_r       );
+    setBranch<float> ( tree, "maxlinkTruth_eta",     m_maxlinkTruth_eta     );
+    setBranch<float> ( tree, "maxlinkTruth_phi",     m_maxlinkTruth_phi     );
 
     setBranch<float> ( tree, "maxlinkTruth_inE",  m_maxlinkTruth_inE  );
     setBranch<float> ( tree, "maxlinkTruth_outE", m_maxlinkTruth_outE );
 
-    setBranch<float> ( tree, "maxlinkTruth_parent_pt",     m_maxlinkTruth_parent_pt     );
-    setBranch<float> ( tree, "maxlinkTruth_parent_eta",    m_maxlinkTruth_parent_eta    );
-    setBranch<float> ( tree, "maxlinkTruth_parent_phi",    m_maxlinkTruth_parent_phi    );
-    setBranch<float> ( tree, "maxlinkTruth_parent_charge", m_maxlinkTruth_parent_charge );
-    setBranch<int>   ( tree, "maxlinkTruth_parent_pid",    m_maxlinkTruth_parent_pid    );
+    setBranch<int>   ( tree, "maxlinkTruth_parent_ID",      m_maxlinkTruth_parent_ID      );
+    setBranch<int>   ( tree, "maxlinkTruth_parent_barcode", m_maxlinkTruth_parent_barcode );
+    setBranch<float> ( tree, "maxlinkTruth_parent_pt",      m_maxlinkTruth_parent_pt      );
+    setBranch<float> ( tree, "maxlinkTruth_parent_eta",     m_maxlinkTruth_parent_eta     );
+    setBranch<float> ( tree, "maxlinkTruth_parent_phi",     m_maxlinkTruth_parent_phi     );
+    setBranch<float> ( tree, "maxlinkTruth_parent_charge",  m_maxlinkTruth_parent_charge  );
+    setBranch<int>   ( tree, "maxlinkTruth_parent_pid",     m_maxlinkTruth_parent_pid     );
 
+    setBranch<std::vector<int>>     ( tree, "maxlinkTruth_outP_ID",       m_maxlinkTruth_outP_ID       );
+    setBranch<std::vector<int>>     ( tree, "maxlinkTruth_outP_barcode",  m_maxlinkTruth_outP_barcode  );
     setBranch<std::vector<float>>   ( tree, "maxlinkTruth_outP_pt",       m_maxlinkTruth_outP_pt       );
     setBranch<std::vector<float>>   ( tree, "maxlinkTruth_outP_eta",      m_maxlinkTruth_outP_eta      );
     setBranch<std::vector<float>>   ( tree, "maxlinkTruth_outP_phi",      m_maxlinkTruth_outP_phi      );
@@ -685,23 +765,29 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
 
     setBranch<float>   ( tree, "maxlinkParentTruth_score",           m_maxlinkParentTruth_score           );
     setBranch<uint8_t> ( tree, "maxlinkParentTruth_isDarkPionDecay", m_maxlinkParentTruth_isDarkPionDecay );
-    
-    setBranch<float> ( tree, "maxlinkParentTruth_x",   m_maxlinkParentTruth_x   );
-    setBranch<float> ( tree, "maxlinkParentTruth_y",   m_maxlinkParentTruth_y   );
-    setBranch<float> ( tree, "maxlinkParentTruth_z",   m_maxlinkParentTruth_z   );
-    setBranch<float> ( tree, "maxlinkParentTruth_r",   m_maxlinkParentTruth_r   );
-    setBranch<float> ( tree, "maxlinkParentTruth_eta", m_maxlinkParentTruth_eta );
-    setBranch<float> ( tree, "maxlinkParentTruth_phi", m_maxlinkParentTruth_phi );
+
+    setBranch<int>   ( tree, "maxlinkParentTruth_ID",      m_maxlinkParentTruth_ID      );
+    setBranch<int>   ( tree, "maxlinkParentTruth_barcode", m_maxlinkParentTruth_barcode );
+    setBranch<float> ( tree, "maxlinkParentTruth_x",       m_maxlinkParentTruth_x       );
+    setBranch<float> ( tree, "maxlinkParentTruth_y",       m_maxlinkParentTruth_y       );
+    setBranch<float> ( tree, "maxlinkParentTruth_z",       m_maxlinkParentTruth_z       );
+    setBranch<float> ( tree, "maxlinkParentTruth_r",       m_maxlinkParentTruth_r       );
+    setBranch<float> ( tree, "maxlinkParentTruth_eta",     m_maxlinkParentTruth_eta     );
+    setBranch<float> ( tree, "maxlinkParentTruth_phi",     m_maxlinkParentTruth_phi     );
 
     setBranch<float> ( tree, "maxlinkParentTruth_inE",  m_maxlinkParentTruth_inE  );
     setBranch<float> ( tree, "maxlinkParentTruth_outE", m_maxlinkParentTruth_outE );
 
-    setBranch<float> ( tree, "maxlinkParentTruth_parent_pt",     m_maxlinkParentTruth_parent_pt     );
-    setBranch<float> ( tree, "maxlinkParentTruth_parent_eta",    m_maxlinkParentTruth_parent_eta    );
-    setBranch<float> ( tree, "maxlinkParentTruth_parent_phi",    m_maxlinkParentTruth_parent_phi    );
-    setBranch<float> ( tree, "maxlinkParentTruth_parent_charge", m_maxlinkParentTruth_parent_charge );
-    setBranch<int>   ( tree, "maxlinkParentTruth_parent_pid",    m_maxlinkParentTruth_parent_pid    );
+    setBranch<int>   ( tree, "maxlinkParentTruth_parent_ID",      m_maxlinkParentTruth_parent_ID      );
+    setBranch<int>   ( tree, "maxlinkParentTruth_parent_barcode", m_maxlinkParentTruth_parent_barcode );
+    setBranch<float> ( tree, "maxlinkParentTruth_parent_pt",      m_maxlinkParentTruth_parent_pt      );
+    setBranch<float> ( tree, "maxlinkParentTruth_parent_eta",     m_maxlinkParentTruth_parent_eta     );
+    setBranch<float> ( tree, "maxlinkParentTruth_parent_phi",     m_maxlinkParentTruth_parent_phi     );
+    setBranch<float> ( tree, "maxlinkParentTruth_parent_charge",  m_maxlinkParentTruth_parent_charge  );
+    setBranch<int>   ( tree, "maxlinkParentTruth_parent_pid",     m_maxlinkParentTruth_parent_pid     );
 
+    setBranch<std::vector<int>>     ( tree, "maxlinkParentTruth_outP_ID",       m_maxlinkParentTruth_outP_ID       );
+    setBranch<std::vector<int>>     ( tree, "maxlinkParentTruth_outP_barcode",  m_maxlinkParentTruth_outP_barcode  );
     setBranch<std::vector<float>>   ( tree, "maxlinkParentTruth_outP_pt",       m_maxlinkParentTruth_outP_pt       );
     setBranch<std::vector<float>>   ( tree, "maxlinkParentTruth_outP_eta",      m_maxlinkParentTruth_outP_eta      );
     setBranch<std::vector<float>>   ( tree, "maxlinkParentTruth_outP_phi",      m_maxlinkParentTruth_outP_phi      );
@@ -715,10 +801,11 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
 
 void SecondaryVertexContainer :: clear ()
 {
-  if ( m_debug ) Info( "SecondaryVertexContainer::clear()", "clearing branches" );
+  if ( m_debug ) Info( "EJs::SecondaryVertexContainer::clear()", "clearing branches" );
   
   VertexContainer::clear ();
 
+  m_ID            ->clear();
   m_x             ->clear();
   m_y             ->clear();
   m_z             ->clear();
@@ -750,6 +837,7 @@ void SecondaryVertexContainer :: clear ()
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
+    m_trk_ID     ->clear();
     m_trk_qOverP ->clear();
     m_trk_theta  ->clear();
     m_trk_vz     ->clear();
@@ -791,6 +879,8 @@ void SecondaryVertexContainer :: clear ()
 
     if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
       m_trk_truthMatchProb                  ->clear();
+      m_trk_truthID                         ->clear();
+      m_trk_truthBarcode                    ->clear();
       m_trk_truthPid                        ->clear();
       if ( m_infoSwitch.m_truth || m_infoSwitch.m_close )
 	m_trk_truthPointsToClosestTV        ->clear();
@@ -805,23 +895,29 @@ void SecondaryVertexContainer :: clear ()
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_close ) {
     m_closestTruth_distance        ->clear();  
     m_closestTruth_isDarkPionDecay ->clear();
-      
-    m_closestTruth_x   ->clear();
-    m_closestTruth_y   ->clear();
-    m_closestTruth_z   ->clear();
-    m_closestTruth_r   ->clear();
-    m_closestTruth_eta ->clear();
-    m_closestTruth_phi ->clear();
+
+    m_closestTruth_ID      ->clear();
+    m_closestTruth_barcode ->clear();
+    m_closestTruth_x       ->clear();
+    m_closestTruth_y       ->clear();
+    m_closestTruth_z       ->clear();
+    m_closestTruth_r       ->clear();
+    m_closestTruth_eta     ->clear();
+    m_closestTruth_phi     ->clear();
 
     m_closestTruth_inE  ->clear();
     m_closestTruth_outE ->clear();
 
-    m_closestTruth_parent_pt     ->clear();
-    m_closestTruth_parent_eta    ->clear();
-    m_closestTruth_parent_phi    ->clear();
-    m_closestTruth_parent_charge ->clear();
-    m_closestTruth_parent_pid    ->clear();
+    m_closestTruth_parent_ID      ->clear();
+    m_closestTruth_parent_barcode ->clear();
+    m_closestTruth_parent_pt      ->clear();
+    m_closestTruth_parent_eta     ->clear();
+    m_closestTruth_parent_phi     ->clear();
+    m_closestTruth_parent_charge  ->clear();
+    m_closestTruth_parent_pid     ->clear();
 
+    m_closestTruth_outP_ID       ->clear();
+    m_closestTruth_outP_barcode  ->clear();
     m_closestTruth_outP_pt       ->clear();
     m_closestTruth_outP_eta      ->clear();
     m_closestTruth_outP_phi      ->clear();
@@ -834,23 +930,29 @@ void SecondaryVertexContainer :: clear ()
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_linked ) {
     m_maxlinkTruth_score           ->clear();  
     m_maxlinkTruth_isDarkPionDecay ->clear();
-    
-    m_maxlinkTruth_x   ->clear();
-    m_maxlinkTruth_y   ->clear();
-    m_maxlinkTruth_z   ->clear();
-    m_maxlinkTruth_r   ->clear();
-    m_maxlinkTruth_eta ->clear();
-    m_maxlinkTruth_phi ->clear();
+
+    m_maxlinkTruth_ID      ->clear();
+    m_maxlinkTruth_barcode ->clear();
+    m_maxlinkTruth_x       ->clear();
+    m_maxlinkTruth_y       ->clear();
+    m_maxlinkTruth_z       ->clear();
+    m_maxlinkTruth_r       ->clear();
+    m_maxlinkTruth_eta     ->clear();
+    m_maxlinkTruth_phi     ->clear();
 
     m_maxlinkTruth_inE  ->clear();
     m_maxlinkTruth_outE ->clear();
 
-    m_maxlinkTruth_parent_pt     ->clear();
-    m_maxlinkTruth_parent_eta    ->clear();
-    m_maxlinkTruth_parent_phi    ->clear();
-    m_maxlinkTruth_parent_charge ->clear();
-    m_maxlinkTruth_parent_pid    ->clear();
+    m_maxlinkTruth_parent_ID      ->clear();
+    m_maxlinkTruth_parent_barcode ->clear();
+    m_maxlinkTruth_parent_pt      ->clear();
+    m_maxlinkTruth_parent_eta     ->clear();
+    m_maxlinkTruth_parent_phi     ->clear();
+    m_maxlinkTruth_parent_charge  ->clear();
+    m_maxlinkTruth_parent_pid     ->clear();
 
+    m_maxlinkTruth_outP_ID       ->clear();
+    m_maxlinkTruth_outP_barcode  ->clear();
     m_maxlinkTruth_outP_pt       ->clear();
     m_maxlinkTruth_outP_eta      ->clear();
     m_maxlinkTruth_outP_phi      ->clear();
@@ -862,23 +964,29 @@ void SecondaryVertexContainer :: clear ()
 
     m_maxlinkParentTruth_score           ->clear();  
     m_maxlinkParentTruth_isDarkPionDecay ->clear();
-    
-    m_maxlinkParentTruth_x   ->clear();
-    m_maxlinkParentTruth_y   ->clear();
-    m_maxlinkParentTruth_z   ->clear();
-    m_maxlinkParentTruth_r   ->clear();
-    m_maxlinkParentTruth_eta ->clear();
-    m_maxlinkParentTruth_phi ->clear();
+
+    m_maxlinkParentTruth_ID      ->clear();
+    m_maxlinkParentTruth_barcode ->clear();
+    m_maxlinkParentTruth_x       ->clear();
+    m_maxlinkParentTruth_y       ->clear();
+    m_maxlinkParentTruth_z       ->clear();
+    m_maxlinkParentTruth_r       ->clear();
+    m_maxlinkParentTruth_eta     ->clear();
+    m_maxlinkParentTruth_phi     ->clear();
 
     m_maxlinkParentTruth_inE  ->clear();
     m_maxlinkParentTruth_outE ->clear();
 
-    m_maxlinkParentTruth_parent_pt     ->clear();
-    m_maxlinkParentTruth_parent_eta    ->clear();
-    m_maxlinkParentTruth_parent_phi    ->clear();
-    m_maxlinkParentTruth_parent_charge ->clear();
-    m_maxlinkParentTruth_parent_pid    ->clear();
+    m_maxlinkParentTruth_parent_ID      ->clear();
+    m_maxlinkParentTruth_parent_barcode ->clear();
+    m_maxlinkParentTruth_parent_pt      ->clear();
+    m_maxlinkParentTruth_parent_eta     ->clear();
+    m_maxlinkParentTruth_parent_phi     ->clear();
+    m_maxlinkParentTruth_parent_charge  ->clear();
+    m_maxlinkParentTruth_parent_pid     ->clear();
 
+    m_maxlinkParentTruth_outP_ID       ->clear();
+    m_maxlinkParentTruth_outP_barcode  ->clear();
     m_maxlinkParentTruth_outP_pt       ->clear();
     m_maxlinkParentTruth_outP_eta      ->clear();
     m_maxlinkParentTruth_outP_phi      ->clear();
@@ -892,7 +1000,7 @@ void SecondaryVertexContainer :: clear ()
 
 void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVtx )
 {
-  if ( m_debug ) Info( "SecondaryVertexContainer::FillSecondaryVertex()", "filling branches" );
+  if ( m_debug ) Info( "EJs::SecondaryVertexContainer::FillSecondaryVertex()", "filling branches" );
   
   VertexContainer::FillVertex ();
 
@@ -940,6 +1048,7 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
      --> do we want to save px/y/z ?? do we want to save sumP4 as a whole ??
      do we want to save p4 (using track parameters wrt pv instead of dv) ?? */
 
+  m_ID            ->push_back( AUXDYN( secVtx, int, "ID" )                );
   m_x             ->push_back( secVtx->x()                                );
   m_y             ->push_back( secVtx->y()                                );
   m_z             ->push_back( secVtx->z()                                );
@@ -1027,8 +1136,9 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
 
 void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::TrackParticle*>& filteredTracks )
 {
-  if ( m_debug ) Info( "SecondaryVertexContainer::recordTracks()", "filling vertex track branches" );
-  
+  if ( m_debug ) Info( "EJs::SecondaryVertexContainer::recordTracks()", "filling vertex track branches" );
+
+  std::vector<int>   trk_ID;
   std::vector<float> trk_qOverP;
   std::vector<float> trk_theta;
   std::vector<float> trk_vz;
@@ -1069,11 +1179,14 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
   std::vector<float>    trk_radiusOfFirstHit;
 
   std::vector<float> trk_truthMatchProb;
+  std::vector<int>   trk_truthID;
+  std::vector<int>   trk_truthBarcode;
   std::vector<int>   trk_truthPid;
 
   for ( const auto& trk : filteredTracks ) {
     if ( !trk ) continue;
 
+    trk_ID     .push_back( AUXDYN( trk, int, "ID" )                );
     trk_qOverP .push_back( trk->qOverP()                           );
     trk_theta  .push_back( trk->theta()                            );
     trk_vz     .push_back( trk->vz()                               );
@@ -1141,15 +1254,20 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
     }
     if ( truthPart ) {
       trk_truthMatchProb .push_back( trk->auxdataConst<float>("truthMatchProbability") );
+      trk_truthID        .push_back( AUXDYN( truthPart, int, "ID" )                    );
+      trk_truthBarcode   .push_back( truthPart->barcode()                              );
       trk_truthPid       .push_back( truthPart->pdgId()                                );
     }
     else {
       trk_truthMatchProb .push_back( AlgConsts::invalidFloat );
+      trk_truthID        .push_back( AlgConsts::invalidInt   );
+      trk_truthBarcode   .push_back( AlgConsts::invalidInt   );
       trk_truthPid       .push_back( AlgConsts::invalidInt   );
     }
     
   }
 
+  m_trk_ID     ->push_back( trk_ID     );
   m_trk_qOverP ->push_back( trk_qOverP );
   m_trk_theta  ->push_back( trk_theta  );
   m_trk_vz     ->push_back( trk_vz     );
@@ -1191,7 +1309,9 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
 
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
     m_trk_truthMatchProb ->push_back( trk_truthMatchProb );
-    m_trk_truthPid       ->push_back( trk_truthPid );
+    m_trk_truthID        ->push_back( trk_truthID        );
+    m_trk_truthBarcode   ->push_back( trk_truthBarcode   );
+    m_trk_truthPid       ->push_back( trk_truthPid       );
   }
 
   // m_trk_truthPid, m_trk_truthIsFromClosestTV, m_trk_truthIsFromReprTV
@@ -1202,8 +1322,7 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
 void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx,
 						     const std::vector<const xAOD::TrackParticle*>& filteredTracks )
 {
-  if ( m_debug )
-    Info( "SecondaryVertexContainer::processCloseTruth()", "filling close truth vertex branches" );
+  if ( m_debug ) Info( "EJs::SecondaryVertexContainer::processCloseTruth()", "filling close truth vertex branches" );
 
   const xAOD::TruthVertex* closestTruthVertex = 0;
   static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t> closestTVAccess("closestTruthVertexLink");
@@ -1219,23 +1338,29 @@ void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx,
     dist = secVtx->auxdataConst<double>("closestTruthVertex_dist");
   
   unsigned isPid = AlgConsts::invalidUnsigned;
-  
-  float x   = AlgConsts::invalidFloat;
-  float y   = AlgConsts::invalidFloat;
-  float z   = AlgConsts::invalidFloat;
-  float r   = AlgConsts::invalidFloat;
-  float eta = AlgConsts::invalidFloat;
-  float phi = AlgConsts::invalidFloat;
+
+  int   ID      = AlgConsts::invalidInt;
+  int   barcode = AlgConsts::invalidInt;
+  float x       = AlgConsts::invalidFloat;
+  float y       = AlgConsts::invalidFloat;
+  float z       = AlgConsts::invalidFloat;
+  float r       = AlgConsts::invalidFloat;
+  float eta     = AlgConsts::invalidFloat;
+  float phi     = AlgConsts::invalidFloat;
   
   TLorentzVector sumP4_in;
   TLorentzVector sumP4_out;
 
-  float parent_pt     = AlgConsts::invalidFloat;
-  float parent_eta    = AlgConsts::invalidFloat;
-  float parent_phi    = AlgConsts::invalidFloat;
-  float parent_charge = AlgConsts::invalidFloat;
-  int   parent_pid    = AlgConsts::invalidInt;
+  int   parent_ID      = AlgConsts::invalidInt;
+  int   parent_barcode = AlgConsts::invalidInt;
+  float parent_pt      = AlgConsts::invalidFloat;
+  float parent_eta     = AlgConsts::invalidFloat;
+  float parent_phi     = AlgConsts::invalidFloat;
+  float parent_charge  = AlgConsts::invalidFloat;
+  int   parent_pid     = AlgConsts::invalidInt;
 
+  std::vector<int>     outP_ID;
+  std::vector<int>     outP_barcode;
   std::vector<float>   outP_pt;
   std::vector<float>   outP_eta;
   std::vector<float>   outP_phi;
@@ -1248,13 +1373,15 @@ void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx,
 
   if ( closestTruthVertex ) {
     isPid = EJsHelper::selectDarkPion( closestTruthVertex );
-    
-    x   = closestTruthVertex->x();
-    y   = closestTruthVertex->y();
-    z   = closestTruthVertex->z();
-    r   = closestTruthVertex->perp();
-    eta = closestTruthVertex->eta();
-    phi = closestTruthVertex->phi();
+
+    ID      = AUXDYN( closestTruthVertex, int, "ID" );
+    barcode = closestTruthVertex->barcode();
+    x       = closestTruthVertex->x();
+    y       = closestTruthVertex->y();
+    z       = closestTruthVertex->z();
+    r       = closestTruthVertex->perp();
+    eta     = closestTruthVertex->eta();
+    phi     = closestTruthVertex->phi();
 
     for ( size_t i = 0; i != closestTruthVertex->nIncomingParticles(); ++i ) {
       const auto* inPart = closestTruthVertex->incomingParticle(i);
@@ -1273,21 +1400,25 @@ void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx,
 
     const auto* parent = closestTruthVertex->incomingParticle(0);
     if ( parent ) {
-      parent_pt     = parent->pt() / m_units;
-      parent_eta    = parent->eta();
-      parent_phi    = parent->phi();
-      parent_charge = parent->charge();
-      parent_pid    = parent->pdgId();
+      parent_ID      = AUXDYN( parent, int, "ID" );
+      parent_barcode = parent->barcode();
+      parent_pt      = parent->pt() / m_units;
+      parent_eta     = parent->eta();
+      parent_phi     = parent->phi();
+      parent_charge  = parent->charge();
+      parent_pid     = parent->pdgId();
     }
 
     for ( size_t k = 0; k != closestTruthVertex->nOutgoingParticles(); ++k ) {
       const auto* outP = closestTruthVertex->outgoingParticle(k);
       if ( !outP ) continue;
-      outP_pt     .push_back( outP->pt() / m_units );
-      outP_eta    .push_back( outP->eta()          );
-      outP_phi    .push_back( outP->phi()          );
-      outP_charge .push_back( outP->charge()       );
-      outP_pid    .push_back( outP->pdgId()        );
+      outP_ID      .push_back( AUXDYN( outP, int, "ID" ) );
+      outP_barcode .push_back( outP->barcode()           );
+      outP_pt      .push_back( outP->pt() / m_units      );
+      outP_eta     .push_back( outP->eta()               );
+      outP_phi     .push_back( outP->phi()               );
+      outP_charge  .push_back( outP->charge()            );
+      outP_pid     .push_back( outP->pdgId()             );
       if ( outP->isAvailable<char>("isTrkMatch") )
 	outP_isReco   .push_back( outP->auxdataConst<char>("isTrkMatch")     );
       if ( outP->isAvailable<double>("trkMatchProb") )
@@ -1305,23 +1436,29 @@ void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx,
 
   m_closestTruth_distance        ->push_back( dist  );
   m_closestTruth_isDarkPionDecay ->push_back( isPid );
-  
-  m_closestTruth_x   ->push_back( x   );
-  m_closestTruth_y   ->push_back( y   );
-  m_closestTruth_z   ->push_back( z   );
-  m_closestTruth_r   ->push_back( r   );
-  m_closestTruth_eta ->push_back( eta );
-  m_closestTruth_phi ->push_back( phi );
+
+  m_closestTruth_ID      ->push_back( ID      );
+  m_closestTruth_barcode ->push_back( barcode );
+  m_closestTruth_x       ->push_back( x       );
+  m_closestTruth_y       ->push_back( y       );
+  m_closestTruth_z       ->push_back( z       );
+  m_closestTruth_r       ->push_back( r       );
+  m_closestTruth_eta     ->push_back( eta     );
+  m_closestTruth_phi     ->push_back( phi     );
 
   m_closestTruth_inE  ->push_back( sumP4_in.E()  / m_units );
   m_closestTruth_outE ->push_back( sumP4_out.E() / m_units );
 
-  m_closestTruth_parent_pt     ->push_back( parent_pt     );
-  m_closestTruth_parent_eta    ->push_back( parent_eta    );
-  m_closestTruth_parent_phi    ->push_back( parent_phi    );
-  m_closestTruth_parent_charge ->push_back( parent_charge );
-  m_closestTruth_parent_pid    ->push_back( parent_pid    );
+  m_closestTruth_parent_ID      ->push_back( parent_ID      );
+  m_closestTruth_parent_barcode ->push_back( parent_barcode );
+  m_closestTruth_parent_pt      ->push_back( parent_pt      );
+  m_closestTruth_parent_eta     ->push_back( parent_eta     );
+  m_closestTruth_parent_phi     ->push_back( parent_phi     );
+  m_closestTruth_parent_charge  ->push_back( parent_charge  );
+  m_closestTruth_parent_pid     ->push_back( parent_pid     );
 
+  m_closestTruth_outP_ID       ->push_back( outP_ID       );
+  m_closestTruth_outP_barcode  ->push_back( outP_barcode  );
   m_closestTruth_outP_pt       ->push_back( outP_pt       );
   m_closestTruth_outP_eta      ->push_back( outP_eta      );
   m_closestTruth_outP_phi      ->push_back( outP_phi      );
@@ -1339,8 +1476,7 @@ void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx,
 void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx,
 						      const std::vector<const xAOD::TrackParticle*>& filteredTracks )
 {
-  if ( m_debug )
-    Info( "SecondaryVertexContainer::processLinkedTruth()", "filling linked truth vertex branches" );
+  if ( m_debug ) Info( "EJs::SecondaryVertexContainer::processLinkedTruth()", "filling linked truth vertex branches" );
   
   const xAOD::TruthVertex* maxlinkedTruthVertex = 0;
   static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t> maxlinkedTVAccess("maxlinkedTruthVertexLink");
@@ -1357,22 +1493,28 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
 
   unsigned tv_isPid = AlgConsts::invalidUnsigned;
 
-  float tv_x   = AlgConsts::invalidFloat;
-  float tv_y   = AlgConsts::invalidFloat;
-  float tv_z   = AlgConsts::invalidFloat;
-  float tv_r   = AlgConsts::invalidFloat;
-  float tv_eta = AlgConsts::invalidFloat;
-  float tv_phi = AlgConsts::invalidFloat;
+  int   tv_ID      = AlgConsts::invalidInt;
+  int   tv_barcode = AlgConsts::invalidInt;
+  float tv_x       = AlgConsts::invalidFloat;
+  float tv_y       = AlgConsts::invalidFloat;
+  float tv_z       = AlgConsts::invalidFloat;
+  float tv_r       = AlgConsts::invalidFloat;
+  float tv_eta     = AlgConsts::invalidFloat;
+  float tv_phi     = AlgConsts::invalidFloat;
 
   TLorentzVector tv_sumP4_in;
   TLorentzVector tv_sumP4_out;
 
-  float tv_parent_pt     = AlgConsts::invalidFloat;
-  float tv_parent_eta    = AlgConsts::invalidFloat;
-  float tv_parent_phi    = AlgConsts::invalidFloat;
-  float tv_parent_charge = AlgConsts::invalidFloat;
-  int   tv_parent_pid    = AlgConsts::invalidInt;
+  int   tv_parent_ID      = AlgConsts::invalidInt;
+  int   tv_parent_barcode = AlgConsts::invalidInt;
+  float tv_parent_pt      = AlgConsts::invalidFloat;
+  float tv_parent_eta     = AlgConsts::invalidFloat;
+  float tv_parent_phi     = AlgConsts::invalidFloat;
+  float tv_parent_charge  = AlgConsts::invalidFloat;
+  int   tv_parent_pid     = AlgConsts::invalidInt;
 
+  std::vector<int>     tv_outP_ID;
+  std::vector<int>     tv_outP_barcode;
   std::vector<float>   tv_outP_pt;
   std::vector<float>   tv_outP_eta;
   std::vector<float>   tv_outP_phi;
@@ -1385,13 +1527,15 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
 
   if ( maxlinkedTruthVertex ) {
     tv_isPid = EJsHelper::selectDarkPion( maxlinkedTruthVertex );
-    
-    tv_x   = maxlinkedTruthVertex->x();
-    tv_y   = maxlinkedTruthVertex->y();
-    tv_z   = maxlinkedTruthVertex->z();
-    tv_r   = maxlinkedTruthVertex->perp();
-    tv_eta = maxlinkedTruthVertex->eta();
-    tv_phi = maxlinkedTruthVertex->phi();
+
+    tv_ID      = AUXDYN( maxlinkedTruthVertex, int, "ID" );
+    tv_barcode = maxlinkedTruthVertex->barcode();
+    tv_x       = maxlinkedTruthVertex->x();
+    tv_y       = maxlinkedTruthVertex->y();
+    tv_z       = maxlinkedTruthVertex->z();
+    tv_r       = maxlinkedTruthVertex->perp();
+    tv_eta     = maxlinkedTruthVertex->eta();
+    tv_phi     = maxlinkedTruthVertex->phi();
 
     for ( size_t i = 0; i != maxlinkedTruthVertex->nIncomingParticles(); ++i ) {
       const auto* inPart = maxlinkedTruthVertex->incomingParticle(i);
@@ -1410,21 +1554,25 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
 
     const auto* parent = maxlinkedTruthVertex->incomingParticle(0);
     if ( parent ) {
-      tv_parent_pt     = parent->pt() / m_units;
-      tv_parent_eta    = parent->eta();
-      tv_parent_phi    = parent->phi();
-      tv_parent_charge = parent->charge();
-      tv_parent_pid    = parent->pdgId();
+      tv_parent_ID      = AUXDYN( parent, int, "ID" );
+      tv_parent_barcode = parent->barcode();
+      tv_parent_pt      = parent->pt() / m_units;
+      tv_parent_eta     = parent->eta();
+      tv_parent_phi     = parent->phi();
+      tv_parent_charge  = parent->charge();
+      tv_parent_pid     = parent->pdgId();
     }
 
     for ( size_t k = 0; k != maxlinkedTruthVertex->nOutgoingParticles(); ++k ) {
       const auto* outP = maxlinkedTruthVertex->outgoingParticle(k);
       if ( !outP ) continue;
-      tv_outP_pt     .push_back( outP->pt() / m_units );
-      tv_outP_eta    .push_back( outP->eta()          );
-      tv_outP_phi    .push_back( outP->phi()          );
-      tv_outP_charge .push_back( outP->charge()       );
-      tv_outP_pid    .push_back( outP->pdgId()        );
+      tv_outP_ID      .push_back( AUXDYN( outP, int, "ID" ) );
+      tv_outP_barcode .push_back( outP->barcode()           );
+      tv_outP_pt      .push_back( outP->pt() / m_units      );
+      tv_outP_eta     .push_back( outP->eta()               );
+      tv_outP_phi     .push_back( outP->phi()               );
+      tv_outP_charge  .push_back( outP->charge()            );
+      tv_outP_pid     .push_back( outP->pdgId()             );
       if ( outP->isAvailable<char>("isTrkMatch") )
 	tv_outP_isReco   .push_back( outP->auxdataConst<char>("isTrkMatch")     );
       if ( outP->isAvailable<double>("trkMatchProb") )
@@ -1442,23 +1590,29 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
 
   m_maxlinkTruth_score           ->push_back( tv_score );
   m_maxlinkTruth_isDarkPionDecay ->push_back( tv_isPid );
-  
-  m_maxlinkTruth_x   ->push_back( tv_x   );
-  m_maxlinkTruth_y   ->push_back( tv_y   );
-  m_maxlinkTruth_z   ->push_back( tv_z   );
-  m_maxlinkTruth_r   ->push_back( tv_r   );
-  m_maxlinkTruth_eta ->push_back( tv_eta );
-  m_maxlinkTruth_phi ->push_back( tv_phi );
+
+  m_maxlinkTruth_ID      ->push_back( tv_ID      );
+  m_maxlinkTruth_barcode ->push_back( tv_barcode );
+  m_maxlinkTruth_x       ->push_back( tv_x       );
+  m_maxlinkTruth_y       ->push_back( tv_y       );
+  m_maxlinkTruth_z       ->push_back( tv_z       );
+  m_maxlinkTruth_r       ->push_back( tv_r       );
+  m_maxlinkTruth_eta     ->push_back( tv_eta     );
+  m_maxlinkTruth_phi     ->push_back( tv_phi     );
 
   m_maxlinkTruth_inE  ->push_back( tv_sumP4_in.E()  / m_units );
   m_maxlinkTruth_outE ->push_back( tv_sumP4_out.E() / m_units );
 
-  m_maxlinkTruth_parent_pt     ->push_back( tv_parent_pt     );
-  m_maxlinkTruth_parent_eta    ->push_back( tv_parent_eta    );
-  m_maxlinkTruth_parent_phi    ->push_back( tv_parent_phi    );
-  m_maxlinkTruth_parent_charge ->push_back( tv_parent_charge );
-  m_maxlinkTruth_parent_pid    ->push_back( tv_parent_pid    );
+  m_maxlinkTruth_parent_ID      ->push_back( tv_parent_ID      );
+  m_maxlinkTruth_parent_barcode ->push_back( tv_parent_barcode );
+  m_maxlinkTruth_parent_pt      ->push_back( tv_parent_pt      );
+  m_maxlinkTruth_parent_eta     ->push_back( tv_parent_eta     );
+  m_maxlinkTruth_parent_phi     ->push_back( tv_parent_phi     );
+  m_maxlinkTruth_parent_charge  ->push_back( tv_parent_charge  );
+  m_maxlinkTruth_parent_pid     ->push_back( tv_parent_pid     );
 
+  m_maxlinkTruth_outP_ID       ->push_back( tv_outP_ID       );
+  m_maxlinkTruth_outP_barcode  ->push_back( tv_outP_barcode  );
   m_maxlinkTruth_outP_pt       ->push_back( tv_outP_pt       );
   m_maxlinkTruth_outP_eta      ->push_back( tv_outP_eta      );
   m_maxlinkTruth_outP_phi      ->push_back( tv_outP_phi      );
@@ -1471,8 +1625,7 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
     m_trk_truthPointsToMaxlinkTV ->push_back( trk_truthPointsToTV );
 
 
-  if ( m_debug )
-    Info( "SecondaryVertexContainer::processLinkedTruth()", "filling linked parent truth vertex branches" );
+  if ( m_debug ) Info( "EJs::SecondaryVertexContainer::processLinkedTruth()", "filling linked parent truth vertex branches" );
   
   const xAOD::TruthVertex* maxlinkedParentTruthVertex = 0;
   static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t> maxlinkedPTVAccess("maxlinkedParentTruthVertexLink");
@@ -1489,22 +1642,28 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
 
   unsigned ptv_isPid = AlgConsts::invalidUnsigned;
 
-  float ptv_x   = AlgConsts::invalidFloat;
-  float ptv_y   = AlgConsts::invalidFloat;
-  float ptv_z   = AlgConsts::invalidFloat;
-  float ptv_r   = AlgConsts::invalidFloat;
-  float ptv_eta = AlgConsts::invalidFloat;
-  float ptv_phi = AlgConsts::invalidFloat;
+  int   ptv_ID      = AlgConsts::invalidInt;
+  int   ptv_barcode = AlgConsts::invalidInt;
+  float ptv_x       = AlgConsts::invalidFloat;
+  float ptv_y       = AlgConsts::invalidFloat;
+  float ptv_z       = AlgConsts::invalidFloat;
+  float ptv_r       = AlgConsts::invalidFloat;
+  float ptv_eta     = AlgConsts::invalidFloat;
+  float ptv_phi     = AlgConsts::invalidFloat;
 
   TLorentzVector ptv_sumP4_in;
   TLorentzVector ptv_sumP4_out;
 
-  float ptv_parent_pt     = AlgConsts::invalidFloat;
-  float ptv_parent_eta    = AlgConsts::invalidFloat;
-  float ptv_parent_phi    = AlgConsts::invalidFloat;
-  float ptv_parent_charge = AlgConsts::invalidFloat;
-  int   ptv_parent_pid    = AlgConsts::invalidInt;
+  int   ptv_parent_ID      = AlgConsts::invalidInt;
+  int   ptv_parent_barcode = AlgConsts::invalidInt;
+  float ptv_parent_pt      = AlgConsts::invalidFloat;
+  float ptv_parent_eta     = AlgConsts::invalidFloat;
+  float ptv_parent_phi     = AlgConsts::invalidFloat;
+  float ptv_parent_charge  = AlgConsts::invalidFloat;
+  int   ptv_parent_pid     = AlgConsts::invalidInt;
 
+  std::vector<int>     ptv_outP_ID;
+  std::vector<int>     ptv_outP_barcode;
   std::vector<float>   ptv_outP_pt;
   std::vector<float>   ptv_outP_eta;
   std::vector<float>   ptv_outP_phi;
@@ -1517,13 +1676,15 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
 
   if ( maxlinkedParentTruthVertex ) {
     ptv_isPid = EJsHelper::selectDarkPion( maxlinkedParentTruthVertex );
-    
-    ptv_x   = maxlinkedParentTruthVertex->x();
-    ptv_y   = maxlinkedParentTruthVertex->y();
-    ptv_z   = maxlinkedParentTruthVertex->z();
-    ptv_r   = maxlinkedParentTruthVertex->perp();
-    ptv_eta = maxlinkedParentTruthVertex->eta();
-    ptv_phi = maxlinkedParentTruthVertex->phi();
+
+    ptv_ID      = AUXDYN( maxlinkedParentTruthVertex, int, "ID" );
+    ptv_barcode = maxlinkedParentTruthVertex->barcode();
+    ptv_x       = maxlinkedParentTruthVertex->x();
+    ptv_y       = maxlinkedParentTruthVertex->y();
+    ptv_z       = maxlinkedParentTruthVertex->z();
+    ptv_r       = maxlinkedParentTruthVertex->perp();
+    ptv_eta     = maxlinkedParentTruthVertex->eta();
+    ptv_phi     = maxlinkedParentTruthVertex->phi();
 
     for ( size_t i = 0; i != maxlinkedParentTruthVertex->nIncomingParticles(); ++i ) {
       const auto* inPart = maxlinkedParentTruthVertex->incomingParticle(i);
@@ -1542,21 +1703,25 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
 
     const auto* parent = maxlinkedParentTruthVertex->incomingParticle(0);
     if ( parent ) {
-      ptv_parent_pt     = parent->pt() / m_units;
-      ptv_parent_eta    = parent->eta();
-      ptv_parent_phi    = parent->phi();
-      ptv_parent_charge = parent->charge();
-      ptv_parent_pid    = parent->pdgId();
+      ptv_parent_ID      = AUXDYN( parent, int, "ID" );
+      ptv_parent_barcode = parent->barcode();
+      ptv_parent_pt      = parent->pt() / m_units;
+      ptv_parent_eta     = parent->eta();
+      ptv_parent_phi     = parent->phi();
+      ptv_parent_charge  = parent->charge();
+      ptv_parent_pid     = parent->pdgId();
     }
 
     for ( size_t k = 0; k != maxlinkedParentTruthVertex->nOutgoingParticles(); ++k ) {
       const auto* outP = maxlinkedParentTruthVertex->outgoingParticle(k);
       if ( !outP ) continue;
-      ptv_outP_pt     .push_back( outP->pt() / m_units );
-      ptv_outP_eta    .push_back( outP->eta()          );
-      ptv_outP_phi    .push_back( outP->phi()          );
-      ptv_outP_charge .push_back( outP->charge()       );
-      ptv_outP_pid    .push_back( outP->pdgId()        );
+      ptv_outP_ID      .push_back( AUXDYN( outP, int, "ID" ) );
+      ptv_outP_barcode .push_back( outP->barcode()           );
+      ptv_outP_pt      .push_back( outP->pt() / m_units      );
+      ptv_outP_eta     .push_back( outP->eta()               );
+      ptv_outP_phi     .push_back( outP->phi()               );
+      ptv_outP_charge  .push_back( outP->charge()            );
+      ptv_outP_pid     .push_back( outP->pdgId()             );
       if ( outP->isAvailable<char>("isTrkMatch") )
 	ptv_outP_isReco   .push_back( outP->auxdataConst<char>("isTrkMatch")     );
       if ( outP->isAvailable<double>("trkMatchProb") )
@@ -1574,23 +1739,29 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
 
   m_maxlinkParentTruth_score           ->push_back( ptv_score );
   m_maxlinkParentTruth_isDarkPionDecay ->push_back( ptv_isPid );
-  
-  m_maxlinkParentTruth_x   ->push_back( ptv_x   );
-  m_maxlinkParentTruth_y   ->push_back( ptv_y   );
-  m_maxlinkParentTruth_z   ->push_back( ptv_z   );
-  m_maxlinkParentTruth_r   ->push_back( ptv_r   );
-  m_maxlinkParentTruth_eta ->push_back( ptv_eta );
-  m_maxlinkParentTruth_phi ->push_back( ptv_phi );
+
+  m_maxlinkParentTruth_ID      ->push_back( ptv_ID      );
+  m_maxlinkParentTruth_barcode ->push_back( ptv_barcode );
+  m_maxlinkParentTruth_x       ->push_back( ptv_x       );
+  m_maxlinkParentTruth_y       ->push_back( ptv_y       );
+  m_maxlinkParentTruth_z       ->push_back( ptv_z       );
+  m_maxlinkParentTruth_r       ->push_back( ptv_r       );
+  m_maxlinkParentTruth_eta     ->push_back( ptv_eta     );
+  m_maxlinkParentTruth_phi     ->push_back( ptv_phi     );
 
   m_maxlinkParentTruth_inE  ->push_back( ptv_sumP4_in.E()  / m_units );
   m_maxlinkParentTruth_outE ->push_back( ptv_sumP4_out.E() / m_units );
 
-  m_maxlinkParentTruth_parent_pt     ->push_back( ptv_parent_pt     );
-  m_maxlinkParentTruth_parent_eta    ->push_back( ptv_parent_eta    );
-  m_maxlinkParentTruth_parent_phi    ->push_back( ptv_parent_phi    );
-  m_maxlinkParentTruth_parent_charge ->push_back( ptv_parent_charge );
-  m_maxlinkParentTruth_parent_pid    ->push_back( ptv_parent_pid    );
+  m_maxlinkParentTruth_parent_ID      ->push_back( ptv_parent_ID      );
+  m_maxlinkParentTruth_parent_barcode ->push_back( ptv_parent_barcode );
+  m_maxlinkParentTruth_parent_pt      ->push_back( ptv_parent_pt      );
+  m_maxlinkParentTruth_parent_eta     ->push_back( ptv_parent_eta     );
+  m_maxlinkParentTruth_parent_phi     ->push_back( ptv_parent_phi     );
+  m_maxlinkParentTruth_parent_charge  ->push_back( ptv_parent_charge  );
+  m_maxlinkParentTruth_parent_pid     ->push_back( ptv_parent_pid     );
 
+  m_maxlinkParentTruth_outP_ID       ->push_back( ptv_outP_ID       );
+  m_maxlinkParentTruth_outP_barcode  ->push_back( ptv_outP_barcode  );
   m_maxlinkParentTruth_outP_pt       ->push_back( ptv_outP_pt       );
   m_maxlinkParentTruth_outP_eta      ->push_back( ptv_outP_eta      );
   m_maxlinkParentTruth_outP_phi      ->push_back( ptv_outP_phi      );

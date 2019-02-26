@@ -34,7 +34,9 @@ namespace EJs {
   private:
     // vector branches
     std::vector<uint8_t>* m_isDarkPionDecay;
-    
+
+    std::vector<int>*   m_ID;
+    std::vector<int>*   m_barcode;
     std::vector<float>* m_x;
     std::vector<float>* m_y;
     std::vector<float>* m_z;
@@ -42,12 +44,16 @@ namespace EJs {
     std::vector<float>* m_eta;
     std::vector<float>* m_phi;
 
+    std::vector<int>*   m_parent_ID;
+    std::vector<int>*   m_parent_barcode;
     std::vector<float>* m_parent_pt;
     std::vector<float>* m_parent_eta;
     std::vector<float>* m_parent_phi;
     std::vector<float>* m_parent_charge;
     std::vector<int>*   m_parent_pid;
 
+    std::vector<int>*   m_parent_prod_ID;
+    std::vector<int>*   m_parent_prod_barcode;
     std::vector<float>* m_parent_prod_x;
     std::vector<float>* m_parent_prod_y;
     std::vector<float>* m_parent_prod_z;
@@ -55,6 +61,8 @@ namespace EJs {
     std::vector<float>* m_parent_prod_eta;
     std::vector<float>* m_parent_prod_phi;
 
+    std::vector<std::vector<int>>*     m_outP_ID;
+    std::vector<std::vector<int>>*     m_outP_barcode;
     std::vector<std::vector<float>>*   m_outP_pt;
     std::vector<std::vector<float>>*   m_outP_eta;
     std::vector<std::vector<float>>*   m_outP_phi;

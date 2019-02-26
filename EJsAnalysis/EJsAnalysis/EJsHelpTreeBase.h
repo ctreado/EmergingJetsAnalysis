@@ -25,6 +25,7 @@
 
 #include "EJsAnalysis/TruthVertexContainer.h"
 #include "EJsAnalysis/SecondaryVertexContainer.h"
+#include "EJsAnalysis/JetContainer.h"
 
 class EJsHelpTreeBase : public HelpTreeBase
 {  
@@ -40,21 +41,15 @@ class EJsHelpTreeBase : public HelpTreeBase
   void FillPV  ( const xAOD::Vertex* pv, int pvLocation = -1 );
   void ClearPV ( );
   
-  void AddTruthVerts   ( const std::string detailStr = "",
-			 const std::string truthVtxName = "truthVtx" );
-  void FillTruthVerts  ( const xAOD::TruthVertexContainer* truthVerts,
-			 const std::string truthVtxName = "truthVtx" );
-  void FillTruthVertex ( const xAOD::TruthVertex* truthVtx,
-			 const std::string truthVtxName = "truthVtx" );
-  void ClearTruthVerts ( const std::string truthVtxName = "truthVtx" );
+  void AddTruthVerts   ( const std::string detailStr = "",             const std::string truthVtxName = "truthVtx" );
+  void FillTruthVerts  ( const xAOD::TruthVertexContainer* truthVerts, const std::string truthVtxName = "truthVtx" );
+  void FillTruthVertex ( const xAOD::TruthVertex* truthVtx,            const std::string truthVtxName = "truthVtx" );
+  void ClearTruthVerts ( const std::string truthVtxName = "truthVtx"                                               );
 
-  void AddSecondaryVerts   ( const std::string detailStr = "",
-			     const std::string secVtxName = "secVtx" );
-  void FillSecondaryVerts  ( const xAOD::VertexContainer* secVerts,
-			     const std::string secVtxName = "secVtx" );
-  void FillSecondaryVertex ( const xAOD::Vertex* secVtx,
-			     const std::string secVtxName = "secVtx" );
-  void ClearSecondaryVerts ( const std::string secVtxName = "secVtx" );
+  void AddSecondaryVerts   ( const std::string detailStr = "",      const std::string secVtxName = "secVtx" );
+  void FillSecondaryVerts  ( const xAOD::VertexContainer* secVerts, const std::string secVtxName = "secVtx" );
+  void FillSecondaryVertex ( const xAOD::Vertex* secVtx,            const std::string secVtxName = "secVtx" );
+  void ClearSecondaryVerts ( const std::string secVtxName = "secVtx"                                         );
 
   // new branches for existing objects
 
@@ -62,18 +57,22 @@ class EJsHelpTreeBase : public HelpTreeBase
   
   void AddJetsUser   ( const std::string detailStr = "", const std::string jetName = "jet" );
   void FillJetsUser  ( const xAOD::Jet*,                 const std::string jetName = "jet" );
-  void ClearJetsUser ( const std::string jetName = "jet"                                   );
+  void ClearJetsUser ( const std::string /*jetName = "jet"*/                               );
   // --> add jet-constituents
+
+  void AddTruthUser   ( const std::string truthName,     const std::string detailStr = "" );
+  void FillTruthUser  ( const std::string /*truthName*/, const xAOD::TruthParticle*       );
+  void ClearTruthUser ( const std::string /*truthName*/                                   );
   
   void AddTracksUser   ( const std::string trackName,     const std::string detailStr = "" );
   void FillTracksUser  ( const std::string /*trackName*/, const xAOD::TrackParticle*       );
   void ClearTracksUser ( const std::string /*trackName*/                                   );
 
-  // truth user ...
 
  protected:
   std::map<std::string, EJs::TruthVertexContainer*>     m_truthVerts;
   std::map<std::string, EJs::SecondaryVertexContainer*> m_secVerts;
+  std::map<std::string, EJs::JetContainer*>             m_jets;
 
  private:
   // extra (vector) branches
@@ -86,8 +85,13 @@ class EJsHelpTreeBase : public HelpTreeBase
   float    m_pv_phi;
   uint32_t m_pv_nTracks;
   int      m_pv_location;
+
+  // truth particles
+  std::vector<int>* m_tp_ID;
+  std::vector<int>* m_tp_barcode;
   
   // tracks
+  std::vector<int>*     m_trk_ID;
   std::vector<float>*   m_trk_d0;
   std::vector<float>*   m_trk_errd0;
   std::vector<float>*   m_trk_errz0;

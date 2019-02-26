@@ -76,7 +76,8 @@ class ObjectMatcher : public xAH::Algorithm
   void matchTruthVertsToJets ( const xAOD::JetContainer*, const xAOD::TruthVertexContainer* );
   void matchSecVertsToJets   ( const xAOD::JetContainer*, const xAOD::VertexContainer* );
 
-  void matchTracksToJets ( const xAOD::JetContainer*, const xAOD::TrackParticleContainer* );
+  void matchTruthPartsToJets ( const xAOD::JetContainer*, const xAOD::TruthParticleContainer* );
+  void matchTracksToJets     ( const xAOD::JetContainer*, const xAOD::TrackParticleContainer* );
 
   void matchTracksToTruthParts ( const xAOD::TruthParticleContainer*, const xAOD::TrackParticleContainer* );
 

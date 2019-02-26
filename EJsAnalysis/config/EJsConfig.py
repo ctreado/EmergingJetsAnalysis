@@ -232,7 +232,7 @@ Dict_EJsMiniNtuple = {
     "m_msgLevel"                     : "info",
     "m_evtDetailStr"                 : "pileup",
     "m_trigDetailStr"                : "basic passTriggers prescales",
-    "m_jetDetailStr"                 : "kinematic rapidity energy truth trackAll JVT allTrack allTrackDetail constituent charge",
+    "m_jetDetailStr"                 : "kinematic rapidity clean energy truth trackAll JVT allTrack allTrackDetail constituent charge",
     "m_jetContainerName"             : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
     "m_jetBranchName"                : "jet pflowJet",
     "m_jetSystsVec"                  : "AntiKt4EMTopoJets_Calib_Select_Algo",

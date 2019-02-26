@@ -35,13 +35,12 @@ namespace EJs {
   private:   
     void recordTracks        ( const std::vector<const xAOD::TrackParticle*>& );
     //void processDVJets       ( const std::vector<const xAOD::TrackParticle*>& );
-    void processCloseTruth   ( const xAOD::Vertex*,
-			       const std::vector<const xAOD::TrackParticle*>& );
-    void processLinkedTruth  ( const xAOD::Vertex*,
-			       const std::vector<const xAOD::TrackParticle*>& );
+    void processCloseTruth   ( const xAOD::Vertex*, const std::vector<const xAOD::TrackParticle*>& );
+    void processLinkedTruth  ( const xAOD::Vertex*, const std::vector<const xAOD::TrackParticle*>& );
 
     
     // vector branches
+    std::vector<int>*                m_ID;
     std::vector<float>*              m_x;
     std::vector<float>*              m_y;
     std::vector<float>*              m_z;
@@ -77,6 +76,7 @@ namespace EJs {
 
     
     // tracks
+    std::vector<std::vector<int>>*   m_trk_ID;
     std::vector<std::vector<float>>* m_trk_qOverP;
     std::vector<std::vector<float>>* m_trk_theta;
     std::vector<std::vector<float>>* m_trk_vz;
@@ -117,6 +117,8 @@ namespace EJs {
     std::vector<std::vector<float>>*    m_trk_radiusOfFirstHit;
 
     std::vector<std::vector<float>>*    m_trk_truthMatchProb;
+    std::vector<std::vector<int>>*      m_trk_truthID;
+    std::vector<std::vector<int>>*      m_trk_truthBarcode;
     std::vector<std::vector<int>>*      m_trk_truthPid;
     std::vector<std::vector<uint8_t>>*  m_trk_truthPointsToClosestTV;
     std::vector<std::vector<uint8_t>>*  m_trk_truthPointsToMaxlinkTV;
@@ -141,7 +143,9 @@ namespace EJs {
     // closest truth
     std::vector<float>*   m_closestTruth_distance;
     std::vector<uint8_t>* m_closestTruth_isDarkPionDecay;
-    
+
+    std::vector<int>*   m_closestTruth_ID;
+    std::vector<int>*   m_closestTruth_barcode;
     std::vector<float>* m_closestTruth_x;
     std::vector<float>* m_closestTruth_y;
     std::vector<float>* m_closestTruth_z;
@@ -153,12 +157,16 @@ namespace EJs {
     std::vector<float>* m_closestTruth_outE;
     // --> anything else from sumP4 worth saving ??
 
+    std::vector<int>*   m_closestTruth_parent_ID;
+    std::vector<int>*   m_closestTruth_parent_barcode;
     std::vector<float>* m_closestTruth_parent_pt;
     std::vector<float>* m_closestTruth_parent_eta;
     std::vector<float>* m_closestTruth_parent_phi;
     std::vector<float>* m_closestTruth_parent_charge;
     std::vector<int>*   m_closestTruth_parent_pid;
 
+    std::vector<std::vector<int>>*     m_closestTruth_outP_ID;
+    std::vector<std::vector<int>>*     m_closestTruth_outP_barcode;
     std::vector<std::vector<float>>*   m_closestTruth_outP_pt;
     std::vector<std::vector<float>>*   m_closestTruth_outP_eta;
     std::vector<std::vector<float>>*   m_closestTruth_outP_phi;
@@ -173,7 +181,9 @@ namespace EJs {
     // max-linked (parent) truth
     std::vector<float>*   m_maxlinkTruth_score;
     std::vector<uint8_t>* m_maxlinkTruth_isDarkPionDecay;
-    
+
+    std::vector<int>*   m_maxlinkTruth_ID;
+    std::vector<int>*   m_maxlinkTruth_barcode;
     std::vector<float>* m_maxlinkTruth_x;
     std::vector<float>* m_maxlinkTruth_y;
     std::vector<float>* m_maxlinkTruth_z;
@@ -184,12 +194,16 @@ namespace EJs {
     std::vector<float>* m_maxlinkTruth_inE;
     std::vector<float>* m_maxlinkTruth_outE;
 
+    std::vector<int>*   m_maxlinkTruth_parent_ID;
+    std::vector<int>*   m_maxlinkTruth_parent_barcode;
     std::vector<float>* m_maxlinkTruth_parent_pt;
     std::vector<float>* m_maxlinkTruth_parent_eta;
     std::vector<float>* m_maxlinkTruth_parent_phi;
     std::vector<float>* m_maxlinkTruth_parent_charge;
     std::vector<int>*   m_maxlinkTruth_parent_pid;
 
+    std::vector<std::vector<int>>*     m_maxlinkTruth_outP_ID;
+    std::vector<std::vector<int>>*     m_maxlinkTruth_outP_barcode;
     std::vector<std::vector<float>>*   m_maxlinkTruth_outP_pt;
     std::vector<std::vector<float>>*   m_maxlinkTruth_outP_eta;
     std::vector<std::vector<float>>*   m_maxlinkTruth_outP_phi;
@@ -201,7 +215,9 @@ namespace EJs {
 
     std::vector<float>*   m_maxlinkParentTruth_score;
     std::vector<uint8_t>* m_maxlinkParentTruth_isDarkPionDecay;
-    
+
+    std::vector<int>*   m_maxlinkParentTruth_ID;
+    std::vector<int>*   m_maxlinkParentTruth_barcode;
     std::vector<float>* m_maxlinkParentTruth_x;
     std::vector<float>* m_maxlinkParentTruth_y;
     std::vector<float>* m_maxlinkParentTruth_z;
@@ -212,12 +228,16 @@ namespace EJs {
     std::vector<float>* m_maxlinkParentTruth_inE;
     std::vector<float>* m_maxlinkParentTruth_outE;
 
+    std::vector<int>*   m_maxlinkParentTruth_parent_ID;
+    std::vector<int>*   m_maxlinkParentTruth_parent_barcode;
     std::vector<float>* m_maxlinkParentTruth_parent_pt;
     std::vector<float>* m_maxlinkParentTruth_parent_eta;
     std::vector<float>* m_maxlinkParentTruth_parent_phi;
     std::vector<float>* m_maxlinkParentTruth_parent_charge;
     std::vector<int>*   m_maxlinkParentTruth_parent_pid;
 
+    std::vector<std::vector<int>>*     m_maxlinkParentTruth_outP_ID;
+    std::vector<std::vector<int>>*     m_maxlinkParentTruth_outP_barcode;
     std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_pt;
     std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_eta;
     std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_phi;
