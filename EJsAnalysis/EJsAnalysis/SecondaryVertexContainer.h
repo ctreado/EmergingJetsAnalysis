@@ -116,7 +116,7 @@ namespace EJs {
     std::vector<std::vector<uint8_t>>*  m_trk_nIBLOverflowsdEdx;
     std::vector<std::vector<float>>*    m_trk_radiusOfFirstHit;
 
-    std::vector<std::vector<float>>*    m_trk_truthMatchProb;
+    std::vector<std::vector<float>>*    m_trk_truthProb;
     std::vector<std::vector<int>>*      m_trk_truthID;
     std::vector<std::vector<int>>*      m_trk_truthBarcode;
     std::vector<std::vector<int>>*      m_trk_truthPid;

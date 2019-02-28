@@ -100,6 +100,9 @@ namespace EJs {
   #define AUXDYN( obj, type, varname ) \
   ( obj->isAvailable<type>(varname) ? obj->auxdataConst<type>(varname) : std::numeric_limits<type>::quiet_NaN() )
 
+  #define AUXDYNVEC( obj, type, varname ) \
+    ( obj->isAvailable<std::vector<type>>(varname) ? obj->auxdataConst<std::vector<type>>(varname) : std::vector<type>() )
+
 } // EJs
 
 #endif // EJsAnalysis_VertexContainer_H

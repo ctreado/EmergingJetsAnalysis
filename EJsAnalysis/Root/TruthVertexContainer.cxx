@@ -301,17 +301,15 @@ void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx
   for ( size_t i = 0; i != truthVtx->nOutgoingParticles(); ++i ) {
     const auto* outP = truthVtx->outgoingParticle(i);
     if ( !outP )           continue;
-    outP_ID      .push_back( AUXDYN( outP, int, "ID" ) );
-    outP_barcode .push_back( outP->barcode()           );
-    outP_pt      .push_back( outP->pt() / m_units      );
-    outP_eta     .push_back( outP->eta()               );
-    outP_phi     .push_back( outP->phi()               );
-    outP_charge  .push_back( outP->charge()            );
-    outP_pid     .push_back( outP->pdgId()             );
-    if ( outP->isAvailable<char>("isTrkMatch") )
-      outP_isReco   .push_back( outP->auxdataConst<char>("isTrkMatch")     );
-    if ( outP->isAvailable<double>("trkMatchProb") )
-      outP_recoProb .push_back( outP->auxdataConst<double>("trkMatchProb") );
+    outP_ID       .push_back( AUXDYN( outP, int, "ID"                       ) );
+    outP_barcode  .push_back( outP->barcode()                                 );
+    outP_pt       .push_back( outP->pt() / m_units                            );
+    outP_eta      .push_back( outP->eta()                                     );
+    outP_phi      .push_back( outP->phi()                                     );
+    outP_charge   .push_back( outP->charge()                                  );
+    outP_pid      .push_back( outP->pdgId()                                   );
+    outP_isReco   .push_back( AUXDYN( outP, char,   "isTrackMatch"          ) );
+    outP_recoProb .push_back( AUXDYN( outP, double, "trackMatchProbability" ) );
   }
 
   m_outP_ID       ->push_back( outP_ID       );

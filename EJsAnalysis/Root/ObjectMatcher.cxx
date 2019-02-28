@@ -194,6 +194,10 @@ EL::StatusCode ObjectMatcher :: execute ()
     matchSecVertsToJets( inTruthJets,     inSecVerts );
     matchSecVertsToJets( inTruthDarkJets, inSecVerts );
 
+    // match truth particles to truth (dark) jets
+    matchTruthPartsToJets( inTruthJets,     inTruthParts );
+    matchTruthPartsToJets( inTruthDarkJets, inTruthParts );
+    
     // match tracks to truth (dark) jets
     matchTracksToJets( inTruthJets,     inTrackParts );
     matchTracksToJets( inTruthDarkJets, inTrackParts );
@@ -225,13 +229,18 @@ EL::StatusCode ObjectMatcher :: execute ()
       if ( isMC() ) {
 	// match truth (dark) jets to reco jets
 	matchTruthJets( inJets, inTruthJets,     m_inJetContainers.at(i)       );
-	matchTruthJets( inJets, inTruthDarkJets, m_inJetContainers.at(i), true );	
+	matchTruthJets( inJets, inTruthDarkJets, m_inJetContainers.at(i), true );
+	
+	// match truth particles to reco jets
+	matchTruthPartsToJets( inJets, inTruthParts );
+	
 	// match truth vertices to reco jets
 	matchTruthVertsToJets( inJets, inTruthVerts );
       }
     
       // match reco secondary vertices to reco jets
-      matchSecVertsToJets( inJets, inSecVerts );   
+      matchSecVertsToJets( inJets, inSecVerts );
+      
       // match tracks to reco jets
       matchTracksToJets( inJets, inTrackParts );
       
@@ -269,13 +278,18 @@ EL::StatusCode ObjectMatcher :: execute ()
 	  if ( isMC() ) {
 	    // match truth (dark) jets to reco jets
 	    matchTruthJets( inJets, inTruthJets,     m_inJetContainers.at(i) + systName       );
-	    matchTruthJets( inJets, inTruthDarkJets, m_inJetContainers.at(i) + systName, true );  
+	    matchTruthJets( inJets, inTruthDarkJets, m_inJetContainers.at(i) + systName, true );
+
+	    // match truth particles to reco jets
+	    matchTruthPartsToJets( inJets, inTruthParts );
+	    
 	    // match truth vertices to reco jets
 	    matchTruthVertsToJets( inJets, inTruthVerts );	
 	  }
 	
 	  // match reco secondary vertices to reco jets
 	  matchSecVertsToJets( inJets, inSecVerts );
+	  
 	  // match tracks to reco jets
 	  matchTracksToJets( inJets, inTrackParts );
 
@@ -377,8 +391,8 @@ void ObjectMatcher :: matchTruthJets ( const xAOD::JetContainer* jets,
     int    jetMatchID  = -1;
     double jetMatchDR  = AlgConsts::invalidFloat;
 
-    std::vector<int>    jetNoMatchIDs;
-    std::vector<double> jetNoMatchDRs;
+    std::vector<int>   jetNoMatchIDs;
+    std::vector<float> jetNoMatchDRs;
     
     // loop over matchJets to match to jets
     for ( const auto& matchJet : *matchJets ) {
@@ -406,8 +420,8 @@ void ObjectMatcher :: matchTruthJets ( const xAOD::JetContainer* jets,
     jet->auxdecor<int>(decor_matchID)    = jetMatchID;
     jet->auxdecor<double>(decor_matchDR) = jetMatchDR;
     
-    jet->auxdecor<std::vector<int>>(decor_noMatchIDs)    = jetNoMatchIDs;
-    jet->auxdecor<std::vector<double>>(decor_noMatchDRs) = jetNoMatchDRs;
+    jet->auxdecor<std::vector<int>>(decor_noMatchIDs)   = jetNoMatchIDs;
+    jet->auxdecor<std::vector<float>>(decor_noMatchDRs) = jetNoMatchDRs;
     
   } // end loop over jets
   
@@ -424,9 +438,7 @@ void ObjectMatcher :: matchTruthVertsToJets ( const xAOD::JetContainer* jets,
   for ( const auto& jet : *jets ) {
 
     EJsHelper::TruthVertexLinkVector_t matchedTVLinks;
-    //std::vector<int>    matched_ID;
-    //std::vector<int>    matched_BC;
-    std::vector<double> matched_dR;
+    std::vector<float>                 matched_dR;
     double jet_radius = jet->getSizeParameter();
     
     // loop over truth vertices
@@ -436,17 +448,13 @@ void ObjectMatcher :: matchTruthVertsToJets ( const xAOD::JetContainer* jets,
       if ( dR < jet_radius ) {
 	EJsHelper::TruthVertexLink_t link( m_inTruthVertexContainerName, v );
 	matchedTVLinks .push_back( link );
-	//matched_ID     .push_back( vtx->auxdataConst<int>("ID") );
-	//matched_BC     .push_back( vtx->barcode() );
 	matched_dR     .push_back( dR );
       }
     } // end loop over truth vertices
 
     // decorate jets w/ matched truth vertices + dRs b/w them
     jet->auxdecor<EJsHelper::TruthVertexLinkVector_t>("matchedTruthVertexLinks") = matchedTVLinks;
-    //jet->auxdecor<std::vector<int>>("matchedTruthVertex_ID")    = matched_ID;
-    //jet->auxdecor<std::vector<int>>("matchedTruthVertex_BC")    = matched_BC;
-    jet->auxdecor<std::vector<double>>("matchedTruthVertex_dR") = matched_dR;
+    jet->auxdecor<std::vector<float>>("matchedTruthVertex_dR")                   = matched_dR;
     
   } // end loop over jets
   
@@ -463,8 +471,7 @@ void ObjectMatcher :: matchSecVertsToJets ( const xAOD::JetContainer* jets,
   for ( const auto& jet : *jets ) {
     
     EJsHelper::VertexLinkVector_t matchedDVLinks;
-    //std::vector<int>    matched_ID;
-    std::vector<double> matched_dR;
+    std::vector<float>            matched_dR;
     double jet_radius = jet->getSizeParameter();
 
     // loop over secondary vertices
@@ -499,7 +506,6 @@ void ObjectMatcher :: matchSecVertsToJets ( const xAOD::JetContainer* jets,
       if ( dR < jet_radius ) {
     	EJsHelper::VertexLink_t link( m_inSecondaryVertexContainerName, v );
     	matchedDVLinks .push_back( link );
-	//matched_ID     .push_back( vtx->auxdataConst<int>("ID") );
     	matched_dR     .push_back( dR );
       }
       
@@ -507,8 +513,7 @@ void ObjectMatcher :: matchSecVertsToJets ( const xAOD::JetContainer* jets,
 
     // decorate jets w/ matched secondary vertices + dRs b/w them
     jet->auxdecor<EJsHelper::VertexLinkVector_t>("matchedSecondaryVertexLinks") = matchedDVLinks;
-    //jet->auxdecor<std::vector<int>>("matchedSecondaryVertex_ID")    = matched_ID;
-    jet->auxdecor<std::vector<double>>("matchedSecondaryVertex_dR") = matched_dR;
+    jet->auxdecor<std::vector<float>>("matchedSecondaryVertex_dR")              = matched_dR;
     
   } // end loop over jets
 
@@ -525,8 +530,7 @@ void ObjectMatcher :: matchTruthPartsToJets ( const xAOD::JetContainer* jets,
   for ( const auto& jet : *jets ) {
 
     EJsHelper::TruthParticleLinkVector_t matchedTruthPartLinks;
-    std::vector<int>    matched_ID;
-    std::vector<double> matched_dR;
+    std::vector<float>                   matched_dR;
     double jet_radius = jet->getSizeParameter();
 
     // loop over truth particles
@@ -536,15 +540,13 @@ void ObjectMatcher :: matchTruthPartsToJets ( const xAOD::JetContainer* jets,
       if ( dR < jet_radius ) {
 	EJsHelper::TruthParticleLink_t link( m_inTruthPartContainerName, t );
 	matchedTruthPartLinks .push_back( link );
-	matched_ID            .push_back( tp->auxdataConst<int>("ID") );
 	matched_dR            .push_back( dR );
       }
     } // end loop over truth particles
 
     // decorate jets w/ matched truth particles + dRs b/w them
-    jet->auxdecor<EJsHelper::TruthParticleLinkVector_t>("matchedTruthPartLinks") = matchedTruthPartLinks;
-    jet->auxdecor<std::vector<int>>("matchedTruthPart_ID")                       = matched_ID;
-    jet->auxdecor<std::vector<double>>("matchedTruthPart_dR")                    = matched_dR;
+    jet->auxdecor<EJsHelper::TruthParticleLinkVector_t>("matchedTruthParticleLinks") = matchedTruthPartLinks;
+    jet->auxdecor<std::vector<float>>("matchedTruthParticle_dR")                     = matched_dR;
     
   } // end loop over jets
   
@@ -561,8 +563,7 @@ void ObjectMatcher :: matchTracksToJets ( const xAOD::JetContainer* jets,
   for ( const auto& jet : *jets ) {
 
     EJsHelper::TrackLinkVector_t matchedTrkLinks;
-    //std::vector<int>    matched_ID;
-    std::vector<double> matched_dR;
+    std::vector<float>           matched_dR;
     double jet_radius = jet->getSizeParameter();
 
     // loop over tracks
@@ -572,15 +573,13 @@ void ObjectMatcher :: matchTracksToJets ( const xAOD::JetContainer* jets,
       if ( dR < jet_radius ) {
 	EJsHelper::TrackLink_t link( m_inTrackPartContainerName, t );
 	matchedTrkLinks .push_back( link );
-	//matched_ID      .push_back( trk->auxdataConst<int>("ID") );
 	matched_dR      .push_back( dR );
       }
     } // end loop over tracks
 
     // decorate jets w/ matched tracks + dRs b/w them
     jet->auxdecor<EJsHelper::TrackLinkVector_t>("matchedTrackLinks") = matchedTrkLinks;
-    //jet->auxdecor<std::vector<int>>("matchedTrack_ID")    = matched_ID;
-    jet->auxdecor<std::vector<double>>("matchedTrack_dR") = matched_dR;
+    jet->auxdecor<std::vector<float>>("matchedTrack_dR")             = matched_dR;
     
   } // end loop over jets
 
@@ -595,20 +594,19 @@ void ObjectMatcher :: matchTracksToTruthParts ( const xAOD::TruthParticleContain
 
   // loop over truth particles + initialize decorators for all in container
   for ( const auto& part : *parts ) {
-    part->auxdecor<char>("isTrkMatch")     = false;
-    part->auxdecor<double>("trkMatchProb") = AlgConsts::invalidFloat;
-    //part->auxdecor<int>("trkMatchID")      = AlgConsts::invalidInt;
+    part->auxdecor<char>("isTrackMatch")            = false;
+    part->auxdecor<double>("trackMatchProbability") = AlgConsts::invalidFloat;
   }
   
   // loop over tracks
   for ( const auto& trk : *tracks ) {
     const auto* tp = EJsHelper::getTruthPart( trk ); // get linked truth particle
     if ( !tp ) continue;
-    tp->auxdecor<char>("isTrkMatch")     = true;
-    tp->auxdecor<double>("trkMatchProb") = trk->auxdataConst<float>("truthMatchProbability");
-    //tp->auxdecor<int>("trkMatchID")      = trk->auxdataConst<int>("ID");
+    tp->auxdecor<char>("isTrackMatch")            = true;
+    tp->auxdecor<double>("trackMatchProbability") = trk->auxdataConst<float>("truthMatchProbability");
+    
     EJsHelper::TrackLink_t trkLink( m_inTrackPartContainerName, trk->index() );
-    tp->auxdecor<EJsHelper::TrackLink_t>("trkLink");
+    tp->auxdecor<EJsHelper::TrackLink_t>("trackLink") = trkLink;
   } // end loop over tracks
   
 } // end matchTracksToTruthParts
@@ -626,9 +624,7 @@ void ObjectMatcher :: matchCloseTruthToSecVerts ( const xAOD::VertexContainer* s
 
     TVector3 reco_pos( secVtx->x(), secVtx->y(), secVtx->z() );
     EJsHelper::TruthVertexLinkVector_t matchedTVLinks;
-    //std::vector<int>    matchedTV_ID;
-    //std::vector<int>    matchedTV_BC;
-    std::vector<double> matchedTV_dist;
+    std::vector<float>                 matchedTV_dist;
     const xAOD::TruthVertex* closestTruthVertex = 0;
     double closestTVDist = AlgConsts::maxValue;
 
@@ -645,8 +641,6 @@ void ObjectMatcher :: matchCloseTruthToSecVerts ( const xAOD::VertexContainer* s
       if ( dist < m_vtx_matchDist ) {
 	EJsHelper::TruthVertexLink_t link( m_inTruthVertexContainerName, tv );
 	matchedTVLinks .push_back( link );
-	//matchedTV_ID   .push_back( truthVtx->auxdataConst<int>("ID") );
-	//matchedTV_BC   .push_back( truthVtx->barcode() );
 	matchedTV_dist .push_back( dist );
       }
 
@@ -660,15 +654,11 @@ void ObjectMatcher :: matchCloseTruthToSecVerts ( const xAOD::VertexContainer* s
 
     // decorate secondary vertices w/ close-matched and closest truth vertices + distances b/w them
     secVtx->auxdecor<EJsHelper::TruthVertexLinkVector_t>("closeMatchedTruthVertexLinks") = matchedTVLinks;
-    //secVtx->auxdecor<std::vector<int>>("closestMatchedTruthVertex_ID")    = matchedTV_ID;
-    //secVtx->auxdecor<std::vector<int>>("closestMatchedTruthVertex_BC")    = matchedTV_BC;
-    secVtx->auxdecor<std::vector<double>>("closeMatchedTruthVertex_dist") = matchedTV_dist;
+    secVtx->auxdecor<std::vector<float>>("closeMatchedTruthVertex_dist")                 = matchedTV_dist;
 
     if ( closestTruthVertex ) {
       EJsHelper::TruthVertexLink_t closestTVLink( closestTruthVertex, *truthVerts );
       secVtx->auxdecor<EJsHelper::TruthVertexLink_t>("closestTruthVertexLink") = closestTVLink;
-      //secVtx->auxdecor<int>("closestTruthVertex_ID") = closestTruthVertex->auxdataConst<int>("ID");
-      //secVtx->auxdecor<int>("closestTruthVertex_BC") = closestTruthVertex->barcode();
     }
     secVtx->auxdecor<double>("closestTruthVertex_dist") = closestTVDist;
     
@@ -721,15 +711,11 @@ void ObjectMatcher :: matchLinkedTruthToSecVerts ( const xAOD::VertexContainer* 
 
     // loop over linked truth vertices and save element links + scores
     EJsHelper::TruthVertexLinkVector_t linkedTVLinks;
-    //std::vector<int>    linkedTV_ID;
-    //std::vector<int>    linkedTV_BC;
-    std::vector<double> linkedTV_score;
+    std::vector<float>                 linkedTV_score;
     for ( const auto& linkedTV : linkedTruthVerts ) {
       const auto* tv = linkedTV.first;
       EJsHelper::TruthVertexLink_t tvlink( tv, *truthVerts );
       linkedTVLinks  .push_back( tvlink );
-      //linkedTV_ID    .push_back( tv->auxdataConst<int>("ID") );
-      //linkedTV_BC    .push_back( tv->barcode() );
       linkedTV_score .push_back( linkedTV.second );
     }
     // find highest-score truth vertex
@@ -747,15 +733,11 @@ void ObjectMatcher :: matchLinkedTruthToSecVerts ( const xAOD::VertexContainer* 
 
     // loop over linked parent truth vertices + save element links + score
     EJsHelper::TruthVertexLinkVector_t linkedPTVLinks;
-    //std::vector<int>    linkedPTV_ID;
-    //std::vector<int>    linkedPTV_BC;
-    std::vector<double> linkedPTV_score;
+    std::vector<float>                 linkedPTV_score;
     for ( const auto& linkedPTV : linkedParentTruthVerts ) {
       const auto* ptv = linkedPTV.first;
       EJsHelper::TruthVertexLink_t ptvlink( ptv, *truthVerts );
       linkedPTVLinks  .push_back( ptvlink );
-      //linkedPTV_ID    .push_back( ptv->auxdataConst<int>("ID") );
-      //linkedPTV_BC    .push_back( ptv->barcode() );
       linkedPTV_score .push_back( linkedPTV.second );
     }
     // find highest-score parent truth vertex
@@ -773,28 +755,20 @@ void ObjectMatcher :: matchLinkedTruthToSecVerts ( const xAOD::VertexContainer* 
     
     // decorate secondary vertices w/ (max) linked (parent) truth vertices + their pt-weighted scores
     secVtx->auxdecor<EJsHelper::TruthVertexLinkVector_t>("trackLinkedTruthVertexLinks") = linkedTVLinks;
-    //secVtx->auxdecor<std::vector<int>>("trackLinkedTruthVertex_ID")       = linkedTV_ID;
-    //secVtx->auxdecor<std::vector<int>>("trackLinkedTruthVertex_BC")       = linkedTV_BC;
-    secVtx->auxdecor<std::vector<double>>("trackLinkedTruthVertex_score") = linkedTV_score;
+    secVtx->auxdecor<std::vector<float>>("trackLinkedTruthVertex_score")                = linkedTV_score;
 
     if ( maxlinkedTruthVertex ) {
       EJsHelper::TruthVertexLink_t maxlinkedTVLink( maxlinkedTruthVertex, *truthVerts );
       secVtx->auxdecor<EJsHelper::TruthVertexLink_t>("maxlinkedTruthVertexLink") = maxlinkedTVLink;
-      //secVtx->auxdecor<int>("maxlinkedTruthVertex_ID") = maxlinkedTruthVertex->auxdataConst<int>("ID");
-      //secVtx->auxdecor<int>("maxlinkedTruthVertex_BC") = maxlinkedTruthVertex->barcode();
     }
     secVtx->auxdecor<double>("maxlinkedTruthVertex_score") = maxlinkedTVScore;
 
     secVtx->auxdecor<EJsHelper::TruthVertexLinkVector_t>("trackLinkedParentTruthVertexLinks") = linkedPTVLinks;
-    //secVtx->auxdecor<std::vector<int>>("trackLinkedParentTruthVertex_ID")       = linkedPTV_ID;
-    //secVtx->auxdecor<std::vector<int>>("trackLinkedParentTruthVertex_BC")       = linkedPTV_BC;
-    secVtx->auxdecor<std::vector<double>>("trackLinkedParentTruthVertex_score") = linkedPTV_score;
+    secVtx->auxdecor<std::vector<float>>("trackLinkedParentTruthVertex_score")                = linkedPTV_score;
 
     if ( maxlinkedParentTruthVertex ) {
       EJsHelper::TruthVertexLink_t maxlinkedPTVLink( maxlinkedParentTruthVertex, *truthVerts );
       secVtx->auxdecor<EJsHelper::TruthVertexLink_t>("maxlinkedParentTruthVertexLink") = maxlinkedPTVLink;
-      //secVtx->auxdecor<int>("maxlinkedParentTruthVertex_ID") = maxlinkedParentTruthVertex->auxdataConst<int>("ID");
-      //secVtx->auxdecor<int>("maxlinkedParentTruthVertex_BC") = maxlinkedParentTruthVertex->barcode();
     }
     secVtx->auxdecor<double>("maxlinkedParentTruthVertex_score") = maxlinkedPTVScore;
 

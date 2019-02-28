@@ -87,7 +87,7 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, 
  
     // do we want to require "truth" info switch too ??
     if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
-      m_trk_truthMatchProb                  = new std::vector<std::vector<float>>;
+      m_trk_truthProb                       = new std::vector<std::vector<float>>;
       m_trk_truthID                         = new std::vector<std::vector<int>>;
       m_trk_truthBarcode                    = new std::vector<std::vector<int>>;
       m_trk_truthPid                        = new std::vector<std::vector<int>>;
@@ -284,7 +284,7 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
     delete m_trk_radiusOfFirstHit;
 
     if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
-      delete m_trk_truthMatchProb;
+      delete m_trk_truthProb;
       delete m_trk_truthID;
       delete m_trk_truthBarcode;
       delete m_trk_truthPid;
@@ -483,7 +483,7 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
     connectBranch<std::vector<float>>    ( tree, "trk_radiusOfFirstHit",   &m_trk_radiusOfFirstHit   );
 
     if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
-      connectBranch<std::vector<float>>     ( tree, "trk_truthMatchProb",                &m_trk_truthMatchProb                );
+      connectBranch<std::vector<float>>     ( tree, "trk_truthProb",                     &m_trk_truthProb                     );
       connectBranch<std::vector<int>>       ( tree, "trk_truthID",                       &m_trk_truthID                       );
       connectBranch<std::vector<int>>       ( tree, "trk_truthBarcode",                  &m_trk_truthBarcode                  );
       connectBranch<std::vector<int>>       ( tree, "trk_truthPid",                      &m_trk_truthPid                      );
@@ -679,7 +679,7 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
     setBranch<std::vector<float>>    ( tree, "trk_radiusOfFirstHit",   m_trk_radiusOfFirstHit   );
 
     if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
-      setBranch<std::vector<float>>     ( tree, "trk_truthMatchProb",                m_trk_truthMatchProb                );
+      setBranch<std::vector<float>>     ( tree, "trk_truthProb",                     m_trk_truthProb                     );
       setBranch<std::vector<int>>       ( tree, "trk_truthID",                       m_trk_truthID                       );
       setBranch<std::vector<int>>       ( tree, "trk_truthBarcode",                  m_trk_truthBarcode                  );
       setBranch<std::vector<int>>       ( tree, "trk_truthPid",                      m_trk_truthPid                      );
@@ -878,7 +878,7 @@ void SecondaryVertexContainer :: clear ()
     m_trk_radiusOfFirstHit   ->clear();
 
     if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
-      m_trk_truthMatchProb                  ->clear();
+      m_trk_truthProb                       ->clear();
       m_trk_truthID                         ->clear();
       m_trk_truthBarcode                    ->clear();
       m_trk_truthPid                        ->clear();
@@ -1032,9 +1032,7 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
   
   const double dir  = sumP4.Vect().Dot( pos ) / sumP4.Vect().Mag() / pos.Mag();
 
-  float mass_nonAssoc = AlgConsts::invalidFloat;
-  if ( secVtx->isAvailable<float>( "mass_selectedTracks" ) )
-    mass_nonAssoc = secVtx->auxdataConst<float>( "mass_selectedTracks" );
+  float mass_nonAssoc = AUXDYN( secVtx, float, "mass_selectedTracks" );
 
   /* pt = sqrt( px*px + py*py ) (same as 'sumP4.Pt())
      eta = pz / TMath::Abs(p)  * TMath::ACosH(p/pt) (same as 'sumP4.Eta()')
@@ -1074,7 +1072,7 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
 
   std::vector<float> twoTracksMass;
   std::vector<float> twoTracksMassRest;
-  std::vector<int>    twoTracksCharge;
+  std::vector<int>   twoTracksCharge;
   for ( const auto& tuple : twoTrackMassTuples ) {
     double mass     = std::get<0>( tuple );
     double massRest = std::get<1>( tuple );
@@ -1178,7 +1176,7 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
   std::vector<uint8_t>  trk_nIBLOverflowsdEdx;
   std::vector<float>    trk_radiusOfFirstHit;
 
-  std::vector<float> trk_truthMatchProb;
+  std::vector<float> trk_truthProb;
   std::vector<int>   trk_truthID;
   std::vector<int>   trk_truthBarcode;
   std::vector<int>   trk_truthPid;
@@ -1253,16 +1251,16 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
       } catch(...) {}
     }
     if ( truthPart ) {
-      trk_truthMatchProb .push_back( trk->auxdataConst<float>("truthMatchProbability") );
-      trk_truthID        .push_back( AUXDYN( truthPart, int, "ID" )                    );
-      trk_truthBarcode   .push_back( truthPart->barcode()                              );
-      trk_truthPid       .push_back( truthPart->pdgId()                                );
+      trk_truthProb    .push_back( trk->auxdataConst<float>("truthMatchProbability") );
+      trk_truthID      .push_back( AUXDYN( truthPart, int, "ID" )                    );
+      trk_truthBarcode .push_back( truthPart->barcode()                              );
+      trk_truthPid     .push_back( truthPart->pdgId()                                );
     }
     else {
-      trk_truthMatchProb .push_back( AlgConsts::invalidFloat );
-      trk_truthID        .push_back( AlgConsts::invalidInt   );
-      trk_truthBarcode   .push_back( AlgConsts::invalidInt   );
-      trk_truthPid       .push_back( AlgConsts::invalidInt   );
+      trk_truthProb    .push_back( AlgConsts::invalidFloat );
+      trk_truthID      .push_back( AlgConsts::invalidInt   );
+      trk_truthBarcode .push_back( AlgConsts::invalidInt   );
+      trk_truthPid     .push_back( AlgConsts::invalidInt   );
     }
     
   }
@@ -1308,10 +1306,10 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
   m_trk_radiusOfFirstHit   ->push_back( trk_radiusOfFirstHit   );
 
   if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
-    m_trk_truthMatchProb ->push_back( trk_truthMatchProb );
-    m_trk_truthID        ->push_back( trk_truthID        );
-    m_trk_truthBarcode   ->push_back( trk_truthBarcode   );
-    m_trk_truthPid       ->push_back( trk_truthPid       );
+    m_trk_truthProb    ->push_back( trk_truthProb );
+    m_trk_truthID      ->push_back( trk_truthID        );
+    m_trk_truthBarcode ->push_back( trk_truthBarcode   );
+    m_trk_truthPid     ->push_back( trk_truthPid       );
   }
 
   // m_trk_truthPid, m_trk_truthIsFromClosestTV, m_trk_truthIsFromReprTV
@@ -1333,20 +1331,16 @@ void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx,
     } catch(...) {}
   }
 
-  float dist = AlgConsts::invalidFloat;
-  if ( secVtx->isAvailable<double>("closestTruthVertex_dist") )
-    dist = secVtx->auxdataConst<double>("closestTruthVertex_dist");
-  
-  unsigned isPid = AlgConsts::invalidUnsigned;
-
-  int   ID      = AlgConsts::invalidInt;
-  int   barcode = AlgConsts::invalidInt;
-  float x       = AlgConsts::invalidFloat;
-  float y       = AlgConsts::invalidFloat;
-  float z       = AlgConsts::invalidFloat;
-  float r       = AlgConsts::invalidFloat;
-  float eta     = AlgConsts::invalidFloat;
-  float phi     = AlgConsts::invalidFloat;
+  float    dist    = AUXDYN( secVtx, double, "closestTruthVertex_dist" ); 
+  unsigned isPid   = AlgConsts::invalidUnsigned;
+  int      ID      = AlgConsts::invalidInt;
+  int      barcode = AlgConsts::invalidInt;
+  float    x       = AlgConsts::invalidFloat;
+  float    y       = AlgConsts::invalidFloat;
+  float    z       = AlgConsts::invalidFloat;
+  float    r       = AlgConsts::invalidFloat;
+  float    eta     = AlgConsts::invalidFloat;
+  float    phi     = AlgConsts::invalidFloat;
   
   TLorentzVector sumP4_in;
   TLorentzVector sumP4_out;
@@ -1412,17 +1406,15 @@ void SecondaryVertexContainer :: processCloseTruth ( const xAOD::Vertex* secVtx,
     for ( size_t k = 0; k != closestTruthVertex->nOutgoingParticles(); ++k ) {
       const auto* outP = closestTruthVertex->outgoingParticle(k);
       if ( !outP ) continue;
-      outP_ID      .push_back( AUXDYN( outP, int, "ID" ) );
-      outP_barcode .push_back( outP->barcode()           );
-      outP_pt      .push_back( outP->pt() / m_units      );
-      outP_eta     .push_back( outP->eta()               );
-      outP_phi     .push_back( outP->phi()               );
-      outP_charge  .push_back( outP->charge()            );
-      outP_pid     .push_back( outP->pdgId()             );
-      if ( outP->isAvailable<char>("isTrkMatch") )
-	outP_isReco   .push_back( outP->auxdataConst<char>("isTrkMatch")     );
-      if ( outP->isAvailable<double>("trkMatchProb") )
-	outP_recoProb .push_back( outP->auxdataConst<double>("trkMatchProb") );
+      outP_ID       .push_back( AUXDYN( outP, int, "ID"                       ) );
+      outP_barcode  .push_back( outP->barcode()                                 );
+      outP_pt       .push_back( outP->pt() / m_units                            );
+      outP_eta      .push_back( outP->eta()                                     );
+      outP_phi      .push_back( outP->phi()                                     );
+      outP_charge   .push_back( outP->charge()                                  );
+      outP_pid      .push_back( outP->pdgId()                                   );
+      outP_isReco   .push_back( AUXDYN( outP, char,   "isTrackMatch"          ) );
+      outP_recoProb .push_back( AUXDYN( outP, double, "trackMatchProbability" ) );
     }
 
     for ( const auto& trk : filteredTracks ) {
@@ -1487,20 +1479,16 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
     } catch(...) {}
   }
 
-  float tv_score = AlgConsts::invalidFloat;
-  if ( secVtx->isAvailable<double>("maxlinkedTruthVertex_score") )
-    tv_score = secVtx->auxdataConst<double>("maxlinkedTruthVertex_score");
-
-  unsigned tv_isPid = AlgConsts::invalidUnsigned;
-
-  int   tv_ID      = AlgConsts::invalidInt;
-  int   tv_barcode = AlgConsts::invalidInt;
-  float tv_x       = AlgConsts::invalidFloat;
-  float tv_y       = AlgConsts::invalidFloat;
-  float tv_z       = AlgConsts::invalidFloat;
-  float tv_r       = AlgConsts::invalidFloat;
-  float tv_eta     = AlgConsts::invalidFloat;
-  float tv_phi     = AlgConsts::invalidFloat;
+  float    tv_score   = AUXDYN( secVtx, double, "maxlinkedTruthVertex_score" );
+  unsigned tv_isPid   = AlgConsts::invalidUnsigned;
+  int      tv_ID      = AlgConsts::invalidInt;
+  int      tv_barcode = AlgConsts::invalidInt;
+  float    tv_x       = AlgConsts::invalidFloat;
+  float    tv_y       = AlgConsts::invalidFloat;
+  float    tv_z       = AlgConsts::invalidFloat;
+  float    tv_r       = AlgConsts::invalidFloat;
+  float    tv_eta     = AlgConsts::invalidFloat;
+  float    tv_phi     = AlgConsts::invalidFloat;
 
   TLorentzVector tv_sumP4_in;
   TLorentzVector tv_sumP4_out;
@@ -1566,17 +1554,15 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
     for ( size_t k = 0; k != maxlinkedTruthVertex->nOutgoingParticles(); ++k ) {
       const auto* outP = maxlinkedTruthVertex->outgoingParticle(k);
       if ( !outP ) continue;
-      tv_outP_ID      .push_back( AUXDYN( outP, int, "ID" ) );
-      tv_outP_barcode .push_back( outP->barcode()           );
-      tv_outP_pt      .push_back( outP->pt() / m_units      );
-      tv_outP_eta     .push_back( outP->eta()               );
-      tv_outP_phi     .push_back( outP->phi()               );
-      tv_outP_charge  .push_back( outP->charge()            );
-      tv_outP_pid     .push_back( outP->pdgId()             );
-      if ( outP->isAvailable<char>("isTrkMatch") )
-	tv_outP_isReco   .push_back( outP->auxdataConst<char>("isTrkMatch")     );
-      if ( outP->isAvailable<double>("trkMatchProb") )
-	tv_outP_recoProb .push_back( outP->auxdataConst<double>("trkMatchProb") );
+      tv_outP_ID       .push_back( AUXDYN( outP, int, "ID"                       ) );
+      tv_outP_barcode  .push_back( outP->barcode()                                 );
+      tv_outP_pt       .push_back( outP->pt() / m_units                            );
+      tv_outP_eta      .push_back( outP->eta()                                     );
+      tv_outP_phi      .push_back( outP->phi()                                     );
+      tv_outP_charge   .push_back( outP->charge()                                  );
+      tv_outP_pid      .push_back( outP->pdgId()                                   );
+      tv_outP_isReco   .push_back( AUXDYN( outP, char,   "isTrackMatch"          ) );
+      tv_outP_recoProb .push_back( AUXDYN( outP, double, "trackMatchProbability" ) );
     }
 
     for ( const auto& trk : filteredTracks ) {
@@ -1636,20 +1622,16 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
     } catch(...) {}
   }
 
-  float ptv_score = AlgConsts::invalidFloat;
-  if ( secVtx->isAvailable<double>("maxlinkedTruthVertex_score") )
-    ptv_score = secVtx->auxdataConst<double>("maxlinkedTruthVertex_score");
-
-  unsigned ptv_isPid = AlgConsts::invalidUnsigned;
-
-  int   ptv_ID      = AlgConsts::invalidInt;
-  int   ptv_barcode = AlgConsts::invalidInt;
-  float ptv_x       = AlgConsts::invalidFloat;
-  float ptv_y       = AlgConsts::invalidFloat;
-  float ptv_z       = AlgConsts::invalidFloat;
-  float ptv_r       = AlgConsts::invalidFloat;
-  float ptv_eta     = AlgConsts::invalidFloat;
-  float ptv_phi     = AlgConsts::invalidFloat;
+  float    ptv_score   = AUXDYN( secVtx, double, "maxlinkedTruthVertex_score" );
+  unsigned ptv_isPid   = AlgConsts::invalidUnsigned;
+  int      ptv_ID      = AlgConsts::invalidInt;
+  int      ptv_barcode = AlgConsts::invalidInt;
+  float    ptv_x       = AlgConsts::invalidFloat;
+  float    ptv_y       = AlgConsts::invalidFloat;
+  float    ptv_z       = AlgConsts::invalidFloat;
+  float    ptv_r       = AlgConsts::invalidFloat;
+  float    ptv_eta     = AlgConsts::invalidFloat;
+  float    ptv_phi     = AlgConsts::invalidFloat;
 
   TLorentzVector ptv_sumP4_in;
   TLorentzVector ptv_sumP4_out;
@@ -1715,17 +1697,15 @@ void SecondaryVertexContainer :: processLinkedTruth ( const xAOD::Vertex* secVtx
     for ( size_t k = 0; k != maxlinkedParentTruthVertex->nOutgoingParticles(); ++k ) {
       const auto* outP = maxlinkedParentTruthVertex->outgoingParticle(k);
       if ( !outP ) continue;
-      ptv_outP_ID      .push_back( AUXDYN( outP, int, "ID" ) );
-      ptv_outP_barcode .push_back( outP->barcode()           );
-      ptv_outP_pt      .push_back( outP->pt() / m_units      );
-      ptv_outP_eta     .push_back( outP->eta()               );
-      ptv_outP_phi     .push_back( outP->phi()               );
-      ptv_outP_charge  .push_back( outP->charge()            );
-      ptv_outP_pid     .push_back( outP->pdgId()             );
-      if ( outP->isAvailable<char>("isTrkMatch") )
-	ptv_outP_isReco   .push_back( outP->auxdataConst<char>("isTrkMatch")     );
-      if ( outP->isAvailable<double>("trkMatchProb") )
-	ptv_outP_recoProb .push_back( outP->auxdataConst<double>("trkMatchProb") );
+      ptv_outP_ID       .push_back( AUXDYN( outP, int, "ID"                       ) );
+      ptv_outP_barcode  .push_back( outP->barcode()                                 );
+      ptv_outP_pt       .push_back( outP->pt() / m_units                            );
+      ptv_outP_eta      .push_back( outP->eta()                                     );
+      ptv_outP_phi      .push_back( outP->phi()                                     );
+      ptv_outP_charge   .push_back( outP->charge()                                  );
+      ptv_outP_pid      .push_back( outP->pdgId()                                   );
+      ptv_outP_isReco   .push_back( AUXDYN( outP, char,   "isTrackMatch"          ) );
+      ptv_outP_recoProb .push_back( AUXDYN( outP, double, "trackMatchProbability" ) );
     }
 
     for ( const auto& trk : filteredTracks ) {

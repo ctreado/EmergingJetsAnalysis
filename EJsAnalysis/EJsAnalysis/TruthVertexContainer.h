@@ -71,6 +71,7 @@ namespace EJs {
     std::vector<std::vector<uint8_t>>* m_outP_isReco;
     std::vector<std::vector<float>>*   m_outP_recoProb;
     // --> add branches for corresponding isReco tracks (??) ...
+    // --> also want to look at POTENTIALLY RECONSTRUCTIBLE tracks ...
     
   };
   
