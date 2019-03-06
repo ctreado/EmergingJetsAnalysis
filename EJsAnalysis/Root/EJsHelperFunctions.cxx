@@ -18,6 +18,16 @@ namespace EJsHelper {
     return dR;
   }
 
+   void getFilteredTracks ( const xAOD::Vertex* vtx, std::vector<const xAOD::TrackParticle*>& filtTrks )
+   {
+     for ( size_t itrk = 0; itrk != vtx->nTrackParticles(); ++itrk ) {
+       const auto* trk = vtx->trackParticle(itrk);
+       bool trk_isFilt = true;
+       if ( trk->isAvailable<char>("isFiltered") ) trk_isFilt = trk->auxdataConst<char>("isFiltered");
+       if ( trk_isFilt )                           filtTrks.push_back( trk );
+     }
+   }
+
   // ------------------------------------------------------------------------------------------ //
 
   bool selectDarkPion ( const xAOD::TruthVertex* truthVtx )

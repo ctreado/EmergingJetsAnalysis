@@ -36,42 +36,54 @@ namespace EJs {
     std::vector<uint8_t>* m_isDarkPionDecay;
 
     std::vector<int>*   m_ID;
-    std::vector<int>*   m_barcode;
     std::vector<float>* m_x;
     std::vector<float>* m_y;
     std::vector<float>* m_z;
     std::vector<float>* m_r;
     std::vector<float>* m_eta;
     std::vector<float>* m_phi;
+    std::vector<int>*   m_barcode;
 
-    std::vector<int>*   m_parent_ID;
-    std::vector<int>*   m_parent_barcode;
+    std::vector<int>*   m_parent_ID; 
     std::vector<float>* m_parent_pt;
     std::vector<float>* m_parent_eta;
     std::vector<float>* m_parent_phi;
+    std::vector<float>* m_parent_E;
+    std::vector<float>* m_parent_M;
     std::vector<float>* m_parent_charge;
     std::vector<int>*   m_parent_pid;
+    std::vector<int>*   m_parent_status;
+    std::vector<int>*   m_parent_barcode;
 
     std::vector<int>*   m_parent_prod_ID;
-    std::vector<int>*   m_parent_prod_barcode;
     std::vector<float>* m_parent_prod_x;
     std::vector<float>* m_parent_prod_y;
     std::vector<float>* m_parent_prod_z;
     std::vector<float>* m_parent_prod_r;
     std::vector<float>* m_parent_prod_eta;
     std::vector<float>* m_parent_prod_phi;
+    std::vector<int>*   m_parent_prod_barcode;
 
     std::vector<std::vector<int>>*     m_outP_ID;
-    std::vector<std::vector<int>>*     m_outP_barcode;
     std::vector<std::vector<float>>*   m_outP_pt;
     std::vector<std::vector<float>>*   m_outP_eta;
     std::vector<std::vector<float>>*   m_outP_phi;
+    std::vector<std::vector<float>>*   m_outP_E;
+    std::vector<std::vector<float>>*   m_outP_M;
     std::vector<std::vector<float>>*   m_outP_charge;
     std::vector<std::vector<int>>*     m_outP_pid;
+    std::vector<std::vector<int>>*     m_outP_status;
+    std::vector<std::vector<int>>*     m_outP_barcode;
     std::vector<std::vector<uint8_t>>* m_outP_isReco;
     std::vector<std::vector<float>>*   m_outP_recoProb;
+    std::vector<std::vector<int>>*     m_outP_recoID;
+    std::vector<std::vector<uint8_t>>* m_outP_recoIsSelected;
+    std::vector<std::vector<uint8_t>>* m_outP_recoIsAssociated;
     // --> add branches for corresponding isReco tracks (??) ...
     // --> also want to look at POTENTIALLY RECONSTRUCTIBLE tracks ...
+
+    // --> add matched reco vertex branches ...
+    // --> --> need to do reco-to-truth matching + decorte truth vertices accordingly first
     
   };
   

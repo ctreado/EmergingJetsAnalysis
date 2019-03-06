@@ -17,12 +17,6 @@
 namespace EJsHelper {
 
   // --- generic helper functions --- //
-  
-  // returns dPhi in [-pi, pi] range
-  double deltaPhi ( const double&, const double& );
-
-  // returns dR b/w two objects
-  double deltaR ( const double&, const double&, const double&, const double& );
 
   // element link typedefs
   typedef ElementLink<xAOD::TrackParticleContainer> TrackLink_t;
@@ -33,6 +27,15 @@ namespace EJsHelper {
   typedef std::vector<ElementLink<xAOD::VertexContainer>> VertexLinkVector_t;
   typedef std::vector<ElementLink<xAOD::TruthParticleContainer>> TruthParticleLinkVector_t;
   typedef std::vector<ElementLink<xAOD::TruthVertexContainer>> TruthVertexLinkVector_t;
+
+  // returns dPhi in [-pi, pi] range
+  double deltaPhi ( const double&, const double& );
+
+  // returns dR b/w two objects
+  double deltaR ( const double&, const double&, const double&, const double& );
+
+  // returns vector of decorated filtered tracks
+  void getFilteredTracks ( const xAOD::Vertex*, std::vector<const xAOD::TrackParticle*>& );
 
 
   // --- truth helper functions (taken from VsiPerf/VsiTruthHelper) --- //

@@ -81,6 +81,7 @@ namespace EJs {
     std::vector<std::vector<float>>* m_trk_theta;
     std::vector<std::vector<float>>* m_trk_vz;
     std::vector<std::vector<float>>* m_trk_E;
+    std::vector<std::vector<float>>* m_trk_M;
     std::vector<std::vector<float>>* m_trk_pt;
     std::vector<std::vector<float>>* m_trk_eta;
     std::vector<std::vector<float>>* m_trk_phi;
@@ -145,35 +146,44 @@ namespace EJs {
     std::vector<uint8_t>* m_closestTruth_isDarkPionDecay;
 
     std::vector<int>*   m_closestTruth_ID;
-    std::vector<int>*   m_closestTruth_barcode;
     std::vector<float>* m_closestTruth_x;
     std::vector<float>* m_closestTruth_y;
     std::vector<float>* m_closestTruth_z;
     std::vector<float>* m_closestTruth_r;
     std::vector<float>* m_closestTruth_eta;
     std::vector<float>* m_closestTruth_phi;
+    std::vector<int>*   m_closestTruth_barcode;
 
     std::vector<float>* m_closestTruth_inE;
     std::vector<float>* m_closestTruth_outE;
     // --> anything else from sumP4 worth saving ??
 
     std::vector<int>*   m_closestTruth_parent_ID;
-    std::vector<int>*   m_closestTruth_parent_barcode;
     std::vector<float>* m_closestTruth_parent_pt;
     std::vector<float>* m_closestTruth_parent_eta;
     std::vector<float>* m_closestTruth_parent_phi;
+    std::vector<float>* m_closestTruth_parent_E;
+    std::vector<float>* m_closestTruth_parent_M;
     std::vector<float>* m_closestTruth_parent_charge;
     std::vector<int>*   m_closestTruth_parent_pid;
+    std::vector<int>*   m_closestTruth_parent_status;
+    std::vector<int>*   m_closestTruth_parent_barcode;
 
     std::vector<std::vector<int>>*     m_closestTruth_outP_ID;
-    std::vector<std::vector<int>>*     m_closestTruth_outP_barcode;
     std::vector<std::vector<float>>*   m_closestTruth_outP_pt;
     std::vector<std::vector<float>>*   m_closestTruth_outP_eta;
     std::vector<std::vector<float>>*   m_closestTruth_outP_phi;
+    std::vector<std::vector<float>>*   m_closestTruth_outP_E;
+    std::vector<std::vector<float>>*   m_closestTruth_outP_M;
     std::vector<std::vector<float>>*   m_closestTruth_outP_charge;
     std::vector<std::vector<int>>*     m_closestTruth_outP_pid;
+    std::vector<std::vector<int>>*     m_closestTruth_outP_status;
+    std::vector<std::vector<int>>*     m_closestTruth_outP_barcode;
     std::vector<std::vector<uint8_t>>* m_closestTruth_outP_isReco;
     std::vector<std::vector<float>>*   m_closestTruth_outP_recoProb;
+    std::vector<std::vector<int>>*     m_closestTruth_outP_recoID;
+    std::vector<std::vector<uint8_t>>* m_closestTruth_outP_recoIsSelected;
+    std::vector<std::vector<uint8_t>>* m_closestTruth_outP_recoIsAssociated;
 
     
     // track-truth-link-matched (parent) truth vertices
@@ -183,68 +193,86 @@ namespace EJs {
     std::vector<uint8_t>* m_maxlinkTruth_isDarkPionDecay;
 
     std::vector<int>*   m_maxlinkTruth_ID;
-    std::vector<int>*   m_maxlinkTruth_barcode;
     std::vector<float>* m_maxlinkTruth_x;
     std::vector<float>* m_maxlinkTruth_y;
     std::vector<float>* m_maxlinkTruth_z;
     std::vector<float>* m_maxlinkTruth_r;
     std::vector<float>* m_maxlinkTruth_eta;
     std::vector<float>* m_maxlinkTruth_phi;
+    std::vector<int>*   m_maxlinkTruth_barcode;
 
     std::vector<float>* m_maxlinkTruth_inE;
     std::vector<float>* m_maxlinkTruth_outE;
 
     std::vector<int>*   m_maxlinkTruth_parent_ID;
-    std::vector<int>*   m_maxlinkTruth_parent_barcode;
     std::vector<float>* m_maxlinkTruth_parent_pt;
     std::vector<float>* m_maxlinkTruth_parent_eta;
     std::vector<float>* m_maxlinkTruth_parent_phi;
+    std::vector<float>* m_maxlinkTruth_parent_E;
+    std::vector<float>* m_maxlinkTruth_parent_M;
     std::vector<float>* m_maxlinkTruth_parent_charge;
     std::vector<int>*   m_maxlinkTruth_parent_pid;
+    std::vector<int>*   m_maxlinkTruth_parent_status;
+    std::vector<int>*   m_maxlinkTruth_parent_barcode;
 
     std::vector<std::vector<int>>*     m_maxlinkTruth_outP_ID;
-    std::vector<std::vector<int>>*     m_maxlinkTruth_outP_barcode;
     std::vector<std::vector<float>>*   m_maxlinkTruth_outP_pt;
     std::vector<std::vector<float>>*   m_maxlinkTruth_outP_eta;
     std::vector<std::vector<float>>*   m_maxlinkTruth_outP_phi;
+    std::vector<std::vector<float>>*   m_maxlinkTruth_outP_E;
+    std::vector<std::vector<float>>*   m_maxlinkTruth_outP_M;
     std::vector<std::vector<float>>*   m_maxlinkTruth_outP_charge;
     std::vector<std::vector<int>>*     m_maxlinkTruth_outP_pid;
+    std::vector<std::vector<int>>*     m_maxlinkTruth_outP_status;
+    std::vector<std::vector<int>>*     m_maxlinkTruth_outP_barcode;
     std::vector<std::vector<uint8_t>>* m_maxlinkTruth_outP_isReco;
     std::vector<std::vector<float>>*   m_maxlinkTruth_outP_recoProb;
+    std::vector<std::vector<int>>*     m_maxlinkTruth_outP_recoID;
+    std::vector<std::vector<uint8_t>>* m_maxlinkTruth_outP_recoIsSelected;
+    std::vector<std::vector<uint8_t>>* m_maxlinkTruth_outP_recoIsAssociated;
 
 
     std::vector<float>*   m_maxlinkParentTruth_score;
     std::vector<uint8_t>* m_maxlinkParentTruth_isDarkPionDecay;
 
     std::vector<int>*   m_maxlinkParentTruth_ID;
-    std::vector<int>*   m_maxlinkParentTruth_barcode;
     std::vector<float>* m_maxlinkParentTruth_x;
     std::vector<float>* m_maxlinkParentTruth_y;
     std::vector<float>* m_maxlinkParentTruth_z;
     std::vector<float>* m_maxlinkParentTruth_r;
     std::vector<float>* m_maxlinkParentTruth_eta;
     std::vector<float>* m_maxlinkParentTruth_phi;
+    std::vector<int>*   m_maxlinkParentTruth_barcode;
 
     std::vector<float>* m_maxlinkParentTruth_inE;
     std::vector<float>* m_maxlinkParentTruth_outE;
 
     std::vector<int>*   m_maxlinkParentTruth_parent_ID;
-    std::vector<int>*   m_maxlinkParentTruth_parent_barcode;
     std::vector<float>* m_maxlinkParentTruth_parent_pt;
     std::vector<float>* m_maxlinkParentTruth_parent_eta;
     std::vector<float>* m_maxlinkParentTruth_parent_phi;
+    std::vector<float>* m_maxlinkParentTruth_parent_E;
+    std::vector<float>* m_maxlinkParentTruth_parent_M;
     std::vector<float>* m_maxlinkParentTruth_parent_charge;
     std::vector<int>*   m_maxlinkParentTruth_parent_pid;
+    std::vector<int>*   m_maxlinkParentTruth_parent_status;
+    std::vector<int>*   m_maxlinkParentTruth_parent_barcode;
 
     std::vector<std::vector<int>>*     m_maxlinkParentTruth_outP_ID;
-    std::vector<std::vector<int>>*     m_maxlinkParentTruth_outP_barcode;
     std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_pt;
     std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_eta;
     std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_phi;
+    std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_E;
+    std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_M;
     std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_charge;
     std::vector<std::vector<int>>*     m_maxlinkParentTruth_outP_pid;
+    std::vector<std::vector<int>>*     m_maxlinkParentTruth_outP_status;
+    std::vector<std::vector<int>>*     m_maxlinkParentTruth_outP_barcode;
     std::vector<std::vector<uint8_t>>* m_maxlinkParentTruth_outP_isReco;
     std::vector<std::vector<float>>*   m_maxlinkParentTruth_outP_recoProb;
+    std::vector<std::vector<int>>*     m_maxlinkParentTruth_outP_recoID;
+    std::vector<std::vector<uint8_t>>* m_maxlinkParentTruth_outP_recoIsSelected;
+    std::vector<std::vector<uint8_t>>* m_maxlinkParentTruth_outP_recoIsAssociated;
 
   };
   

@@ -100,6 +100,7 @@ class EJsHelpTreeBase : public HelpTreeBase
   std::vector<uint8_t>* m_trk_isAssociated;
   uint32_t m_trk_nSelected;
   uint32_t m_trk_nAssociated;
+  // --> definitely at least add info from jet class (i.e. charge, truth match, etc.)
   // --> do we want to add more info here (i.e. VSI track info) ???
 
 };

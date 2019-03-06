@@ -122,7 +122,7 @@ EL::StatusCode SecondaryVertexSelector :: execute ()
   // create output container (if requested) -- deep copy
   auto selectedSecVerts =
     std::make_unique<ConstDataVector<xAOD::VertexContainer>>(SG::VIEW_ELEMENTS);
-
+  
   for ( const auto& vtx : *inSecVerts ) {
     int passSel = this->PassCuts( vtx );
     if ( m_decorateSelectedObjects ) vtx->auxdecor<char>( "passSel" ) = passSel;

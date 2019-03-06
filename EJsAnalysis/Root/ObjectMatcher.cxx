@@ -486,15 +486,9 @@ void ObjectMatcher :: matchSecVertsToJets ( const xAOD::JetContainer* jets,
       if ( vtx->isAvailable<TLorentzVector>("sumP4") )
 	vtxP4 = vtx->auxdataConst<TLorentzVector>("sumP4");
       // otherwise, calculate from filtered tracks
-      else {
+      else { 
 	std::vector<const xAOD::TrackParticle*> filteredTracks;
-	for ( size_t itrk = 0; itrk != vtx->nTrackParticles(); ++itrk ) {
-	  const auto* trk = vtx->trackParticle(itrk);
-	  bool trk_isFilt = true;
-	  if ( trk->isAvailable<char>("isFiltered") )
-	    trk_isFilt = trk->auxdataConst<char>("isFiltered");
-	  if ( trk_isFilt ) filteredTracks.push_back( trk );
-	}
+	EJsHelper::getFilteredTracks( vtx, filteredTracks );
 	vtxP4 = VsiBonsai::sumP4( filteredTracks );
       }
 
@@ -679,13 +673,7 @@ void ObjectMatcher :: matchLinkedTruthToSecVerts ( const xAOD::VertexContainer* 
 
     // fill vector of filtered tracks
     std::vector<const xAOD::TrackParticle*> filteredTracks;
-    for ( size_t itrk = 0; itrk != secVtx->nTrackParticles(); ++itrk ) {
-      const auto* trk = secVtx->trackParticle(itrk);
-      bool trk_isFilt = true;
-      if ( trk->isAvailable<char>("isFiltered") )
-	trk_isFilt = trk->auxdataConst<char>("isFiltered");
-      if ( trk_isFilt ) filteredTracks.push_back( trk );
-    }
+    EJsHelper::getFilteredTracks( secVtx, filteredTracks );
 
     // map all (parent) truth vertices linked from secondary vertex tracks + their pt-weighted scores
     std::map<const xAOD::TruthVertex*, double> linkedTruthVerts;
