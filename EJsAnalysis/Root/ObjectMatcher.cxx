@@ -481,7 +481,6 @@ void ObjectMatcher :: matchSecVertsToJets ( const xAOD::JetContainer* jets,
 
       // get vertex eta, phi from four-momentum
       TLorentzVector vtxP4;
-      
       // grab 4-mom from decorator, if available
       if ( vtx->isAvailable<TLorentzVector>("sumP4") )
 	vtxP4 = vtx->auxdataConst<TLorentzVector>("sumP4");

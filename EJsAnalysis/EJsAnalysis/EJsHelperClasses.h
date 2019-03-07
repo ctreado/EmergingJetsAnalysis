@@ -36,6 +36,23 @@ namespace EJsHelperClasses {
   protected:
     void initialize();
   };
+
+
+  class JetInfoSwitch : public HelperClasses::InfoSwitch
+  {
+  public:
+    bool m_constituentAll;
+    bool m_ghost;
+    bool m_match;
+    bool m_truthJets;
+    bool m_vertices;
+    bool m_trackParts;
+    
+    JetInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
+
+  protected:
+    void initialize();
+  };
   
 } // EJsHelperClasses
 

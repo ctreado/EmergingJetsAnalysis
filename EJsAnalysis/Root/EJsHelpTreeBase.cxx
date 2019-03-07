@@ -57,7 +57,7 @@ void EJsHelpTreeBase :: AddTruthVerts ( const std::string detailStr, const std::
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddTruthVerts()", "adding truth vertex variables" );
   
-  m_truthVerts[ truthVtxName ] = new EJs::TruthVertexContainer( truthVtxName, detailStr, m_units );
+  m_truthVerts[ truthVtxName ] = new EJs::TruthVertexContainer( truthVtxName, detailStr, m_units, m_isMC );
   EJs::TruthVertexContainer* thisTruthVtx = m_truthVerts[ truthVtxName ];
   thisTruthVtx->setBranches( m_tree );
 }
@@ -92,7 +92,7 @@ void EJsHelpTreeBase :: AddSecondaryVerts ( const std::string detailStr, const s
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddSecondaryVerts()", "adding secondary vertex variables" );
 
-  m_secVerts[ secVtxName ] = new EJs::SecondaryVertexContainer( secVtxName, detailStr, m_units );
+  m_secVerts[ secVtxName ] = new EJs::SecondaryVertexContainer( secVtxName, detailStr, m_units, m_isMC );
   EJs::SecondaryVertexContainer* thisSecVtx = m_secVerts[ secVtxName ];
   thisSecVtx->setBranches( m_tree );
 }

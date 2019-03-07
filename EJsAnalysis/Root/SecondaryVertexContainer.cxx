@@ -1,3 +1,6 @@
+#include <TVector3.h>
+#include <TLorentzVector.h>
+
 #include <xAODTracking/TrackParticleContainer.h>
 #include <xAODTracking/VertexContainer.h>
 #include <xAODTruth/TruthVertexContainer.h>
@@ -8,8 +11,8 @@
 
 using namespace EJs;
 
-SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, const std::string& detailStr, float units ) :
-  VertexContainer ( name, detailStr, units )
+SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, const std::string& detailStr, float units, bool mc ) :
+  VertexContainer ( name, detailStr, units, mc )
 {
   if ( m_debug ) Info( "EJs::SecondaryVertexContainer()", "setting up" );
 
@@ -86,7 +89,6 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, 
     m_trk_nIBLOverflowsdEdx  = new std::vector<std::vector<uint8_t>>;
     m_trk_radiusOfFirstHit   = new std::vector<std::vector<float>>;
  
-    // do we want to require "truth" info switch too ??
     if ( m_infoSwitch.m_truth || m_infoSwitch.m_close || m_infoSwitch.m_linked ) {
       m_trk_truthProb                       = new std::vector<std::vector<float>>;
       m_trk_truthID                         = new std::vector<std::vector<int>>;

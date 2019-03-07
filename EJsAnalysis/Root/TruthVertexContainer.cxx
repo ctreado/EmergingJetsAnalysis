@@ -7,8 +7,8 @@
 
 using namespace EJs;
 
-TruthVertexContainer :: TruthVertexContainer ( const std::string& name, const std::string& detailStr, float units ) :
-  VertexContainer ( name, detailStr, units )
+TruthVertexContainer :: TruthVertexContainer ( const std::string& name, const std::string& detailStr, float units, bool mc ) :
+  VertexContainer ( name, detailStr, units, mc )
 {
   if ( m_debug ) Info( "EJs::TruthVertexContainer()", "setting up" );
 

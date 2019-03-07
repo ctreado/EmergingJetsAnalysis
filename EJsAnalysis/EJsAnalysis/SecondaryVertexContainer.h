@@ -23,7 +23,7 @@ namespace EJs {
   class SecondaryVertexContainer : public VertexContainer < EJsHelperClasses::SecondaryVertexInfoSwitch >
   {
   public:
-    SecondaryVertexContainer ( const std::string& name = "secVtx", const std::string& detailStr = "", float units = 1e3 );
+    SecondaryVertexContainer ( const std::string& name = "secVtx", const std::string& detailStr = "", float units = 1e3, bool mc = false );
     virtual ~SecondaryVertexContainer ();
 
     virtual void setTree             ( TTree* tree );

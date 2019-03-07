@@ -13,5 +13,14 @@ namespace EJsHelperClasses {
   void TruthVertexInfoSwitch::initialize() {
     // nothing here yet...
   }
+
+  void JetInfoSwitch::initialize() {
+    m_constituentAll = has_exact( "constituentAll" );
+    m_ghost          = has_exact( "ghost"          );
+    m_match          = has_exact( "match"          );
+    m_truthJets      = has_exact( "truthJets"      );
+    m_vertices       = has_exact( "vertices"       );
+    m_trackParts     = has_exact( "trackParts"     );
+  }
   
 } // EJsHelperClasses

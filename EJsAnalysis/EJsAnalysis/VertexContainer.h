@@ -22,11 +22,12 @@ namespace EJs {
   class VertexContainer
   {
   public:
-    VertexContainer ( const std::string& name, const std::string& detailStr = "", float units = 1e3 )
-      : m_name       ( name ),
+    VertexContainer ( const std::string& name, const std::string& detailStr = "", float units = 1e3, bool mc = false )
+      : m_name       ( name      ),
         m_infoSwitch ( detailStr ),
-        m_units      ( units ),
-        m_debug      ( false )
+        m_units      ( units     ),
+        m_mc         ( mc        ),
+        m_debug      ( false     )
     {
       m_n = 0;
     }
@@ -91,7 +92,8 @@ namespace EJs {
     
   public:
     T_INFOSWITCH m_infoSwitch; 
-    float    m_units; 
+    float    m_units;
+    bool     m_mc;
     bool     m_debug;   
     uint32_t m_n;
 
