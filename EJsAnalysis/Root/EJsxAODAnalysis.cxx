@@ -387,7 +387,13 @@ EL::StatusCode EJsxAODAnalysis :: executeSelection ( const xAOD::EventInfo* even
       for ( const auto& jet : *inJets )
 	jet->auxdecor<char>("isEmerging") = selectEmergingJet( jet );
 
-      std::string decorLabel = m_inJetContainers.at(i) + systName;
+      // set decorator label
+      std::string jetStr = "";
+      if      ( m_inJetContainers.at(i).find("EMTopo") != std::string::npos ) jetStr = "EMTopo";
+      else if ( m_inJetContainers.at(i).find("PFlow")  != std::string::npos ) jetStr = "PFlow";
+      std::string decorLabel = jetStr + systName;
+      if ( m_eventNumber == 0 )
+	ANA_MSG_INFO( "EJsxAODAnalysis::executeSelection(): " << decorLabel );
 
       // signal selections
       int passSignalSel = this->PassSignalCuts( eventInfo, inJets, m_inJetBins.at(i), decorLabel );

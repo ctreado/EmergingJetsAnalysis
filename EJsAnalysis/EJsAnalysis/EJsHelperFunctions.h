@@ -9,6 +9,7 @@
 
 #include <AthLinks/ElementLink.h>
 
+#include <xAODJet/JetContainer.h>
 #include <xAODTracking/TrackParticleContainer.h>
 #include <xAODTracking/VertexContainer.h>
 #include <xAODTruth/TruthParticleContainer.h>
@@ -19,14 +20,16 @@ namespace EJsHelper {
   // --- generic helper functions --- //
 
   // element link typedefs
-  typedef ElementLink<xAOD::TrackParticleContainer> TrackLink_t;
-  typedef ElementLink<xAOD::VertexContainer> VertexLink_t;
-  typedef ElementLink<xAOD::TruthParticleContainer> TruthParticleLink_t;
-  typedef ElementLink<xAOD::TruthVertexContainer> TruthVertexLink_t;
+  typedef ElementLink<xAOD::JetContainer>                        JetLink_t;
+  typedef ElementLink<xAOD::TrackParticleContainer>              TrackLink_t;
+  typedef ElementLink<xAOD::VertexContainer>                     VertexLink_t;
+  typedef ElementLink<xAOD::TruthParticleContainer>              TruthParticleLink_t;
+  typedef ElementLink<xAOD::TruthVertexContainer>                TruthVertexLink_t;
+  typedef std::vector<ElementLink<xAOD::JetContainer>>           JetLinkVector_t;
   typedef std::vector<ElementLink<xAOD::TrackParticleContainer>> TrackLinkVector_t;
-  typedef std::vector<ElementLink<xAOD::VertexContainer>> VertexLinkVector_t;
+  typedef std::vector<ElementLink<xAOD::VertexContainer>>        VertexLinkVector_t;
   typedef std::vector<ElementLink<xAOD::TruthParticleContainer>> TruthParticleLinkVector_t;
-  typedef std::vector<ElementLink<xAOD::TruthVertexContainer>> TruthVertexLinkVector_t;
+  typedef std::vector<ElementLink<xAOD::TruthVertexContainer>>   TruthVertexLinkVector_t;
 
   // returns dPhi in [-pi, pi] range
   double deltaPhi ( const double&, const double& );

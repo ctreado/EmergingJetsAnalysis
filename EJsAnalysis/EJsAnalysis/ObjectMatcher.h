@@ -53,6 +53,10 @@ class ObjectMatcher : public xAH::Algorithm
  protected:
   std::vector<std::string> m_inJetContainers; //!
 
+  private:
+  int m_eventNumber; //!
+  enum jetType { RECO, TRUTH, DARK }; //!
+
   
  public:
   // standard constructor
@@ -70,16 +74,23 @@ class ObjectMatcher : public xAH::Algorithm
   virtual EL::StatusCode histFinalize ();
 
   // added functions not from Algorithm
-  void matchTruthJets        ( const xAOD::JetContainer*, const xAOD::JetContainer*,
-			       const std::string,         bool matchJetIsDark = false );
+  void matchTruthJets ( const xAOD::JetContainer*, const xAOD::JetContainer*,
+			const enum jetType&,       const enum jetType&,
+			const std::string );
 
-  void matchTruthVertsToJets ( const xAOD::JetContainer*, const xAOD::TruthVertexContainer* );
-  void matchSecVertsToJets   ( const xAOD::JetContainer*, const xAOD::VertexContainer* );
+  void matchTruthVertsToJets ( const xAOD::JetContainer*, const xAOD::TruthVertexContainer*,
+			       const enum jetType&,       const std::string );
+  void matchSecVertsToJets   ( const xAOD::JetContainer*, const xAOD::VertexContainer*,
+			       const enum jetType&,       const std::string );
 
-  void matchTruthPartsToJets ( const xAOD::JetContainer*, const xAOD::TruthParticleContainer* );
-  void matchTracksToJets     ( const xAOD::JetContainer*, const xAOD::TrackParticleContainer* );
+  void matchTruthPartsToJets ( const xAOD::JetContainer*, const xAOD::TruthParticleContainer*,
+			       const enum jetType&,       const std::string );
+  void matchTracksToJets     ( const xAOD::JetContainer*, const xAOD::TrackParticleContainer*,
+			       const enum jetType&,       const std::string );
 
   void matchTracksToTruthParts ( const xAOD::TruthParticleContainer*, const xAOD::TrackParticleContainer* );
+
+  void matchTracksToSecVerts ( const xAOD::VertexContainer*, const xAOD::TrackParticleContainer* );
 
   void matchCloseTruthToSecVerts  ( const xAOD::VertexContainer*, const xAOD::TruthVertexContainer* );
   void matchLinkedTruthToSecVerts ( const xAOD::VertexContainer*, const xAOD::TruthVertexContainer* );

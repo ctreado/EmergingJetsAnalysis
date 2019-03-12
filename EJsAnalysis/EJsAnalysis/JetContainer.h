@@ -33,19 +33,32 @@ namespace EJs {
   private:
     // vector branches
     std::vector<int>*   m_ID;
+    std::vector<float>* m_M;
     std::vector<float>* m_radius;
 
     // matched truth (dark) jets
     std::vector<uint8_t>*            m_isTruthMatched;
-    std::vector<int>*                m_truthMatchID;
-    std::vector<float>*              m_truthMatchDR;
-    std::vector<std::vector<int>>*   m_truthNonmatchIDs;
-    std::vector<std::vector<float>>* m_truthNonmatchDRs;
+    std::vector<int>*                m_truthMatch_ID;
+    std::vector<float>*              m_truthMatch_dR;
+    std::vector<float>*              m_truthMatch_E;
+    std::vector<float>*              m_truthMatch_M;
+    std::vector<float>*              m_truthMatch_pt;
+    std::vector<float>*              m_truthMatch_eta;
+    std::vector<float>*              m_truthMatch_phi;
+    std::vector<float>*              m_truthMatch_rapidity;
+    std::vector<std::vector<int>>*   m_truthNonmatch_IDs;
+    std::vector<std::vector<float>>* m_truthNonmatch_dRs;
     std::vector<uint8_t>*            m_isDarkMatched;
-    std::vector<int>*                m_darkMatchID;
-    std::vector<float>*              m_darkMatchDR;
-    std::vector<std::vector<int>>*   m_darkNonmatchIDs;
-    std::vector<std::vector<float>>* m_darkNonmatchDRs;
+    std::vector<int>*                m_darkMatch_ID;
+    std::vector<float>*              m_darkMatch_dR;
+    std::vector<float>*              m_darkMatch_E;
+    std::vector<float>*              m_darkMatch_M;
+    std::vector<float>*              m_darkMatch_pt;
+    std::vector<float>*              m_darkMatch_eta;
+    std::vector<float>*              m_darkMatch_phi;
+    std::vector<float>*              m_darkMatch_rapidity;
+    std::vector<std::vector<int>>*   m_darkNonmatch_IDs;
+    std::vector<std::vector<float>>* m_darkNonmatch_dRs;
     // matched vertices
     std::vector<std::vector<int>>*     m_secVtx_ID;
     std::vector<std::vector<float>>*   m_secVtx_x;
@@ -56,6 +69,7 @@ namespace EJs {
     std::vector<std::vector<float>>*   m_secVtx_eta;
     std::vector<std::vector<float>>*   m_secVtx_phi;
     std::vector<std::vector<float>>*   m_secVtx_mass;
+    std::vector<std::vector<float>>*   m_secVtx_chi2;
     std::vector<std::vector<int>>*     m_secVtx_ntrk; // ntrk_sel/assoc ??
     std::vector<std::vector<float>>*   m_secVtx_dR;
     std::vector<std::vector<uint8_t>>* m_secVtx_closestTruth_isDarkPionDecay;
@@ -156,6 +170,8 @@ namespace EJs {
     // --> want to add truth parents / ancestors ?? --> at least check if truth particle is dark pion descendant (and generation)
 
     // jet constituents
+    std::vector<float>*              m_jet_girth;
+    std::vector<std::vector<float>>* m_constituent_dR;
     std::vector<std::vector<float>>* m_constituent_m;
   };
 

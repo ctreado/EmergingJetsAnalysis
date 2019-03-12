@@ -12,19 +12,32 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
   if ( m_debug ) Info( "EJs::JetContainer()", "setting up" );
 
   m_ID     = new std::vector<int>;
+  m_M      = new std::vector<float>;
   m_radius = new std::vector<float>;
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
-    m_isTruthMatched   = new std::vector<uint8_t>;
-    m_truthMatchID     = new std::vector<int>;
-    m_truthMatchDR     = new std::vector<float>;
-    m_truthNonmatchIDs = new std::vector<std::vector<int>>;
-    m_truthNonmatchDRs = new std::vector<std::vector<float>>;
-    m_isDarkMatched    = new std::vector<uint8_t>;
-    m_darkMatchID      = new std::vector<int>;
-    m_darkMatchDR      = new std::vector<float>;
-    m_darkNonmatchIDs  = new std::vector<std::vector<int>>;
-    m_darkNonmatchDRs  = new std::vector<std::vector<float>>;
+    m_isTruthMatched      = new std::vector<uint8_t>;
+    m_truthMatch_ID       = new std::vector<int>;
+    m_truthMatch_dR       = new std::vector<float>;
+    m_truthMatch_E        = new std::vector<float>;
+    m_truthMatch_M        = new std::vector<float>;
+    m_truthMatch_pt       = new std::vector<float>;
+    m_truthMatch_eta      = new std::vector<float>;
+    m_truthMatch_phi      = new std::vector<float>;
+    m_truthMatch_rapidity = new std::vector<float>;
+    m_truthNonmatch_IDs   = new std::vector<std::vector<int>>;
+    m_truthNonmatch_dRs   = new std::vector<std::vector<float>>;
+    m_isDarkMatched       = new std::vector<uint8_t>;
+    m_darkMatch_ID        = new std::vector<int>;
+    m_darkMatch_dR        = new std::vector<float>;
+    m_darkMatch_E         = new std::vector<float>;
+    m_darkMatch_M         = new std::vector<float>;
+    m_darkMatch_pt        = new std::vector<float>;
+    m_darkMatch_eta       = new std::vector<float>;
+    m_darkMatch_phi       = new std::vector<float>;
+    m_darkMatch_rapidity  = new std::vector<float>;
+    m_darkNonmatch_IDs    = new std::vector<std::vector<int>>;
+    m_darkNonmatch_dRs    = new std::vector<std::vector<float>>;
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices ) {
@@ -37,6 +50,7 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
     m_secVtx_eta                                  = new std::vector<std::vector<float>>;
     m_secVtx_phi                                  = new std::vector<std::vector<float>>;
     m_secVtx_mass                                 = new std::vector<std::vector<float>>;
+    m_secVtx_chi2                                 = new std::vector<std::vector<float>>;
     m_secVtx_ntrk                                 = new std::vector<std::vector<int>>;
     m_secVtx_dR                                   = new std::vector<std::vector<float>>;
     if ( m_mc ) {
@@ -142,8 +156,11 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
     }
   }
 
-  if ( m_infoSwitch.m_constituentAll )
-    m_constituent_m = new std::vector<std::vector<float>>;
+  if ( m_infoSwitch.m_constituentAll ) {
+    m_jet_girth      = new std::vector<float>;
+    m_constituent_dR = new std::vector<std::vector<float>>;
+    m_constituent_m  = new std::vector<std::vector<float>>;
+  }
 }
 
 
@@ -152,19 +169,32 @@ JetContainer :: ~JetContainer ()
   if ( m_debug ) Info( "EJs::JetContainer()", "deleting" );
 
   delete m_ID;
+  delete m_M;
   delete m_radius;
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
     delete m_isTruthMatched;
-    delete m_truthMatchID;
-    delete m_truthMatchDR;
-    delete m_truthNonmatchIDs;
-    delete m_truthNonmatchDRs;
+    delete m_truthMatch_ID;
+    delete m_truthMatch_dR;
+    delete m_truthMatch_E;
+    delete m_truthMatch_M;
+    delete m_truthMatch_pt;
+    delete m_truthMatch_eta;
+    delete m_truthMatch_phi;
+    delete m_truthMatch_rapidity;
+    delete m_truthNonmatch_IDs;
+    delete m_truthNonmatch_dRs;
     delete m_isDarkMatched;
-    delete m_darkMatchID;
-    delete m_darkMatchDR;
-    delete m_darkNonmatchIDs;
-    delete m_darkNonmatchDRs;
+    delete m_darkMatch_ID;
+    delete m_darkMatch_dR;
+    delete m_darkMatch_E;
+    delete m_darkMatch_M;
+    delete m_darkMatch_pt;
+    delete m_darkMatch_eta;
+    delete m_darkMatch_phi;
+    delete m_darkMatch_rapidity;
+    delete m_darkNonmatch_IDs;
+    delete m_darkNonmatch_dRs;
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices ) {
@@ -177,6 +207,7 @@ JetContainer :: ~JetContainer ()
     delete m_secVtx_eta;
     delete m_secVtx_phi;
     delete m_secVtx_mass;
+    delete m_secVtx_chi2;
     delete m_secVtx_ntrk;
     delete m_secVtx_dR;
     if ( m_mc ) {
@@ -282,8 +313,11 @@ JetContainer :: ~JetContainer ()
     }
   }
 
-  if ( m_infoSwitch.m_constituentAll )
+  if ( m_infoSwitch.m_constituentAll ) {
+    delete m_jet_girth;
+    delete m_constituent_dR;
     delete m_constituent_m;
+  }
 }
 
 
@@ -292,19 +326,32 @@ void JetContainer :: setTree ( TTree* tree )
   if ( m_debug ) Info( "EJs::JetContainer::setTree()", "setting tree" );
 
   connectBranch<int>   ( tree, "ID",     &m_ID     );
+  connectBranch<float> ( tree, "M",      &m_M      );
   connectBranch<float> ( tree, "radius", &m_radius );
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
-    connectBranch<uint8_t>            ( tree, "isTruthMatched",   &m_isTruthMatched   );
-    connectBranch<int>                ( tree, "truthMatchID",     &m_truthMatchID     );
-    connectBranch<float>              ( tree, "truthMatchDR",     &m_truthMatchDR     );
-    connectBranch<std::vector<int>>   ( tree, "truthNonmatchIDs", &m_truthNonmatchIDs );
-    connectBranch<std::vector<float>> ( tree, "truthNonmatchDRs", &m_truthNonmatchDRs );
-    connectBranch<uint8_t>            ( tree, "isDarkMatched",    &m_isDarkMatched    );
-    connectBranch<int>                ( tree, "darkMatchID",      &m_darkMatchID      );
-    connectBranch<float>              ( tree, "darkMatchDR",      &m_darkMatchDR      );
-    connectBranch<std::vector<int>>   ( tree, "darkNonmatchIDs",  &m_darkNonmatchIDs  );
-    connectBranch<std::vector<float>> ( tree, "darkNonmatchDRs",  &m_darkNonmatchDRs  );
+    connectBranch<uint8_t>            ( tree, "isTruthMatched",      &m_isTruthMatched      );
+    connectBranch<int>                ( tree, "truthMatch_ID",       &m_truthMatch_ID       );
+    connectBranch<float>              ( tree, "truthMatch_dR",       &m_truthMatch_dR       );
+    connectBranch<float>              ( tree, "truthMatch_E",        &m_truthMatch_E        );
+    connectBranch<float>              ( tree, "truthMatch_M",        &m_truthMatch_M        );
+    connectBranch<float>              ( tree, "truthMatch_pt",       &m_truthMatch_pt       );
+    connectBranch<float>              ( tree, "truthMatch_eta",      &m_truthMatch_eta      );
+    connectBranch<float>              ( tree, "truthMatch_phi",      &m_truthMatch_phi      );
+    connectBranch<float>              ( tree, "truthMatch_rapidity", &m_truthMatch_rapidity );
+    connectBranch<std::vector<int>>   ( tree, "truthNonmatch_IDs",   &m_truthNonmatch_IDs   );
+    connectBranch<std::vector<float>> ( tree, "truthNonmatch_dRs",   &m_truthNonmatch_dRs   );
+    connectBranch<uint8_t>            ( tree, "isDarkMatched",       &m_isDarkMatched       );
+    connectBranch<int>                ( tree, "darkMatch_ID",        &m_darkMatch_ID        );
+    connectBranch<float>              ( tree, "darkMatch_dR",        &m_darkMatch_dR        );
+    connectBranch<float>              ( tree, "darkMatch_E",         &m_darkMatch_E         );
+    connectBranch<float>              ( tree, "darkMatch_M",         &m_darkMatch_M         );
+    connectBranch<float>              ( tree, "darkMatch_pt",        &m_darkMatch_pt        );
+    connectBranch<float>              ( tree, "darkMatch_eta",       &m_darkMatch_eta       );
+    connectBranch<float>              ( tree, "darkMatch_phi",       &m_darkMatch_phi       );
+    connectBranch<float>              ( tree, "darkMatch_rapidity",  &m_darkMatch_rapidity  );
+    connectBranch<std::vector<int>>   ( tree, "darkNonmatch_IDs",    &m_darkNonmatch_IDs    );
+    connectBranch<std::vector<float>> ( tree, "darkNonmatch_dRs",    &m_darkNonmatch_dRs    );
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices ) {
@@ -317,6 +364,7 @@ void JetContainer :: setTree ( TTree* tree )
     connectBranch<std::vector<float>>     ( tree, "secVtx_eta",                                &m_secVtx_eta                                );
     connectBranch<std::vector<float>>     ( tree, "secVtx_phi",                                &m_secVtx_phi                                );
     connectBranch<std::vector<float>>     ( tree, "secVtx_mass",                               &m_secVtx_mass                               );
+    connectBranch<std::vector<float>>     ( tree, "secVtx_chi2",                               &m_secVtx_chi2                               );
     connectBranch<std::vector<int>>       ( tree, "secVtx_ntrk",                               &m_secVtx_ntrk                               );
     connectBranch<std::vector<float>>     ( tree, "secVtx_dR",                                 &m_secVtx_dR                                 );
     if ( m_mc ) {
@@ -423,8 +471,11 @@ void JetContainer :: setTree ( TTree* tree )
     }
   }
     
-  if ( m_infoSwitch.m_constituentAll )
-    connectBranch<std::vector<float>> ( tree, "constituent_m", &m_constituent_m );
+  if ( m_infoSwitch.m_constituentAll ) {
+    connectBranch<float>              ( tree, "jet_girth",      &m_jet_girth      );
+    connectBranch<std::vector<float>> ( tree, "constituent_dR", &m_constituent_dR );
+    connectBranch<std::vector<float>> ( tree, "constituent_m",  &m_constituent_m  );
+  }
 }
 
 
@@ -432,20 +483,33 @@ void JetContainer :: setBranches ( TTree* tree )
 {
   if ( m_debug ) Info( "EJs::JetContainer::setBranches()", "setting branches" );
 
-  setBranch<int>   ( tree, "ID", m_ID );
+  setBranch<int>   ( tree, "ID",     m_ID     );
+  setBranch<float> ( tree, "M",      m_M      );
   setBranch<float> ( tree, "radius", m_radius );
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
-    setBranch<uint8_t>            ( tree, "isTruthMatched",   m_isTruthMatched   );
-    setBranch<int>                ( tree, "truthMatchID",     m_truthMatchID     );
-    setBranch<float>              ( tree, "truthMatchDR",     m_truthMatchDR     );
-    setBranch<std::vector<int>>   ( tree, "truthNonmatchIDs", m_truthNonmatchIDs );
-    setBranch<std::vector<float>> ( tree, "truthNonmatchDRs", m_truthNonmatchDRs );
-    setBranch<uint8_t>            ( tree, "isDarkMatched",    m_isDarkMatched    );
-    setBranch<int>                ( tree, "darkMatchID",      m_darkMatchID      );
-    setBranch<float>              ( tree, "darkMatchDR",      m_darkMatchDR      );
-    setBranch<std::vector<int>>   ( tree, "darkNonmatchIDs",  m_darkNonmatchIDs  );
-    setBranch<std::vector<float>> ( tree, "darkNonmatchDRs",  m_darkNonmatchDRs  );
+    setBranch<uint8_t>            ( tree, "isTruthMatched",      m_isTruthMatched      );
+    setBranch<int>                ( tree, "truthMatch_ID",       m_truthMatch_ID       );
+    setBranch<float>              ( tree, "truthMatch_dR",       m_truthMatch_dR       );
+    setBranch<float>              ( tree, "truthMatch_E",        m_truthMatch_E        );
+    setBranch<float>              ( tree, "truthMatch_M",        m_truthMatch_M        );
+    setBranch<float>              ( tree, "truthMatch_pt",       m_truthMatch_pt       );
+    setBranch<float>              ( tree, "truthMatch_eta",      m_truthMatch_eta      );
+    setBranch<float>              ( tree, "truthMatch_phi",      m_truthMatch_phi      );
+    setBranch<float>              ( tree, "truthMatch_rapidity", m_truthMatch_rapidity );
+    setBranch<std::vector<int>>   ( tree, "truthNonmatch_IDs",   m_truthNonmatch_IDs   );
+    setBranch<std::vector<float>> ( tree, "truthNonmatch_dRs",   m_truthNonmatch_dRs   );
+    setBranch<uint8_t>            ( tree, "isDarkMatched",       m_isDarkMatched       );
+    setBranch<int>                ( tree, "darkMatch_ID",        m_darkMatch_ID        );
+    setBranch<float>              ( tree, "darkMatch_dR",        m_darkMatch_dR        );
+    setBranch<float>              ( tree, "darkMatch_E",         m_darkMatch_E         );
+    setBranch<float>              ( tree, "darkMatch_M",         m_darkMatch_M         );
+    setBranch<float>              ( tree, "darkMatch_pt",        m_darkMatch_pt        );
+    setBranch<float>              ( tree, "darkMatch_eta",       m_darkMatch_eta       );
+    setBranch<float>              ( tree, "darkMatch_phi",       m_darkMatch_phi       );
+    setBranch<float>              ( tree, "darkMatch_rapidity",  m_darkMatch_rapidity  );
+    setBranch<std::vector<int>>   ( tree, "darkNonmatch_IDs",    m_darkNonmatch_IDs    );
+    setBranch<std::vector<float>> ( tree, "darkNonmatch_dRs",    m_darkNonmatch_dRs    );
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices ) {
@@ -458,6 +522,7 @@ void JetContainer :: setBranches ( TTree* tree )
     setBranch<std::vector<float>>     ( tree, "secVtx_eta",                                m_secVtx_eta                                );
     setBranch<std::vector<float>>     ( tree, "secVtx_phi",                                m_secVtx_phi                                );
     setBranch<std::vector<float>>     ( tree, "secVtx_mass",                               m_secVtx_mass                               );
+    setBranch<std::vector<float>>     ( tree, "secVtx_chi2",                               m_secVtx_chi2                               );
     setBranch<std::vector<int>>       ( tree, "secVtx_ntrk",                               m_secVtx_ntrk                               );
     setBranch<std::vector<float>>     ( tree, "secVtx_dR",                                 m_secVtx_dR                                 );
     if ( m_mc ) {
@@ -563,8 +628,11 @@ void JetContainer :: setBranches ( TTree* tree )
     }
   }
 
-  if ( m_infoSwitch.m_constituentAll )
-    setBranch<std::vector<float>> ( tree, "constituent_m", m_constituent_m );
+  if ( m_infoSwitch.m_constituentAll ) {
+    setBranch<float>              ( tree, "jet_girth",      m_jet_girth      );
+    setBranch<std::vector<float>> ( tree, "constituent_dR", m_constituent_dR );
+    setBranch<std::vector<float>> ( tree, "constituent_m",  m_constituent_m  );
+  }
 }
 
 
@@ -573,19 +641,32 @@ void JetContainer :: clear ( )
   if ( m_debug ) Info( "EJs::JetContainer::clear()", "clearing branches" );
 
   m_ID     ->clear();
+  m_M      ->clear();
   m_radius ->clear();
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
-    m_isTruthMatched   ->clear();
-    m_truthMatchID     ->clear();
-    m_truthMatchDR     ->clear();
-    m_truthNonmatchIDs ->clear();
-    m_truthNonmatchDRs ->clear();
-    m_isDarkMatched    ->clear();
-    m_darkMatchID      ->clear();
-    m_darkMatchDR      ->clear();
-    m_darkNonmatchIDs  ->clear();
-    m_darkNonmatchDRs  ->clear();
+    m_isTruthMatched      ->clear();
+    m_truthMatch_ID       ->clear();
+    m_truthMatch_dR       ->clear();
+    m_truthMatch_E        ->clear();
+    m_truthMatch_M        ->clear();
+    m_truthMatch_pt       ->clear();
+    m_truthMatch_eta      ->clear();
+    m_truthMatch_phi      ->clear();
+    m_truthMatch_rapidity ->clear();
+    m_truthNonmatch_IDs   ->clear();
+    m_truthNonmatch_dRs   ->clear();
+    m_isDarkMatched       ->clear();
+    m_darkMatch_ID        ->clear();
+    m_darkMatch_dR        ->clear();
+    m_darkMatch_E         ->clear();
+    m_darkMatch_M         ->clear();
+    m_darkMatch_pt        ->clear();
+    m_darkMatch_eta       ->clear();
+    m_darkMatch_phi       ->clear();
+    m_darkMatch_rapidity  ->clear();
+    m_darkNonmatch_IDs    ->clear();
+    m_darkNonmatch_dRs    ->clear();
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices ) {
@@ -598,6 +679,7 @@ void JetContainer :: clear ( )
     m_secVtx_eta                                  ->clear();
     m_secVtx_phi                                  ->clear();
     m_secVtx_mass                                 ->clear();
+    m_secVtx_chi2                                 ->clear();
     m_secVtx_ntrk                                 ->clear();
     m_secVtx_dR                                   ->clear();
     if ( m_mc ) {
@@ -703,8 +785,11 @@ void JetContainer :: clear ( )
     }
   }
 
-  if ( m_infoSwitch.m_constituentAll )
-    m_constituent_m ->clear();
+  if ( m_infoSwitch.m_constituentAll ) {
+    m_jet_girth      ->clear();
+    m_constituent_dR ->clear();
+    m_constituent_m  ->clear();
+  }
 }
 
 
@@ -713,19 +798,81 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
   if ( m_debug ) Info( "EJs::JetContainer::FillJet()", "filling branches" );
 
   m_ID     ->push_back( AUXDYN( jet, int, "ID" ) );
+  m_M      ->push_back( jet->m() / m_units       );
   m_radius ->push_back( jet->getSizeParameter()  );
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
-    m_isTruthMatched   ->push_back( AUXDYN(    jet, char,   "hasTruthJetMatch"   ) );
-    m_truthMatchID     ->push_back( AUXDYN(    jet, int,    "truthJetMatchID"    ) );
-    m_truthMatchDR     ->push_back( AUXDYN(    jet, double, "truthJetMatchDR"    ) );
-    m_truthNonmatchIDs ->push_back( AUXDYNVEC( jet, int,    "truthJetNoMatchIDs" ) );
-    m_truthNonmatchDRs ->push_back( AUXDYNVEC( jet, float,  "truthJetNoMatchDRs" ) );
-    m_isDarkMatched    ->push_back( AUXDYN(    jet, char,   "hasDarkJetMatch"    ) );
-    m_darkMatchID      ->push_back( AUXDYN(    jet, int,    "darkJetMatchID"     ) );
-    m_darkMatchDR      ->push_back( AUXDYN(    jet, double, "darkJetMatchDR"     ) );
-    m_darkNonmatchIDs  ->push_back( AUXDYNVEC( jet, int,    "darkJetNoMatchIDs"  ) );
-    m_darkNonmatchDRs  ->push_back( AUXDYNVEC( jet, float,  "darkJetNoMatchDRs"  ) );
+    float truthJet_E        = AlgConsts::invalidFloat;
+    float truthJet_M        = AlgConsts::invalidFloat;
+    float truthJet_pt       = AlgConsts::invalidFloat;
+    float truthJet_eta      = AlgConsts::invalidFloat;
+    float truthJet_phi      = AlgConsts::invalidFloat;
+    float truthJet_rapidity = AlgConsts::invalidFloat;
+    float darkJet_E         = AlgConsts::invalidFloat;
+    float darkJet_M         = AlgConsts::invalidFloat;
+    float darkJet_pt        = AlgConsts::invalidFloat;
+    float darkJet_eta       = AlgConsts::invalidFloat;
+    float darkJet_phi       = AlgConsts::invalidFloat;
+    float darkJet_rapidity  = AlgConsts::invalidFloat;
+
+    // access matched truth jet link
+    const xAOD::Jet* truthJet = 0;
+    static SG::AuxElement::ConstAccessor<EJsHelper::JetLink_t> truthJetAccess("truthJetMatchLink");
+    if ( truthJetAccess.isAvailable( *jet ) ) {
+      try {
+	const EJsHelper::JetLink_t& truthJetLink = truthJetAccess( *jet );
+	truthJet = *truthJetLink;
+      } catch(...) {}
+    }
+    if ( truthJet ) {
+      truthJet_E        = truthJet->e()  / m_units;
+      truthJet_M        = truthJet->m()  / m_units;
+      truthJet_pt       = truthJet->pt() / m_units;
+      truthJet_eta      = truthJet->eta();
+      truthJet_phi      = truthJet->phi();
+      truthJet_rapidity = truthJet->rapidity();
+    }
+
+    // access matched truth dark jet link
+    const xAOD::Jet* darkJet = 0;
+    static SG::AuxElement::ConstAccessor<EJsHelper::JetLink_t> darkJetAccess("darkJetMatchLink");
+    if ( darkJetAccess.isAvailable( *jet ) ) {
+      try {
+	const EJsHelper::JetLink_t& darkJetLink = darkJetAccess( *jet );
+	darkJet = *darkJetLink;
+      } catch(...) {}
+    }
+    if ( darkJet ) {
+      darkJet_E        = darkJet->e()  / m_units;
+      darkJet_M        = darkJet->m()  / m_units;
+      darkJet_pt       = darkJet->pt() / m_units;
+      darkJet_eta      = darkJet->eta();
+      darkJet_phi      = darkJet->phi();
+      darkJet_rapidity = darkJet->rapidity();
+    }
+    
+    m_isTruthMatched      ->push_back( AUXDYN(    jet, char,   "hasTruthJetMatch"   ) );
+    m_truthMatch_ID       ->push_back( AUXDYN(    jet, int,    "truthJetMatchID"    ) );
+    m_truthMatch_dR       ->push_back( AUXDYN(    jet, double, "truthJetMatchDR"    ) );
+    m_truthMatch_E        ->push_back( truthJet_E                                     );
+    m_truthMatch_M        ->push_back( truthJet_M                                     );
+    m_truthMatch_pt       ->push_back( truthJet_pt                                    );
+    m_truthMatch_eta      ->push_back( truthJet_eta                                   );
+    m_truthMatch_phi      ->push_back( truthJet_phi                                   );
+    m_truthMatch_rapidity ->push_back( truthJet_rapidity                              );
+    m_truthNonmatch_IDs   ->push_back( AUXDYNVEC( jet, int,    "truthJetNoMatchIDs" ) );
+    m_truthNonmatch_dRs   ->push_back( AUXDYNVEC( jet, float,  "truthJetNoMatchDRs" ) );
+    m_isDarkMatched       ->push_back( AUXDYN(    jet, char,   "hasDarkJetMatch"    ) );
+    m_darkMatch_ID        ->push_back( AUXDYN(    jet, int,    "darkJetMatchID"     ) );
+    m_darkMatch_dR        ->push_back( AUXDYN(    jet, double, "darkJetMatchDR"     ) );
+    m_darkMatch_E         ->push_back( darkJet_E                                      );
+    m_darkMatch_M         ->push_back( darkJet_M                                      );
+    m_darkMatch_pt        ->push_back( darkJet_pt                                     );
+    m_darkMatch_eta       ->push_back( darkJet_eta                                    );
+    m_darkMatch_phi       ->push_back( darkJet_phi                                    );
+    m_darkMatch_rapidity  ->push_back( darkJet_rapidity                               );
+    m_darkNonmatch_IDs    ->push_back( AUXDYNVEC( jet, int,    "darkJetNoMatchIDs"  ) );
+    m_darkNonmatch_dRs    ->push_back( AUXDYNVEC( jet, float,  "darkJetNoMatchDRs"  ) );
   }
 
   
@@ -739,6 +886,7 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
     std::vector<float>   matchDV_eta;
     std::vector<float>   matchDV_phi;
     std::vector<float>   matchDV_mass;
+    std::vector<float>   matchDV_chi2;
     std::vector<int>     matchDV_ntrk;
     std::vector<uint8_t> matchDV_closeTV_isPid;
     std::vector<int>     matchDV_closeTV_ID;
@@ -782,16 +930,17 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
 	else	
 	  dvP4 = VsiBonsai::sumP4( filteredTracks );
       
-	matchDV_ID   .push_back( AUXDYN( (*dvlink), int, "ID" ) );
-	matchDV_x    .push_back( (*dvlink)->x()                 );
-	matchDV_y    .push_back( (*dvlink)->y()                 );
-	matchDV_z    .push_back( (*dvlink)->z()                 );
-	matchDV_r    .push_back( (*dvlink)->position().perp()   );
-	matchDV_pt   .push_back( dvP4.Pt() / m_units            );
-	matchDV_eta  .push_back( dvP4.Eta()                     );
-	matchDV_phi  .push_back( dvP4.Phi()                     );
-	matchDV_mass .push_back( dvP4.M()  / m_units            );
-	matchDV_ntrk .push_back( filteredTracks.size()          );
+	matchDV_ID   .push_back( AUXDYN( (*dvlink), int, "ID" )                   );
+	matchDV_x    .push_back( (*dvlink)->x()                                   );
+	matchDV_y    .push_back( (*dvlink)->y()                                   );
+	matchDV_z    .push_back( (*dvlink)->z()                                   );
+	matchDV_r    .push_back( (*dvlink)->position().perp()                     );
+	matchDV_pt   .push_back( dvP4.Pt() / m_units                              );
+	matchDV_eta  .push_back( dvP4.Eta()                                       );
+	matchDV_phi  .push_back( dvP4.Phi()                                       );
+	matchDV_mass .push_back( dvP4.M()  / m_units                              );
+	matchDV_chi2 .push_back( (*dvlink)->chiSquared() / (*dvlink)->numberDoF() ); 
+	matchDV_ntrk .push_back( filteredTracks.size()                            );
       
 	// get closest TV link
 	static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t> closeTVAccess("closestTruthVertexLink");
@@ -861,6 +1010,7 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
     m_secVtx_eta                                  ->push_back( matchDV_eta                                          );
     m_secVtx_phi                                  ->push_back( matchDV_phi                                          );
     m_secVtx_mass                                 ->push_back( matchDV_mass                                         );
+    m_secVtx_chi2                                 ->push_back( matchDV_chi2                                         );
     m_secVtx_ntrk                                 ->push_back( matchDV_ntrk                                         );
     m_secVtx_dR                                   ->push_back( AUXDYNVEC( jet, float, "matchedSecondaryVertex_dR" ) );
     if ( m_mc ) {
@@ -966,7 +1116,7 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
 	  } catch(...) {}
 	}
 	trk_isTruth   .push_back( trackHasTruthLink                                        );
-	//trk_truthProb .push_back( (*trklink)->auxdataConst<float>("truthMatchProbability") );
+	trk_truthProb .push_back( (*trklink)->auxdataConst<float>("truthMatchProbability") );
       
       } // end loop over matched track links
     
@@ -1113,7 +1263,7 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
 	  } catch(...) {}
 	}
 	ghostTrack_isTruth   .push_back( ghosttrackHasTruthLink                                   );
-	//ghostTrack_truthProb .push_back( ghosttrack->auxdataConst<float>("truthMatchProbability") );
+	ghostTrack_truthProb .push_back( ghosttrack->auxdataConst<float>("truthMatchProbability") );
       }
     }
 
@@ -1188,15 +1338,23 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
   
 
   if ( m_infoSwitch.m_constituentAll ) {
+    double             jconstitPtWeightedDR = 0;
+    std::vector<float> constituent_dR;
     std::vector<float> constituent_m;
-  
     // access constituents
     xAOD::JetConstituentVector jcv = jet->getConstituents();
-    if ( jcv.isValid() )
-      for ( const auto& jconstit : jcv )
-	constituent_m .push_back( jconstit->m() / m_units );
-
-    m_constituent_m ->push_back( constituent_m );
+    if ( jcv.isValid() ) {
+      for ( const auto& jconstit : jcv ) {
+	double dR = EJsHelper::deltaR( jet->eta(), jconstit->eta(), jet->phi(), jconstit->phi() );
+	jconstitPtWeightedDR += dR * jconstit->pt();
+	constituent_dR .push_back( dR                      );
+	constituent_m  .push_back( jconstit->m() / m_units );
+      }
+    }
+    float jet_girth  = jconstitPtWeightedDR / jet->pt();
+    m_jet_girth      ->push_back( jet_girth      );
+    m_constituent_dR ->push_back( constituent_dR );
+    m_constituent_m  ->push_back( constituent_m  );
   }
-
+  
 }
