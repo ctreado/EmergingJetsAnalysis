@@ -392,8 +392,6 @@ EL::StatusCode EJsxAODAnalysis :: executeSelection ( const xAOD::EventInfo* even
       if      ( m_inJetContainers.at(i).find("EMTopo") != std::string::npos ) jetStr = "EMTopo";
       else if ( m_inJetContainers.at(i).find("PFlow")  != std::string::npos ) jetStr = "PFlow";
       std::string decorLabel = jetStr + systName;
-      if ( m_eventNumber == 0 )
-	ANA_MSG_INFO( "EJsxAODAnalysis::executeSelection(): " << decorLabel );
 
       // signal selections
       int passSignalSel = this->PassSignalCuts( eventInfo, inJets, m_inJetBins.at(i), decorLabel );
@@ -460,6 +458,14 @@ int EJsxAODAnalysis :: PassSignalCuts ( const xAOD::EventInfo* eventInfo, const 
   int njetHt_bin_w = m_cutflowSignalHistW ->GetXaxis()->FindBin( ( "njetHt_" + bin_label ).c_str() );
   // int nej_bin      = m_cutflowSignalHist  ->GetXaxis()->FindBin( ( "nEJs_"   + bin_label ).c_str() );
   // int nej_bin_w    = m_cutflowSignalHistW ->GetXaxis()->FindBin( ( "nEJs_"   + bin_label ).c_str() );
+
+  // initialize decorators
+  if ( m_isNominalCase && m_isFirstJetContainer )
+    eventInfo->auxdecor<char>("passSignalTrigSel")                = false;
+  eventInfo->auxdecor<char>("passSignalNJetSel_"   + decor_label) = false;
+  eventInfo->auxdecor<char>("passSignalJetPtSel_"  + decor_label) = false;
+  eventInfo->auxdecor<char>("passSignalJetEtaSel_" + decor_label) = false;
+  eventInfo->auxdecor<char>("passSignalNJetHtSel_" + decor_label) = false;
   
   // trigger selection
   bool passTrigSel = false;
@@ -556,15 +562,24 @@ int EJsxAODAnalysis :: PassValidationCuts ( const xAOD::EventInfo* eventInfo, co
   int trig_bin       = m_cutflowValidHist  ->GetXaxis()->FindBin( "singlejetTrig"                   );
   int trig_bin_w     = m_cutflowValidHistW ->GetXaxis()->FindBin( "singlejetTrig"                   );
   // trig match bins ...
-  int trigveto_bin   = m_cutflowValidHist  ->GetXaxis()->FindBin( "multijetTrigVeto"                );
-  int trigveto_bin_w = m_cutflowValidHistW ->GetXaxis()->FindBin( "multijetTrigVeto"                );
-  int njet_bin       = m_cutflowValidHist  ->GetXaxis()->FindBin( ( "NJets_"  + bin_label ).c_str() );
-  int njet_bin_w     = m_cutflowValidHistW ->GetXaxis()->FindBin( ( "NJets_"  + bin_label ).c_str() );
-  int jetpt_bin      = m_cutflowValidHist  ->GetXaxis()->FindBin( ( "jetPt_"  + bin_label ).c_str() );
-  int jetpt_bin_w    = m_cutflowValidHistW ->GetXaxis()->FindBin( ( "jetPt_"  + bin_label ).c_str() );
-  int jeteta_bin     = m_cutflowValidHist  ->GetXaxis()->FindBin( ( "jetEta_" + bin_label ).c_str() );
-  int jeteta_bin_w   = m_cutflowValidHistW ->GetXaxis()->FindBin( ( "jetEta_" + bin_label ).c_str() );
-  // --> require events to pass single-jet triggers, fail multi-jet triggers, and contain (exactly? at least but less than four?) two jets w/ pt at least 50 GeV --> do we want/need an eta requirement? maybe < 2.7?
+  int njetmin_bin    = m_cutflowValidHist  ->GetXaxis()->FindBin( ( "NJetsMin_" + bin_label ).c_str() );
+  int njetmin_bin_w  = m_cutflowValidHistW ->GetXaxis()->FindBin( ( "NJetsMin_" + bin_label ).c_str() );
+  int njetmax_bin    = m_cutflowValidHist  ->GetXaxis()->FindBin( ( "NJetsMax_" + bin_label ).c_str() );
+  int njetmax_bin_w  = m_cutflowValidHistW ->GetXaxis()->FindBin( ( "NJetsMax_" + bin_label ).c_str() );
+  int jetpt_bin      = m_cutflowValidHist  ->GetXaxis()->FindBin( ( "jetPt_"    + bin_label ).c_str() );
+  int jetpt_bin_w    = m_cutflowValidHistW ->GetXaxis()->FindBin( ( "jetPt_"    + bin_label ).c_str() );
+  int jeteta_bin     = m_cutflowValidHist  ->GetXaxis()->FindBin( ( "jetEta_"   + bin_label ).c_str() );
+  int jeteta_bin_w   = m_cutflowValidHistW ->GetXaxis()->FindBin( ( "jetEta_"   + bin_label ).c_str() );
+  // --> require events to pass single-jet triggers and contain at least two but less than our jets w/ pt at least 50 GeV
+  // --> --> do we want/need an eta requirement? maybe < 2.7?
+
+  // initialize decorators
+  if ( m_isNominalCase && m_isFirstJetContainer )
+    eventInfo->auxdecor<char>("passValidTrigSel")                 = false;
+  eventInfo->auxdecor<char>("passValidNJetMinSel_" + decor_label) = false;
+  eventInfo->auxdecor<char>("passValidNJetMaxSel_" + decor_label) = false;
+  eventInfo->auxdecor<char>("passValidJetPtSel_"   + decor_label) = false;
+  eventInfo->auxdecor<char>("passValidJetEtaSel_"  + decor_label) = false;
 
   // trigger selection
   bool passTrigSel  = false;
@@ -589,37 +604,27 @@ int EJsxAODAnalysis :: PassValidationCuts ( const xAOD::EventInfo* eventInfo, co
 
   // trigger matching ???
 
-  // trigger veto
-  bool passTrigVetoSel = true;
-  for ( size_t i = 0; i != m_passedTriggers.size(); ++i ) {
-    for ( size_t j = 0; j != m_signalTrigs.size(); ++j ) {
-      if ( m_passedTriggers.at(i) == m_signalTrigs.at(j) ) {
-	passTrigVetoSel = false;
-	break;
-      }
-    }
-    if ( !passTrigVetoSel ) break;
-  }
-  if ( m_isNominalCase && m_isFirstJetContainer ) {
-    if ( m_useCutFlow && passTrigVetoSel ) {
-      m_cutflowValidHist  ->Fill( trigveto_bin,   1               );
-      m_cutflowValidHistW ->Fill( trigveto_bin_w, m_mcEventWeight );
-    }
-    if ( m_decorateSelectedEvents )
-      eventInfo->auxdecor<char>("passValidTrigVetoSel") = passTrigVetoSel;
-  }
-  if ( !passTrigVetoSel ) return 0;
-
-  // n-jet selection
-  bool passNJetSel = true;
-  if ( jets->size() < m_nValidJets ) passNJetSel = false;
-  if ( m_isNominalCase && m_useCutFlow && passNJetSel ) {
-    m_cutflowValidHist  ->Fill( njet_bin,   1               );
-    m_cutflowValidHistW ->Fill( njet_bin_w, m_mcEventWeight );
+  // n-jet min selection
+  bool passNJetMinSel = true;
+  if ( jets->size() <  m_nValidJets  ) passNJetMinSel = false;
+  if ( m_isNominalCase && m_useCutFlow && passNJetMinSel ) {
+    m_cutflowValidHist  ->Fill( njetmin_bin,   1               );
+    m_cutflowValidHistW ->Fill( njetmin_bin_w, m_mcEventWeight );
   }
   if ( m_decorateSelectedEvents )
-    eventInfo->auxdecor<char>("passValidNJet_" + decor_label) = passNJetSel;
-  if ( !passNJetSel ) return 0;
+    eventInfo->auxdecor<char>("passValidNJetMinSel_" + decor_label) = passNJetMinSel;
+  if ( !passNJetMinSel ) return 0;
+
+  // n-jet max selection
+  bool passNJetMaxSel = true;
+  if ( jets->size() >= m_nSignalJets ) passNJetMaxSel = false;
+  if ( m_isNominalCase && m_useCutFlow && passNJetMaxSel ) {
+    m_cutflowValidHist  ->Fill( njetmax_bin,   1               );
+    m_cutflowValidHistW ->Fill( njetmax_bin_w, m_mcEventWeight );
+  }
+  if ( m_decorateSelectedEvents )
+    eventInfo->auxdecor<char>("passValidNJetMaxSel_" + decor_label) = passNJetMaxSel;
+  if ( !passNJetMaxSel ) return 0;
 
   // jet-pt, jet-eta selection
   bool passJetPtSel  = true;
@@ -634,12 +639,16 @@ int EJsxAODAnalysis :: PassValidationCuts ( const xAOD::EventInfo* eventInfo, co
     m_cutflowValidHist  ->Fill( jetpt_bin,   1               );
     m_cutflowValidHistW ->Fill( jetpt_bin_w, m_mcEventWeight );
   }
+  if ( m_decorateSelectedEvents )
+    eventInfo->auxdecor<char>("passValidJetPtSel_" + decor_label) = passJetPtSel;
   if ( !passJetPtSel ) return 0;
 
   if ( m_isNominalCase && m_useCutFlow && passJetEtaSel ) { // jet-eta
     m_cutflowValidHist  ->Fill( jeteta_bin,   1               );
     m_cutflowValidHistW ->Fill( jeteta_bin_w, m_mcEventWeight );
   }
+  if ( m_decorateSelectedEvents )
+    eventInfo->auxdecor<char>("passValidJetEtaSel_" + decor_label) = passJetEtaSel;
   if ( !passJetEtaSel ) return 0;
   
   return 1;

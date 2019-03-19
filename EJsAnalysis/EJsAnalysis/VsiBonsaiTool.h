@@ -74,7 +74,7 @@ namespace VsiBonsai {
   // tool functions for kinematic properties of displaced vertex //
   /////////////////////////////////////////////////////////////////
 
-  /* returns sum four-vector of constituent tracks using track parameters wrt DV */
+  /* returns sum four-vector momentum of constituent tracks using track parameters wrt DV */
   TLorentzVector sumP4          ( const std::vector< const xAOD::TrackParticle* >& );
   TLorentzVector sumP4          ( const std::vector< TLorentzVector >&             );
 

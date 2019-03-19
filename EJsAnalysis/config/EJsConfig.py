@@ -197,6 +197,10 @@ Dict_JetSelector_PFlow = {
 # truth particle selector ...
 
 # secondary vertex selector ...
+Dict_SecondaryVertexSelector = {
+    "m_name"     : "SecVtxSel",
+    "m_msgLevel" : "info",
+}
 
 
 # object matching
@@ -232,24 +236,24 @@ Dict_EJsMiniNtuple = {
     "m_msgLevel"                     : "info",
     "m_evtDetailStr"                 : "pileup",
     "m_trigDetailStr"                : "basic passTriggers prescales",
-    "m_jetDetailStr"                 : "kinematic rapidity clean energy truth trackAll JVT allTrack allTrackDetail constituent charge",
+    "m_jetDetailStr"                 : "kinematic rapidity clean energy truth trackAll JVT allTrack allTrackDetail constituent charge ghost match",
     "m_jetContainerName"             : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
     "m_jetBranchName"                : "jet pflowJet",
     "m_jetSystsVec"                  : "AntiKt4EMTopoJets_Calib_Select_Algo",
     "m_jetSystsContainerIndex"       : 0,
-    "m_truthJetDetailStr"            : "kinematic rapidity constituent",
+    "m_truthJetDetailStr"            : "kinematic rapidity energyLight constituent constituentAll match emtopo pflow",
     "m_truthJetContainerName"        : "AntiKt4TruthJets AntiKt4TruthDarkJets",
-    "m_truthJetBranchName"           : "truthJet truthDarkJet",
+    "m_truthJetBranchName"           : "truthJet darkJet",
     "m_truthPartDetailStr"           : "kinematic parents children",
     "m_truthPartContainerName"       : "TruthParticles",                    # --> use selected truth particles
     "m_truthPartBranchName"          : "truthPart",
     "m_trackPartDetailStr"           : "kinematic numbers vertex",
     "m_trackPartContainerName"       : "InDetTrackParticles",               # --> use selected tracks
     "m_trackPartBranchName"          : "track",
-    "m_truthVertexDetailStr"         : "",
+    "m_truthVertexDetailStr"         : "isMatched emtopo pflow",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
-    "m_secondaryVertexDetailStr"     : "tracks truth",
+    "m_secondaryVertexDetailStr"     : "tracks truth jetMatched emtopo pflow",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
     "m_secondaryVertexBranchName"    : "secVtx",
 }
@@ -260,21 +264,24 @@ Dict_EJsMiniNtuple = {
 ## --- algorithms to run --- ##
 
 # Basic Setup
-c.algorithm ( "BasicEventSelection", Dict_BasicEventSelection  )
+c.algorithm ( "BasicEventSelection",     Dict_BasicEventSelection     )
 
 # Jet Calibration
-c.algorithm ( "JetCalibrator",       Dict_JetCalibrator_EMTopo )
-c.algorithm ( "JetCalibrator",       Dict_JetCalibrator_PFlow  )
+c.algorithm ( "JetCalibrator",           Dict_JetCalibrator_EMTopo    )
+c.algorithm ( "JetCalibrator",           Dict_JetCalibrator_PFlow     )
 
 # Jet Selection
-c.algorithm ( "JetSelector",         Dict_JetSelector_EMTopo   )
-c.algorithm ( "JetSelector",         Dict_JetSelector_PFlow    )
+c.algorithm ( "JetSelector",             Dict_JetSelector_EMTopo      )
+c.algorithm ( "JetSelector",             Dict_JetSelector_PFlow       )
+# Secondary Vertex Selection
+c.algorithm ( "SecondaryVertexSelector", Dict_SecondaryVertexSelector )
+
 
 # Object Matching
-c.algorithm ( "ObjectMatcher",       Dict_ObjectMatcher        )
+c.algorithm ( "ObjectMatcher",           Dict_ObjectMatcher           )
 
 # EJs Analysis Selection
-c.algorithm ( "EJsxAODAnalysis",     Dict_EJsxAODAnalysis      )
+c.algorithm ( "EJsxAODAnalysis",         Dict_EJsxAODAnalysis         )
 
 # EJs Ntuple
-c.algorithm ( "EJsMiniNtuple",       Dict_EJsMiniNtuple        )
+c.algorithm ( "EJsMiniNtuple",           Dict_EJsMiniNtuple           )

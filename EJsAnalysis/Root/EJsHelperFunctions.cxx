@@ -30,6 +30,30 @@ namespace EJsHelper {
 
   // ------------------------------------------------------------------------------------------ //
 
+  void fillRegion ( Region& region, const std::string regionName )
+  {
+    enum RegionType regionType = ALL;
+    if      ( regionName == "signal"     || regionName == "sgnl"  ) regionType = SIGNAL;
+    else if ( regionName == "validation" || regionName == "valid" ) regionType = VALIDATION;
+    else if ( regionName == "control"    || regionName == "ctrl"  ) regionType = CONTROL;
+
+    region .name = regionName;
+    region .type = regionType;
+    
+    
+    
+    // std::string regionName = "";
+    // if      ( regionType == ALL        ) regionName = "all";
+    // else if ( regionType == SIGNAL     ) regionName = "signal";
+    // else if ( regionType == VALIDATION ) regionName = "valid";
+    // else if ( regionType == CONTROL    ) regionName = "ctrl";
+
+    // region .type = regionType;
+    // region .name = regionName;
+  }
+  
+  // ------------------------------------------------------------------------------------------ //
+
   bool selectDarkPion ( const xAOD::TruthVertex* truthVtx )
   {
     if ( truthVtx->perp() < 0.1 )                               return false;
@@ -74,6 +98,21 @@ namespace EJsHelper {
     const xAOD::TruthParticle* tp = getParentTruthPart( trk );
     if ( !tp ) return nullptr;
     return tp->prodVtx();
+  }
+
+
+  TLorentzVector truthSumP4 ( const std::vector< const xAOD::TruthParticle* >& truthParts )
+  {
+    TLorentzVector v;
+    for ( const auto& tp : truthParts ) v += tp->p4();
+    return v;
+  }
+
+  TLorentzVector truthSumP4 ( const std::vector< TLorentzVector >& truthParts )
+  {
+    TLorentzVector v;
+    for ( const auto& tp : truthParts ) v += tp;
+    return v;
   }
 
   // ------------------------------------------------------------------------------------------ //

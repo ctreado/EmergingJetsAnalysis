@@ -29,7 +29,7 @@ namespace EJs {
     virtual void setTree             ( TTree* tree );
     virtual void setBranches         ( TTree* tree );
     virtual void clear               ( );
-    virtual void FillSecondaryVertex ( const xAOD::Vertex* secVtx );
+    virtual void FillSecondaryVertex ( const xAOD::Vertex* secVtx, const std::string treeName = "" );
 
 
   private:   
@@ -140,7 +140,12 @@ namespace EJs {
 
 
     // close-matched truth vertices
-    // all close truth ??
+    // close truth
+    std::vector<std::vector<float>>*   m_closeTruth_distance;
+    std::vector<std::vector<uint8_t>>* m_closeTruth_isDarkPionDecay;
+    std::vector<std::vector<int>>*     m_closeTruth_ID;
+    std::vector<std::vector<int>>*     m_closeTruth_barcode;
+    
     // closest truth
     std::vector<float>*   m_closestTruth_distance;
     std::vector<uint8_t>* m_closestTruth_isDarkPionDecay;
@@ -187,7 +192,17 @@ namespace EJs {
 
     
     // track-truth-link-matched (parent) truth vertices
-    // all linked (parent) truth ??
+    // linked (parent) truth
+    std::vector<std::vector<float>>*   m_linkTruth_score;
+    std::vector<std::vector<uint8_t>>* m_linkTruth_isDarkPionDecay;
+    std::vector<std::vector<int>>*     m_linkTruth_ID;
+    std::vector<std::vector<int>>*     m_linkTruth_barcode;
+
+    std::vector<std::vector<float>>*   m_linkParentTruth_score;
+    std::vector<std::vector<uint8_t>>* m_linkParentTruth_isDarkPionDecay;
+    std::vector<std::vector<int>>*     m_linkParentTruth_ID;
+    std::vector<std::vector<int>>*     m_linkParentTruth_barcode;
+    
     // max-linked (parent) truth
     std::vector<float>*   m_maxlinkTruth_score;
     std::vector<uint8_t>* m_maxlinkTruth_isDarkPionDecay;
@@ -273,6 +288,21 @@ namespace EJs {
     std::vector<std::vector<int>>*     m_maxlinkParentTruth_outP_recoID;
     std::vector<std::vector<uint8_t>>* m_maxlinkParentTruth_outP_recoIsSelected;
     std::vector<std::vector<uint8_t>>* m_maxlinkParentTruth_outP_recoIsAssociated;
+
+
+    // matched jets
+    std::vector<uint8_t>*            m_isTruthJetMatch;
+    std::vector<std::vector<int>>*   m_truthJetMatch_ID;
+    std::vector<std::vector<float>>* m_truthJetMatch_dR;
+    std::vector<uint8_t>*            m_isDarkJetMatch;
+    std::vector<std::vector<int>>*   m_darkJetMatch_ID;
+    std::vector<std::vector<float>>* m_darkJetMatch_dR;
+    std::vector<uint8_t>*            m_isEMTopoRecoJetMatch;
+    std::vector<std::vector<int>>*   m_EMTopoRecoJetMatch_ID;
+    std::vector<std::vector<float>>* m_EMTopoRecoJetMatch_dR;
+    std::vector<uint8_t>*            m_isPFlowRecoJetMatch;
+    std::vector<std::vector<int>>*   m_PFlowRecoJetMatch_ID;
+    std::vector<std::vector<float>>* m_PFlowRecoJetMatch_dR;
 
   };
   

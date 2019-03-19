@@ -49,24 +49,24 @@ class EJsHelpTreeBase : public HelpTreeBase
   void AddSecondaryVerts   ( const std::string detailStr = "",      const std::string secVtxName = "secVtx" );
   void FillSecondaryVerts  ( const xAOD::VertexContainer* secVerts, const std::string secVtxName = "secVtx" );
   void FillSecondaryVertex ( const xAOD::Vertex* secVtx,            const std::string secVtxName = "secVtx" );
-  void ClearSecondaryVerts ( const std::string secVtxName = "secVtx"                                         );
+  void ClearSecondaryVerts ( const std::string secVtxName = "secVtx"                                        );
 
   // new branches for existing objects
-
-  // event user ...
+  void AddEventUser    ( const std::string detailStr = "" );
+  void FillEventUser   ( const xAOD::EventInfo*           );
+  void ClearEventUser  ( );
   
-  void AddJetsUser   ( const std::string detailStr = "", const std::string jetName = "jet" );
-  void FillJetsUser  ( const xAOD::Jet*,                 const std::string jetName = "jet" );
-  void ClearJetsUser ( const std::string /*jetName = "jet"*/                               );
-  // --> add jet-constituents
+  void AddJetsUser     ( const std::string detailStr = "", const std::string jetName = "jet" );
+  void FillJetsUser    ( const xAOD::Jet*,                 const std::string jetName = "jet" );
+  void ClearJetsUser   ( const std::string /*jetName = "jet"*/                               );
 
-  void AddTruthUser   ( const std::string truthName,     const std::string detailStr = "" );
-  void FillTruthUser  ( const std::string /*truthName*/, const xAOD::TruthParticle*       );
-  void ClearTruthUser ( const std::string /*truthName*/                                   );
+  void AddTruthUser    ( const std::string truthName,     const std::string detailStr = ""   );
+  void FillTruthUser   ( const std::string /*truthName*/, const xAOD::TruthParticle*         );
+  void ClearTruthUser  ( const std::string /*truthName*/                                     );
   
-  void AddTracksUser   ( const std::string trackName,     const std::string detailStr = "" );
-  void FillTracksUser  ( const std::string /*trackName*/, const xAOD::TrackParticle*       );
-  void ClearTracksUser ( const std::string /*trackName*/                                   );
+  void AddTracksUser   ( const std::string trackName,     const std::string detailStr = ""   );
+  void FillTracksUser  ( const std::string /*trackName*/, const xAOD::TrackParticle*         );
+  void ClearTracksUser ( const std::string /*trackName*/                                     );
 
 
  protected:
@@ -86,9 +86,42 @@ class EJsHelpTreeBase : public HelpTreeBase
   uint32_t m_pv_nTracks;
   int      m_pv_location;
 
+  // event info
+  char m_signal_emtopo;
+  char m_signal_pflow;
+  char m_valid_emtopo;
+  char m_valid_pflow;
+  char m_ctrl_emtopo;
+  char m_ctrl_pflow;
+
+  char m_signalTrig;
+  char m_signalNJet_emtopo;
+  char m_signalNJet_pflow;
+  char m_signalJetPt_emtopo;
+  char m_signalJetPt_pflow;
+  char m_signalJetEta_emtopo;
+  char m_signalJetEta_pflow;
+  char m_signalNJetHt_emtopo;
+  char m_signalNJetHt_pflow;
+
+  char m_validTrig;
+  char m_validNJetMin_emtopo;
+  char m_validNJetMin_pflow;
+  char m_validNJetMax_emtopo;
+  char m_validNJetMax_pflow;
+  char m_validJetPt_emtopo;
+  char m_validJetPt_pflow;
+  char m_validJetEta_emtopo;
+  char m_validJetEta_pflow;
+
   // truth particles
-  std::vector<int>* m_tp_ID;
-  std::vector<int>* m_tp_barcode;
+  std::vector<int>*   m_tp_ID;
+  std::vector<float>* m_tp_M;
+  // charge, isReco, recoProb, recoID, recoIsSelected, recoIsAssociated
+  // isDarkPion, isStable, isInteracting (?)
+  // charge, pt, eta, phi, E, M, ID, isReco, recoProb, recoID, recoIsSelected, recoIsAssociated of parents / children
+  // --> eventually, "isDarkPionDescendant" + "darkPionDescGeneration" (or something like that)
+  // production, decay vertices (basics - ID, barcode, isDarkPionDecay, x, y, z, r
   
   // tracks
   std::vector<int>*     m_trk_ID;

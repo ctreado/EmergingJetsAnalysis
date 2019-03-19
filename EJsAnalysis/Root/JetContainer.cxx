@@ -11,36 +11,66 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
 {
   if ( m_debug ) Info( "EJs::JetContainer()", "setting up" );
 
+  if ( name.find("dark")  != std::string::npos || name.find("Dark")  != std::string::npos )
+    jet_type = DARK;
+  else if ( name.find("truth") != std::string::npos || name.find("Truth") != std::string::npos )
+    jet_type = TRUTH;
+  else
+    jet_type = RECO;
+
   m_ID     = new std::vector<int>;
   m_M      = new std::vector<float>;
   m_radius = new std::vector<float>;
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
-    m_isTruthMatched      = new std::vector<uint8_t>;
-    m_truthMatch_ID       = new std::vector<int>;
-    m_truthMatch_dR       = new std::vector<float>;
-    m_truthMatch_E        = new std::vector<float>;
-    m_truthMatch_M        = new std::vector<float>;
-    m_truthMatch_pt       = new std::vector<float>;
-    m_truthMatch_eta      = new std::vector<float>;
-    m_truthMatch_phi      = new std::vector<float>;
-    m_truthMatch_rapidity = new std::vector<float>;
-    m_truthNonmatch_IDs   = new std::vector<std::vector<int>>;
-    m_truthNonmatch_dRs   = new std::vector<std::vector<float>>;
-    m_isDarkMatched       = new std::vector<uint8_t>;
-    m_darkMatch_ID        = new std::vector<int>;
-    m_darkMatch_dR        = new std::vector<float>;
-    m_darkMatch_E         = new std::vector<float>;
-    m_darkMatch_M         = new std::vector<float>;
-    m_darkMatch_pt        = new std::vector<float>;
-    m_darkMatch_eta       = new std::vector<float>;
-    m_darkMatch_phi       = new std::vector<float>;
-    m_darkMatch_rapidity  = new std::vector<float>;
-    m_darkNonmatch_IDs    = new std::vector<std::vector<int>>;
-    m_darkNonmatch_dRs    = new std::vector<std::vector<float>>;
+    if ( jet_type == RECO ) {
+      m_isTruthMatched          = new std::vector<uint8_t>;
+      m_truthMatch_ID           = new std::vector<int>;
+      m_truthMatch_dR           = new std::vector<float>;
+      m_truthMatch_E            = new std::vector<float>;
+      m_truthMatch_M            = new std::vector<float>;
+      m_truthMatch_pt           = new std::vector<float>;
+      m_truthMatch_eta          = new std::vector<float>;
+      m_truthMatch_phi          = new std::vector<float>;
+      m_truthMatch_rapidity     = new std::vector<float>;
+      m_truthNonmatch_IDs       = new std::vector<std::vector<int>>;
+      m_truthNonmatch_dRs       = new std::vector<std::vector<float>>;
+    }
+    if ( jet_type == RECO || jet_type == TRUTH ) {
+      m_isDarkMatched           = new std::vector<uint8_t>;
+      m_darkMatch_ID            = new std::vector<int>;
+      m_darkMatch_dR            = new std::vector<float>;
+      m_darkMatch_E             = new std::vector<float>;
+      m_darkMatch_M             = new std::vector<float>;
+      m_darkMatch_pt            = new std::vector<float>;
+      m_darkMatch_eta           = new std::vector<float>;
+      m_darkMatch_phi           = new std::vector<float>;
+      m_darkMatch_rapidity      = new std::vector<float>;
+      m_darkNonmatch_IDs        = new std::vector<std::vector<int>>;
+      m_darkNonmatch_dRs        = new std::vector<std::vector<float>>;
+    }
+    if ( jet_type == DARK ) {
+      m_isMatchedToTruth        = new std::vector<uint8_t>;
+      m_matchedTruthID          = new std::vector<int>;
+      m_matchedTruthDR          = new std::vector<float>;
+    }
+    if ( jet_type == DARK || jet_type == TRUTH ) {
+      if ( m_infoSwitch.m_emtopo ) {
+	m_isMatchedToEMTopoReco = new std::vector<uint8_t>;
+	m_matchedEMTopoRecoID   = new std::vector<int>;
+	m_matchedEMTopoRecoDR   = new std::vector<float>;
+      }
+      if ( m_infoSwitch.m_pflow ) {
+	m_isMatchedToPFlowReco  = new std::vector<uint8_t>;
+	m_matchedPFlowRecoID    = new std::vector<int>;
+	m_matchedPFlowRecoDR    = new std::vector<float>;
+      }
+    }
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices ) {
+    m_secVtxCount                                 = new std::vector<int>;
+    m_secVtxPt                                    = new std::vector<float>;
     m_secVtx_ID                                   = new std::vector<std::vector<int>>;
     m_secVtx_x                                    = new std::vector<std::vector<float>>;
     m_secVtx_y                                    = new std::vector<std::vector<float>>;
@@ -66,20 +96,27 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
       m_secVtx_maxlinkParentTruth_ID              = new std::vector<std::vector<int>>;
       m_secVtx_maxlinkParentTruth_barcode         = new std::vector<std::vector<int>>;
       m_secVtx_maxlinkParentTruth_score           = new std::vector<std::vector<float>>;
+      m_truthVtxCount                             = new std::vector<int>;
+      m_truthVtxPt                                = new std::vector<float>;
       m_truthVtx_isDarkPionDecay                  = new std::vector<std::vector<uint8_t>>;
       m_truthVtx_ID                               = new std::vector<std::vector<int>>;
       m_truthVtx_x                                = new std::vector<std::vector<float>>;
       m_truthVtx_y                                = new std::vector<std::vector<float>>;
       m_truthVtx_z                                = new std::vector<std::vector<float>>;
       m_truthVtx_r                                = new std::vector<std::vector<float>>;
+      m_truthVtx_pt                               = new std::vector<std::vector<float>>;
       m_truthVtx_eta                              = new std::vector<std::vector<float>>;
       m_truthVtx_phi                              = new std::vector<std::vector<float>>;
+      m_truthVtx_mass                             = new std::vector<std::vector<float>>;
+      m_truthVtx_nOutP                            = new std::vector<std::vector<int>>;
       m_truthVtx_barcode                          = new std::vector<std::vector<int>>;
       m_truthVtx_dR                               = new std::vector<std::vector<float>>;
     }
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_trackParts ) {
+    m_trkCount              = new std::vector<int>;
+    m_trkPt                 = new std::vector<float>;
     m_trk_ID                = new std::vector<std::vector<int>>;
     m_trk_qOverP            = new std::vector<std::vector<float>>;
     m_trk_E                 = new std::vector<std::vector<float>>;
@@ -102,6 +139,8 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
       m_trk_truthID         = new std::vector<std::vector<int>>;
       m_trk_truthBarcode    = new std::vector<std::vector<int>>;
       m_trk_truthPid        = new std::vector<std::vector<int>>;
+      m_tpCount             = new std::vector<int>;
+      m_tpPt                = new std::vector<float>;
       m_tp_ID               = new std::vector<std::vector<int>>;
       m_tp_pt               = new std::vector<std::vector<float>>;
       m_tp_eta              = new std::vector<std::vector<float>>;
@@ -157,7 +196,8 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
   }
 
   if ( m_infoSwitch.m_constituentAll ) {
-    m_jet_girth      = new std::vector<float>;
+    m_girth          = new std::vector<float>;
+    m_constituentPt  = new std::vector<float>;
     m_constituent_dR = new std::vector<std::vector<float>>;
     m_constituent_m  = new std::vector<std::vector<float>>;
   }
@@ -173,31 +213,54 @@ JetContainer :: ~JetContainer ()
   delete m_radius;
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
-    delete m_isTruthMatched;
-    delete m_truthMatch_ID;
-    delete m_truthMatch_dR;
-    delete m_truthMatch_E;
-    delete m_truthMatch_M;
-    delete m_truthMatch_pt;
-    delete m_truthMatch_eta;
-    delete m_truthMatch_phi;
-    delete m_truthMatch_rapidity;
-    delete m_truthNonmatch_IDs;
-    delete m_truthNonmatch_dRs;
-    delete m_isDarkMatched;
-    delete m_darkMatch_ID;
-    delete m_darkMatch_dR;
-    delete m_darkMatch_E;
-    delete m_darkMatch_M;
-    delete m_darkMatch_pt;
-    delete m_darkMatch_eta;
-    delete m_darkMatch_phi;
-    delete m_darkMatch_rapidity;
-    delete m_darkNonmatch_IDs;
-    delete m_darkNonmatch_dRs;
+    if ( jet_type == RECO ) {
+      delete m_isTruthMatched;
+      delete m_truthMatch_ID;
+      delete m_truthMatch_dR;
+      delete m_truthMatch_E;
+      delete m_truthMatch_M;
+      delete m_truthMatch_pt;
+      delete m_truthMatch_eta;
+      delete m_truthMatch_phi;
+      delete m_truthMatch_rapidity;
+      delete m_truthNonmatch_IDs;
+      delete m_truthNonmatch_dRs;
+    }
+    if ( jet_type == RECO || jet_type == TRUTH ) {
+      delete m_isDarkMatched;
+      delete m_darkMatch_ID;
+      delete m_darkMatch_dR;
+      delete m_darkMatch_E;
+      delete m_darkMatch_M;
+      delete m_darkMatch_pt;
+      delete m_darkMatch_eta;
+      delete m_darkMatch_phi;
+      delete m_darkMatch_rapidity;
+      delete m_darkNonmatch_IDs;
+      delete m_darkNonmatch_dRs;
+    }
+    if ( jet_type == DARK ) {
+      delete m_isMatchedToTruth;
+      delete m_matchedTruthID;
+      delete m_matchedTruthDR;
+    }
+    if ( jet_type == DARK || jet_type == TRUTH ) {
+      if ( m_infoSwitch.m_emtopo ) {
+	delete m_isMatchedToEMTopoReco;
+	delete m_matchedEMTopoRecoID;
+	delete m_matchedEMTopoRecoDR;
+      }
+      if ( m_infoSwitch.m_pflow ) {
+	delete m_isMatchedToPFlowReco;
+	delete m_matchedPFlowRecoID;
+	delete m_matchedPFlowRecoDR;
+      }
+    }
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices ) {
+    delete m_secVtxCount;
+    delete m_secVtxPt;
     delete m_secVtx_ID;
     delete m_secVtx_x;
     delete m_secVtx_y;
@@ -223,20 +286,27 @@ JetContainer :: ~JetContainer ()
       delete m_secVtx_maxlinkParentTruth_ID;
       delete m_secVtx_maxlinkParentTruth_barcode;
       delete m_secVtx_maxlinkParentTruth_score;
+      delete m_truthVtxCount;
+      delete m_truthVtxPt;
       delete m_truthVtx_isDarkPionDecay;
       delete m_truthVtx_ID;
       delete m_truthVtx_x;
       delete m_truthVtx_y;
       delete m_truthVtx_z;
       delete m_truthVtx_r;
+      delete m_truthVtx_pt;
       delete m_truthVtx_eta;
       delete m_truthVtx_phi;
+      delete m_truthVtx_mass;
+      delete m_truthVtx_nOutP;
       delete m_truthVtx_barcode;
       delete m_truthVtx_dR;
     }
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_trackParts ) {
+    delete m_trkCount;
+    delete m_trkPt;
     delete m_trk_ID;
     delete m_trk_qOverP;
     delete m_trk_E;
@@ -259,6 +329,8 @@ JetContainer :: ~JetContainer ()
       delete m_trk_truthID;
       delete m_trk_truthBarcode;
       delete m_trk_truthPid;
+      delete m_tpCount;
+      delete m_tpPt;
       delete m_tp_ID;
       delete m_tp_pt;
       delete m_tp_eta;
@@ -314,7 +386,8 @@ JetContainer :: ~JetContainer ()
   }
 
   if ( m_infoSwitch.m_constituentAll ) {
-    delete m_jet_girth;
+    delete m_girth;
+    delete m_constituentPt;
     delete m_constituent_dR;
     delete m_constituent_m;
   }
@@ -330,31 +403,54 @@ void JetContainer :: setTree ( TTree* tree )
   connectBranch<float> ( tree, "radius", &m_radius );
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
-    connectBranch<uint8_t>            ( tree, "isTruthMatched",      &m_isTruthMatched      );
-    connectBranch<int>                ( tree, "truthMatch_ID",       &m_truthMatch_ID       );
-    connectBranch<float>              ( tree, "truthMatch_dR",       &m_truthMatch_dR       );
-    connectBranch<float>              ( tree, "truthMatch_E",        &m_truthMatch_E        );
-    connectBranch<float>              ( tree, "truthMatch_M",        &m_truthMatch_M        );
-    connectBranch<float>              ( tree, "truthMatch_pt",       &m_truthMatch_pt       );
-    connectBranch<float>              ( tree, "truthMatch_eta",      &m_truthMatch_eta      );
-    connectBranch<float>              ( tree, "truthMatch_phi",      &m_truthMatch_phi      );
-    connectBranch<float>              ( tree, "truthMatch_rapidity", &m_truthMatch_rapidity );
-    connectBranch<std::vector<int>>   ( tree, "truthNonmatch_IDs",   &m_truthNonmatch_IDs   );
-    connectBranch<std::vector<float>> ( tree, "truthNonmatch_dRs",   &m_truthNonmatch_dRs   );
-    connectBranch<uint8_t>            ( tree, "isDarkMatched",       &m_isDarkMatched       );
-    connectBranch<int>                ( tree, "darkMatch_ID",        &m_darkMatch_ID        );
-    connectBranch<float>              ( tree, "darkMatch_dR",        &m_darkMatch_dR        );
-    connectBranch<float>              ( tree, "darkMatch_E",         &m_darkMatch_E         );
-    connectBranch<float>              ( tree, "darkMatch_M",         &m_darkMatch_M         );
-    connectBranch<float>              ( tree, "darkMatch_pt",        &m_darkMatch_pt        );
-    connectBranch<float>              ( tree, "darkMatch_eta",       &m_darkMatch_eta       );
-    connectBranch<float>              ( tree, "darkMatch_phi",       &m_darkMatch_phi       );
-    connectBranch<float>              ( tree, "darkMatch_rapidity",  &m_darkMatch_rapidity  );
-    connectBranch<std::vector<int>>   ( tree, "darkNonmatch_IDs",    &m_darkNonmatch_IDs    );
-    connectBranch<std::vector<float>> ( tree, "darkNonmatch_dRs",    &m_darkNonmatch_dRs    );
+    if ( jet_type == RECO ) {
+      connectBranch<uint8_t>            ( tree, "isTruthMatched",        &m_isTruthMatched        );
+      connectBranch<int>                ( tree, "truthMatch_ID",         &m_truthMatch_ID         );
+      connectBranch<float>              ( tree, "truthMatch_dR",         &m_truthMatch_dR         );
+      connectBranch<float>              ( tree, "truthMatch_E",          &m_truthMatch_E          );
+      connectBranch<float>              ( tree, "truthMatch_M",          &m_truthMatch_M          );
+      connectBranch<float>              ( tree, "truthMatch_pt",         &m_truthMatch_pt         );
+      connectBranch<float>              ( tree, "truthMatch_eta",        &m_truthMatch_eta        );
+      connectBranch<float>              ( tree, "truthMatch_phi",        &m_truthMatch_phi        );
+      connectBranch<float>              ( tree, "truthMatch_rapidity",   &m_truthMatch_rapidity   );
+      connectBranch<std::vector<int>>   ( tree, "truthNonmatch_IDs",     &m_truthNonmatch_IDs     );
+      connectBranch<std::vector<float>> ( tree, "truthNonmatch_dRs",     &m_truthNonmatch_dRs     );
+    }
+    if ( jet_type == RECO || jet_type == TRUTH ) {
+      connectBranch<uint8_t>            ( tree, "isDarkMatched",         &m_isDarkMatched         );
+      connectBranch<int>                ( tree, "darkMatch_ID",          &m_darkMatch_ID          );
+      connectBranch<float>              ( tree, "darkMatch_dR",          &m_darkMatch_dR          );
+      connectBranch<float>              ( tree, "darkMatch_E",           &m_darkMatch_E           );
+      connectBranch<float>              ( tree, "darkMatch_M",           &m_darkMatch_M           );
+      connectBranch<float>              ( tree, "darkMatch_pt",          &m_darkMatch_pt          );
+      connectBranch<float>              ( tree, "darkMatch_eta",         &m_darkMatch_eta         );
+      connectBranch<float>              ( tree, "darkMatch_phi",         &m_darkMatch_phi         );
+      connectBranch<float>              ( tree, "darkMatch_rapidity",    &m_darkMatch_rapidity    );
+      connectBranch<std::vector<int>>   ( tree, "darkNonmatch_IDs",      &m_darkNonmatch_IDs      );
+      connectBranch<std::vector<float>> ( tree, "darkNonmatch_dRs",      &m_darkNonmatch_dRs      );
+    }
+    if ( jet_type == DARK ) {
+      connectBranch<uint8_t>            ( tree, "isMatchedToTruth",      &m_isMatchedToTruth      );
+      connectBranch<int>                ( tree, "matchedTruthID",        &m_matchedTruthID        );
+      connectBranch<float>              ( tree, "matchedTruthDR",        &m_matchedTruthDR        );
+    }
+    if ( jet_type == DARK || jet_type == TRUTH ) {
+      if ( m_infoSwitch.m_emtopo ) {
+	connectBranch<uint8_t>          ( tree, "isMatchedToEMTopoReco", &m_isMatchedToEMTopoReco );
+	connectBranch<int>              ( tree, "matchedEMTopoRecoID",   &m_matchedEMTopoRecoID   );
+	connectBranch<float>            ( tree, "matchedEMTopoRecoDR",   &m_matchedEMTopoRecoDR   );
+      }
+      if ( m_infoSwitch.m_pflow ) {
+	connectBranch<uint8_t>          ( tree, "isMatchedToPFlowReco",  &m_isMatchedToPFlowReco  );
+	connectBranch<int>              ( tree, "matchedPFlowRecoID",    &m_matchedPFlowRecoID    );
+	connectBranch<float>            ( tree, "matchedPFlowRecoDR",    &m_matchedPFlowRecoDR    );
+      }
+    }
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices ) {
+    connectBranch<int>                    ( tree, "secVtxCount",                               &m_secVtxCount                               );
+    connectBranch<float>                  ( tree, "secVtxPt",                                  &m_secVtxPt                                  );
     connectBranch<std::vector<int>>       ( tree, "secVtx_ID",                                 &m_secVtx_ID                                 );
     connectBranch<std::vector<float>>     ( tree, "secVtx_x",                                  &m_secVtx_x                                  );
     connectBranch<std::vector<float>>     ( tree, "secVtx_y",                                  &m_secVtx_y                                  );
@@ -380,21 +476,27 @@ void JetContainer :: setTree ( TTree* tree )
       connectBranch<std::vector<int>>     ( tree, "secVtx_maxlinkParentTruth_ID",              &m_secVtx_maxlinkParentTruth_ID              );
       connectBranch<std::vector<int>>     ( tree, "secVtx_maxlinkParentTruth_barcode",         &m_secVtx_maxlinkParentTruth_barcode         );
       connectBranch<std::vector<float>>   ( tree, "secVtx_maxlinkParentTruth_score",           &m_secVtx_maxlinkParentTruth_score           );
+      connectBranch<int>                  ( tree, "truthVtxCount",                             &m_truthVtxCount                             );
+      connectBranch<float>                ( tree, "truthVtxPt",                                &m_truthVtxPt                                );
       connectBranch<std::vector<uint8_t>> ( tree, "truthVtx_isDarkPionDecay",                  &m_truthVtx_isDarkPionDecay                  );
       connectBranch<std::vector<int>>     ( tree, "truthVtx_ID",                               &m_truthVtx_ID                               );
       connectBranch<std::vector<float>>   ( tree, "truthVtx_x",                                &m_truthVtx_x                                );
       connectBranch<std::vector<float>>   ( tree, "truthVtx_y",                                &m_truthVtx_y                                );
       connectBranch<std::vector<float>>   ( tree, "truthVtx_z",                                &m_truthVtx_z                                );
       connectBranch<std::vector<float>>   ( tree, "truthVtx_r",                                &m_truthVtx_r                                );
+      connectBranch<std::vector<float>>   ( tree, "truthVtx_pt",                               &m_truthVtx_pt                               );
       connectBranch<std::vector<float>>   ( tree, "truthVtx_eta",                              &m_truthVtx_eta                              );
       connectBranch<std::vector<float>>   ( tree, "truthVtx_phi",                              &m_truthVtx_phi                              );
+      connectBranch<std::vector<float>>   ( tree, "truthVtx_mass",                             &m_truthVtx_mass                             );
+      connectBranch<std::vector<int>>     ( tree, "truthVtx_nOutP",                            &m_truthVtx_nOutP                            );
       connectBranch<std::vector<int>>     ( tree, "truthVtx_barcode",                          &m_truthVtx_barcode                          );
       connectBranch<std::vector<float>>   ( tree, "truthVtx_dR",                               &m_truthVtx_dR                               );
     }
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_trackParts ) {
-    
+    connectBranch<int>                    ( tree, "trkCount",            &m_trkCount            );
+    connectBranch<float>                  ( tree, "trkPt",               &m_trkPt               );
     connectBranch<std::vector<int>>       ( tree, "trk_ID",              &m_trk_ID              );
     connectBranch<std::vector<float>>     ( tree, "trk_qOverP",          &m_trk_qOverP          );
     connectBranch<std::vector<float>>     ( tree, "trk_E",               &m_trk_E               );
@@ -417,6 +519,8 @@ void JetContainer :: setTree ( TTree* tree )
       connectBranch<std::vector<int>>     ( tree, "trk_truthID",         &m_trk_truthID         );
       connectBranch<std::vector<int>>     ( tree, "trk_truthBarcode",    &m_trk_truthBarcode    );
       connectBranch<std::vector<int>>     ( tree, "trk_truthPid",        &m_trk_truthPid        );
+      connectBranch<int>                  ( tree, "tpCount",             &m_tpCount             );
+      connectBranch<float>                ( tree, "tpPt",                &m_tpPt                );
       connectBranch<std::vector<int>>     ( tree, "tp_ID",               &m_tp_ID               );
       connectBranch<std::vector<float>>   ( tree, "tp_pt",               &m_tp_pt               );
       connectBranch<std::vector<float>>   ( tree, "tp_eta",              &m_tp_eta              );
@@ -472,7 +576,8 @@ void JetContainer :: setTree ( TTree* tree )
   }
     
   if ( m_infoSwitch.m_constituentAll ) {
-    connectBranch<float>              ( tree, "jet_girth",      &m_jet_girth      );
+    connectBranch<float>              ( tree, "girth",          &m_girth          );
+    connectBranch<float>              ( tree, "constituentPt",  &m_constituentPt  );
     connectBranch<std::vector<float>> ( tree, "constituent_dR", &m_constituent_dR );
     connectBranch<std::vector<float>> ( tree, "constituent_m",  &m_constituent_m  );
   }
@@ -488,31 +593,54 @@ void JetContainer :: setBranches ( TTree* tree )
   setBranch<float> ( tree, "radius", m_radius );
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
-    setBranch<uint8_t>            ( tree, "isTruthMatched",      m_isTruthMatched      );
-    setBranch<int>                ( tree, "truthMatch_ID",       m_truthMatch_ID       );
-    setBranch<float>              ( tree, "truthMatch_dR",       m_truthMatch_dR       );
-    setBranch<float>              ( tree, "truthMatch_E",        m_truthMatch_E        );
-    setBranch<float>              ( tree, "truthMatch_M",        m_truthMatch_M        );
-    setBranch<float>              ( tree, "truthMatch_pt",       m_truthMatch_pt       );
-    setBranch<float>              ( tree, "truthMatch_eta",      m_truthMatch_eta      );
-    setBranch<float>              ( tree, "truthMatch_phi",      m_truthMatch_phi      );
-    setBranch<float>              ( tree, "truthMatch_rapidity", m_truthMatch_rapidity );
-    setBranch<std::vector<int>>   ( tree, "truthNonmatch_IDs",   m_truthNonmatch_IDs   );
-    setBranch<std::vector<float>> ( tree, "truthNonmatch_dRs",   m_truthNonmatch_dRs   );
-    setBranch<uint8_t>            ( tree, "isDarkMatched",       m_isDarkMatched       );
-    setBranch<int>                ( tree, "darkMatch_ID",        m_darkMatch_ID        );
-    setBranch<float>              ( tree, "darkMatch_dR",        m_darkMatch_dR        );
-    setBranch<float>              ( tree, "darkMatch_E",         m_darkMatch_E         );
-    setBranch<float>              ( tree, "darkMatch_M",         m_darkMatch_M         );
-    setBranch<float>              ( tree, "darkMatch_pt",        m_darkMatch_pt        );
-    setBranch<float>              ( tree, "darkMatch_eta",       m_darkMatch_eta       );
-    setBranch<float>              ( tree, "darkMatch_phi",       m_darkMatch_phi       );
-    setBranch<float>              ( tree, "darkMatch_rapidity",  m_darkMatch_rapidity  );
-    setBranch<std::vector<int>>   ( tree, "darkNonmatch_IDs",    m_darkNonmatch_IDs    );
-    setBranch<std::vector<float>> ( tree, "darkNonmatch_dRs",    m_darkNonmatch_dRs    );
+    if ( jet_type == RECO ) {
+      setBranch<uint8_t>            ( tree, "isTruthMatched",        m_isTruthMatched        );
+      setBranch<int>                ( tree, "truthMatch_ID",         m_truthMatch_ID         );
+      setBranch<float>              ( tree, "truthMatch_dR",         m_truthMatch_dR         );
+      setBranch<float>              ( tree, "truthMatch_E",          m_truthMatch_E          );
+      setBranch<float>              ( tree, "truthMatch_M",          m_truthMatch_M          );
+      setBranch<float>              ( tree, "truthMatch_pt",         m_truthMatch_pt         );
+      setBranch<float>              ( tree, "truthMatch_eta",        m_truthMatch_eta        );
+      setBranch<float>              ( tree, "truthMatch_phi",        m_truthMatch_phi        );
+      setBranch<float>              ( tree, "truthMatch_rapidity",   m_truthMatch_rapidity   );
+      setBranch<std::vector<int>>   ( tree, "truthNonmatch_IDs",     m_truthNonmatch_IDs     );
+      setBranch<std::vector<float>> ( tree, "truthNonmatch_dRs",     m_truthNonmatch_dRs     );
+    }
+    if ( jet_type == RECO || jet_type == TRUTH ) {
+      setBranch<uint8_t>            ( tree, "isDarkMatched",         m_isDarkMatched         );
+      setBranch<int>                ( tree, "darkMatch_ID",          m_darkMatch_ID          );
+      setBranch<float>              ( tree, "darkMatch_dR",          m_darkMatch_dR          );
+      setBranch<float>              ( tree, "darkMatch_E",           m_darkMatch_E           );
+      setBranch<float>              ( tree, "darkMatch_M",           m_darkMatch_M           );
+      setBranch<float>              ( tree, "darkMatch_pt",          m_darkMatch_pt          );
+      setBranch<float>              ( tree, "darkMatch_eta",         m_darkMatch_eta         );
+      setBranch<float>              ( tree, "darkMatch_phi",         m_darkMatch_phi         );
+      setBranch<float>              ( tree, "darkMatch_rapidity",    m_darkMatch_rapidity    );
+      setBranch<std::vector<int>>   ( tree, "darkNonmatch_IDs",      m_darkNonmatch_IDs      );
+      setBranch<std::vector<float>> ( tree, "darkNonmatch_dRs",      m_darkNonmatch_dRs      );
+    }
+    if ( jet_type == DARK ) {
+      setBranch<uint8_t>            ( tree, "isMatchedToTruth",      m_isMatchedToTruth      );
+      setBranch<int>                ( tree, "matchedTruthID",        m_matchedTruthID        );
+      setBranch<float>              ( tree, "matchedTruthDR",        m_matchedTruthDR        );
+    }
+    if ( jet_type == DARK || jet_type == TRUTH ) {
+      if ( m_infoSwitch.m_emtopo ) {
+	setBranch<uint8_t>          ( tree, "isMatchedToEMTopoReco", m_isMatchedToEMTopoReco );
+	setBranch<int>              ( tree, "matchedEMTopoRecoID",   m_matchedEMTopoRecoID   );
+	setBranch<float>            ( tree, "matchedEMTopoRecoDR",   m_matchedEMTopoRecoDR   );
+      }
+      if ( m_infoSwitch.m_pflow ) {
+	setBranch<uint8_t>          ( tree, "isMatchedToPFlowReco",  m_isMatchedToPFlowReco  );
+	setBranch<int>              ( tree, "matchedPFlowRecoID",    m_matchedPFlowRecoID    );
+	setBranch<float>            ( tree, "matchedPFlowRecoDR",    m_matchedPFlowRecoDR    );
+      }
+    }
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices ) {
+    setBranch<int>                    ( tree, "secVtxCount",                               m_secVtxCount                               );
+    setBranch<float>                  ( tree, "secVtxPt",                                  m_secVtxPt                                  );
     setBranch<std::vector<int>>       ( tree, "secVtx_ID",                                 m_secVtx_ID                                 );
     setBranch<std::vector<float>>     ( tree, "secVtx_x",                                  m_secVtx_x                                  );
     setBranch<std::vector<float>>     ( tree, "secVtx_y",                                  m_secVtx_y                                  );
@@ -538,20 +666,27 @@ void JetContainer :: setBranches ( TTree* tree )
       setBranch<std::vector<int>>     ( tree, "secVtx_maxlinkParentTruth_ID",              m_secVtx_maxlinkParentTruth_ID              );
       setBranch<std::vector<int>>     ( tree, "secVtx_maxlinkParentTruth_barcode",         m_secVtx_maxlinkParentTruth_barcode         );
       setBranch<std::vector<float>>   ( tree, "secVtx_maxlinkParentTruth_score",           m_secVtx_maxlinkParentTruth_score           );
+      setBranch<int>                  ( tree, "truthVtxCount",                             m_truthVtxCount                             );
+      setBranch<float>                ( tree, "truthVtxPt",                                m_truthVtxPt                                );
       setBranch<std::vector<uint8_t>> ( tree, "truthVtx_isDarkPionDecay",                  m_truthVtx_isDarkPionDecay                  );
       setBranch<std::vector<int>>     ( tree, "truthVtx_ID",                               m_truthVtx_ID                               );
       setBranch<std::vector<float>>   ( tree, "truthVtx_x",                                m_truthVtx_x                                );
       setBranch<std::vector<float>>   ( tree, "truthVtx_y",                                m_truthVtx_y                                );
       setBranch<std::vector<float>>   ( tree, "truthVtx_z",                                m_truthVtx_z                                );
       setBranch<std::vector<float>>   ( tree, "truthVtx_r",                                m_truthVtx_r                                );
+      setBranch<std::vector<float>>   ( tree, "truthVtx_pt",                               m_truthVtx_pt                               );
       setBranch<std::vector<float>>   ( tree, "truthVtx_eta",                              m_truthVtx_eta                              );
       setBranch<std::vector<float>>   ( tree, "truthVtx_phi",                              m_truthVtx_phi                              );
+      setBranch<std::vector<float>>   ( tree, "truthVtx_mass",                             m_truthVtx_mass                             );
+      setBranch<std::vector<int>>     ( tree, "truthVtx_nOutP",                            m_truthVtx_nOutP                            );
       setBranch<std::vector<int>>     ( tree, "truthVtx_barcode",                          m_truthVtx_barcode                          );
       setBranch<std::vector<float>>   ( tree, "truthVtx_dR",                               m_truthVtx_dR                               );
     }
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_trackParts ) {
+    setBranch<int>                    ( tree, "trkCount",            m_trkCount            );
+    setBranch<float>                  ( tree, "trkPt",               m_trkPt               );
     setBranch<std::vector<int>>       ( tree, "trk_ID",              m_trk_ID              );
     setBranch<std::vector<float>>     ( tree, "trk_qOverP",          m_trk_qOverP          );
     setBranch<std::vector<float>>     ( tree, "trk_E",               m_trk_E               );
@@ -574,6 +709,8 @@ void JetContainer :: setBranches ( TTree* tree )
       setBranch<std::vector<int>>     ( tree, "trk_truthID",         m_trk_truthID         );
       setBranch<std::vector<int>>     ( tree, "trk_truthBarcode",    m_trk_truthBarcode    );
       setBranch<std::vector<int>>     ( tree, "trk_truthPid",        m_trk_truthPid        );
+      setBranch<int>                  ( tree, "tpCount",             m_tpCount             );
+      setBranch<float>                ( tree, "tpPt",                m_tpPt                );
       setBranch<std::vector<int>>     ( tree, "tp_ID",               m_tp_ID               );
       setBranch<std::vector<float>>   ( tree, "tp_pt",               m_tp_pt               );
       setBranch<std::vector<float>>   ( tree, "tp_eta",              m_tp_eta              );
@@ -629,7 +766,8 @@ void JetContainer :: setBranches ( TTree* tree )
   }
 
   if ( m_infoSwitch.m_constituentAll ) {
-    setBranch<float>              ( tree, "jet_girth",      m_jet_girth      );
+    setBranch<float>              ( tree, "girth",          m_girth          );
+    setBranch<float>              ( tree, "constituentPt",  m_constituentPt  );
     setBranch<std::vector<float>> ( tree, "constituent_dR", m_constituent_dR );
     setBranch<std::vector<float>> ( tree, "constituent_m",  m_constituent_m  );
   }
@@ -645,31 +783,54 @@ void JetContainer :: clear ( )
   m_radius ->clear();
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
-    m_isTruthMatched      ->clear();
-    m_truthMatch_ID       ->clear();
-    m_truthMatch_dR       ->clear();
-    m_truthMatch_E        ->clear();
-    m_truthMatch_M        ->clear();
-    m_truthMatch_pt       ->clear();
-    m_truthMatch_eta      ->clear();
-    m_truthMatch_phi      ->clear();
-    m_truthMatch_rapidity ->clear();
-    m_truthNonmatch_IDs   ->clear();
-    m_truthNonmatch_dRs   ->clear();
-    m_isDarkMatched       ->clear();
-    m_darkMatch_ID        ->clear();
-    m_darkMatch_dR        ->clear();
-    m_darkMatch_E         ->clear();
-    m_darkMatch_M         ->clear();
-    m_darkMatch_pt        ->clear();
-    m_darkMatch_eta       ->clear();
-    m_darkMatch_phi       ->clear();
-    m_darkMatch_rapidity  ->clear();
-    m_darkNonmatch_IDs    ->clear();
-    m_darkNonmatch_dRs    ->clear();
+    if ( jet_type == RECO ) {
+      m_isTruthMatched         ->clear();
+      m_truthMatch_ID          ->clear();
+      m_truthMatch_dR          ->clear();
+      m_truthMatch_E           ->clear();
+      m_truthMatch_M           ->clear();
+      m_truthMatch_pt          ->clear();
+      m_truthMatch_eta         ->clear();
+      m_truthMatch_phi         ->clear();
+      m_truthMatch_rapidity    ->clear();
+      m_truthNonmatch_IDs      ->clear();
+      m_truthNonmatch_dRs      ->clear();
+    }
+    if ( jet_type == RECO || jet_type == TRUTH ) {
+      m_isDarkMatched          ->clear();
+      m_darkMatch_ID           ->clear();
+      m_darkMatch_dR           ->clear();
+      m_darkMatch_E            ->clear();
+      m_darkMatch_M            ->clear();
+      m_darkMatch_pt           ->clear();
+      m_darkMatch_eta          ->clear();
+      m_darkMatch_phi          ->clear();
+      m_darkMatch_rapidity     ->clear();
+      m_darkNonmatch_IDs       ->clear();
+      m_darkNonmatch_dRs       ->clear();
+    }
+    if ( jet_type == DARK ) {
+      m_isMatchedToTruth       ->clear();
+      m_matchedTruthID         ->clear();
+      m_matchedTruthDR         ->clear();
+    }
+    if ( jet_type == DARK || jet_type == TRUTH ) {
+      if ( m_infoSwitch.m_emtopo ) {
+	m_isMatchedToEMTopoReco ->clear();
+	m_matchedEMTopoRecoID   ->clear();
+	m_matchedEMTopoRecoDR   ->clear();
+      }
+      if ( m_infoSwitch.m_pflow ) {
+	m_isMatchedToPFlowReco  ->clear();
+	m_matchedPFlowRecoID    ->clear();
+	m_matchedPFlowRecoDR    ->clear();
+      }
+    }
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices ) {
+    m_secVtxCount                                 ->clear();
+    m_secVtxPt                                    ->clear();
     m_secVtx_ID                                   ->clear();
     m_secVtx_x                                    ->clear();
     m_secVtx_y                                    ->clear();
@@ -695,20 +856,27 @@ void JetContainer :: clear ( )
       m_secVtx_maxlinkParentTruth_ID              ->clear();
       m_secVtx_maxlinkParentTruth_barcode         ->clear();
       m_secVtx_maxlinkParentTruth_score           ->clear();
+      m_truthVtxCount                             ->clear();
+      m_truthVtxPt                                ->clear();
       m_truthVtx_isDarkPionDecay                  ->clear();
       m_truthVtx_ID                               ->clear();
       m_truthVtx_x                                ->clear();
       m_truthVtx_y                                ->clear();
       m_truthVtx_z                                ->clear();
       m_truthVtx_r                                ->clear();
+      m_truthVtx_pt                               ->clear();
       m_truthVtx_eta                              ->clear();
       m_truthVtx_phi                              ->clear();
+      m_truthVtx_mass                             ->clear();
+      m_truthVtx_nOutP                            ->clear();
       m_truthVtx_barcode                          ->clear();
       m_truthVtx_dR                               ->clear();
     }
   }
   
   if ( m_infoSwitch.m_match || m_infoSwitch.m_trackParts ) {
+    m_trkCount            ->clear();
+    m_trkPt               ->clear();
     m_trk_ID              ->clear();
     m_trk_qOverP          ->clear();
     m_trk_E               ->clear();
@@ -731,6 +899,8 @@ void JetContainer :: clear ( )
       m_trk_truthID         ->clear();
       m_trk_truthBarcode    ->clear();
       m_trk_truthPid        ->clear();
+      m_tpCount             ->clear();
+      m_tpPt                ->clear();
       m_tp_ID               ->clear();
       m_tp_pt               ->clear();
       m_tp_eta              ->clear();
@@ -786,16 +956,20 @@ void JetContainer :: clear ( )
   }
 
   if ( m_infoSwitch.m_constituentAll ) {
-    m_jet_girth      ->clear();
+    m_girth          ->clear();
+    m_constituentPt  ->clear();
     m_constituent_dR ->clear();
     m_constituent_m  ->clear();
   }
 }
 
 
-void JetContainer :: FillJet ( const xAOD::Jet* jet )
+void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName )
 {
   if ( m_debug ) Info( "EJs::JetContainer::FillJet()", "filling branches" );
+
+  std::string jet_str = treeName;
+  if ( treeName == "nominal" ) jet_str = "";
 
   m_ID     ->push_back( AUXDYN( jet, int, "ID" ) );
   m_M      ->push_back( jet->m() / m_units       );
@@ -850,33 +1024,56 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
       darkJet_phi      = darkJet->phi();
       darkJet_rapidity = darkJet->rapidity();
     }
-    
-    m_isTruthMatched      ->push_back( AUXDYN(    jet, char,   "hasTruthJetMatch"   ) );
-    m_truthMatch_ID       ->push_back( AUXDYN(    jet, int,    "truthJetMatchID"    ) );
-    m_truthMatch_dR       ->push_back( AUXDYN(    jet, double, "truthJetMatchDR"    ) );
-    m_truthMatch_E        ->push_back( truthJet_E                                     );
-    m_truthMatch_M        ->push_back( truthJet_M                                     );
-    m_truthMatch_pt       ->push_back( truthJet_pt                                    );
-    m_truthMatch_eta      ->push_back( truthJet_eta                                   );
-    m_truthMatch_phi      ->push_back( truthJet_phi                                   );
-    m_truthMatch_rapidity ->push_back( truthJet_rapidity                              );
-    m_truthNonmatch_IDs   ->push_back( AUXDYNVEC( jet, int,    "truthJetNoMatchIDs" ) );
-    m_truthNonmatch_dRs   ->push_back( AUXDYNVEC( jet, float,  "truthJetNoMatchDRs" ) );
-    m_isDarkMatched       ->push_back( AUXDYN(    jet, char,   "hasDarkJetMatch"    ) );
-    m_darkMatch_ID        ->push_back( AUXDYN(    jet, int,    "darkJetMatchID"     ) );
-    m_darkMatch_dR        ->push_back( AUXDYN(    jet, double, "darkJetMatchDR"     ) );
-    m_darkMatch_E         ->push_back( darkJet_E                                      );
-    m_darkMatch_M         ->push_back( darkJet_M                                      );
-    m_darkMatch_pt        ->push_back( darkJet_pt                                     );
-    m_darkMatch_eta       ->push_back( darkJet_eta                                    );
-    m_darkMatch_phi       ->push_back( darkJet_phi                                    );
-    m_darkMatch_rapidity  ->push_back( darkJet_rapidity                               );
-    m_darkNonmatch_IDs    ->push_back( AUXDYNVEC( jet, int,    "darkJetNoMatchIDs"  ) );
-    m_darkNonmatch_dRs    ->push_back( AUXDYNVEC( jet, float,  "darkJetNoMatchDRs"  ) );
+
+    if ( jet_type == RECO ) {
+      m_isTruthMatched      ->push_back( AUXDYN(    jet, char,   "hasTruthJetMatch"   ) );
+      m_truthMatch_ID       ->push_back( AUXDYN(    jet, int,    "truthJetMatchID"    ) );
+      m_truthMatch_dR       ->push_back( AUXDYN(    jet, double, "truthJetMatchDR"    ) );
+      m_truthMatch_E        ->push_back( truthJet_E                                     );
+      m_truthMatch_M        ->push_back( truthJet_M                                     );
+      m_truthMatch_pt       ->push_back( truthJet_pt                                    );
+      m_truthMatch_eta      ->push_back( truthJet_eta                                   );
+      m_truthMatch_phi      ->push_back( truthJet_phi                                   );
+      m_truthMatch_rapidity ->push_back( truthJet_rapidity                              );
+      m_truthNonmatch_IDs   ->push_back( AUXDYNVEC( jet, int,    "truthJetNoMatchIDs" ) );
+      m_truthNonmatch_dRs   ->push_back( AUXDYNVEC( jet, float,  "truthJetNoMatchDRs" ) );
+    }
+    if ( jet_type == RECO || jet_type == TRUTH ) {
+      m_isDarkMatched       ->push_back( AUXDYN(    jet, char,   "hasDarkJetMatch"    ) );
+      m_darkMatch_ID        ->push_back( AUXDYN(    jet, int,    "darkJetMatchID"     ) );
+      m_darkMatch_dR        ->push_back( AUXDYN(    jet, double, "darkJetMatchDR"     ) );
+      m_darkMatch_E         ->push_back( darkJet_E                                      );
+      m_darkMatch_M         ->push_back( darkJet_M                                      );
+      m_darkMatch_pt        ->push_back( darkJet_pt                                     );
+      m_darkMatch_eta       ->push_back( darkJet_eta                                    );
+      m_darkMatch_phi       ->push_back( darkJet_phi                                    );
+      m_darkMatch_rapidity  ->push_back( darkJet_rapidity                               );
+      m_darkNonmatch_IDs    ->push_back( AUXDYNVEC( jet, int,    "darkJetNoMatchIDs"  ) );
+      m_darkNonmatch_dRs    ->push_back( AUXDYNVEC( jet, float,  "darkJetNoMatchDRs"  ) );
+    }
+    if ( jet_type == DARK ) {
+      m_isMatchedToTruth    ->push_back( AUXDYN(    jet, char,   "isTruthMatched"     ) );
+      m_matchedTruthID      ->push_back( AUXDYN(    jet, int,    "truthMatchID"       ) );
+      m_matchedTruthDR      ->push_back( AUXDYN(    jet, double, "truthMatchDR"       ) );
+    }
+    if ( jet_type == DARK || jet_type == TRUTH ) {
+      if ( m_infoSwitch.m_emtopo ) {
+	m_isMatchedToEMTopoReco ->push_back( AUXDYN( jet, char,   "isRecoMatched_EMTopo" + jet_str ) );
+	m_matchedEMTopoRecoID   ->push_back( AUXDYN( jet, int,    "recoMatchID_EMTopo"   + jet_str ) );
+	m_matchedEMTopoRecoDR   ->push_back( AUXDYN( jet, double, "recoMatchDR_EMTopo"   + jet_str ) );
+      }
+      if ( m_infoSwitch.m_pflow ) {
+	m_isMatchedToPFlowReco  ->push_back( AUXDYN( jet, char,   "isRecoMatched_PFlow"  + jet_str ) );
+	m_matchedPFlowRecoID    ->push_back( AUXDYN( jet, int,    "recoMatchID_PFlow"    + jet_str ) );
+	m_matchedPFlowRecoDR    ->push_back( AUXDYN( jet, double, "recoMatchDR_PFlow"    + jet_str ) );
+      }
+    }
   }
 
   
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices ) {
+    int                  matchDVCount = 0;
+    double               matchDVPt    = 0;
     std::vector<int>     matchDV_ID;
     std::vector<float>   matchDV_x;
     std::vector<float>   matchDV_y;
@@ -900,14 +1097,19 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
     std::vector<int>     matchDV_maxPTV_ID;
     std::vector<int>     matchDV_maxPTV_barcode;
     std::vector<float>   matchDV_maxPTV_score;
+    int                  matchTVCount = 0;
+    double               matchTVPt    = 0;
     std::vector<uint8_t> matchTV_isPid;
     std::vector<int>     matchTV_ID;
     std::vector<float>   matchTV_x;
     std::vector<float>   matchTV_y;
     std::vector<float>   matchTV_z;
     std::vector<float>   matchTV_r;
+    std::vector<float>   matchTV_pt;
     std::vector<float>   matchTV_eta;
     std::vector<float>   matchTV_phi;
+    std::vector<float>   matchTV_mass;
+    std::vector<int>     matchTV_nOutP;
     std::vector<int>     matchTV_barcode;
    
     // access matched secondary vertex links
@@ -929,6 +1131,9 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
 	// otherwise, calculate from filtered tracks
 	else	
 	  dvP4 = VsiBonsai::sumP4( filteredTracks );
+
+	++matchDVCount;
+	matchDVPt += dvP4.Pt();
       
 	matchDV_ID   .push_back( AUXDYN( (*dvlink), int, "ID" )                   );
 	matchDV_x    .push_back( (*dvlink)->x()                                   );
@@ -989,18 +1194,35 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
       // loop over matched truth vertex links
       for ( const auto& tvlink : matchTVLinks ) {
 	if ( !tvlink.isValid() ) continue;
+
+	std::vector<const xAOD::TruthParticle*> outParts;
+	for ( size_t i = 0; i != (*tvlink)->nOutgoingParticles(); ++i ) {
+	  const auto* outP = (*tvlink)->outgoingParticle(i);
+	  if ( !outP ) continue;
+	  outParts .push_back( outP );
+	}
+	const TLorentzVector& tvP4 = EJsHelper::truthSumP4( outParts );
+	
+	++matchTVCount;
+	matchTVPt += tvP4.Pt();
+	
 	matchTV_isPid   .push_back( EJsHelper::selectDarkPion( (*tvlink) ) );
 	matchTV_ID      .push_back( AUXDYN( (*tvlink), int, "ID" )         );
 	matchTV_x       .push_back( (*tvlink)->x()                         );
 	matchTV_y       .push_back( (*tvlink)->y()                         );
 	matchTV_z       .push_back( (*tvlink)->z()                         );
 	matchTV_r       .push_back( (*tvlink)->perp()                      );
+	matchTV_pt      .push_back( tvP4.Pt() / m_units                    );
 	matchTV_eta     .push_back( (*tvlink)->eta()                       );
 	matchTV_phi     .push_back( (*tvlink)->phi()                       );
+	matchTV_mass    .push_back( tvP4.M()  / m_units                    );
+	matchTV_nOutP   .push_back( (*tvlink)->nOutgoingParticles()        );
 	matchTV_barcode .push_back( (*tvlink)->barcode()                   );
       }
     }
 
+    m_secVtxCount                                 ->push_back( matchDVCount                                         );
+    m_secVtxPt                                    ->push_back( matchDVPt / m_units                                  );
     m_secVtx_ID                                   ->push_back( matchDV_ID                                           );
     m_secVtx_x                                    ->push_back( matchDV_x                                            );
     m_secVtx_y                                    ->push_back( matchDV_y                                            );
@@ -1026,21 +1248,28 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
       m_secVtx_maxlinkParentTruth_ID              ->push_back( matchDV_maxPTV_ID                                    );
       m_secVtx_maxlinkParentTruth_barcode         ->push_back( matchDV_maxPTV_barcode                               );
       m_secVtx_maxlinkParentTruth_score           ->push_back( matchDV_maxPTV_score                                 );
+      m_truthVtxCount                             ->push_back( matchTVCount                                         );
+      m_truthVtxPt                                ->push_back( matchTVPt / m_units                                  );
       m_truthVtx_isDarkPionDecay                  ->push_back( matchTV_isPid                                        );
       m_truthVtx_ID                               ->push_back( matchTV_ID                                           );
       m_truthVtx_x                                ->push_back( matchTV_x                                            );
       m_truthVtx_y                                ->push_back( matchTV_y                                            );
       m_truthVtx_z                                ->push_back( matchTV_z                                            );
       m_truthVtx_r                                ->push_back( matchTV_r                                            );
+      m_truthVtx_pt                               ->push_back( matchTV_pt                                           );
       m_truthVtx_eta                              ->push_back( matchTV_eta                                          );
       m_truthVtx_phi                              ->push_back( matchTV_phi                                          );
+      m_truthVtx_mass                             ->push_back( matchTV_mass                                         );
+      m_truthVtx_nOutP                            ->push_back( matchTV_nOutP                                        );
       m_truthVtx_barcode                          ->push_back( matchTV_barcode                                      );
       m_truthVtx_dR                               ->push_back( AUXDYNVEC( jet, float, "matchedTruthVertex_dR"     ) );
     }
   }
 
   
-  if ( m_infoSwitch.m_match || m_infoSwitch.m_trackParts ) {   
+  if ( m_infoSwitch.m_match || m_infoSwitch.m_trackParts ) {
+    int                  trkCount = 0;
+    double               trkPt    = 0;
     std::vector<int>     trk_ID;
     std::vector<float>   trk_qOverP;
     std::vector<float>   trk_E;
@@ -1061,6 +1290,8 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
     std::vector<int>     trk_truthID;
     std::vector<int>     trk_truthBarcode;
     std::vector<int>     trk_truthPid;
+    int                  tpCount = 0;
+    double               tpPt    = 0;
     std::vector<int>     tp_ID;
     std::vector<float>   tp_pt;
     std::vector<float>   tp_eta;
@@ -1085,7 +1316,11 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
       // loop over matched track links
       for ( const auto& trklink : trkLinks ) {
 	if ( !trklink.isValid() ) continue;
-	trk_ID .push_back( AUXDYN( (*trklink), int, "ID" )                                                   );
+
+	++trkCount;
+	trkPt += (*trklink)->pt();
+	
+	trk_ID     .push_back( AUXDYN( (*trklink), int, "ID" )                                               );
 	trk_qOverP .push_back( (*trklink)->qOverP() * m_units                                                );
 	trk_E      .push_back( (*trklink)->e()      / m_units                                                );
 	trk_M      .push_back( (*trklink)->m()      / m_units                                                );
@@ -1104,19 +1339,21 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
 	  trk_isAssociated .push_back( (*trklink)->auxdataConst<char>("is_associated") );
       
 	// get linked truth particle
-	bool trackHasTruthLink = false;
-	static SG::AuxElement::ConstAccessor<EJsHelper::TruthParticleLink_t> truthAccess("truthParticleLink");
-	if ( truthAccess.isAvailable( **trklink ) ) {
-	  try {
-	    const EJsHelper::TruthParticleLink_t& truthLink = truthAccess( **trklink );
-	    if ( (*truthLink) ) trackHasTruthLink = true;
-	    trk_truthID      .push_back( AUXDYN( (*truthLink), int, "ID" ) );
-	    trk_truthBarcode .push_back( (*truthLink)->barcode()           );
-	    trk_truthPid     .push_back( (*truthLink)->pdgId()             );
-	  } catch(...) {}
+	if ( m_mc ) {
+	  bool trackHasTruthLink = false;
+	  static SG::AuxElement::ConstAccessor<EJsHelper::TruthParticleLink_t> truthAccess("truthParticleLink");
+	  if ( truthAccess.isAvailable( **trklink ) ) {
+	    try {
+	      const EJsHelper::TruthParticleLink_t& truthLink = truthAccess( **trklink );
+	      if ( (*truthLink) ) trackHasTruthLink = true;
+	      trk_truthID      .push_back( AUXDYN( (*truthLink), int, "ID" ) );
+	      trk_truthBarcode .push_back( (*truthLink)->barcode()           );
+	      trk_truthPid     .push_back( (*truthLink)->pdgId()             );
+	    } catch(...) {}
+	  }
+	  trk_isTruth   .push_back( trackHasTruthLink                                        );
+	  trk_truthProb .push_back( (*trklink)->auxdataConst<float>("truthMatchProbability") );
 	}
-	trk_isTruth   .push_back( trackHasTruthLink                                        );
-	trk_truthProb .push_back( (*trklink)->auxdataConst<float>("truthMatchProbability") );
       
       } // end loop over matched track links
     
@@ -1130,6 +1367,10 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
       // loop over matched truth particle links
       for ( const auto& tplink : tpLinks ) {
 	if ( !tplink.isValid() ) continue;
+
+	++tpCount;
+	tpPt += (*tplink)->pt();
+	
 	tp_ID      .push_back( AUXDYN( (*tplink), int, "ID" ) );
 	tp_pt      .push_back( (*tplink)->pt() / m_units      );
 	tp_eta     .push_back( (*tplink)->eta()               );
@@ -1160,6 +1401,8 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
     
     } // end matched truth link access
 
+    m_trkCount              ->push_back( trkCount                                           );
+    m_trkPt                 ->push_back( trkPt / m_units                                    );
     m_trk_ID                ->push_back( trk_ID                                             );
     m_trk_qOverP            ->push_back( trk_qOverP                                         );
     m_trk_E                 ->push_back( trk_E                                              );
@@ -1177,11 +1420,13 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
     m_trk_isAssociated      ->push_back( trk_isAssociated                                   );
     m_trk_dR                ->push_back( AUXDYNVEC( jet, float, "matchedTrack_dR"         ) );
     if ( m_mc ) {
-      m_trk_isTruth           ->push_back( trk_isTruth                                        );
+      m_trk_isTruth         ->push_back( trk_isTruth                                        );
       m_trk_truthProb       ->push_back( trk_truthProb                                      );
       m_trk_truthID         ->push_back( trk_truthID                                        );
       m_trk_truthBarcode    ->push_back( trk_truthBarcode                                   );
       m_trk_truthPid        ->push_back( trk_truthPid                                       );
+      m_tpCount             ->push_back( tpCount                                            );
+      m_tpPt                ->push_back( tpPt / m_units                                     );
       m_tp_ID               ->push_back( tp_ID                                              );
       m_tp_pt               ->push_back( tp_pt                                              );
       m_tp_eta              ->push_back( tp_eta                                             );
@@ -1251,19 +1496,21 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
 	  ghostTrack_isAssociated .push_back( ghosttrack->auxdataConst<char>("is_associated") );
 	
 	// get linked truth particle
-	bool ghosttrackHasTruthLink = false;
-	static SG::AuxElement::ConstAccessor<EJsHelper::TruthParticleLink_t> ghosttruthAccess("truthParticleLink");
-	if ( ghosttruthAccess.isAvailable( *ghosttrack ) ) {
-	  try {
-	    const EJsHelper::TruthParticleLink_t& ghosttruthLink = ghosttruthAccess( *ghosttrack );
-	    if ( (*ghosttruthLink) ) ghosttrackHasTruthLink = true;
-	    ghostTrack_truthID      .push_back( AUXDYN( (*ghosttruthLink), int, "ID" ) );
-	    ghostTrack_truthBarcode .push_back( (*ghosttruthLink)->barcode()           );
-	    ghostTrack_truthPid     .push_back( (*ghosttruthLink)->pdgId()             ); 
-	  } catch(...) {}
+	if ( m_mc ) {
+	  bool ghosttrackHasTruthLink = false;
+	  static SG::AuxElement::ConstAccessor<EJsHelper::TruthParticleLink_t> ghosttruthAccess("truthParticleLink");
+	  if ( ghosttruthAccess.isAvailable( *ghosttrack ) ) {
+	    try {
+	      const EJsHelper::TruthParticleLink_t& ghosttruthLink = ghosttruthAccess( *ghosttrack );
+	      if ( (*ghosttruthLink) ) ghosttrackHasTruthLink = true;
+	      ghostTrack_truthID      .push_back( AUXDYN( (*ghosttruthLink), int, "ID" ) );
+	      ghostTrack_truthBarcode .push_back( (*ghosttruthLink)->barcode()           );
+	      ghostTrack_truthPid     .push_back( (*ghosttruthLink)->pdgId()             ); 
+	    } catch(...) {}
+	  }
+	  ghostTrack_isTruth   .push_back( ghosttrackHasTruthLink                                   );
+	  ghostTrack_truthProb .push_back( ghosttrack->auxdataConst<float>("truthMatchProbability") );
 	}
-	ghostTrack_isTruth   .push_back( ghosttrackHasTruthLink                                   );
-	ghostTrack_truthProb .push_back( ghosttrack->auxdataConst<float>("truthMatchProbability") );
       }
     }
 
@@ -1339,6 +1586,7 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
 
   if ( m_infoSwitch.m_constituentAll ) {
     double             jconstitPtWeightedDR = 0;
+    double             constituentPt        = 0;
     std::vector<float> constituent_dR;
     std::vector<float> constituent_m;
     // access constituents
@@ -1347,14 +1595,16 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet )
       for ( const auto& jconstit : jcv ) {
 	double dR = EJsHelper::deltaR( jet->eta(), jconstit->eta(), jet->phi(), jconstit->phi() );
 	jconstitPtWeightedDR += dR * jconstit->pt();
+	constituentPt        += jconstit->pt();
 	constituent_dR .push_back( dR                      );
 	constituent_m  .push_back( jconstit->m() / m_units );
       }
     }
-    float jet_girth  = jconstitPtWeightedDR / jet->pt();
-    m_jet_girth      ->push_back( jet_girth      );
-    m_constituent_dR ->push_back( constituent_dR );
-    m_constituent_m  ->push_back( constituent_m  );
+    float girth      = jconstitPtWeightedDR / jet->pt();
+    m_girth          ->push_back( girth                   );
+    m_constituentPt  ->push_back( constituentPt / m_units ); 
+    m_constituent_dR ->push_back( constituent_dR          );
+    m_constituent_m  ->push_back( constituent_m           );
   }
   
 }

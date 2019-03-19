@@ -16,8 +16,35 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
   m_pv_nTracks  = 0;
   m_pv_location = 0;
 
-  m_tp_ID      = new std::vector<int>;
-  m_tp_barcode = new std::vector<int>;
+  m_signal_emtopo = 0;
+  m_signal_pflow  = 0;
+  m_valid_emtopo  = 0;
+  m_valid_pflow   = 0;
+  m_ctrl_emtopo   = 0;
+  m_ctrl_pflow    = 0;
+
+  m_signalTrig          = 0;
+  m_signalNJet_emtopo   = 0;
+  m_signalNJet_pflow    = 0;
+  m_signalJetPt_emtopo  = 0;
+  m_signalJetPt_pflow   = 0;
+  m_signalJetEta_emtopo = 0;
+  m_signalJetEta_pflow  = 0;
+  m_signalNJetHt_emtopo = 0;
+  m_signalNJetHt_pflow  = 0;
+
+  m_validTrig           = 0;
+  m_validNJetMin_emtopo = 0;
+  m_validNJetMin_pflow  = 0;
+  m_validNJetMax_emtopo = 0;
+  m_validNJetMax_pflow  = 0;
+  m_validJetPt_emtopo   = 0;
+  m_validJetPt_pflow    = 0;
+  m_validJetEta_emtopo  = 0;
+  m_validJetEta_pflow   = 0;
+
+  m_tp_ID = new std::vector<int>;
+  m_tp_M  = new std::vector<float>;
 
   m_trk_ID           = new std::vector<int>;
   m_trk_d0           = new std::vector<float>;
@@ -72,8 +99,9 @@ void EJsHelpTreeBase :: FillTruthVerts ( const xAOD::TruthVertexContainer* truth
 
 void EJsHelpTreeBase :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx, const std::string truthVtxName )
 {
+  std::string treeName = m_tree->GetName();
   EJs::TruthVertexContainer* thisTruthVtx = m_truthVerts[ truthVtxName ];
-  thisTruthVtx->FillTruthVertex( truthVtx );
+  thisTruthVtx->FillTruthVertex( truthVtx, treeName );
 }
 
 void EJsHelpTreeBase :: ClearTruthVerts ( const std::string truthVtxName )
@@ -107,8 +135,9 @@ void EJsHelpTreeBase :: FillSecondaryVerts ( const xAOD::VertexContainer* secVer
 
 void EJsHelpTreeBase :: FillSecondaryVertex ( const xAOD::Vertex* secVtx, const std::string secVtxName )
 {
+  std::string treeName = m_tree->GetName();
   EJs::SecondaryVertexContainer* thisSecVtx = m_secVerts[ secVtxName ];
-  thisSecVtx->FillSecondaryVertex( secVtx );
+  thisSecVtx->FillSecondaryVertex( secVtx, treeName );
 }
 
 void EJsHelpTreeBase :: ClearSecondaryVerts ( const std::string secVtxName )
@@ -162,6 +191,178 @@ void EJsHelpTreeBase :: ClearPV ( )
 
 
 /*************
+ * USER EVENTS *
+ *************/
+
+void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
+{
+  if ( m_debug ) Info( "EJsHelpTreeBase::AddEventUser()", "adding EJs-user event variables" );
+
+  m_tree->Branch( "isSignal_EMTopo", &m_signal_emtopo );
+  m_tree->Branch( "isSignal_PFlow",  &m_signal_pflow  );
+  m_tree->Branch( "isValid_EMTopo",  &m_valid_emtopo  );
+  m_tree->Branch( "isValid_PFlow",   &m_valid_pflow   );
+  m_tree->Branch( "isCtrl_EMTopo",   &m_ctrl_emtopo   );
+  m_tree->Branch( "isCtrl_PFlow",    &m_ctrl_pflow    );
+
+  m_tree->Branch( "passesSignalTrigger",         &m_signalTrig            );
+  m_tree->Branch( "passesSignalNJet_EMTopo",     &m_signalNJet_emtopo     );
+  m_tree->Branch( "passesSignalNJet_PFlow",      &m_signalNJet_pflow      );
+  m_tree->Branch( "passesSignalJetPt_EMTopo",    &m_signalJetPt_emtopo    );
+  m_tree->Branch( "passesSignalJetPt_PFlow",     &m_signalJetPt_pflow     );
+  m_tree->Branch( "passesSignalJetEta_EMTopo",   &m_signalJetEta_emtopo   );
+  m_tree->Branch( "passesSignalJetEta_PFlow",    &m_signalJetEta_pflow    );
+  m_tree->Branch( "passesSignalNJetHt_EMTopo",   &m_signalNJetHt_emtopo   );
+  m_tree->Branch( "passesSignalNJetHt_PFlow",    &m_signalNJetHt_pflow    );
+
+  m_tree->Branch( "passesValidTrigger",        &m_validTrig            );
+  m_tree->Branch( "passesValidNJetMin_EMTopo", &m_validNJetMin_emtopo );
+  m_tree->Branch( "passesValidNJetMin_PFlow",  &m_validNJetMin_pflow   );
+  m_tree->Branch( "passesValidNJetMax_EMTopo", &m_validNJetMax_emtopo );
+  m_tree->Branch( "passesValidNJetMax_PFlow",  &m_validNJetMax_pflow   );
+  m_tree->Branch( "passesValidJetPt_EMTopo",   &m_validJetPt_emtopo    );
+  m_tree->Branch( "passesValidJetPt_PFlow",    &m_validJetPt_pflow     );
+  m_tree->Branch( "passesValidJetEta_EMTopo",  &m_validJetEta_emtopo   );
+  m_tree->Branch( "passesValidJetEta_PFlow",   &m_validJetEta_pflow    );
+}
+
+void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
+{
+  std::string treeName = m_tree->GetName();
+  if ( treeName == "nominal" ) treeName = "";
+
+  m_signal_emtopo = 0;
+  m_signal_pflow  = 0;
+  m_valid_emtopo  = 0;
+  m_valid_pflow   = 0;
+  m_ctrl_emtopo   = 0;
+  m_ctrl_pflow    = 0;
+
+  m_signalTrig          = 0;
+  m_signalNJet_emtopo   = 0;
+  m_signalNJet_pflow    = 0;
+  m_signalJetPt_emtopo  = 0;
+  m_signalJetPt_pflow   = 0;
+  m_signalJetEta_emtopo = 0;
+  m_signalJetEta_pflow  = 0;
+  m_signalNJetHt_emtopo = 0;
+  m_signalNJetHt_pflow  = 0;
+
+  m_validTrig           = 0;
+  m_validNJetMin_emtopo = 0;
+  m_validNJetMin_pflow  = 0;
+  m_validNJetMax_emtopo = 0;
+  m_validNJetMax_pflow  = 0;
+  m_validJetPt_emtopo   = 0;
+  m_validJetPt_pflow    = 0;
+  m_validJetEta_emtopo  = 0;
+  m_validJetEta_pflow   = 0;
+
+  if ( event->isAvailable<char>( "passSignalTrigSel" ) ) {
+    m_signalTrig = event->auxdataConst<char>( "passSignalTrigSel" );
+    m_validTrig  = event->auxdataConst<char>( "passValidTrigSel"  );
+  }
+
+  // if running EMTopo systematics...
+  if ( event->isAvailable<char>( "passSignalSel_EMTopo" + treeName ) ) {
+    m_signal_emtopo = event->auxdataConst<char>( "passSignalSel_EMTopo" + treeName );
+    m_valid_emtopo  = event->auxdataConst<char>( "passValidSel_EMTopo"  + treeName );
+    m_ctrl_emtopo   = event->auxdataConst<char>( "passCtrlSel_EMTopo"   + treeName );
+
+    m_signalNJet_emtopo   = event->auxdataConst<char>( "passSignalNJetSel_EMTopo"   + treeName );
+    m_signalJetPt_emtopo  = event->auxdataConst<char>( "passSignalJetPtSel_EMTopo"  + treeName );
+    m_signalJetEta_emtopo = event->auxdataConst<char>( "passSignalJetEtaSel_EMTopo" + treeName );
+    m_signalNJetHt_emtopo = event->auxdataConst<char>( "passSignalNJetHtSel_EMTopo" + treeName );
+
+    m_validNJetMin_emtopo = event->auxdataConst<char>( "passValidNJetMinSel_EMTopo" + treeName );
+    m_validNJetMax_emtopo = event->auxdataConst<char>( "passValidNJetMaxSel_EMTopo" + treeName );
+    m_validJetPt_emtopo   = event->auxdataConst<char>( "passValidJetPtSel_EMTopo"   + treeName );
+    m_validJetEta_emtopo  = event->auxdataConst<char>( "passValidJetEtaSel_EMTopo"  + treeName );
+  }
+  // otherwise, get decorators for nominal case...
+  else if ( event->isAvailable<char>( "passSignalSel_EMTopo" ) ) {
+    m_signal_emtopo = event->auxdataConst<char>( "passSignalSel_EMTopo" );
+    m_valid_emtopo  = event->auxdataConst<char>( "passValidSel_EMTopo"  );
+    m_ctrl_emtopo   = event->auxdataConst<char>( "passCtrlSel_EMTopo"   );
+
+    m_signalNJet_emtopo   = event->auxdataConst<char>( "passSignalNJetSel_EMTopo"   );
+    m_signalJetPt_emtopo  = event->auxdataConst<char>( "passSignalJetPtSel_EMTopo"  );
+    m_signalJetEta_emtopo = event->auxdataConst<char>( "passSignalJetEtaSel_EMTopo" );
+    m_signalNJetHt_emtopo = event->auxdataConst<char>( "passSignalNJetHtSel_EMTopo" );
+
+    m_validNJetMin_emtopo = event->auxdataConst<char>( "passValidNJetMinSel_EMTopo" );
+    m_validNJetMax_emtopo = event->auxdataConst<char>( "passValidNJetMaxSel_EMTopo" );
+    m_validJetPt_emtopo   = event->auxdataConst<char>( "passValidJetPtSel_EMTopo"   );
+    m_validJetEta_emtopo  = event->auxdataConst<char>( "passValidJetEtaSel_EMTopo"  );
+  }
+
+  // if running PFlow systematics...
+  if ( event->isAvailable<char>( "passSignalSel_PFlow" + treeName ) ) {  
+    m_signal_pflow  = event->auxdataConst<char>( "passSignalSel_PFlow" + treeName );
+    m_valid_pflow   = event->auxdataConst<char>( "passValidSel_PFlow"  + treeName );
+    m_ctrl_pflow    = event->auxdataConst<char>( "passCtrlSel_PFlow"   + treeName );
+
+    m_signalNJet_pflow    = event->auxdataConst<char>( "passSignalNJetSel_PFlow"   + treeName );
+    m_signalJetPt_pflow   = event->auxdataConst<char>( "passSignalJetPtSel_PFlow"  + treeName );
+    m_signalJetEta_pflow  = event->auxdataConst<char>( "passSignalJetEtaSel_PFlow" + treeName );
+    m_signalNJetHt_pflow  = event->auxdataConst<char>( "passSignalNJetHtSel_PFlow" + treeName );
+
+    m_validNJetMin_pflow  = event->auxdataConst<char>( "passValidNJetMinSel_PFlow" + treeName );
+    m_validNJetMax_pflow  = event->auxdataConst<char>( "passValidNJetMaxSel_PFlow" + treeName );
+    m_validJetPt_pflow    = event->auxdataConst<char>( "passValidJetPtSel_PFlow"   + treeName );
+    m_validJetEta_pflow   = event->auxdataConst<char>( "passValidJetEtaSel_PFlow"  + treeName );
+  }
+  // otherwise, get decorators for nominal case...
+  else if ( event->isAvailable<char>( "passSignalSel_PFlow" ) ) {
+    m_signal_pflow  = event->auxdataConst<char>( "passSignalSel_PFlow" );
+    m_valid_pflow   = event->auxdataConst<char>( "passValidSel_PFlow"  );
+    m_ctrl_pflow    = event->auxdataConst<char>( "passCtrlSel_PFlow"   );
+
+    m_signalNJet_pflow    = event->auxdataConst<char>( "passSignalNJetSel_PFlow"   );
+    m_signalJetPt_pflow   = event->auxdataConst<char>( "passSignalJetPtSel_PFlow"  );
+    m_signalJetEta_pflow  = event->auxdataConst<char>( "passSignalJetEtaSel_PFlow" );
+    m_signalNJetHt_pflow  = event->auxdataConst<char>( "passSignalNJetHtSel_PFlow" );
+
+    m_validNJetMin_pflow  = event->auxdataConst<char>( "passValidNJetMinSel_PFlow" );
+    m_validNJetMax_pflow  = event->auxdataConst<char>( "passValidNJetMaxSel_PFlow" );
+    m_validJetPt_pflow    = event->auxdataConst<char>( "passValidJetPtSel_PFlow"   );
+    m_validJetEta_pflow   = event->auxdataConst<char>( "passValidJetEtaSel_PFlow"  );
+  }
+}
+
+void EJsHelpTreeBase :: ClearEventUser ( )
+{
+  m_signal_emtopo = 0;
+  m_signal_pflow  = 0;
+  m_valid_emtopo  = 0;
+  m_valid_pflow   = 0;
+  m_ctrl_emtopo   = 0;
+  m_ctrl_pflow    = 0;
+
+  m_signalTrig          = 0;
+  m_signalNJet_emtopo   = 0;
+  m_signalNJet_pflow    = 0;
+  m_signalJetPt_emtopo  = 0;
+  m_signalJetPt_pflow   = 0;
+  m_signalJetEta_emtopo = 0;
+  m_signalJetEta_pflow  = 0;
+  m_signalNJetHt_emtopo = 0;
+  m_signalNJetHt_pflow  = 0;
+
+  m_validTrig           = 0;
+  m_validNJetMin_emtopo = 0;
+  m_validNJetMin_pflow  = 0;
+  m_validNJetMax_emtopo = 0;
+  m_validNJetMax_pflow  = 0;
+  m_validJetPt_emtopo   = 0;
+  m_validJetPt_pflow    = 0;
+  m_validJetEta_emtopo  = 0;
+  m_validJetEta_pflow   = 0;
+}
+
+
+
+/*************
  * USER JETS *
  *************/
 
@@ -176,8 +377,9 @@ void EJsHelpTreeBase :: AddJetsUser ( const std::string detailStr, const std::st
 
 void EJsHelpTreeBase :: FillJetsUser ( const xAOD::Jet* jet, const std::string jetName )
 {
+  std::string treeName = m_tree->GetName();
   EJs::JetContainer* thisJet = m_jets[ jetName ];
-  thisJet->FillJet( jet );
+  thisJet->FillJet( jet, treeName );
 }
 
 void EJsHelpTreeBase :: ClearJetsUser ( const std::string jetName )
@@ -195,20 +397,20 @@ void EJsHelpTreeBase :: AddTruthUser ( const std::string truthName, const std::s
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddTruthUser()", "adding EJs-user truth particle variables" );
 
-  setBranch<int> ( truthName, "ID",      m_tp_ID      );
-  setBranch<int> ( truthName, "barcode", m_tp_barcode );
+  setBranch<int>   ( truthName, "ID", m_tp_ID );
+  setBranch<float> ( truthName, "M",  m_tp_M  );
 }
 
 void EJsHelpTreeBase :: FillTruthUser ( const std::string truthName, const xAOD::TruthParticle* truthPart )
 {
-  m_tp_ID      ->push_back( AUXDYN( truthPart, int, "ID" ) );
-  m_tp_barcode ->push_back( truthPart->barcode()           );
+  m_tp_ID ->push_back( AUXDYN( truthPart, int, "ID" ) );
+  m_tp_M  ->push_back( truthPart->m() / m_units       );
 }
 
 void EJsHelpTreeBase :: ClearTruthUser ( const std::string truthName )
 {
-  m_tp_ID      ->clear();
-  m_tp_barcode ->clear();
+  m_tp_ID ->clear();
+  m_tp_M  ->clear();
 }
 
 

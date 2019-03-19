@@ -27,17 +27,20 @@ namespace EJs {
     virtual void setTree     ( TTree* tree );
     virtual void setBranches ( TTree* tree );
     virtual void clear       ( );
-    virtual void FillJet     ( const xAOD::Jet* jet );
+    virtual void FillJet     ( const xAOD::Jet* jet, const std::string treeName = "" );
 
 
   private:
+    enum jetType { RECO, TRUTH, DARK };
+    jetType jet_type;
+    
     // vector branches
     std::vector<int>*   m_ID;
     std::vector<float>* m_M;
     std::vector<float>* m_radius;
 
     // matched truth (dark) jets
-    std::vector<uint8_t>*            m_isTruthMatched;
+    std::vector<uint8_t>*            m_isTruthMatched;        // reco jet is truth-matched
     std::vector<int>*                m_truthMatch_ID;
     std::vector<float>*              m_truthMatch_dR;
     std::vector<float>*              m_truthMatch_E;
@@ -48,7 +51,7 @@ namespace EJs {
     std::vector<float>*              m_truthMatch_rapidity;
     std::vector<std::vector<int>>*   m_truthNonmatch_IDs;
     std::vector<std::vector<float>>* m_truthNonmatch_dRs;
-    std::vector<uint8_t>*            m_isDarkMatched;
+    std::vector<uint8_t>*            m_isDarkMatched;         // reco / truth jet is dark-matched
     std::vector<int>*                m_darkMatch_ID;
     std::vector<float>*              m_darkMatch_dR;
     std::vector<float>*              m_darkMatch_E;
@@ -59,7 +62,18 @@ namespace EJs {
     std::vector<float>*              m_darkMatch_rapidity;
     std::vector<std::vector<int>>*   m_darkNonmatch_IDs;
     std::vector<std::vector<float>>* m_darkNonmatch_dRs;
+    std::vector<uint8_t>*            m_isMatchedToTruth;      // dark jet is matched to truth
+    std::vector<int>*                m_matchedTruthID;
+    std::vector<float>*              m_matchedTruthDR;
+    std::vector<uint8_t>*            m_isMatchedToEMTopoReco; // dark / truth jet is matched to emtopo reco
+    std::vector<int>*                m_matchedEMTopoRecoID;
+    std::vector<float>*              m_matchedEMTopoRecoDR;
+    std::vector<uint8_t>*            m_isMatchedToPFlowReco;  // dark / truth jet is matched to pflow reco
+    std::vector<int>*                m_matchedPFlowRecoID;
+    std::vector<float>*              m_matchedPFlowRecoDR;
     // matched vertices
+    std::vector<int>*                  m_secVtxCount;
+    std::vector<float>*                m_secVtxPt;
     std::vector<std::vector<int>>*     m_secVtx_ID;
     std::vector<std::vector<float>>*   m_secVtx_x;
     std::vector<std::vector<float>>*   m_secVtx_y;
@@ -70,7 +84,7 @@ namespace EJs {
     std::vector<std::vector<float>>*   m_secVtx_phi;
     std::vector<std::vector<float>>*   m_secVtx_mass;
     std::vector<std::vector<float>>*   m_secVtx_chi2;
-    std::vector<std::vector<int>>*     m_secVtx_ntrk; // ntrk_sel/assoc ??
+    std::vector<std::vector<int>>*     m_secVtx_ntrk; // ntrk_sel/assoc ... ??
     std::vector<std::vector<float>>*   m_secVtx_dR;
     std::vector<std::vector<uint8_t>>* m_secVtx_closestTruth_isDarkPionDecay;
     std::vector<std::vector<int>>*     m_secVtx_closestTruth_ID;
@@ -84,19 +98,26 @@ namespace EJs {
     std::vector<std::vector<int>>*     m_secVtx_maxlinkParentTruth_ID;
     std::vector<std::vector<int>>*     m_secVtx_maxlinkParentTruth_barcode;
     std::vector<std::vector<float>>*   m_secVtx_maxlinkParentTruth_score;
+    std::vector<int>*                  m_truthVtxCount;
+    std::vector<float>*                m_truthVtxPt;
     std::vector<std::vector<uint8_t>>* m_truthVtx_isDarkPionDecay;
     std::vector<std::vector<int>>*     m_truthVtx_ID;
     std::vector<std::vector<float>>*   m_truthVtx_x;
     std::vector<std::vector<float>>*   m_truthVtx_y;
     std::vector<std::vector<float>>*   m_truthVtx_z;
     std::vector<std::vector<float>>*   m_truthVtx_r;
+    std::vector<std::vector<float>>*   m_truthVtx_pt;
     std::vector<std::vector<float>>*   m_truthVtx_eta;
     std::vector<std::vector<float>>*   m_truthVtx_phi;
+    std::vector<std::vector<float>>*   m_truthVtx_mass;
+    std::vector<std::vector<int>>*     m_truthVtx_nOutP; // n charged, reco, reconstructible out parts ... ??
     std::vector<std::vector<int>>*     m_truthVtx_barcode;
     std::vector<std::vector<float>>*   m_truthVtx_dR;
     // --> isReco (isClose(st) / is(Max)Linked) --> need to decorate truth vertices accordingly first (and do reco-to-truth matching)
     
     // matched tracks / truth particles
+    std::vector<int>*                  m_trkCount;
+    std::vector<float>*                m_trkPt;
     std::vector<std::vector<int>>*     m_trk_ID;
     std::vector<std::vector<float>>*   m_trk_qOverP;
     std::vector<std::vector<float>>*   m_trk_E;
@@ -118,6 +139,8 @@ namespace EJs {
     std::vector<std::vector<int>>*     m_trk_truthID;
     std::vector<std::vector<int>>*     m_trk_truthBarcode;
     std::vector<std::vector<int>>*     m_trk_truthPid;
+    std::vector<int>*                  m_tpCount;
+    std::vector<float>*                m_tpPt;
     std::vector<std::vector<int>>*     m_tp_ID;
     std::vector<std::vector<float>>*   m_tp_pt;
     std::vector<std::vector<float>>*   m_tp_eta;
@@ -170,7 +193,8 @@ namespace EJs {
     // --> want to add truth parents / ancestors ?? --> at least check if truth particle is dark pion descendant (and generation)
 
     // jet constituents
-    std::vector<float>*              m_jet_girth;
+    std::vector<float>*              m_girth;
+    std::vector<float>*              m_constituentPt;
     std::vector<std::vector<float>>* m_constituent_dR;
     std::vector<std::vector<float>>* m_constituent_m;
   };

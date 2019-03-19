@@ -44,7 +44,7 @@ namespace EJs {
     virtual void setBranches ( TTree* tree )
     {
       std::string counterName  = "n" + m_name;
-      tree->Branch( counterName.c_str(), &m_n, (counterName+"/i").c_str() );
+      tree->Branch( counterName.c_str(), &m_n, (counterName+"/I").c_str() );
     }
  
     virtual void clear ()
@@ -87,7 +87,6 @@ namespace EJs {
     // safe*Fill, updateParticle ... may want to add later...
  
     std::string m_name;
-    // m_vertices ...
 
     
   public:
@@ -95,7 +94,7 @@ namespace EJs {
     float    m_units;
     bool     m_mc;
     bool     m_debug;   
-    uint32_t m_n;
+    int      m_n;
 
   };
 
