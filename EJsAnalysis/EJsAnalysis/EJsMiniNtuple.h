@@ -58,6 +58,10 @@ class EJsMiniNtuple : public xAH::Algorithm
   // index of jet container to run systematics over
   unsigned m_jetSystsContainerIndex = 0;
 
+  // jet types to include
+  bool m_jetEMTopo = true;
+  bool m_jetPFlow  = false;
+
   // unit conversion from MeV; default is GeV
   float m_units = 1e3;
 
@@ -68,19 +72,19 @@ class EJsMiniNtuple : public xAH::Algorithm
   // protected from being sent from submission to worker node
  public:
   // TTree *myTree; //!
-  // TH1 *myHist; //!
+  // TH1 *myHist;   //!
 
  protected:
-  std::vector<std::string> m_jetDetails; //!
-  std::vector<std::string> m_trigJetDetails; //!
+  std::vector<std::string> m_jetDetails;      //!
+  std::vector<std::string> m_trigJetDetails;  //!
   std::vector<std::string> m_truthJetDetails; //!
   
-  std::vector<std::string> m_jetContainers; //!
-  std::vector<std::string> m_trigJetContainers; //!
+  std::vector<std::string> m_jetContainers;      //!
+  std::vector<std::string> m_trigJetContainers;  //!
   std::vector<std::string> m_truthJetContainers; //!
   
-  std::vector<std::string> m_jetBranches; //!
-  std::vector<std::string> m_trigJetBranches; //!
+  std::vector<std::string> m_jetBranches;      //!
+  std::vector<std::string> m_trigJetBranches;  //!
   std::vector<std::string> m_truthJetBranches; //!
 
   std::map< std::string, EJsHelpTreeBase* > m_trees; //!

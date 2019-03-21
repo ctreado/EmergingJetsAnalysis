@@ -71,7 +71,7 @@ namespace EJsHelper {
   void fillRegion ( Region&, const std::string );
 
 
-  // --- truth helper functions (taken from VsiPerf/VsiTruthHelper) --- //
+  // --- truth helper functions (some taken from VsiPerf/VsiTruthHelper) --- //
 
   // selects specified particle decay truth vertices
   bool selectDarkPion ( const xAOD::TruthVertex* );
@@ -90,6 +90,13 @@ namespace EJsHelper {
   // returns truth vertex sum four-vector momentum of outgoing particles
   TLorentzVector truthSumP4 ( const std::vector< const xAOD::TruthParticle* >& );
   TLorentzVector truthSumP4 ( const std::vector< TLorentzVector >&             );
+
+  // is truth particle stable / interacting / reconstructible / dark ?
+  bool isStable          ( const xAOD::TruthParticle* );
+  bool isInteracting     ( const xAOD::TruthParticle* );
+  bool isReconstructible ( const xAOD::TruthParticle* );
+  bool isDark            ( const xAOD::TruthParticle* );
+  
   
 }
 

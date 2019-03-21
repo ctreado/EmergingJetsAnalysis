@@ -241,7 +241,9 @@ Dict_EJsMiniNtuple = {
     "m_jetBranchName"                : "jet pflowJet",
     "m_jetSystsVec"                  : "AntiKt4EMTopoJets_Calib_Select_Algo",
     "m_jetSystsContainerIndex"       : 0,
-    "m_truthJetDetailStr"            : "kinematic rapidity energyLight constituent constituentAll match emtopo pflow",
+    "m_jetEMTopo"                    : True,
+    "m_jetPFlow"                     : True,
+    "m_truthJetDetailStr"            : "kinematic rapidity energyLight constituent constituentAll match",
     "m_truthJetContainerName"        : "AntiKt4TruthJets AntiKt4TruthDarkJets",
     "m_truthJetBranchName"           : "truthJet darkJet",
     "m_truthPartDetailStr"           : "kinematic parents children",
@@ -250,10 +252,10 @@ Dict_EJsMiniNtuple = {
     "m_trackPartDetailStr"           : "kinematic numbers vertex",
     "m_trackPartContainerName"       : "InDetTrackParticles",               # --> use selected tracks
     "m_trackPartBranchName"          : "track",
-    "m_truthVertexDetailStr"         : "isMatched emtopo pflow",
+    "m_truthVertexDetailStr"         : "isMatched",
     "m_truthVertexContainerName"     : "TruthVertices",
     "m_truthVertexBranchName"        : "truthVtx",
-    "m_secondaryVertexDetailStr"     : "tracks truth jetMatched emtopo pflow",
+    "m_secondaryVertexDetailStr"     : "tracks truth jetMatched",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices", # --> use selected DVs
     "m_secondaryVertexBranchName"    : "secVtx",
 }

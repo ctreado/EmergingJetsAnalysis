@@ -6,10 +6,14 @@
 
 using namespace EJs;
 
-JetContainer :: JetContainer ( const std::string& name, const std::string& detailStr, float units, bool mc ) :
+JetContainer :: JetContainer ( const std::string& name, const std::string& detailStr, float units,
+			       bool mc, bool emtopo, bool pflow ) :
   VertexContainer ( name, detailStr, units, mc )
 {
   if ( m_debug ) Info( "EJs::JetContainer()", "setting up" );
+
+  m_doEMTopo = emtopo;
+  m_doPFlow  = pflow;
 
   if ( name.find("dark")  != std::string::npos || name.find("Dark")  != std::string::npos )
     jet_type = DARK;
@@ -24,46 +28,46 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
     if ( jet_type == RECO ) {
-      m_isTruthMatched          = new std::vector<uint8_t>;
-      m_truthMatch_ID           = new std::vector<int>;
-      m_truthMatch_dR           = new std::vector<float>;
-      m_truthMatch_E            = new std::vector<float>;
-      m_truthMatch_M            = new std::vector<float>;
-      m_truthMatch_pt           = new std::vector<float>;
-      m_truthMatch_eta          = new std::vector<float>;
-      m_truthMatch_phi          = new std::vector<float>;
-      m_truthMatch_rapidity     = new std::vector<float>;
-      m_truthNonmatch_IDs       = new std::vector<std::vector<int>>;
-      m_truthNonmatch_dRs       = new std::vector<std::vector<float>>;
+      m_isTruthMatched      = new std::vector<uint8_t>;
+      m_truthMatch_ID       = new std::vector<int>;
+      m_truthMatch_dR       = new std::vector<float>;
+      m_truthMatch_E        = new std::vector<float>;
+      m_truthMatch_M        = new std::vector<float>;
+      m_truthMatch_pt       = new std::vector<float>;
+      m_truthMatch_eta      = new std::vector<float>;
+      m_truthMatch_phi      = new std::vector<float>;
+      m_truthMatch_rapidity = new std::vector<float>;
+      m_truthNonmatch_IDs   = new std::vector<std::vector<int>>;
+      m_truthNonmatch_dRs   = new std::vector<std::vector<float>>;
     }
     if ( jet_type == RECO || jet_type == TRUTH ) {
-      m_isDarkMatched           = new std::vector<uint8_t>;
-      m_darkMatch_ID            = new std::vector<int>;
-      m_darkMatch_dR            = new std::vector<float>;
-      m_darkMatch_E             = new std::vector<float>;
-      m_darkMatch_M             = new std::vector<float>;
-      m_darkMatch_pt            = new std::vector<float>;
-      m_darkMatch_eta           = new std::vector<float>;
-      m_darkMatch_phi           = new std::vector<float>;
-      m_darkMatch_rapidity      = new std::vector<float>;
-      m_darkNonmatch_IDs        = new std::vector<std::vector<int>>;
-      m_darkNonmatch_dRs        = new std::vector<std::vector<float>>;
+      m_isDarkMatched       = new std::vector<uint8_t>;
+      m_darkMatch_ID        = new std::vector<int>;
+      m_darkMatch_dR        = new std::vector<float>;
+      m_darkMatch_E         = new std::vector<float>;
+      m_darkMatch_M         = new std::vector<float>;
+      m_darkMatch_pt        = new std::vector<float>;
+      m_darkMatch_eta       = new std::vector<float>;
+      m_darkMatch_phi       = new std::vector<float>;
+      m_darkMatch_rapidity  = new std::vector<float>;
+      m_darkNonmatch_IDs    = new std::vector<std::vector<int>>;
+      m_darkNonmatch_dRs    = new std::vector<std::vector<float>>;
     }
     if ( jet_type == DARK ) {
-      m_isMatchedToTruth        = new std::vector<uint8_t>;
-      m_matchedTruthID          = new std::vector<int>;
-      m_matchedTruthDR          = new std::vector<float>;
+      m_isMatchedToTruth    = new std::vector<uint8_t>;
+      m_matchedTruthID      = new std::vector<int>;
+      m_matchedTruthDR      = new std::vector<float>;
     }
     if ( jet_type == DARK || jet_type == TRUTH ) {
-      if ( m_infoSwitch.m_emtopo ) {
-	m_isMatchedToEMTopoReco = new std::vector<uint8_t>;
-	m_matchedEMTopoRecoID   = new std::vector<int>;
-	m_matchedEMTopoRecoDR   = new std::vector<float>;
+      if ( m_doEMTopo ) {
+	m_isMatchedToEMTopo = new std::vector<uint8_t>;
+	m_matchedEMTopoID   = new std::vector<int>;
+	m_matchedEMTopoDR   = new std::vector<float>;
       }
-      if ( m_infoSwitch.m_pflow ) {
-	m_isMatchedToPFlowReco  = new std::vector<uint8_t>;
-	m_matchedPFlowRecoID    = new std::vector<int>;
-	m_matchedPFlowRecoDR    = new std::vector<float>;
+      if ( m_doPFlow ) {
+	m_isMatchedToPFlow  = new std::vector<uint8_t>;
+	m_matchedPFlowID    = new std::vector<int>;
+	m_matchedPFlowDR    = new std::vector<float>;
       }
     }
   }
@@ -245,15 +249,15 @@ JetContainer :: ~JetContainer ()
       delete m_matchedTruthDR;
     }
     if ( jet_type == DARK || jet_type == TRUTH ) {
-      if ( m_infoSwitch.m_emtopo ) {
-	delete m_isMatchedToEMTopoReco;
-	delete m_matchedEMTopoRecoID;
-	delete m_matchedEMTopoRecoDR;
+      if ( m_doEMTopo ) {
+	delete m_isMatchedToEMTopo;
+	delete m_matchedEMTopoID;
+	delete m_matchedEMTopoDR;
       }
-      if ( m_infoSwitch.m_pflow ) {
-	delete m_isMatchedToPFlowReco;
-	delete m_matchedPFlowRecoID;
-	delete m_matchedPFlowRecoDR;
+      if ( m_doPFlow ) {
+	delete m_isMatchedToPFlow;
+	delete m_matchedPFlowID;
+	delete m_matchedPFlowDR;
       }
     }
   }
@@ -404,46 +408,46 @@ void JetContainer :: setTree ( TTree* tree )
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
     if ( jet_type == RECO ) {
-      connectBranch<uint8_t>            ( tree, "isTruthMatched",        &m_isTruthMatched        );
-      connectBranch<int>                ( tree, "truthMatch_ID",         &m_truthMatch_ID         );
-      connectBranch<float>              ( tree, "truthMatch_dR",         &m_truthMatch_dR         );
-      connectBranch<float>              ( tree, "truthMatch_E",          &m_truthMatch_E          );
-      connectBranch<float>              ( tree, "truthMatch_M",          &m_truthMatch_M          );
-      connectBranch<float>              ( tree, "truthMatch_pt",         &m_truthMatch_pt         );
-      connectBranch<float>              ( tree, "truthMatch_eta",        &m_truthMatch_eta        );
-      connectBranch<float>              ( tree, "truthMatch_phi",        &m_truthMatch_phi        );
-      connectBranch<float>              ( tree, "truthMatch_rapidity",   &m_truthMatch_rapidity   );
-      connectBranch<std::vector<int>>   ( tree, "truthNonmatch_IDs",     &m_truthNonmatch_IDs     );
-      connectBranch<std::vector<float>> ( tree, "truthNonmatch_dRs",     &m_truthNonmatch_dRs     );
+      connectBranch<uint8_t>            ( tree, "isTruthMatched",      &m_isTruthMatched      );
+      connectBranch<int>                ( tree, "truthMatch_ID",       &m_truthMatch_ID       );
+      connectBranch<float>              ( tree, "truthMatch_dR",       &m_truthMatch_dR       );
+      connectBranch<float>              ( tree, "truthMatch_E",        &m_truthMatch_E        );
+      connectBranch<float>              ( tree, "truthMatch_M",        &m_truthMatch_M        );
+      connectBranch<float>              ( tree, "truthMatch_pt",       &m_truthMatch_pt       );
+      connectBranch<float>              ( tree, "truthMatch_eta",      &m_truthMatch_eta      );
+      connectBranch<float>              ( tree, "truthMatch_phi",      &m_truthMatch_phi      );
+      connectBranch<float>              ( tree, "truthMatch_rapidity", &m_truthMatch_rapidity );
+      connectBranch<std::vector<int>>   ( tree, "truthNonmatch_IDs",   &m_truthNonmatch_IDs   );
+      connectBranch<std::vector<float>> ( tree, "truthNonmatch_dRs",   &m_truthNonmatch_dRs   );
     }
     if ( jet_type == RECO || jet_type == TRUTH ) {
-      connectBranch<uint8_t>            ( tree, "isDarkMatched",         &m_isDarkMatched         );
-      connectBranch<int>                ( tree, "darkMatch_ID",          &m_darkMatch_ID          );
-      connectBranch<float>              ( tree, "darkMatch_dR",          &m_darkMatch_dR          );
-      connectBranch<float>              ( tree, "darkMatch_E",           &m_darkMatch_E           );
-      connectBranch<float>              ( tree, "darkMatch_M",           &m_darkMatch_M           );
-      connectBranch<float>              ( tree, "darkMatch_pt",          &m_darkMatch_pt          );
-      connectBranch<float>              ( tree, "darkMatch_eta",         &m_darkMatch_eta         );
-      connectBranch<float>              ( tree, "darkMatch_phi",         &m_darkMatch_phi         );
-      connectBranch<float>              ( tree, "darkMatch_rapidity",    &m_darkMatch_rapidity    );
-      connectBranch<std::vector<int>>   ( tree, "darkNonmatch_IDs",      &m_darkNonmatch_IDs      );
-      connectBranch<std::vector<float>> ( tree, "darkNonmatch_dRs",      &m_darkNonmatch_dRs      );
+      connectBranch<uint8_t>            ( tree, "isDarkMatched",       &m_isDarkMatched       );
+      connectBranch<int>                ( tree, "darkMatch_ID",        &m_darkMatch_ID        );
+      connectBranch<float>              ( tree, "darkMatch_dR",        &m_darkMatch_dR        );
+      connectBranch<float>              ( tree, "darkMatch_E",         &m_darkMatch_E         );
+      connectBranch<float>              ( tree, "darkMatch_M",         &m_darkMatch_M         );
+      connectBranch<float>              ( tree, "darkMatch_pt",        &m_darkMatch_pt        );
+      connectBranch<float>              ( tree, "darkMatch_eta",       &m_darkMatch_eta       );
+      connectBranch<float>              ( tree, "darkMatch_phi",       &m_darkMatch_phi       );
+      connectBranch<float>              ( tree, "darkMatch_rapidity",  &m_darkMatch_rapidity  );
+      connectBranch<std::vector<int>>   ( tree, "darkNonmatch_IDs",    &m_darkNonmatch_IDs    );
+      connectBranch<std::vector<float>> ( tree, "darkNonmatch_dRs",    &m_darkNonmatch_dRs    );
     }
     if ( jet_type == DARK ) {
-      connectBranch<uint8_t>            ( tree, "isMatchedToTruth",      &m_isMatchedToTruth      );
-      connectBranch<int>                ( tree, "matchedTruthID",        &m_matchedTruthID        );
-      connectBranch<float>              ( tree, "matchedTruthDR",        &m_matchedTruthDR        );
+      connectBranch<uint8_t>            ( tree, "isMatchedToTruth",    &m_isMatchedToTruth    );
+      connectBranch<int>                ( tree, "matchedTruthID",      &m_matchedTruthID      );
+      connectBranch<float>              ( tree, "matchedTruthDR",      &m_matchedTruthDR      );
     }
     if ( jet_type == DARK || jet_type == TRUTH ) {
-      if ( m_infoSwitch.m_emtopo ) {
-	connectBranch<uint8_t>          ( tree, "isMatchedToEMTopoReco", &m_isMatchedToEMTopoReco );
-	connectBranch<int>              ( tree, "matchedEMTopoRecoID",   &m_matchedEMTopoRecoID   );
-	connectBranch<float>            ( tree, "matchedEMTopoRecoDR",   &m_matchedEMTopoRecoDR   );
+      if ( m_doEMTopo ) {
+	connectBranch<uint8_t>          ( tree, "isMatchedToEMTopo",   &m_isMatchedToEMTopo   );
+	connectBranch<int>              ( tree, "matchedEMTopoID",     &m_matchedEMTopoID     );
+	connectBranch<float>            ( tree, "matchedEMTopoDR",     &m_matchedEMTopoDR     );
       }
-      if ( m_infoSwitch.m_pflow ) {
-	connectBranch<uint8_t>          ( tree, "isMatchedToPFlowReco",  &m_isMatchedToPFlowReco  );
-	connectBranch<int>              ( tree, "matchedPFlowRecoID",    &m_matchedPFlowRecoID    );
-	connectBranch<float>            ( tree, "matchedPFlowRecoDR",    &m_matchedPFlowRecoDR    );
+      if ( m_doPFlow ) {
+	connectBranch<uint8_t>          ( tree, "isMatchedToPFlow",    &m_isMatchedToPFlow    );
+	connectBranch<int>              ( tree, "matchedPFlowID",      &m_matchedPFlowID      );
+	connectBranch<float>            ( tree, "matchedPFlowDR",      &m_matchedPFlowDR      );
       }
     }
   }
@@ -607,33 +611,33 @@ void JetContainer :: setBranches ( TTree* tree )
       setBranch<std::vector<float>> ( tree, "truthNonmatch_dRs",     m_truthNonmatch_dRs     );
     }
     if ( jet_type == RECO || jet_type == TRUTH ) {
-      setBranch<uint8_t>            ( tree, "isDarkMatched",         m_isDarkMatched         );
-      setBranch<int>                ( tree, "darkMatch_ID",          m_darkMatch_ID          );
-      setBranch<float>              ( tree, "darkMatch_dR",          m_darkMatch_dR          );
-      setBranch<float>              ( tree, "darkMatch_E",           m_darkMatch_E           );
-      setBranch<float>              ( tree, "darkMatch_M",           m_darkMatch_M           );
-      setBranch<float>              ( tree, "darkMatch_pt",          m_darkMatch_pt          );
-      setBranch<float>              ( tree, "darkMatch_eta",         m_darkMatch_eta         );
-      setBranch<float>              ( tree, "darkMatch_phi",         m_darkMatch_phi         );
-      setBranch<float>              ( tree, "darkMatch_rapidity",    m_darkMatch_rapidity    );
-      setBranch<std::vector<int>>   ( tree, "darkNonmatch_IDs",      m_darkNonmatch_IDs      );
-      setBranch<std::vector<float>> ( tree, "darkNonmatch_dRs",      m_darkNonmatch_dRs      );
+      setBranch<uint8_t>            ( tree, "isDarkMatched",      m_isDarkMatched      );
+      setBranch<int>                ( tree, "darkMatch_ID",       m_darkMatch_ID       );
+      setBranch<float>              ( tree, "darkMatch_dR",       m_darkMatch_dR       );
+      setBranch<float>              ( tree, "darkMatch_E",        m_darkMatch_E        );
+      setBranch<float>              ( tree, "darkMatch_M",        m_darkMatch_M        );
+      setBranch<float>              ( tree, "darkMatch_pt",       m_darkMatch_pt       );
+      setBranch<float>              ( tree, "darkMatch_eta",      m_darkMatch_eta      );
+      setBranch<float>              ( tree, "darkMatch_phi",      m_darkMatch_phi      );
+      setBranch<float>              ( tree, "darkMatch_rapidity", m_darkMatch_rapidity );
+      setBranch<std::vector<int>>   ( tree, "darkNonmatch_IDs",   m_darkNonmatch_IDs   );
+      setBranch<std::vector<float>> ( tree, "darkNonmatch_dRs",   m_darkNonmatch_dRs   );
     }
     if ( jet_type == DARK ) {
-      setBranch<uint8_t>            ( tree, "isMatchedToTruth",      m_isMatchedToTruth      );
-      setBranch<int>                ( tree, "matchedTruthID",        m_matchedTruthID        );
-      setBranch<float>              ( tree, "matchedTruthDR",        m_matchedTruthDR        );
+      setBranch<uint8_t>            ( tree, "isMatchedToTruth",   m_isMatchedToTruth   );
+      setBranch<int>                ( tree, "matchedTruthID",     m_matchedTruthID     );
+      setBranch<float>              ( tree, "matchedTruthDR",     m_matchedTruthDR     );
     }
     if ( jet_type == DARK || jet_type == TRUTH ) {
-      if ( m_infoSwitch.m_emtopo ) {
-	setBranch<uint8_t>          ( tree, "isMatchedToEMTopoReco", m_isMatchedToEMTopoReco );
-	setBranch<int>              ( tree, "matchedEMTopoRecoID",   m_matchedEMTopoRecoID   );
-	setBranch<float>            ( tree, "matchedEMTopoRecoDR",   m_matchedEMTopoRecoDR   );
+      if ( m_doEMTopo ) {
+	setBranch<uint8_t>          ( tree, "isMatchedToEMTopo",  m_isMatchedToEMTopo  );
+	setBranch<int>              ( tree, "matchedEMTopoID",    m_matchedEMTopoID    );
+	setBranch<float>            ( tree, "matchedEMTopoDR",    m_matchedEMTopoDR    );
       }
-      if ( m_infoSwitch.m_pflow ) {
-	setBranch<uint8_t>          ( tree, "isMatchedToPFlowReco",  m_isMatchedToPFlowReco  );
-	setBranch<int>              ( tree, "matchedPFlowRecoID",    m_matchedPFlowRecoID    );
-	setBranch<float>            ( tree, "matchedPFlowRecoDR",    m_matchedPFlowRecoDR    );
+      if ( m_doPFlow ) {
+	setBranch<uint8_t>          ( tree, "isMatchedToPFlow",   m_isMatchedToPFlow   );
+	setBranch<int>              ( tree, "matchedPFlowID",     m_matchedPFlowID     );
+	setBranch<float>            ( tree, "matchedPFlowDR",     m_matchedPFlowDR     );
       }
     }
   }
@@ -784,46 +788,46 @@ void JetContainer :: clear ( )
 
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthJets ) && m_mc ) {
     if ( jet_type == RECO ) {
-      m_isTruthMatched         ->clear();
-      m_truthMatch_ID          ->clear();
-      m_truthMatch_dR          ->clear();
-      m_truthMatch_E           ->clear();
-      m_truthMatch_M           ->clear();
-      m_truthMatch_pt          ->clear();
-      m_truthMatch_eta         ->clear();
-      m_truthMatch_phi         ->clear();
-      m_truthMatch_rapidity    ->clear();
-      m_truthNonmatch_IDs      ->clear();
-      m_truthNonmatch_dRs      ->clear();
+      m_isTruthMatched      ->clear();
+      m_truthMatch_ID       ->clear();
+      m_truthMatch_dR       ->clear();
+      m_truthMatch_E        ->clear();
+      m_truthMatch_M        ->clear();
+      m_truthMatch_pt       ->clear();
+      m_truthMatch_eta      ->clear();
+      m_truthMatch_phi      ->clear();
+      m_truthMatch_rapidity ->clear();
+      m_truthNonmatch_IDs   ->clear();
+      m_truthNonmatch_dRs   ->clear();
     }
     if ( jet_type == RECO || jet_type == TRUTH ) {
-      m_isDarkMatched          ->clear();
-      m_darkMatch_ID           ->clear();
-      m_darkMatch_dR           ->clear();
-      m_darkMatch_E            ->clear();
-      m_darkMatch_M            ->clear();
-      m_darkMatch_pt           ->clear();
-      m_darkMatch_eta          ->clear();
-      m_darkMatch_phi          ->clear();
-      m_darkMatch_rapidity     ->clear();
-      m_darkNonmatch_IDs       ->clear();
-      m_darkNonmatch_dRs       ->clear();
+      m_isDarkMatched       ->clear();
+      m_darkMatch_ID        ->clear();
+      m_darkMatch_dR        ->clear();
+      m_darkMatch_E         ->clear();
+      m_darkMatch_M         ->clear();
+      m_darkMatch_pt        ->clear();
+      m_darkMatch_eta       ->clear();
+      m_darkMatch_phi       ->clear();
+      m_darkMatch_rapidity  ->clear();
+      m_darkNonmatch_IDs    ->clear();
+      m_darkNonmatch_dRs    ->clear();
     }
     if ( jet_type == DARK ) {
-      m_isMatchedToTruth       ->clear();
-      m_matchedTruthID         ->clear();
-      m_matchedTruthDR         ->clear();
+      m_isMatchedToTruth    ->clear();
+      m_matchedTruthID      ->clear();
+      m_matchedTruthDR      ->clear();
     }
     if ( jet_type == DARK || jet_type == TRUTH ) {
-      if ( m_infoSwitch.m_emtopo ) {
-	m_isMatchedToEMTopoReco ->clear();
-	m_matchedEMTopoRecoID   ->clear();
-	m_matchedEMTopoRecoDR   ->clear();
+      if ( m_doEMTopo ) {
+	m_isMatchedToEMTopo ->clear();
+	m_matchedEMTopoID   ->clear();
+	m_matchedEMTopoDR   ->clear();
       }
-      if ( m_infoSwitch.m_pflow ) {
-	m_isMatchedToPFlowReco  ->clear();
-	m_matchedPFlowRecoID    ->clear();
-	m_matchedPFlowRecoDR    ->clear();
+      if ( m_doPFlow ) {
+	m_isMatchedToPFlow  ->clear();
+	m_matchedPFlowID    ->clear();
+	m_matchedPFlowDR    ->clear();
       }
     }
   }
@@ -1057,15 +1061,29 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
       m_matchedTruthDR      ->push_back( AUXDYN(    jet, double, "truthMatchDR"       ) );
     }
     if ( jet_type == DARK || jet_type == TRUTH ) {
-      if ( m_infoSwitch.m_emtopo ) {
-	m_isMatchedToEMTopoReco ->push_back( AUXDYN( jet, char,   "isRecoMatched_EMTopo" + jet_str ) );
-	m_matchedEMTopoRecoID   ->push_back( AUXDYN( jet, int,    "recoMatchID_EMTopo"   + jet_str ) );
-	m_matchedEMTopoRecoDR   ->push_back( AUXDYN( jet, double, "recoMatchDR_EMTopo"   + jet_str ) );
+      if ( m_doEMTopo ) {
+	if ( jet->isAvailable<char>("isRecoMatched_EMTopo" + jet_str) ) {
+	  m_isMatchedToEMTopo ->push_back( jet->auxdataConst<char>(   "isRecoMatched_EMTopo" + jet_str ) );
+	  m_matchedEMTopoID   ->push_back( jet->auxdataConst<int>(    "recoMatchID_EMTopo"   + jet_str ) );
+	  m_matchedEMTopoDR   ->push_back( jet->auxdataConst<double>( "recoMatchDR_EMTopo"   + jet_str ) );
+	}
+	else {
+	  m_isMatchedToEMTopo ->push_back( AUXDYN( jet, char,   "isRecoMatched_EMTopo" ) );
+	  m_matchedEMTopoID   ->push_back( AUXDYN( jet, int,    "recoMatchID_EMTopo"   ) );
+	  m_matchedEMTopoDR   ->push_back( AUXDYN( jet, double, "recoMatchDR_EMTopo"   ) );
+	}
       }
-      if ( m_infoSwitch.m_pflow ) {
-	m_isMatchedToPFlowReco  ->push_back( AUXDYN( jet, char,   "isRecoMatched_PFlow"  + jet_str ) );
-	m_matchedPFlowRecoID    ->push_back( AUXDYN( jet, int,    "recoMatchID_PFlow"    + jet_str ) );
-	m_matchedPFlowRecoDR    ->push_back( AUXDYN( jet, double, "recoMatchDR_PFlow"    + jet_str ) );
+      if ( m_doPFlow ) {
+	if ( jet->isAvailable<char>("isRecoMatched_PFlow" + jet_str) ) {
+	  m_isMatchedToPFlow  ->push_back( jet->auxdataConst<char>(   "isRecoMatched_PFlow" + jet_str  ) );
+	  m_matchedPFlowID    ->push_back( jet->auxdataConst<int>(    "recoMatchID_PFlow"   + jet_str  ) );
+	  m_matchedPFlowDR    ->push_back( jet->auxdataConst<double>( "recoMatchDR_PFlow"   + jet_str  ) );
+	}
+	else {
+	  m_isMatchedToPFlow  ->push_back( AUXDYN( jet, char,   "isRecoMatched_PFlow"  ) );
+	  m_matchedPFlowID    ->push_back( AUXDYN( jet, int,    "recoMatchID_PFlow"    ) );
+	  m_matchedPFlowDR    ->push_back( AUXDYN( jet, double, "recoMatchDR_PFlow"    ) );
+	}
       }
     }
   }
@@ -1320,23 +1338,21 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
 	++trkCount;
 	trkPt += (*trklink)->pt();
 	
-	trk_ID     .push_back( AUXDYN( (*trklink), int, "ID" )                                               );
-	trk_qOverP .push_back( (*trklink)->qOverP() * m_units                                                );
-	trk_E      .push_back( (*trklink)->e()      / m_units                                                );
-	trk_M      .push_back( (*trklink)->m()      / m_units                                                );
-	trk_pt     .push_back( (*trklink)->pt()     / m_units                                                );
-	trk_eta    .push_back( (*trklink)->eta()                                                             );
-	trk_phi    .push_back( (*trklink)->phi()                                                             );
-	trk_d0     .push_back( (*trklink)->d0()                                                              );
-	trk_z0     .push_back( (*trklink)->z0()                                                              ); // xAH saves z0 wrt PV ...
-	trk_errd0  .push_back( (*trklink)->definingParametersCovMatrix()(0,0)                                );
-	trk_errz0  .push_back( (*trklink)->definingParametersCovMatrix()(1,1)                                );
-	trk_chi2   .push_back( (*trklink)->chiSquared() / (*trklink)->numberDoF() / AlgConsts::infinitesimal );
-	trk_charge .push_back( (*trklink)->charge()                                                          );
-	if ( (*trklink)->isAvailable<char>("is_selected")   )
-	  trk_isSelected   .push_back( (*trklink)->auxdataConst<char>("is_selected")   );
-	if ( (*trklink)->isAvailable<char>("is_associated") )
-	  trk_isAssociated .push_back( (*trklink)->auxdataConst<char>("is_associated") );
+	trk_ID           .push_back( AUXDYN( (*trklink), int, "ID" )                                               );
+	trk_qOverP       .push_back( (*trklink)->qOverP() * m_units                                                );
+	trk_E            .push_back( (*trklink)->e()      / m_units                                                );
+	trk_M            .push_back( (*trklink)->m()      / m_units                                                );
+	trk_pt           .push_back( (*trklink)->pt()     / m_units                                                );
+	trk_eta          .push_back( (*trklink)->eta()                                                             );
+	trk_phi          .push_back( (*trklink)->phi()                                                             );
+	trk_d0           .push_back( (*trklink)->d0()                                                              );
+	trk_z0           .push_back( (*trklink)->z0()                                                              ); // xAH saves z0 wrt PV ...
+	trk_errd0        .push_back( (*trklink)->definingParametersCovMatrix()(0,0)                                );
+	trk_errz0        .push_back( (*trklink)->definingParametersCovMatrix()(1,1)                                );
+	trk_chi2         .push_back( (*trklink)->chiSquared() / (*trklink)->numberDoF() / AlgConsts::infinitesimal );
+	trk_charge       .push_back( (*trklink)->charge()                                                          );
+	trk_isSelected   .push_back( AUXDYN( (*trklink), char, "is_selected"   )                                   );
+	trk_isAssociated .push_back( AUXDYN( (*trklink), char, "is_associated" )                                   );
       
 	// get linked truth particle
 	if ( m_mc ) {
@@ -1387,11 +1403,9 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
 	if ( recoAccess.isAvailable( **tplink ) ) {
 	  try {
 	    const EJsHelper::TrackLink_t& recoLink = recoAccess( **tplink );
-	    tp_recoID .push_back( AUXDYN( (*recoLink), int, "ID" ) );
-	    if ( (*recoLink)->isAvailable<char>("is_selected")   )
-	      tp_recoIsSelected   .push_back( (*recoLink)->auxdataConst<char>("is_selected")   );
-	    if ( (*recoLink)->isAvailable<char>("is_associated") )
-	      tp_recoIsAssociated .push_back( (*recoLink)->auxdataConst<char>("is_associated") );
+	    tp_recoID           .push_back( AUXDYN( (*recoLink), int,  "ID"            ) );
+	    tp_recoIsSelected   .push_back( AUXDYN( (*recoLink), char, "is_selected"   ) );
+	    tp_recoIsAssociated .push_back( AUXDYN( (*recoLink), char, "is_associated" ) );
 	  } catch(...) {}
 	}
 	tp_isReco   .push_back( AUXDYN( (*tplink), char,   "isTrackMatch"          ) );
@@ -1484,16 +1498,14 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
       for ( const auto& ghosttrklink : ghostTrackLinks ) {
 	if ( !ghosttrklink.isValid() ) continue;
 	const xAOD::TrackParticle* ghosttrack = dynamic_cast<const xAOD::TrackParticle*>( *ghosttrklink );
-	ghostTrack_ID      .push_back( AUXDYN( ghosttrack, int, "ID" )                                               );
-	ghostTrack_m       .push_back( ghosttrack->m()  / m_units                                                    );
-	ghostTrack_errd0   .push_back( ghosttrack->definingParametersCovMatrix()(0,0)                                );
-	ghostTrack_errz0   .push_back( ghosttrack->definingParametersCovMatrix()(1,1)                                );
-	ghostTrack_chi2    .push_back( ghosttrack->chiSquared() / ghosttrack->numberDoF() / AlgConsts::infinitesimal );
-	ghostTrack_charge  .push_back( ghosttrack->charge()                                                          );
-	if ( ghosttrack->isAvailable<char>("is_selected")   )
-	  ghostTrack_isSelected   .push_back( ghosttrack->auxdataConst<char>("is_selected")   );
-	if ( ghosttrack->isAvailable<char>("is_associated") )
-	  ghostTrack_isAssociated .push_back( ghosttrack->auxdataConst<char>("is_associated") );
+	ghostTrack_ID           .push_back( AUXDYN( ghosttrack, int, "ID" )                                               );
+	ghostTrack_m            .push_back( ghosttrack->m()  / m_units                                                    );
+	ghostTrack_errd0        .push_back( ghosttrack->definingParametersCovMatrix()(0,0)                                );
+	ghostTrack_errz0        .push_back( ghosttrack->definingParametersCovMatrix()(1,1)                                );
+	ghostTrack_chi2         .push_back( ghosttrack->chiSquared() / ghosttrack->numberDoF() / AlgConsts::infinitesimal );
+	ghostTrack_charge       .push_back( ghosttrack->charge()                                                          );
+	ghostTrack_isSelected   .push_back( AUXDYN( ghosttrack, char, "is_selected"   )                                   );
+	ghostTrack_isAssociated .push_back( AUXDYN( ghosttrack, char, "is_associated" )                                   );
 	
 	// get linked truth particle
 	if ( m_mc ) {
@@ -1537,11 +1549,9 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
 	if ( ghostrecoAccess.isAvailable( *ghosttruth ) ) {
 	  try {
 	    const EJsHelper::TrackLink_t& ghostrecoLink = ghostrecoAccess( *ghosttruth );
-	    ghostTruth_recoID .push_back( AUXDYN( (*ghostrecoLink), int, "ID" ) );
-	    if ( (*ghostrecoLink)->isAvailable<char>("is_selected")   )
-	      ghostTruth_recoIsSelected   .push_back( (*ghostrecoLink)->auxdataConst<char>("is_selected")   );
-	    if ( (*ghostrecoLink)->isAvailable<char>("is_associated") )
-	      ghostTruth_recoIsAssociated .push_back( (*ghostrecoLink)->auxdataConst<char>("is_associated") );
+	    ghostTruth_recoID           .push_back( AUXDYN( (*ghostrecoLink), int,   "ID"           ) );
+	    ghostTruth_recoIsSelected   .push_back( AUXDYN( (*ghostrecoLink), char, "is_selected"   ) );
+	    ghostTruth_recoIsAssociated .push_back( AUXDYN( (*ghostrecoLink), char, "is_associated" ) ); 
 	  } catch(...) {}
 	}
 	ghostTruth_isReco   .push_back( AUXDYN( ghosttruth, char,   "isTrackMatch"          ) );

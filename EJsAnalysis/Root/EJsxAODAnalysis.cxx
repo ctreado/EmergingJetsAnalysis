@@ -393,6 +393,14 @@ EL::StatusCode EJsxAODAnalysis :: executeSelection ( const xAOD::EventInfo* even
       else if ( m_inJetContainers.at(i).find("PFlow")  != std::string::npos ) jetStr = "PFlow";
       std::string decorLabel = jetStr + systName;
 
+      // calculate N-jet Ht
+      double njet_ht = 0;
+      for ( const auto& jet : *inJets ) {
+	if ( jet->index() >= m_nSignalJets ) break;
+	njet_ht += jet->pt();
+      }
+      eventInfo->auxdecor<double>("NJetHt_" + decorLabel) = njet_ht;
+
       // signal selections
       int passSignalSel = this->PassSignalCuts( eventInfo, inJets, m_inJetBins.at(i), decorLabel );
 

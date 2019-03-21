@@ -7,10 +7,14 @@
 
 using namespace EJs;
 
-TruthVertexContainer :: TruthVertexContainer ( const std::string& name, const std::string& detailStr, float units, bool mc ) :
+TruthVertexContainer :: TruthVertexContainer ( const std::string& name, const std::string& detailStr, float units,
+					       bool mc, bool emtopo, bool pflow ) :
   VertexContainer ( name, detailStr, units, mc )
 {
   if ( m_debug ) Info( "EJs::TruthVertexContainer()", "setting up" );
+
+  m_doEMTopo = emtopo;
+  m_doPFlow  = pflow;
 
   m_isDarkPionDecay       = new std::vector<uint8_t>;
   m_ID                    = new std::vector<int>;
@@ -79,21 +83,21 @@ TruthVertexContainer :: TruthVertexContainer ( const std::string& name, const st
     m_maxlinkedParentRecoVtx_score = new std::vector<std::vector<float>>;
   }
   if ( m_infoSwitch.m_isMatched || m_infoSwitch.m_jets ) {
-    m_isTruthJetMatch  = new std::vector<uint8_t>;
+    m_truthJetMatch    = new std::vector<uint8_t>;
     m_truthJetMatch_ID = new std::vector<std::vector<int>>;
     m_truthJetMatch_dR = new std::vector<std::vector<float>>;
-    m_isDarkJetMatch   = new std::vector<uint8_t>;
+    m_darkJetMatch     = new std::vector<uint8_t>;
     m_darkJetMatch_ID  = new std::vector<std::vector<int>>;
     m_darkJetMatch_dR  = new std::vector<std::vector<float>>;
-    if ( m_infoSwitch.m_emtopo ) {
-      m_isEMTopoRecoJetMatch  = new std::vector<uint8_t>;
-      m_EMTopoRecoJetMatch_ID = new std::vector<std::vector<int>>;
-      m_EMTopoRecoJetMatch_dR = new std::vector<std::vector<float>>;
+    if ( m_doEMTopo ) {
+      m_emtopoJetMatch    = new std::vector<uint8_t>;
+      m_emtopoJetMatch_ID = new std::vector<std::vector<int>>;
+      m_emtopoJetMatch_dR = new std::vector<std::vector<float>>;
     }
-    if ( m_infoSwitch.m_pflow ) {
-      m_isPFlowRecoJetMatch  = new std::vector<uint8_t>;
-      m_PFlowRecoJetMatch_ID = new std::vector<std::vector<int>>;
-      m_PFlowRecoJetMatch_dR = new std::vector<std::vector<float>>;
+    if ( m_doPFlow ) {
+      m_pflowJetMatch    = new std::vector<uint8_t>;
+      m_pflowJetMatch_ID = new std::vector<std::vector<int>>;
+      m_pflowJetMatch_dR = new std::vector<std::vector<float>>;
     }
   }
 }
@@ -170,21 +174,21 @@ TruthVertexContainer :: ~TruthVertexContainer ()
     delete m_maxlinkedParentRecoVtx_score;
   }
   if ( m_infoSwitch.m_isMatched || m_infoSwitch.m_jets ) {
-    delete m_isTruthJetMatch;
+    delete m_truthJetMatch;
     delete m_truthJetMatch_ID;
     delete m_truthJetMatch_dR;
-    delete m_isDarkJetMatch;
+    delete m_darkJetMatch;
     delete m_darkJetMatch_ID;
     delete m_darkJetMatch_dR;
-    if ( m_infoSwitch.m_emtopo ) {
-      delete m_isEMTopoRecoJetMatch;
-      delete m_EMTopoRecoJetMatch_ID;
-      delete m_EMTopoRecoJetMatch_dR;
+    if ( m_doEMTopo ) {
+      delete m_emtopoJetMatch;
+      delete m_emtopoJetMatch_ID;
+      delete m_emtopoJetMatch_dR;
     }
-    if ( m_infoSwitch.m_pflow ) {
-      delete m_isPFlowRecoJetMatch;
-      delete m_PFlowRecoJetMatch_ID;
-      delete m_PFlowRecoJetMatch_dR;
+    if ( m_doPFlow ) {
+      delete m_pflowJetMatch;
+      delete m_pflowJetMatch_ID;
+      delete m_pflowJetMatch_dR;
     }
   }
 }
@@ -263,21 +267,21 @@ void TruthVertexContainer :: setTree ( TTree* tree )
     connectBranch<std::vector<float>> ( tree, "maxlinkedParentRecoVtx_score", &m_maxlinkedParentRecoVtx_score );
   }
   if ( m_infoSwitch.m_isMatched || m_infoSwitch.m_jets ) {
-    connectBranch<uint8_t>              ( tree, "isTruthJetMatch",       &m_isTruthJetMatch       );
-    connectBranch<std::vector<int>>     ( tree, "truthJetMatch_ID",      &m_truthJetMatch_ID      );
-    connectBranch<std::vector<float>>   ( tree, "truthJetMatch_dR",      &m_truthJetMatch_dR      );
-    connectBranch<uint8_t>              ( tree, "isDarkJetMatch",        &m_isDarkJetMatch        );
-    connectBranch<std::vector<int>>     ( tree, "darkJetMatch_ID",       &m_darkJetMatch_ID       );
-    connectBranch<std::vector<float>>   ( tree, "darkJetMatch_dR",       &m_darkJetMatch_dR       );
-    if ( m_infoSwitch.m_emtopo ) {
-      connectBranch<uint8_t>            ( tree, "isEMTopoRecoJetMatch",  &m_isEMTopoRecoJetMatch  );
-      connectBranch<std::vector<int>>   ( tree, "EMTopoRecoJetMatch_ID", &m_EMTopoRecoJetMatch_ID );
-      connectBranch<std::vector<float>> ( tree, "EMTopoRecoJetMatch_dR", &m_EMTopoRecoJetMatch_dR );
+    connectBranch<uint8_t>              ( tree, "isTruthJetMatched",  &m_truthJetMatch     );
+    connectBranch<std::vector<int>>     ( tree, "truthJetMatch_ID",   &m_truthJetMatch_ID  );
+    connectBranch<std::vector<float>>   ( tree, "truthJetMatch_dR",   &m_truthJetMatch_dR  );
+    connectBranch<uint8_t>              ( tree, "isDarkJetMatched",   &m_darkJetMatch      );
+    connectBranch<std::vector<int>>     ( tree, "darkJetMatch_ID",    &m_darkJetMatch_ID   );
+    connectBranch<std::vector<float>>   ( tree, "darkJetMatch_dR",    &m_darkJetMatch_dR   );
+    if ( m_doEMTopo ) {
+      connectBranch<uint8_t>            ( tree, "isEMTopoJetMatched", &m_emtopoJetMatch    );
+      connectBranch<std::vector<int>>   ( tree, "EMTopoJetMatch_ID",  &m_emtopoJetMatch_ID );
+      connectBranch<std::vector<float>> ( tree, "EMTopoJetMatch_dR",  &m_emtopoJetMatch_dR );
     }
-    if ( m_infoSwitch.m_pflow ) {
-      connectBranch<uint8_t>            ( tree, "isPFlowRecoJetMatch",   &m_isPFlowRecoJetMatch   );
-      connectBranch<std::vector<int>>   ( tree, "PFlowRecoJetMatch_ID",  &m_PFlowRecoJetMatch_ID  );
-      connectBranch<std::vector<float>> ( tree, "PFlowRecoJetMatch_dR",  &m_PFlowRecoJetMatch_dR  );
+    if ( m_doPFlow ) {
+      connectBranch<uint8_t>            ( tree, "isPFlowJetMatched",  &m_pflowJetMatch     );
+      connectBranch<std::vector<int>>   ( tree, "PFlowJetMatch_ID",   &m_pflowJetMatch_ID  );
+      connectBranch<std::vector<float>> ( tree, "PFlowJetMatch_dR",   &m_pflowJetMatch_dR  );
     }
   }
 }
@@ -356,21 +360,21 @@ void TruthVertexContainer :: setBranches ( TTree* tree )
     setBranch<std::vector<float>> ( tree, "maxlinkedParentRecoVtx_score", m_maxlinkedParentRecoVtx_score );
   }
   if ( m_infoSwitch.m_isMatched || m_infoSwitch.m_jets ) {
-    setBranch<uint8_t>              ( tree, "isTruthJetMatch",       m_isTruthJetMatch       );
-    setBranch<std::vector<int>>     ( tree, "truthJetMatch_ID",      m_truthJetMatch_ID      );
-    setBranch<std::vector<float>>   ( tree, "truthJetMatch_dR",      m_truthJetMatch_dR      );
-    setBranch<uint8_t>              ( tree, "isDarkJetMatch",        m_isDarkJetMatch        );
-    setBranch<std::vector<int>>     ( tree, "darkJetMatch_ID",       m_darkJetMatch_ID       );
-    setBranch<std::vector<float>>   ( tree, "darkJetMatch_dR",       m_darkJetMatch_dR       );
-    if ( m_infoSwitch.m_emtopo ) {
-      setBranch<uint8_t>            ( tree, "isEMTopoRecoJetMatch",  m_isEMTopoRecoJetMatch  );
-      setBranch<std::vector<int>>   ( tree, "EMTopoRecoJetMatch_ID", m_EMTopoRecoJetMatch_ID );
-      setBranch<std::vector<float>> ( tree, "EMTopoRecoJetMatch_dR", m_EMTopoRecoJetMatch_dR );
+    setBranch<uint8_t>              ( tree, "isTruthJetMatched",  m_truthJetMatch     );
+    setBranch<std::vector<int>>     ( tree, "truthJetMatch_ID",   m_truthJetMatch_ID  );
+    setBranch<std::vector<float>>   ( tree, "truthJetMatch_dR",   m_truthJetMatch_dR  );
+    setBranch<uint8_t>              ( tree, "isDarkJetMatched",   m_darkJetMatch      );
+    setBranch<std::vector<int>>     ( tree, "darkJetMatch_ID",    m_darkJetMatch_ID   );
+    setBranch<std::vector<float>>   ( tree, "darkJetMatch_dR",    m_darkJetMatch_dR   );
+    if ( m_doEMTopo ) {
+      setBranch<uint8_t>            ( tree, "isEMTopoJetMatched", m_emtopoJetMatch    );
+      setBranch<std::vector<int>>   ( tree, "EMTopoJetMatch_ID",  m_emtopoJetMatch_ID );
+      setBranch<std::vector<float>> ( tree, "EMTopoJetMatch_dR",  m_emtopoJetMatch_dR );
     }
-    if ( m_infoSwitch.m_pflow ) {
-      setBranch<uint8_t>            ( tree, "isPFlowRecoJetMatch",   m_isPFlowRecoJetMatch   );
-      setBranch<std::vector<int>>   ( tree, "PFlowRecoJetMatch_ID",  m_PFlowRecoJetMatch_ID  );
-      setBranch<std::vector<float>> ( tree, "PFlowRecoJetMatch_dR",  m_PFlowRecoJetMatch_dR  );
+    if ( m_doPFlow ) {
+      setBranch<uint8_t>            ( tree, "isPFlowJetMatched",  m_pflowJetMatch     );
+      setBranch<std::vector<int>>   ( tree, "PFlowJetMatch_ID",   m_pflowJetMatch_ID  );
+      setBranch<std::vector<float>> ( tree, "PFlowJetMatch_dR",   m_pflowJetMatch_dR  );
     }
   }
 }
@@ -449,21 +453,21 @@ void TruthVertexContainer :: clear ()
     m_maxlinkedParentRecoVtx_score ->clear();
   }
   if ( m_infoSwitch.m_isMatched || m_infoSwitch.m_jets ) {
-    m_isTruthJetMatch         ->clear();
-    m_truthJetMatch_ID        ->clear();
-    m_truthJetMatch_dR        ->clear();
-    m_isDarkJetMatch          ->clear();
-    m_darkJetMatch_ID         ->clear();
-    m_darkJetMatch_dR         ->clear();
-    if ( m_infoSwitch.m_emtopo ) {
-      m_isEMTopoRecoJetMatch  ->clear();
-      m_EMTopoRecoJetMatch_ID ->clear();
-      m_EMTopoRecoJetMatch_dR ->clear();
+    m_truthJetMatch       ->clear();
+    m_truthJetMatch_ID    ->clear();
+    m_truthJetMatch_dR    ->clear();
+    m_darkJetMatch        ->clear();
+    m_darkJetMatch_ID     ->clear();
+    m_darkJetMatch_dR     ->clear();
+    if ( m_doEMTopo ) {
+      m_emtopoJetMatch    ->clear();
+      m_emtopoJetMatch_ID ->clear();
+      m_emtopoJetMatch_dR ->clear();
     }
-    if ( m_infoSwitch.m_pflow ) {
-      m_isPFlowRecoJetMatch   ->clear();
-      m_PFlowRecoJetMatch_ID  ->clear();
-      m_PFlowRecoJetMatch_dR  ->clear();
+    if ( m_doPFlow ) {
+      m_pflowJetMatch     ->clear();
+      m_pflowJetMatch_ID  ->clear();
+      m_pflowJetMatch_dR  ->clear();
     }
   }
 }
@@ -574,24 +578,29 @@ void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx
   for ( size_t i = 0; i != truthVtx->nOutgoingParticles(); ++i ) {
     const auto* outP = truthVtx->outgoingParticle(i);
     if ( !outP )           continue;
-    outParts      .push_back( outP                                            );
-    outP_ID       .push_back( AUXDYN( outP, int, "ID"                       ) );
-    outP_pt       .push_back( outP->pt() / m_units                            );
-    outP_eta      .push_back( outP->eta()                                     );
-    outP_phi      .push_back( outP->phi()                                     );
-    outP_E        .push_back( outP->e()  / m_units                            );
-    outP_M        .push_back( outP->m()  / m_units                            );
-    outP_charge   .push_back( outP->charge()                                  );
-    outP_pid      .push_back( outP->pdgId()                                   );
-    outP_status   .push_back( outP->status()                                  );
-    outP_barcode  .push_back( outP->barcode()                                 );
-    outP_isReco   .push_back( AUXDYN( outP, char,   "isTrackMatch"          ) );
-    outP_recoProb .push_back( AUXDYN( outP, double, "trackMatchProbability" ) );
-    outP_recoID   .push_back( AUXDYN( outP, int,    "ID"                    ) );
-    if ( outP->isAvailable<char>("is_selected")   )
-      outP_recoIsSelected   .push_back( outP->auxdataConst<char>("is_selected")   );
-    if ( outP->isAvailable<char>("is_associated") )
-      outP_recoIsAssociated .push_back( outP->auxdataConst<char>("is_associated") );
+    outParts              .push_back( outP                                            );
+    outP_ID               .push_back( AUXDYN( outP, int, "ID"                       ) );
+    outP_pt               .push_back( outP->pt() / m_units                            );
+    outP_eta              .push_back( outP->eta()                                     );
+    outP_phi              .push_back( outP->phi()                                     );
+    outP_E                .push_back( outP->e()  / m_units                            );
+    outP_M                .push_back( outP->m()  / m_units                            );
+    outP_charge           .push_back( outP->charge()                                  );
+    outP_pid              .push_back( outP->pdgId()                                   );
+    outP_status           .push_back( outP->status()                                  );
+    outP_barcode          .push_back( outP->barcode()                                 );
+    outP_isReco           .push_back( AUXDYN( outP, char,   "isTrackMatch"          ) );
+    outP_recoProb         .push_back( AUXDYN( outP, double, "trackMatchProbability" ) );
+    // get linked track
+    static SG::AuxElement::ConstAccessor<EJsHelper::TrackLink_t> recoAccess("trackLink");
+    if ( recoAccess.isAvailable( *outP ) ) {
+      try {
+	const EJsHelper::TrackLink_t& recoLink = recoAccess( *outP );
+	outP_recoID           .push_back( AUXDYN( (*recoLink), int,  "ID"            ) );
+	outP_recoIsSelected   .push_back( AUXDYN( (*recoLink), char, "is_selected"   ) );
+	outP_recoIsAssociated .push_back( AUXDYN( (*recoLink), char, "is_associated" ) );
+      } catch(...){}
+    }
   }
 
   const TLorentzVector& sumP4 = EJsHelper::truthSumP4 ( outParts );
@@ -727,29 +736,45 @@ void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx
     if ( treeName == "nominal" ) jet_str = "";
 
     uint8_t isTruthJetMatch = false;
-    if ( truthVtx->isAvailable<char>("isMatchedToTruthJet") )
+    uint8_t isDarkJetMatch  = false;
+    if ( truthVtx->isAvailable<char>("isMatchedToTruthJet") ) {
       isTruthJetMatch = truthVtx->auxdataConst<char>("isMatchedToTruthJet");
-    uint8_t isDarkJetMatch = false;
-    if ( truthVtx->isAvailable<char>("isMatchedToDarkJet") )
-      isDarkJetMatch = truthVtx->auxdataConst<char>("isMatchedToDarkJet");
+      isDarkJetMatch  = truthVtx->auxdataConst<char>("isMatchedToDarkJet");
+    }
+      
     uint8_t isEMTopoJetMatch = false;
-    if ( truthVtx->isAvailable<char>("isMatchedToRecoJet_EMTopo" + jet_str) )
+    std::string emtopo_str = "";
+    if ( truthVtx->isAvailable<char>("isMatchedToRecoJet_EMTopo" + jet_str) ) {
       isEMTopoJetMatch = truthVtx->auxdataConst<char>("isMatchedToRecoJet_EMTopo" + jet_str);
+      emtopo_str = jet_str;
+    }
+    else if ( truthVtx->isAvailable<char>("isMatchedToRecoJet_EMTopo") )
+      isEMTopoJetMatch = truthVtx->auxdataConst<char>("isMatchedToRecoJet_EMTopo");
+    
     uint8_t isPFlowJetMatch = false;
-    if ( truthVtx->isAvailable<char>("isMatchedToRecoJet_PFlow" + jet_str) )
+    std::string pflow_str = "";
+    if ( truthVtx->isAvailable<char>("isMatchedToRecoJet_PFlow" + jet_str) ) {
       isPFlowJetMatch = truthVtx->auxdataConst<char>("isMatchedToRecoJet_PFlow" + jet_str);
+      pflow_str = jet_str;
+    }
+    else if ( truthVtx->isAvailable<char>("isMatchedToRecoJet_PFlow") )
+      isPFlowJetMatch = truthVtx->auxdataConst<char>("isMatchedToRecoJet_PFlow");
 
-    m_isTruthJetMatch       ->push_back( isTruthJetMatch                                                  );
-    m_truthJetMatch_ID      ->push_back( AUXDYNVEC( truthVtx, int,   "truthJetMatchIDs"                 ) );
-    m_truthJetMatch_dR      ->push_back( AUXDYNVEC( truthVtx, float, "truthJetMatchDRs"                 ) );
-    m_isDarkJetMatch        ->push_back( isDarkJetMatch                                                   );
-    m_darkJetMatch_ID       ->push_back( AUXDYNVEC( truthVtx, int,   "darkJetMatchIDs"                  ) );
-    m_darkJetMatch_dR       ->push_back( AUXDYNVEC( truthVtx, float, "darkJetMatchDRs"                  ) );
-    m_isEMTopoRecoJetMatch  ->push_back( isEMTopoJetMatch                                                 );
-    m_EMTopoRecoJetMatch_ID ->push_back( AUXDYNVEC( truthVtx, int,   "recoJetMatchIDs_EMTopo" + jet_str ) );
-    m_EMTopoRecoJetMatch_dR ->push_back( AUXDYNVEC( truthVtx, float, "recoJetMatchDRs_EMTopo" + jet_str ) );
-    m_isPFlowRecoJetMatch   ->push_back( isPFlowJetMatch                                                  );
-    m_PFlowRecoJetMatch_ID  ->push_back( AUXDYNVEC( truthVtx, int,   "recoJetMatchIDs_PFlow"  + jet_str ) );
-    m_PFlowRecoJetMatch_dR  ->push_back( AUXDYNVEC( truthVtx, float, "recoJetMatchDRs_PFlow"  + jet_str ) );
+    m_truthJetMatch       ->push_back( isTruthJetMatch );
+    m_truthJetMatch_ID    ->push_back( AUXDYNVEC( truthVtx, int,   "truthJetMatchIDs" ) );
+    m_truthJetMatch_dR    ->push_back( AUXDYNVEC( truthVtx, float, "truthJetMatchDRs" ) );
+    m_darkJetMatch        ->push_back( isDarkJetMatch  );
+    m_darkJetMatch_ID     ->push_back( AUXDYNVEC( truthVtx, int,   "darkJetMatchIDs"  ) );
+    m_darkJetMatch_dR     ->push_back( AUXDYNVEC( truthVtx, float, "darkJetMatchDRs"  ) );
+    if ( m_doEMTopo ) {
+      m_emtopoJetMatch    ->push_back( isEMTopoJetMatch );
+      m_emtopoJetMatch_ID ->push_back( AUXDYNVEC( truthVtx, int,   "recoJetMatchIDs_EMTopo" + emtopo_str ) );
+      m_emtopoJetMatch_dR ->push_back( AUXDYNVEC( truthVtx, float, "recoJetMatchDRs_EMTopo" + emtopo_str ) );
+    }
+    if ( m_doPFlow ) {
+      m_pflowJetMatch     ->push_back( isPFlowJetMatch  );
+      m_pflowJetMatch_ID  ->push_back( AUXDYNVEC( truthVtx, int,   "recoJetMatchIDs_PFlow"  + pflow_str  ) );
+      m_pflowJetMatch_dR  ->push_back( AUXDYNVEC( truthVtx, float, "recoJetMatchDRs_PFlow"  + pflow_str  ) );
+    }
   }
 }

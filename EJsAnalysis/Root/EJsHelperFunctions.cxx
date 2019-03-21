@@ -39,17 +39,6 @@ namespace EJsHelper {
 
     region .name = regionName;
     region .type = regionType;
-    
-    
-    
-    // std::string regionName = "";
-    // if      ( regionType == ALL        ) regionName = "all";
-    // else if ( regionType == SIGNAL     ) regionName = "signal";
-    // else if ( regionType == VALIDATION ) regionName = "valid";
-    // else if ( regionType == CONTROL    ) regionName = "ctrl";
-
-    // region .type = regionType;
-    // region .name = regionName;
   }
   
   // ------------------------------------------------------------------------------------------ //
@@ -113,6 +102,37 @@ namespace EJsHelper {
     TLorentzVector v;
     for ( const auto& tp : truthParts ) v += tp;
     return v;
+  }
+
+  // from Reconstruction/Jet/JetSimTools/Root/JetTruthParticleSelectorTool.cxx
+  bool isStable ( const xAOD::TruthParticle* tp )
+  {
+    if ( tp->barcode() >= 200000 ) return false; // G4 particle
+    if ( tp->absPdgId() == 21 && tp->p4().E() == 0 ) return false; // zero-energy gluon
+    return ( ( tp->status() % 1000 == 1 ) || // fully stable
+	     ( tp->status() % 1000 == 2 && tp->hasDecayVtx() && tp->decayVtx() != NULL && tp->decayVtx()->barcode() < -200000 ) ); // gen-stable
+  }
+
+  // from Reconstruction/Jet/JetSimTools/Root/JetTruthParticleSelectorTool.cxx
+  bool isInteracting ( const xAOD::TruthParticle* tp )
+  {
+    if ( !isStable( tp ) ) return false;
+    const int pid = tp->absPdgId();
+    if ( pid == 12 || pid == 14 || pid == 16 ) return false; // neutrinos
+    if ( ( tp->status() % 1000 == 1 ) &&
+	 ( pid == 1000022 || pid == 1000024 || pid == 5100022 || pid == 39 || pid == 1000039 || pid == 5000039 ) ) return false; // susy
+    return true;
+  }
+
+  bool isReconstructible ( const xAOD::TruthParticle* tp )
+  {
+    // FILL IN...
+    return true;
+  }
+
+  bool isDark ( const xAOD::TruthParticle* tp )
+  {
+    return ( tp->absPdgId() > 4.9e6 && tp->absPdgId() < 5.0e6 );
   }
 
   // ------------------------------------------------------------------------------------------ //

@@ -21,7 +21,8 @@ namespace EJs {
   class JetContainer : public VertexContainer < EJsHelperClasses::JetInfoSwitch >
   {
   public:
-    JetContainer( const std::string& name = "jet", const std::string& detailStr = "", float units = 1e3, bool mc = false );
+    JetContainer( const std::string& name = "jet", const std::string& detailStr = "", float units = 1e3,
+		  bool mc = false, bool emtopo = true, bool pflow = false );
     virtual ~JetContainer();
 
     virtual void setTree     ( TTree* tree );
@@ -31,6 +32,9 @@ namespace EJs {
 
 
   private:
+    bool m_doEMTopo;
+    bool m_doPFlow;
+    
     enum jetType { RECO, TRUTH, DARK };
     jetType jet_type;
     
@@ -65,12 +69,12 @@ namespace EJs {
     std::vector<uint8_t>*            m_isMatchedToTruth;      // dark jet is matched to truth
     std::vector<int>*                m_matchedTruthID;
     std::vector<float>*              m_matchedTruthDR;
-    std::vector<uint8_t>*            m_isMatchedToEMTopoReco; // dark / truth jet is matched to emtopo reco
-    std::vector<int>*                m_matchedEMTopoRecoID;
-    std::vector<float>*              m_matchedEMTopoRecoDR;
-    std::vector<uint8_t>*            m_isMatchedToPFlowReco;  // dark / truth jet is matched to pflow reco
-    std::vector<int>*                m_matchedPFlowRecoID;
-    std::vector<float>*              m_matchedPFlowRecoDR;
+    std::vector<uint8_t>*            m_isMatchedToEMTopo; // dark / truth jet is matched to emtopo reco
+    std::vector<int>*                m_matchedEMTopoID;
+    std::vector<float>*              m_matchedEMTopoDR;
+    std::vector<uint8_t>*            m_isMatchedToPFlow;  // dark / truth jet is matched to pflow reco
+    std::vector<int>*                m_matchedPFlowID;
+    std::vector<float>*              m_matchedPFlowDR;
     // matched vertices
     std::vector<int>*                  m_secVtxCount;
     std::vector<float>*                m_secVtxPt;

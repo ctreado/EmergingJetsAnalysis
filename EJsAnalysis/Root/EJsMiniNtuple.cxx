@@ -100,7 +100,6 @@ EL::StatusCode EJsMiniNtuple :: initialize ()
   TFile* treeFile = wk()->getOutputFile( "tree" );
   treeFile->mkdir( m_name.c_str() );
 
-  
   // to handle more than one jet collection (reco, trig, truth)
   std::string token;
   // reco jets
@@ -191,7 +190,7 @@ EL::StatusCode EJsMiniNtuple :: addTree ( std::string syst )
     return EL::StatusCode::FAILURE;
   }
 
-  m_trees[syst] = new EJsHelpTreeBase( m_event, outTree, treeFile, 1e3, msgLvl(MSG::DEBUG), m_store );
+  m_trees[syst] = new EJsHelpTreeBase( m_event, outTree, treeFile, 1e3, msgLvl(MSG::DEBUG), m_store, m_jetEMTopo, m_jetPFlow );
   const auto& helpTree = m_trees[syst];
   helpTree->m_vertexContainerName = m_vertexContainerName;
 
