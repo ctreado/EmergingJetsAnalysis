@@ -19,10 +19,9 @@ namespace EJsHelperClasses {
     bool m_close;
     bool m_linked;
     bool m_jetMatched;
-    bool m_emtopo;
-    bool m_pflow;
     
     SecondaryVertexInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
+    virtual ~SecondaryVertexInfoSwitch() {}
     
   protected:
     void initialize();
@@ -35,10 +34,9 @@ namespace EJsHelperClasses {
     bool m_isMatched;
     bool m_recoVerts;
     bool m_jets;
-    bool m_emtopo;
-    bool m_pflow;
     
     TruthVertexInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
+    virtual ~TruthVertexInfoSwitch() {}
 
   protected:
     void initialize();
@@ -52,12 +50,11 @@ namespace EJsHelperClasses {
     bool m_ghost;
     bool m_match;
     bool m_truthJets;
-    bool m_emtopo;
-    bool m_pflow;
     bool m_vertices;
     bool m_trackParts;
     
     JetInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
+    virtual ~JetInfoSwitch() {}
 
   protected:
     void initialize();
@@ -67,14 +64,26 @@ namespace EJsHelperClasses {
   class HistogramInfoSwitch : public HelperClasses::InfoSwitch
   {
   public:
-    bool m_basics;
-    bool m_jet_basics;
-    bool m_secVtx_basics;
-    bool m_truthVtx_basics;
-    bool m_trk_basics;
-    bool m_truthPart_basics;
+    bool m_kinematic;
+    bool m_kinematic_jet;
+    bool m_match;
+    bool m_match_jet;
+    bool m_match_jetTrk;
+    bool m_match_jetVtx;
+    bool m_match_jetTruth;
+    bool m_vsMu;
+    bool m_vsMu_jet;
+    bool m_vsMu_vtx;
+    bool m_jetEConstit;
+    bool m_jetTrkMom;
+    bool m_jetGhost;
+    bool m_vtxTracks;
+    int  m_numLeading;
+    int  m_numVtxTrk;
+    
     
     HistogramInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
+    virtual ~HistogramInfoSwitch() {}
 
   protected:
     void initialize();

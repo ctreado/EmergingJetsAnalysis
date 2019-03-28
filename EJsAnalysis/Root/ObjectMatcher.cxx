@@ -1071,11 +1071,19 @@ void ObjectMatcher :: matchLinkedTruthToSecVerts ( const xAOD::VertexContainer* 
     // loop over filtered tracks --> get corresponding (parent) truth vertices + pt-weight
     for ( const auto& trk : filteredTracks ) {
       const auto* truthProdVtx = EJsHelper::getProdVtx( trk );
-      if ( truthProdVtx )
-	linkedTruthVerts[truthProdVtx] += fabs( trk->pt() / secVtxSumPt );
+      if ( truthProdVtx ) {
+	if ( linkedTruthVerts.find(truthProdVtx) == linkedTruthVerts.end() )
+	  linkedTruthVerts[truthProdVtx] = 0;
+	else
+	  linkedTruthVerts[truthProdVtx] += fabs( trk->pt() / secVtxSumPt );
+      }
       const auto* truthParentProdVtx = EJsHelper::getParentProdVtx( trk );
-      if ( truthParentProdVtx )
-	linkedParentTruthVerts[truthParentProdVtx] += fabs( trk->pt() / secVtxSumPt );
+      if ( truthParentProdVtx ) {
+	if ( linkedParentTruthVerts.find(truthParentProdVtx) == linkedParentTruthVerts.end() )
+	  linkedParentTruthVerts[truthParentProdVtx] = 0;
+	else
+	  linkedParentTruthVerts[truthParentProdVtx] += fabs( trk->pt() / secVtxSumPt );
+      }
     }
 
     // loop over linked truth vertices and save element links + scores

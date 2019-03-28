@@ -15,6 +15,7 @@ input_E_600_75="${inpath}*ModelE_600_75*.root"
 
 jo="$EJ_PATH/EJsanalysis/config/EJsHistoConfig.py"
 
+#subdir_A_1400_20="hists.test.local.MC16d.EJ_ModelA_1400_20"
 subdir_A_1400_20="hists.local.MC16d.EJ_ModelA_1400_20"
 subdir_A_1000_150="hists.local.MC16d.EJ_ModelA_1000_150"
 subdir_B_1400_20="hists.local.MC16d.EJ_ModelB_1400_20"

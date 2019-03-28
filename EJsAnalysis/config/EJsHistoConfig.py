@@ -7,8 +7,8 @@ c = xAH_config()
 Dict_EJsNtupleToHists = {
     "m_name"                      : "EJsHists",
     "m_msgLevel"                  : "info",
-    "m_detailStr"                 : "",
-    "m_regionName"                : "all signal valid",
+    "m_detailStr"                 : "kinematic match vsMu jetEConstit jetTrkMom jetGhost NLeading4 NVtxTrk5",
+    "m_regionName"                : "all signal valid ctrl",
     "m_jetBranchName"             : "jet",
     #"m_jetBranchName"             : "pflowJet",
     "m_truthJetBranchName"        : "truthJet",
@@ -20,3 +20,6 @@ Dict_EJsNtupleToHists = {
 }
 
 c.algorithm ( "EJsNtupleToHists", Dict_EJsNtupleToHists )
+
+
+## TEST INFO SWITCHES

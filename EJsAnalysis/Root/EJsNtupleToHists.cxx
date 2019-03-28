@@ -63,10 +63,28 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
     m_regions.push_back( region );
   }
 
+  // set emtopo / pflow booleans
+  m_doEMTopo = false; m_doPFlow = false;
+  if ( m_jetBranchName.find("EMTopo") != std::string::npos || m_jetBranchName.find("emtopo") != std::string::npos || m_jetEMTopo ) {
+    m_doEMTopo = true;
+    m_doPFlow  = false;
+  }
+  if ( m_jetBranchName.find("PFlow")  != std::string::npos || m_jetBranchName.find("pflow")  != std::string::npos || m_jetPFlow  ) {
+    m_doEMTopo = false;
+    m_doPFlow  = true;
+  }
+
+  // get input file name to set m_isMC
+  TFile* inputFile = wk()->inputFile();
+  std::string fileName = inputFile->GetName();
+  m_isMC = true;
+  if ( ( fileName.find("data1") != std::string::npos ) || ( fileName.find("Data1") != std::string::npos ) )
+    m_isMC = false;
+
 
   // declare classes and add histograms to output
-  m_plots = new EJsHistogramManager ( m_name, m_detailStr );
-  ANA_CHECK( m_plots ->initialize( outFileName, m_regionNames ) ); // NEED TO FIND A WAY TO PASS IS-MC ...
+  m_plots = new EJsHistogramManager ( m_name, m_detailStr, false, m_doEMTopo, m_doPFlow );
+  ANA_CHECK( m_plots ->initialize( m_jetBranchName, outFileName, m_regionNames, m_isMC ) );
   m_plots ->record( wk() );
 
   return EL::StatusCode::SUCCESS;
@@ -153,7 +171,8 @@ EL::StatusCode EJsNtupleToHists :: execute ()
   // do any more necessary analysis ???
 
   TTree* tree = wk()->tree();
-  ANA_CHECK( m_plots ->execute( tree, wk()->treeEntry(), m_regionNames, m_isMC ) );
+  //ANA_CHECK( m_plots ->execute( tree, wk()->treeEntry(), m_regionNames, m_isMC ) );
+  ANA_CHECK( m_plots ->execute( tree, wk()->treeEntry(), m_regions, m_isMC ) );
   
 
   return EL::StatusCode::SUCCESS;

@@ -13,22 +13,24 @@
 
 #include <iostream>
 
-void make2DPlots ( TString  hname  = "secVtx_r_vs_ntrk", TString  htitle = "MC16d.EJ_ModelA_1400_20",
-		   TString  xtitle = "n DV tracks",      TString  ytitle = "DV Lxy [mm]",
-		   TString  ztitle = "events / bin",
-		   TString  htype  = "mc16d",            TString  hext   = "pdf",
-		   Bool_t   doLogx = false,              Bool_t   doLogy = false,
-		   Double_t xmin   = 1.0,                Double_t xmax   = -1.0,
-		   Double_t ymin   = 1.0,                Double_t ymax   = -1.0,
-		   Int_t    rebinx = 1,                  Int_t    rebiny = 1 )
+void make2DPlots ( TString  hname  = "",   TString htitle  = "",   TString  xtitle = "",  TString  ytitle = "",    TString  ztitle = "",
+		   TString  htype  = "",   TString hreg    = "",   TString  hobj   = "",  TString  hext   = "pdf", Bool_t   doLogx = false,
+		   Bool_t   doLogy = true, Bool_t  doLocal = true, Double_t xmin   = 1.0, Double_t xmax   = -1.0,  Double_t ymin   = 1.0,
+		   Double_t ymax   = -1.0, Int_t   rebinx  = 1,    Int_t    rebiny = 1 )
 {
   std::cout << "in make2DPlots()" << std::endl;
 
   // set path and file names
   // --> paths + root file names may change ...
   TString path  = "$EJ_PATH/../run/"; // make sure $EJ_PATH set to local repo dir: 'export EJ_PATH=$(pwd)'
-  TString hpath = "hists.local." + htitle;
+  //TString hpath = "hists.local." + htitle;
+  TString hpath = "";
   TString hfile = "/hist-data-tree.root";
+  if ( doLocal ) {
+    path += "localOutput/";
+    if      ( htype.Contains("mc16d") ) hpath = "hist-tree/hists.local." + htitle;
+    else if ( htype.Contains("data")  ) hpath = "hist-tree/hists.local." + htitle;
+  }
 
   // get histogram from file
   TFile* f = TFile::Open( path + hpath + hfile, "READ" );
@@ -37,12 +39,19 @@ void make2DPlots ( TString  hname  = "secVtx_r_vs_ntrk", TString  htitle = "MC16
     std::cout << "file pointer: " << f             << std::endl;
     std::cout << "   file name: " << hpath + hfile << std::endl;
   }
-  f->cd("EJsHists");
-  
+  f->cd("EJsHists/nominal/" + hreg);
+
+  // set histogram title
+  TString region_title = hreg;
+  if      ( hreg == "all"    ) region_title = "all regions";
+  else if ( hreg == "signal" ) region_title = "signal region";
+  else if ( hreg == "valid"  ) region_title = "validation region";
+  TString title = htitle + ": " + region_title;
+      
   TH2F* h = (TH2F*)gDirectory->Get(hname);
   h->SetDirectory(0);
   h->SetStats(0);
-  h->SetTitle( htitle );
+  h->SetTitle( title );
 
   // get stats
   Int_t    nEvents = h->GetEntries();
@@ -128,13 +137,18 @@ void make2DPlots ( TString  hname  = "secVtx_r_vs_ntrk", TString  htitle = "MC16
   gPad->RedrawAxis();
 
   // save plot
-  TString hdir  = path + "/tmp_plots/2d_plots/" + htype + "/";
+  TString hdir  = path + "/plots/2d_plots/" + htype + "/" + hreg + "/" + hobj + "/";
   TString hout = hdir + htitle + "." + hname;
   c1->SaveAs( hout + "." + hext );
   if ( doLogx || doLogy ) {
-    if ( doLogx ) gPad->SetLogx();
-    if ( doLogy ) gPad->SetLogy();
-    hout += "_log";
+    if ( doLogx ) {
+      gPad->SetLogx();
+      hout += "_logyx";
+    }
+    if ( doLogy ) {
+      gPad->SetLogy();
+      hout += "_logy";
+    }
     c1->SaveAs( hout + "." + hext );
   }
 

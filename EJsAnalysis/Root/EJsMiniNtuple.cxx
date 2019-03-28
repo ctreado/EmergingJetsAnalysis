@@ -168,6 +168,15 @@ EL::StatusCode EJsMiniNtuple :: initialize ()
     return EL::StatusCode::FAILURE;
   }
 
+  // set emtopo / pflow booleans
+  m_doEMTopo = false; m_doPFlow = false;
+  for ( size_t i = 0; i != m_jetContainers.size(); ++i ) {
+    if ( m_jetContainers.at(i).find("EMTopo") != std::string::npos || m_jetContainers.at(i).find("emtopo") != std::string::npos || m_jetEMTopo )
+      m_doEMTopo = true;
+    if ( m_jetContainers.at(i).find("PFlow")  != std::string::npos || m_jetContainers.at(i).find("pflow")  != std::string::npos || m_jetPFlow  )
+      m_doPFlow  = true;
+  }
+
   return EL::StatusCode::SUCCESS;
 }
 
@@ -190,7 +199,7 @@ EL::StatusCode EJsMiniNtuple :: addTree ( std::string syst )
     return EL::StatusCode::FAILURE;
   }
 
-  m_trees[syst] = new EJsHelpTreeBase( m_event, outTree, treeFile, 1e3, msgLvl(MSG::DEBUG), m_store, m_jetEMTopo, m_jetPFlow );
+  m_trees[syst] = new EJsHelpTreeBase( m_event, outTree, treeFile, 1e3, msgLvl(MSG::DEBUG), m_store, m_doEMTopo, m_doPFlow );
   const auto& helpTree = m_trees[syst];
   helpTree->m_vertexContainerName = m_vertexContainerName;
 

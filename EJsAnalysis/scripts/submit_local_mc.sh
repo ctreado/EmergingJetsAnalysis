@@ -9,7 +9,7 @@ jo="$EJ_PATH/EJsAnalysis/config/EJsConfig.py"
 subdir="local.MC16d.EJ_ModelA_1400_20"
 subdir_list="local.MC16d"
 
-#xAH_run.py --files ${input} --config ${jo} --submitDir ${subdir} --nevents 100 --isMC direct
+#xAH_run.py --files ${input} --config ${jo} --submitDir ${subdir} --nevents -1 --isMC direct
 xAH_run.py --files ${input_list} --config ${jo} --submitDir ${subdir_list} --nevents -1 --isMC direct
 
 # --isMC option doesn't seem wholly necessary -->

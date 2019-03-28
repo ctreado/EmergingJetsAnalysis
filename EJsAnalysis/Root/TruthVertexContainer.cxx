@@ -11,10 +11,10 @@ TruthVertexContainer :: TruthVertexContainer ( const std::string& name, const st
 					       bool mc, bool emtopo, bool pflow ) :
   VertexContainer ( name, detailStr, units, mc )
 {
-  if ( m_debug ) Info( "EJs::TruthVertexContainer()", "setting up" );
-
   m_doEMTopo = emtopo;
   m_doPFlow  = pflow;
+  
+  if ( m_debug ) Info( "EJs::TruthVertexContainer()", "setting up" );
 
   m_isDarkPionDecay       = new std::vector<uint8_t>;
   m_ID                    = new std::vector<int>;

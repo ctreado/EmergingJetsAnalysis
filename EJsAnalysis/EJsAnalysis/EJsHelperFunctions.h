@@ -50,7 +50,7 @@ namespace EJsHelper {
       tree ->SetBranchStatus  ( name.c_str(), 1        );
       tree ->SetBranchAddress ( name.c_str(), variable );
     }
-  template <typename T_BR> void connectBranchVec ( TTree* tree, std::string name, std::vector<T_BR> **variable )
+  template <typename T_BR> void connectBranchVec ( TTree* tree, std::string name, std::vector<T_BR>** variable )
     {
       tree->SetBranchStatus  ( name.c_str(),        1 );
       tree->SetBranchAddress ( name.c_str(), variable );
@@ -65,7 +65,6 @@ namespace EJsHelper {
   struct Region {
     std::string name;
     RegionType  type;
-    std::string decor;
   };
   // fills region structure info given input string
   void fillRegion ( Region&, const std::string );

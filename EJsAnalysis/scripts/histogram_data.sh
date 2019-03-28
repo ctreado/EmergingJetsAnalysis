@@ -2,13 +2,14 @@
 # script for running tree-to-histogram jobs
 
 inpath="$EJ_PATH/../run/local.data/data-tree/"
-#inpath="$EJ_PATH/../run/local.data17.00328333/"
+#inpath="$EJ_PATH/../run/local.data17.00328333/data-tree/"
 input_17="${inpath}data17_13TeV.00328333.physics_Main.deriv.DAOD_EXOT23.r10203_r10658_p3578_p3664.root"
 input_16="${inpath}data16_13TeV.00302872.physics_Main.deriv.DAOD_EXOT23.r9264_r10573_p3578_p3664.root"
 input_15="${inpath}data15_13TeV.00284285.physics_Main.deriv.DAOD_EXOT23.r9264_r10573_p3578_p3664.root"
 
 jo="$EJ_PATH/EJsanalysis/config/EJsHistoConfig.py"
 
+#subdir_17="hists.test.local.data17.00328333"
 subdir_17="hists.local.data17.00328333"
 subdir_16="hists.local.data16.00302872"
 subdir_15="hists.local.data15.00284285"

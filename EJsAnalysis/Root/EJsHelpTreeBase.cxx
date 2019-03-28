@@ -7,12 +7,12 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
 				     bool debug, xAOD::TStore* store, bool emtopo, bool pflow ) :
   HelpTreeBase ( event, tree, file, units, debug, store )
 {
+  m_doEMTopoJets = emtopo;
+  m_doPFlowJets  = pflow;
+  
   if ( m_debug ) Info( "EJsHelpTreeBase()", "creating output EJs TTree" );
 
   m_treeName = m_tree->GetName();
-  
-  m_doEMTopoJets = emtopo;
-  m_doPFlowJets  = pflow;
   
   m_pv_x        = 0;
   m_pv_y        = 0;

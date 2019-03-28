@@ -10,10 +10,10 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
 			       bool mc, bool emtopo, bool pflow ) :
   VertexContainer ( name, detailStr, units, mc )
 {
-  if ( m_debug ) Info( "EJs::JetContainer()", "setting up" );
-
   m_doEMTopo = emtopo;
   m_doPFlow  = pflow;
+  
+  if ( m_debug ) Info( "EJs::JetContainer()", "setting up" );
 
   if ( name.find("dark")  != std::string::npos || name.find("Dark")  != std::string::npos )
     jet_type = DARK;

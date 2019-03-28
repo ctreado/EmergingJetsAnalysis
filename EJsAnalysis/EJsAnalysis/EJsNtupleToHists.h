@@ -5,8 +5,7 @@
    the algorithm runs over a tree (the output EJsMiniNtuple from the ntuple-making alg)
    and books, fills, and outputs histograms using the EJsHistogramManager class;
    NOTE: unlike the tree-making alg, this alg can only handle one reco jet collection at a time;
-   to histogram multiple reco jet collections, re-run the job with a different input jet branch name
-   (can also turn off redundant histograms with 'do_jet_histos_only' info switch) */
+   to histogram multiple reco jet collections, re-run the job with a different input jet branch name */
 
 #include <string>
 
@@ -41,6 +40,10 @@ class EJsNtupleToHists : public xAH::Algorithm
   std::string m_truthVertexBranchName     = "";
   std::string m_secondaryVertexBranchName = "";
 
+  // jets type to use
+  bool m_jetEMTopo = true;
+  bool m_jetPFlow  = false;
+
   // unit conversion from MeV; default is GeV
   float m_units = 1e3;
 
@@ -57,8 +60,10 @@ class EJsNtupleToHists : public xAH::Algorithm
   
   EJsHistogramManager* m_plots = 0; //!
 
-  int m_eventNumber; //!
-  bool m_isMC;       //!
+  int  m_eventNumber; //!
+  bool m_isMC;        //!
+  bool m_doEMTopo;    //!
+  bool m_doPFlow;     //!
 
   
  public:

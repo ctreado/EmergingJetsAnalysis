@@ -11,14 +11,13 @@
 #include <TPad.h>
 #include <TString.h>
 #include <TStyle.h>
+#include <TSystem.h>
 
 #include <iostream>
 
-void makeStackPlots ( TString  hname  = "secVtx_n", TString  htitle = "MC16d",
-		      TString  xtitle = "n DVs",    TString  ytitle = "events / bin",
-		      TString  htype  = "mc16d",    TString  hext   = "pdf",
-		      Bool_t   doLogy = true,       Bool_t   doNorm = true,
-		      Double_t xmin   = 1.0,        Double_t xmax   = -1.0 )
+void makeStackPlots ( TString  hname  = "nPV",   TString htitle = "MC16d", TString  xtitle = "n PV",  TString  ytitle = "",
+		      TString  htype  = "mc16d", TString hreg   = "all",   TString  hobj   = "event", TString  hext   = "pdf",
+		      Bool_t   doLogy = true,    Bool_t  doNorm = true,    Bool_t   doLocal = true,   Double_t xmin   = 1.0,   Double_t xmax = -1.0 )
 {
   std::cout << "in makeStackPlots()" << std::endl;
 
@@ -27,25 +26,30 @@ void makeStackPlots ( TString  hname  = "secVtx_n", TString  htitle = "MC16d",
   TString path = "$EJ_PATH/../run/"; // make sure $EJ_PATH set to local repo dir: 'export EJ_PATH=$(pwd)'
   TString hpath = "";
   TString hfile = "/hist-data-tree.root";
+  if ( doLocal ) path += "localOutput/";
   
   std::vector<TString> fname;
   if ( htype.Contains("mc16d") ) {
-    hpath = "hists.local.MC16d.EJ_Model";
-    fname.push_back( "A_1400_20"  );
-    fname.push_back( "B_1400_20"  );
-    fname.push_back( "C_1400_20"  );
-    fname.push_back( "A_1000_150" );
-    fname.push_back( "B_1000_5"   );
-    fname.push_back( "C_1000_75"  );
-    fname.push_back( "C_600_20"   );
-    fname.push_back( "D_600_300"  );
-    fname.push_back( "E_600_75"   );
+    if ( doLocal ) {
+      hpath = "hist-tree/hists.local.MC16d.EJ_Model";
+      fname.push_back( "A_1400_20"  );
+      fname.push_back( "B_1400_20"  );
+      fname.push_back( "C_1400_20"  );
+      fname.push_back( "A_1000_150" );
+      fname.push_back( "B_1000_5"   );
+      fname.push_back( "C_1000_75"  );
+      fname.push_back( "C_600_20"   );
+      fname.push_back( "D_600_300"  );
+      fname.push_back( "E_600_75"   );
+    }
   }
   else if ( htype.Contains("data") ) {
-    hpath = "hists.local.data";
-    fname.push_back( "17.00328333" );
-    fname.push_back( "16.00302872" );
-    fname.push_back( "15.00284285" );
+    if ( doLocal ) {
+      hpath = "hist-tree/hists.local.data";
+      fname.push_back( "17.00328333" );
+      fname.push_back( "16.00302872" );
+      fname.push_back( "15.00284285" );
+    }
   }
 
   // set line attributes
@@ -127,7 +131,8 @@ void makeStackPlots ( TString  hname  = "secVtx_n", TString  htitle = "MC16d",
       std::cout << "file pointer: " << f                           << std::endl;
       std::cout << "   file name: " << hpath + fname.at(i) + hfile << std::endl;
     }
-    f->cd("EJsHists");
+    f->cd("EJsHists/nominal/" + hreg);
+    // --> need to modify to take variable tree name....
 
     // get histogram from file
     h = (TH1F*)gDirectory->Get(hname);
@@ -180,8 +185,8 @@ void makeStackPlots ( TString  hname  = "secVtx_n", TString  htitle = "MC16d",
   lumiText ->Draw( "same" );
 
   // save plot
-  TString hdir  = path + "/tmp_plots/stack_plots/" + htype + "/";
-  TString hout = hdir + hname;
+  TString hdir = path + "plots/stack_plots/" + htype + "/" + hreg + "/" + hobj + "/";
+  TString hout = hdir + "h_" + hname;
   c1->SaveAs( hout + "." + hext );
   if ( doLogy ) {
     gPad->SetLogy();

@@ -15,10 +15,10 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, 
 						       bool mc, bool emtopo, bool pflow ) :
   VertexContainer ( name, detailStr, units, mc )
 {
-  if ( m_debug ) Info( "EJs::SecondaryVertexContainer()", "setting up" );
-
   m_doEMTopo = emtopo;
   m_doPFlow  = pflow;
+  
+  if ( m_debug ) Info( "EJs::SecondaryVertexContainer()", "setting up" );
 
   m_ID            = new std::vector<int>;
   m_x             = new std::vector<float>;

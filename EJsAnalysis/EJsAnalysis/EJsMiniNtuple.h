@@ -89,6 +89,9 @@ class EJsMiniNtuple : public xAH::Algorithm
 
   std::map< std::string, EJsHelpTreeBase* > m_trees; //!
 
+  bool m_doEMTopo; //!
+  bool m_doPFlow;  //!
+
 
  public:
   // standard constructor
