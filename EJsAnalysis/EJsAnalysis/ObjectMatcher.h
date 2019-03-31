@@ -43,6 +43,9 @@ class ObjectMatcher : public xAH::Algorithm
   // truth - vertex matching distance
   double m_vtx_matchDist   = 5.0;
 
+  // protection when running on truth derivation
+  bool m_truthLevelOnly = false;
+
 
   // variables not filled at submission time
   // protected from being sent from submission to worker node

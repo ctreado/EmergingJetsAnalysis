@@ -51,6 +51,17 @@ void makeStackPlots ( TString  hname  = "nPV",   TString htitle = "MC16d", TStri
       fname.push_back( "15.00284285" );
     }
   }
+  else if ( htype.Contains("truth") ) {
+    if ( doLocal ) {
+      hpath = "hist-tree/hists.local.truth.";
+      fname.push_back( "py81.A_1000_150"         );
+      fname.push_back( "py81.B_1000_5"           );
+      fname.push_back( "py82.A_1000_150"         );
+      fname.push_back( "py82.B_1000_5"           );
+      fname.push_back( "py82.A_1000_150.211ctau" );
+      fname.push_back( "py82.B_1000_5.211ctau"   );
+    }
+  }
 
   // set line attributes
   std::vector<Color_t> hcolor;
@@ -69,6 +80,14 @@ void makeStackPlots ( TString  hname  = "nPV",   TString htitle = "MC16d", TStri
     hcolor.push_back( kRed       ); // data17
     hcolor.push_back( kBlue      ); // data16
     hcolor.push_back( kGreen + 1 ); // data15
+  }
+  else if ( htype.Contains("truth") ) {
+    hcolor.push_back( kRed       ); // pythia 8.183
+    hcolor.push_back( kRed       );
+    hcolor.push_back( kBlue      ); // pythia 8.230
+    hcolor.push_back( kBlue      );
+    hcolor.push_back( kGreen + 1 ); // pythia 8.230 w/ nonzero 4900211 ctau
+    hcolor.push_back( kGreen + 1 );
   }
 
   // configure legend

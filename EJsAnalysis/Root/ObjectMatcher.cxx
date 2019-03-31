@@ -99,15 +99,15 @@ EL::StatusCode ObjectMatcher :: initialize ()
     m_inJetContainers.push_back( token );
   
   // check for input containers
-  if ( m_inJetContainers.empty() ) {
+  if ( m_inJetContainers.empty() && !m_truthLevelOnly ) {
     ANA_MSG_ERROR( "No input jet container(s) provided! Exiting." );
     return EL::StatusCode::FAILURE;
   }
-  if ( m_inTrackPartContainerName.empty() ) {
+  if ( m_inTrackPartContainerName.empty() && !m_truthLevelOnly ) {
     ANA_MSG_ERROR( "No input track particle container provided! Exiting." );
     return EL::StatusCode::FAILURE;
   }
-  if ( m_inSecondaryVertexContainerName.empty() ) {
+  if ( m_inSecondaryVertexContainerName.empty() && !m_truthLevelOnly ) {
     ANA_MSG_ERROR( "No input secondary vertex container provided! Exiting." );
     return EL::StatusCode::FAILURE;
   }
@@ -135,12 +135,14 @@ EL::StatusCode ObjectMatcher :: execute ()
   const xAOD::TrackParticleContainer* inTrackParts    = 0;
   const xAOD::TruthVertexContainer*   inTruthVerts    = 0;
   const xAOD::VertexContainer*        inSecVerts      = 0;
-  
-  ANA_MSG_DEBUG( "Getting input track particle container: " << m_inTrackPartContainerName );
-  ANA_CHECK( HelperFunctions::retrieve( inTrackParts, m_inTrackPartContainerName, m_event, m_store, msg() ) );
 
-  ANA_MSG_DEBUG( "Getting input secondary vertex container: " << m_inSecondaryVertexContainerName );
-  ANA_CHECK( HelperFunctions::retrieve( inSecVerts, m_inSecondaryVertexContainerName, m_event, m_store, msg() ) );
+  if ( !m_truthLevelOnly ) {
+    ANA_MSG_DEBUG( "Getting input track particle container: " << m_inTrackPartContainerName );
+    ANA_CHECK( HelperFunctions::retrieve( inTrackParts, m_inTrackPartContainerName, m_event, m_store, msg() ) );
+
+    ANA_MSG_DEBUG( "Getting input secondary vertex container: " << m_inSecondaryVertexContainerName );
+    ANA_CHECK( HelperFunctions::retrieve( inSecVerts, m_inSecondaryVertexContainerName, m_event, m_store, msg() ) );
+  }
   
   if ( isMC() ) {
     ANA_MSG_DEBUG( "Getting input truth jet container: " << m_inTruthJetContainerName );
@@ -158,23 +160,25 @@ EL::StatusCode ObjectMatcher :: execute ()
 
   
   // intialize decorators
-  for ( const auto& track : *inTrackParts ) {
-    track->auxdecor<int>("ID")                              = track->index();
-    track->auxdecor<char>("isMatchedToTruthJet")            = false;
-    track->auxdecor<std::vector<int>>("truthJetMatchIDs")   = std::vector<int>();
-    track->auxdecor<std::vector<float>>("truthJetMatchDRs") = std::vector<float>();
-    track->auxdecor<char>("isMatchedToDarkJet")             = false;
-    track->auxdecor<std::vector<int>>("darkJetMatchIDs")    = std::vector<int>();
-    track->auxdecor<std::vector<float>>("darkJetMatchDRs")  = std::vector<float>();
-  }
-  for ( const auto& secVtx : *inSecVerts ) {
-    secVtx->auxdecor<int>("ID")                              = secVtx->index();
-    secVtx->auxdecor<char>("isMatchedToTruthJet")            = false;
-    secVtx->auxdecor<std::vector<int>>("truthJetMatchIDs")   = std::vector<int>();
-    secVtx->auxdecor<std::vector<float>>("truthJetMatchDRs") = std::vector<float>();
-    secVtx->auxdecor<char>("isMatchedToDarkJet")             = false;
-    secVtx->auxdecor<std::vector<int>>("darkJetMatchIDs")    = std::vector<int>();
-    secVtx->auxdecor<std::vector<float>>("darkJetMatchDRs")  = std::vector<float>();
+  if ( !m_truthLevelOnly ) {
+    for ( const auto& track : *inTrackParts ) {
+      track->auxdecor<int>("ID")                              = track->index();
+      track->auxdecor<char>("isMatchedToTruthJet")            = false;
+      track->auxdecor<std::vector<int>>("truthJetMatchIDs")   = std::vector<int>();
+      track->auxdecor<std::vector<float>>("truthJetMatchDRs") = std::vector<float>();
+      track->auxdecor<char>("isMatchedToDarkJet")             = false;
+      track->auxdecor<std::vector<int>>("darkJetMatchIDs")    = std::vector<int>();
+      track->auxdecor<std::vector<float>>("darkJetMatchDRs")  = std::vector<float>();
+    }
+    for ( const auto& secVtx : *inSecVerts ) {
+      secVtx->auxdecor<int>("ID")                              = secVtx->index();
+      secVtx->auxdecor<char>("isMatchedToTruthJet")            = false;
+      secVtx->auxdecor<std::vector<int>>("truthJetMatchIDs")   = std::vector<int>();
+      secVtx->auxdecor<std::vector<float>>("truthJetMatchDRs") = std::vector<float>();
+      secVtx->auxdecor<char>("isMatchedToDarkJet")             = false;
+      secVtx->auxdecor<std::vector<int>>("darkJetMatchIDs")    = std::vector<int>();
+      secVtx->auxdecor<std::vector<float>>("darkJetMatchDRs")  = std::vector<float>();
+    }
   }
   if ( isMC() ) {
     for ( const auto& truthJet : *inTruthJets )
@@ -225,18 +229,29 @@ EL::StatusCode ObjectMatcher :: execute ()
 
 
   // match tracks to reco secondary vertices
-  matchTracksToSecVerts( inSecVerts, inTrackParts );
+  if ( !m_truthLevelOnly )
+    matchTracksToSecVerts( inSecVerts, inTrackParts );
 
 
   // do matching to truth objects
   if ( isMC() ) {
-    
-    // match tracks to truth particles
-    matchTracksToTruthParts( inTruthParts, inTrackParts );
 
-    // match truth vertices to reco secondary vertices
-    matchCloseTruthToSecVerts( inSecVerts, inTruthVerts );
-    matchLinkedTruthToSecVerts( inSecVerts, inTruthVerts );
+    if ( !m_truthLevelOnly ) {
+      // match tracks to truth particles
+      matchTracksToTruthParts( inTruthParts, inTrackParts );
+
+      // match truth vertices to reco secondary vertices
+      matchCloseTruthToSecVerts( inSecVerts, inTruthVerts );
+      matchLinkedTruthToSecVerts( inSecVerts, inTruthVerts );
+      
+      // match reco secondary vertices to truth (dark) jets
+      matchSecVertsToJets( inTruthJets,     inSecVerts, TRUTH, "" );
+      matchSecVertsToJets( inTruthDarkJets, inSecVerts, DARK,  "" );
+      
+      // match tracks to truth (dark) jets
+      matchTracksToJets( inTruthJets,     inTrackParts, TRUTH, "" );
+      matchTracksToJets( inTruthDarkJets, inTrackParts, DARK,  "" );
+    }
 
     // match truth dark jets to truth jets
     matchTruthJets( inTruthJets, inTruthDarkJets, TRUTH, DARK, "" );
@@ -245,124 +260,120 @@ EL::StatusCode ObjectMatcher :: execute ()
     matchTruthVertsToJets( inTruthJets,     inTruthVerts, TRUTH, "" );
     matchTruthVertsToJets( inTruthDarkJets, inTruthVerts, DARK,  "" );
 
-    // match reco secondary vertices to truth (dark) jets
-    matchSecVertsToJets( inTruthJets,     inSecVerts, TRUTH, "" );
-    matchSecVertsToJets( inTruthDarkJets, inSecVerts, DARK,  "" );
-
     // match truth particles to truth (dark) jets
     matchTruthPartsToJets( inTruthJets,     inTruthParts, TRUTH, "" );
     matchTruthPartsToJets( inTruthDarkJets, inTruthParts, DARK,  "" );
-    
-    // match tracks to truth (dark) jets
-    matchTracksToJets( inTruthJets,     inTrackParts, TRUTH, "" );
-    matchTracksToJets( inTruthDarkJets, inTrackParts, DARK,  "" );
 
   }
   
 
   // do matching for reco jets
-  // if input comes from xAOD, or not running systematics...
-  if ( m_inputAlgo.empty() ) {
+  if ( !m_truthLevelOnly ) {
     
-    // get jet container(s)
-    for ( size_t i = 0; i != m_inJetContainers.size(); ++i ) {
-
-      const xAOD::JetContainer* inJets = 0;
-      
-      // skip jet container if not available
-      if ( !HelperFunctions::isAvailable<xAOD::JetContainer>( m_inJetContainers.at(i), m_event, m_store, msg() ) ) {
-	ANA_MSG_DEBUG( "Input jet container, '" << m_inJetContainers.at(i) << "', is not available. Skipping..." );
-	continue;
-      }	
-      ANA_MSG_DEBUG( "Getting input jet container: " << m_inJetContainers.at(i) );
-      ANA_CHECK( HelperFunctions::retrieve( inJets, m_inJetContainers.at(i), m_event, m_store, msg() ) );
-
-      // initialize decorators
-      for ( const auto& jet : *inJets )
-	jet->auxdecor<int>("ID") = jet->index();
-
-      // set jet-string
-      std::string jetStr = "";
-      if      ( m_inJetContainers.at(i).find("EMTopo") != std::string::npos ) jetStr = "EMTopo";
-      else if ( m_inJetContainers.at(i).find("PFlow")  != std::string::npos ) jetStr = "PFlow";
-
-      if ( isMC() ) {
-	// match truth (dark) jets to reco jets
-	matchTruthJets( inJets, inTruthJets,     RECO, TRUTH, jetStr );
-	matchTruthJets( inJets, inTruthDarkJets, RECO, DARK,  jetStr );
-	
-	// match truth particles to reco jets
-	matchTruthPartsToJets( inJets, inTruthParts, RECO, jetStr );
-	
-	// match truth vertices to reco jets
-	matchTruthVertsToJets( inJets, inTruthVerts, RECO, jetStr );
-      }
+    // if input comes from xAOD, or not running systematics...
+    if ( m_inputAlgo.empty() ) {
     
-      // match reco secondary vertices to reco jets
-      matchSecVertsToJets( inJets, inSecVerts, RECO, jetStr );
-      
-      // match tracks to reco jets
-      matchTracksToJets( inJets, inTrackParts, RECO, jetStr );
-      
-    } // end loop over jet containers
-    
-  }
-  // otherwise, get list of systematics to run over
-  else {
-    
-    // get vector of string giving syst names of upstream algo from TStore
-    std::vector<std::string>* systNames = 0;
-    ANA_CHECK( HelperFunctions::retrieve( systNames, m_inputAlgo, 0, m_store, msg() ) );
-
-    // loop over systematics
-    for ( const auto& systName : *systNames ) {
-
       // get jet container(s)
       for ( size_t i = 0; i != m_inJetContainers.size(); ++i ) {
 
 	const xAOD::JetContainer* inJets = 0;
-
-	if ( i == m_jetSystsContainerIndex || systName.empty() ) { // only run systs for specified container
-	  // skip jet container if not available
-	  if ( !HelperFunctions::isAvailable<xAOD::JetContainer>( m_inJetContainers.at(i) + systName, m_event, m_store, msg() ) ) {
-	    ANA_MSG_DEBUG( "Input jet container, '" << m_inJetContainers.at(i) + systName << "', is not available. Skipping..." );
-	    continue;
-	  }
-	  ANA_MSG_DEBUG( "Getting input jet container: " << m_inJetContainers.at(i) + systName );
-	  ANA_CHECK( HelperFunctions::retrieve( inJets, m_inJetContainers.at(i) + systName, m_event, m_store, msg() ) );
-
-	  // initialize decorators
-	  for ( const auto& jet : *inJets )
-	    jet->auxdecor<int>("ID") = jet->index();
-
-	  // set jet-string
-	  std::string jetStr = "";
-	  if      ( m_inJetContainers.at(i).find("EMTopo") != std::string::npos ) jetStr = "EMTopo";
-	  else if ( m_inJetContainers.at(i).find("PFlow")  != std::string::npos ) jetStr = "PFlow";
       
-	  if ( isMC() ) {
-	    // match truth (dark) jets to reco jets
-	    matchTruthJets( inJets, inTruthJets,     RECO, TRUTH, jetStr + systName );
-	    matchTruthJets( inJets, inTruthDarkJets, RECO, DARK,  jetStr + systName );
+	// skip jet container if not available
+	if ( !HelperFunctions::isAvailable<xAOD::JetContainer>( m_inJetContainers.at(i), m_event, m_store, msg() ) ) {
+	  ANA_MSG_DEBUG( "Input jet container, '" << m_inJetContainers.at(i) << "', is not available. Skipping..." );
+	  continue;
+	}	
+	ANA_MSG_DEBUG( "Getting input jet container: " << m_inJetContainers.at(i) );
+	ANA_CHECK( HelperFunctions::retrieve( inJets, m_inJetContainers.at(i), m_event, m_store, msg() ) );
 
-	    // match truth particles to reco jets
-	    matchTruthPartsToJets( inJets, inTruthParts, RECO, jetStr + systName );
-	    
-	    // match truth vertices to reco jets
-	    matchTruthVertsToJets( inJets, inTruthVerts, RECO, jetStr + systName ); 	
-	  }
+	// initialize decorators
+	for ( const auto& jet : *inJets )
+	  jet->auxdecor<int>("ID") = jet->index();
+
+	// set jet-string
+	std::string jetStr = "";
+	if      ( m_inJetContainers.at(i).find("EMTopo") != std::string::npos ) jetStr = "EMTopo";
+	else if ( m_inJetContainers.at(i).find("PFlow")  != std::string::npos ) jetStr = "PFlow";
+
+	if ( isMC() ) {
+	  // match truth (dark) jets to reco jets
+	  matchTruthJets( inJets, inTruthJets,     RECO, TRUTH, jetStr );
+	  matchTruthJets( inJets, inTruthDarkJets, RECO, DARK,  jetStr );
 	
-	  // match reco secondary vertices to reco jets
-	  matchSecVertsToJets( inJets, inSecVerts, RECO, jetStr + systName );
-	  
-	  // match tracks to reco jets
-	  matchTracksToJets( inJets, inTrackParts, RECO, jetStr + systName );
-
+	  // match truth particles to reco jets
+	  matchTruthPartsToJets( inJets, inTruthParts, RECO, jetStr );
+	
+	  // match truth vertices to reco jets
+	  matchTruthVertsToJets( inJets, inTruthVerts, RECO, jetStr );
 	}
-	
-      } // end loop over input jet containers
+    
+	// match reco secondary vertices to reco jets
+	matchSecVertsToJets( inJets, inSecVerts, RECO, jetStr );
       
-    } // end loop over systematics
+	// match tracks to reco jets
+	matchTracksToJets( inJets, inTrackParts, RECO, jetStr );
+      
+      } // end loop over jet containers
+    
+    }
+    // otherwise, get list of systematics to run over
+    else {
+    
+      // get vector of string giving syst names of upstream algo from TStore
+      std::vector<std::string>* systNames = 0;
+      ANA_CHECK( HelperFunctions::retrieve( systNames, m_inputAlgo, 0, m_store, msg() ) );
+
+      // loop over systematics
+      for ( const auto& systName : *systNames ) {
+
+	// get jet container(s)
+	for ( size_t i = 0; i != m_inJetContainers.size(); ++i ) {
+
+	  const xAOD::JetContainer* inJets = 0;
+
+	  if ( i == m_jetSystsContainerIndex || systName.empty() ) { // only run systs for specified container
+	    // skip jet container if not available
+	    if ( !HelperFunctions::isAvailable<xAOD::JetContainer>( m_inJetContainers.at(i) + systName, m_event, m_store, msg() ) ) {
+	      ANA_MSG_DEBUG( "Input jet container, '" << m_inJetContainers.at(i) + systName << "', is not available. Skipping..." );
+	      continue;
+	    }
+	    ANA_MSG_DEBUG( "Getting input jet container: " << m_inJetContainers.at(i) + systName );
+	    ANA_CHECK( HelperFunctions::retrieve( inJets, m_inJetContainers.at(i) + systName, m_event, m_store, msg() ) );
+
+	    // initialize decorators
+	    for ( const auto& jet : *inJets )
+	      jet->auxdecor<int>("ID") = jet->index();
+
+	    // set jet-string
+	    std::string jetStr = "";
+	    if      ( m_inJetContainers.at(i).find("EMTopo") != std::string::npos ) jetStr = "EMTopo";
+	    else if ( m_inJetContainers.at(i).find("PFlow")  != std::string::npos ) jetStr = "PFlow";
+      
+	    if ( isMC() ) {
+	      // match truth (dark) jets to reco jets
+	      matchTruthJets( inJets, inTruthJets,     RECO, TRUTH, jetStr + systName );
+	      matchTruthJets( inJets, inTruthDarkJets, RECO, DARK,  jetStr + systName );
+
+	      // match truth particles to reco jets
+	      matchTruthPartsToJets( inJets, inTruthParts, RECO, jetStr + systName );
+	    
+	      // match truth vertices to reco jets
+	      matchTruthVertsToJets( inJets, inTruthVerts, RECO, jetStr + systName ); 	
+	    }
+	
+	    // match reco secondary vertices to reco jets
+	    matchSecVertsToJets( inJets, inSecVerts, RECO, jetStr + systName );
+	  
+	    // match tracks to reco jets
+	    matchTracksToJets( inJets, inTrackParts, RECO, jetStr + systName );
+
+	  }
+	
+	} // end loop over input jet containers
+      
+      } // end loop over systematics
+    
+    }
     
   }
 

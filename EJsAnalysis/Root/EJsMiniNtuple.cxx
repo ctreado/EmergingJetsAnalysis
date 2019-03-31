@@ -318,6 +318,7 @@ EL::StatusCode EJsMiniNtuple :: execute ()
     // retrieve primary vertex + location
     ANA_MSG_DEBUG( "Retrieving '" << m_vertexContainerName << "' vertex container" );
     const xAOD::VertexContainer* vertices = 0;
+    if ( m_truthLevelOnly ) m_retrievePV = false;
     if ( m_retrievePV )
       ANA_CHECK( HelperFunctions::retrieve( vertices, m_vertexContainerName, m_event, m_store, msg() ) );
     ANA_MSG_DEBUG( "Setting primary vertex" );
@@ -332,8 +333,10 @@ EL::StatusCode EJsMiniNtuple :: execute ()
 
 
     // fill primary vertex info
-    ANA_MSG_DEBUG( "Filling primary vertex branches" );
-    helpTree->FillPV( primaryVertex, pvLocation );
+    if ( !m_truthLevelOnly ) {
+      ANA_MSG_DEBUG( "Filling primary vertex branches" );
+      helpTree->FillPV( primaryVertex, pvLocation );
+    }
 
   
     // fill trigger info

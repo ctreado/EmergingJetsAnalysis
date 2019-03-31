@@ -21,7 +21,7 @@
 class EJsHistogramManager : public HistogramManager
 {
  public:
-  EJsHistogramManager ( std::string name, std::string detailStr, bool debug = false, bool emtopo = true, bool pflow = false );
+  EJsHistogramManager ( std::string name, std::string detailStr, bool debug = false, bool emtopo = true, bool pflow = false, bool truth = false );
   virtual ~EJsHistogramManager ();
 
   StatusCode connectEvents         ( TTree* tree, bool mc = false );
@@ -58,6 +58,7 @@ class EJsHistogramManager : public HistogramManager
   bool m_debug;
   bool m_doEMTopoJets;
   bool m_doPFlowJets;
+  bool m_truthLevelOnly;
   
   std::string m_jetStr;
 
@@ -209,6 +210,29 @@ class EJsHistogramManager : public HistogramManager
   std::vector<int>*                m_darkJet_truthVtxCount; //!
   std::vector<float>*              m_darkJet_truthVtxPt;    //!
   std::vector<std::vector<float>>* m_darkJet_truthVtx_dR;   //!
+
+
+  // branches -- truth particles
+  int                                m_tp_n;             //!
+  std::vector<float>*                m_tp_pt;            //!
+  std::vector<float>*                m_tp_eta;           //!
+  std::vector<float>*                m_tp_phi;           //!
+  std::vector<float>*                m_tp_E;             //!
+  std::vector<float>*                m_tp_M;             //!
+  std::vector<float>*                m_tp_charge;        //!
+  std::vector<int>*                  m_tp_pdgId;         //!
+  std::vector<int>*                  m_tp_status;        //!
+  std::vector<uint8_t>*              m_tp_isDark;        //!
+  std::vector<int>*                  m_tp_nParents;      //!
+  std::vector<std::vector<int>>*     m_tp_parent_pdgId;  //!
+  std::vector<std::vector<int>>*     m_tp_parent_status; //!
+  std::vector<int>*                  m_tp_nChildren;     //!
+  std::vector<std::vector<int>>*     m_tp_child_pdgId;   //!
+  std::vector<std::vector<int>>*     m_tp_child_status;  //!
+  std::vector<uint8_t>*              m_tp_hasPVtx;       //!
+  std::vector<float>*                m_tp_pVtx_r;        //!
+  std::vector<uint8_t>*              m_tp_hasDVtx;       //!
+  std::vector<float>*                m_tp_dVtx_r;        //!
 
    
   // branches -- secondary vertex
@@ -517,6 +541,137 @@ class EJsHistogramManager : public HistogramManager
   // dark jets vs pileup (actual mu)
   std::vector<TH2F*> h_darkJet_n_vs_actMu;  //!
   std::vector<TH2F*> h_darkJet_pt_vs_actMu; //!
+
+
+  // histograms -- truth particles
+  // heavy scalar mediator (Xd) basics
+  std::vector<TH1F*> h_Xd_n;            //!
+  std::vector<TH1F*> h_Xd_pt;           //!
+  std::vector<TH1F*> h_Xd_eta;          //!
+  std::vector<TH1F*> h_Xd_phi;          //!
+  std::vector<TH1F*> h_Xd_E;            //!
+  std::vector<TH1F*> h_Xd_M;            //!
+  std::vector<TH1F*> h_Xd_charge;       //!
+  std::vector<TH1F*> h_Xd_nParents;     //!
+  std::vector<TH1F*> h_Xd_parentPdgId;  //!
+  std::vector<TH1F*> h_Xd_parentStatus; //!
+  std::vector<TH1F*> h_Xd_nChildren;    //!
+  std::vector<TH1F*> h_Xd_childPdgId;   //!
+  std::vector<TH1F*> h_Xd_childStatus;  //!
+  std::vector<TH1F*> h_Xd_prodVtx_r;    //!
+  std::vector<TH1F*> h_Xd_decayVtx_r;   //!
+  // dark quark (qd) basics
+  std::vector<TH1F*> h_qd_n;            //!
+  std::vector<TH1F*> h_qd_pt;           //!
+  std::vector<TH1F*> h_qd_eta;          //!
+  std::vector<TH1F*> h_qd_phi;          //!
+  std::vector<TH1F*> h_qd_E;            //!
+  std::vector<TH1F*> h_qd_M;            //!
+  std::vector<TH1F*> h_qd_charge;       //!
+  std::vector<TH1F*> h_qd_nParents;     //!
+  std::vector<TH1F*> h_qd_parentPdgId;  //!
+  std::vector<TH1F*> h_qd_parentStatus; //!
+  std::vector<TH1F*> h_qd_nChildren;    //!
+  std::vector<TH1F*> h_qd_childPdgId;   //!
+  std::vector<TH1F*> h_qd_childStatus;  //!
+  std::vector<TH1F*> h_qd_prodVtx_r;    //!
+  std::vector<TH1F*> h_qd_decayVtx_r;   //!
+  // dark pion (pid) basics
+  std::vector<TH1F*> h_pid_n;            //!
+  std::vector<TH1F*> h_pid_pt;           //!
+  std::vector<TH1F*> h_pid_eta;          //!
+  std::vector<TH1F*> h_pid_phi;          //!
+  std::vector<TH1F*> h_pid_E;            //!
+  std::vector<TH1F*> h_pid_M;            //!
+  std::vector<TH1F*> h_pid_charge;       //!
+  std::vector<TH1F*> h_pid_nParents;     //!
+  std::vector<TH1F*> h_pid_parentPdgId;  //!
+  std::vector<TH1F*> h_pid_parentStatus; //!
+  std::vector<TH1F*> h_pid_nChildren;    //!
+  std::vector<TH1F*> h_pid_childPdgId;   //!
+  std::vector<TH1F*> h_pid_childStatus;  //!
+  std::vector<TH1F*> h_pid_prodVtx_r;    //!
+  std::vector<TH1F*> h_pid_decayVtx_r;   //!
+  // dark rho (rhod) basics
+  std::vector<TH1F*> h_rhod_n;            //!
+  std::vector<TH1F*> h_rhod_pt;           //!
+  std::vector<TH1F*> h_rhod_eta;          //!
+  std::vector<TH1F*> h_rhod_phi;          //!
+  std::vector<TH1F*> h_rhod_E;            //!
+  std::vector<TH1F*> h_rhod_M;            //!
+  std::vector<TH1F*> h_rhod_charge;       //!
+  std::vector<TH1F*> h_rhod_nParents;     //!
+  std::vector<TH1F*> h_rhod_parentPdgId;  //!
+  std::vector<TH1F*> h_rhod_parentStatus; //!
+  std::vector<TH1F*> h_rhod_nChildren;    //!
+  std::vector<TH1F*> h_rhod_childPdgId;   //!
+  std::vector<TH1F*> h_rhod_childStatus;  //!
+  std::vector<TH1F*> h_rhod_prodVtx_r;    //!
+  std::vector<TH1F*> h_rhod_decayVtx_r;   //!
+  // off-diagonal dark pion (offpid) basics
+  std::vector<TH1F*> h_offpid_n;            //!
+  std::vector<TH1F*> h_offpid_pt;           //!
+  std::vector<TH1F*> h_offpid_eta;          //!
+  std::vector<TH1F*> h_offpid_phi;          //!
+  std::vector<TH1F*> h_offpid_E;            //!
+  std::vector<TH1F*> h_offpid_M;            //!
+  std::vector<TH1F*> h_offpid_charge;       //!
+  std::vector<TH1F*> h_offpid_nParents;     //!
+  std::vector<TH1F*> h_offpid_parentPdgId;  //!
+  std::vector<TH1F*> h_offpid_parentStatus; //!
+  std::vector<TH1F*> h_offpid_nChildren;    //!
+  std::vector<TH1F*> h_offpid_childPdgId;   //!
+  std::vector<TH1F*> h_offpid_childStatus;  //!
+  std::vector<TH1F*> h_offpid_prodVtx_r;    //!
+  std::vector<TH1F*> h_offpid_decayVtx_r;   //!
+  // off-diagonal dark rho (offrhod) basics
+  std::vector<TH1F*> h_offrhod_n;            //!
+  std::vector<TH1F*> h_offrhod_pt;           //!
+  std::vector<TH1F*> h_offrhod_eta;          //!
+  std::vector<TH1F*> h_offrhod_phi;          //!
+  std::vector<TH1F*> h_offrhod_E;            //!
+  std::vector<TH1F*> h_offrhod_M;            //!
+  std::vector<TH1F*> h_offrhod_charge;       //!
+  std::vector<TH1F*> h_offrhod_nParents;     //!
+  std::vector<TH1F*> h_offrhod_parentPdgId;  //!
+  std::vector<TH1F*> h_offrhod_parentStatus; //!
+  std::vector<TH1F*> h_offrhod_nChildren;    //!
+  std::vector<TH1F*> h_offrhod_childPdgId;   //!
+  std::vector<TH1F*> h_offrhod_childStatus;  //!
+  std::vector<TH1F*> h_offrhod_prodVtx_r;    //!
+  std::vector<TH1F*> h_offrhod_decayVtx_r;   //!
+  // dark pion + off-diagonal dark pion (allpid) basics
+  std::vector<TH1F*> h_allpid_n;            //!
+  std::vector<TH1F*> h_allpid_pt;           //!
+  std::vector<TH1F*> h_allpid_eta;          //!
+  std::vector<TH1F*> h_allpid_phi;          //!
+  std::vector<TH1F*> h_allpid_E;            //!
+  std::vector<TH1F*> h_allpid_M;            //!
+  std::vector<TH1F*> h_allpid_charge;       //!
+  std::vector<TH1F*> h_allpid_nParents;     //!
+  std::vector<TH1F*> h_allpid_parentPdgId;  //!
+  std::vector<TH1F*> h_allpid_parentStatus; //!
+  std::vector<TH1F*> h_allpid_nChildren;    //!
+  std::vector<TH1F*> h_allpid_childPdgId;   //!
+  std::vector<TH1F*> h_allpid_childStatus;  //!
+  std::vector<TH1F*> h_allpid_prodVtx_r;    //!
+  std::vector<TH1F*> h_allpid_decayVtx_r;   //!
+  // dark rho + off-diagonal dark rho (allrhod) basics
+  std::vector<TH1F*> h_allrhod_n;            //!
+  std::vector<TH1F*> h_allrhod_pt;           //!
+  std::vector<TH1F*> h_allrhod_eta;          //!
+  std::vector<TH1F*> h_allrhod_phi;          //!
+  std::vector<TH1F*> h_allrhod_E;            //!
+  std::vector<TH1F*> h_allrhod_M;            //!
+  std::vector<TH1F*> h_allrhod_charge;       //!
+  std::vector<TH1F*> h_allrhod_nParents;     //!
+  std::vector<TH1F*> h_allrhod_parentPdgId;  //!
+  std::vector<TH1F*> h_allrhod_parentStatus; //!
+  std::vector<TH1F*> h_allrhod_nChildren;    //!
+  std::vector<TH1F*> h_allrhod_childPdgId;   //!
+  std::vector<TH1F*> h_allrhod_childStatus;  //!
+  std::vector<TH1F*> h_allrhod_prodVtx_r;    //!
+  std::vector<TH1F*> h_allrhod_decayVtx_r;   //!
   
   
   // histograms -- secondary vertex

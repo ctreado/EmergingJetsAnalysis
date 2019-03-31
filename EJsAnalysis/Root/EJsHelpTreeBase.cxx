@@ -261,9 +261,9 @@ void EJsHelpTreeBase :: ClearPV ( )
 
 
 
-/*************
+/***************
  * USER EVENTS *
- *************/
+ **************/
 
 void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
 {

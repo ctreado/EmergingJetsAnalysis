@@ -3,13 +3,14 @@
 #include "EJsAnalysis/EJsHistogramManager.h"
 
 
-EJsHistogramManager :: EJsHistogramManager ( std::string name, std::string detailStr, bool debug, bool emtopo, bool pflow ) :
+EJsHistogramManager :: EJsHistogramManager ( std::string name, std::string detailStr, bool debug, bool emtopo, bool pflow, bool truth ) :
   HistogramManager ( name, detailStr )
 {
   m_histoInfoSwitch = new EJsHelperClasses::HistogramInfoSwitch( detailStr );
   m_debug           = debug;
   m_doEMTopoJets    = emtopo;
   m_doPFlowJets     = pflow;
+  m_truthLevelOnly  = truth;
   
   if      ( m_doEMTopoJets ) m_jetStr = "EMTopo";
   else if ( m_doPFlowJets  ) m_jetStr = "PFlow";
@@ -156,6 +157,28 @@ EJsHistogramManager :: EJsHistogramManager ( std::string name, std::string detai
   m_darkJet_truthVtxPt    = new std::vector<float>;
   m_darkJet_truthVtx_dR   = new std::vector<std::vector<float>>;
 
+
+  m_tp_n             = 0;
+  m_tp_pt            = new std::vector<float>;
+  m_tp_eta           = new std::vector<float>;
+  m_tp_phi           = new std::vector<float>;
+  m_tp_E             = new std::vector<float>;
+  m_tp_M             = new std::vector<float>;
+  m_tp_charge        = new std::vector<float>;
+  m_tp_pdgId         = new std::vector<int>;
+  m_tp_status        = new std::vector<int>;
+  m_tp_isDark        = new std::vector<uint8_t>;
+  m_tp_nParents      = new std::vector<int>;
+  m_tp_parent_pdgId  = new std::vector<std::vector<int>>;
+  m_tp_parent_status = new std::vector<std::vector<int>>;
+  m_tp_nChildren     = new std::vector<int>;
+  m_tp_child_pdgId   = new std::vector<std::vector<int>>;
+  m_tp_child_status  = new std::vector<std::vector<int>>;
+  m_tp_hasPVtx       = new std::vector<uint8_t>;
+  m_tp_pVtx_r        = new std::vector<float>;
+  m_tp_hasDVtx       = new std::vector<uint8_t>;
+  m_tp_dVtx_r        = new std::vector<float>;
+
   
   m_secVtx_n             = 0;
   m_secVtx_x             = new std::vector<float>;
@@ -299,6 +322,27 @@ EJsHistogramManager :: ~EJsHistogramManager ()
   delete m_darkJet_truthVtxPt;
   delete m_darkJet_truthVtx_dR;
 
+
+  delete m_tp_pt;
+  delete m_tp_eta;
+  delete m_tp_phi;
+  delete m_tp_E;
+  delete m_tp_M;
+  delete m_tp_charge;
+  delete m_tp_pdgId;
+  delete m_tp_status;
+  delete m_tp_isDark;
+  delete m_tp_nParents;
+  delete m_tp_parent_pdgId;
+  delete m_tp_parent_status;
+  delete m_tp_nChildren;
+  delete m_tp_child_pdgId;
+  delete m_tp_child_status;
+  delete m_tp_hasPVtx;
+  delete m_tp_pVtx_r;
+  delete m_tp_hasDVtx;
+  delete m_tp_dVtx_r;
+
   
   delete m_secVtx_x;
   delete m_secVtx_y;
@@ -350,18 +394,20 @@ StatusCode EJsHistogramManager :: connectEvents ( TTree* tree, bool mc )
   }
   connectBranch<uint8_t>    ( tree, "isMC",                           &m_isMC            );
 
-  connectBranch<uint8_t>    ( tree, "isSignal_" + m_jetStr,           &m_signal          );
-  connectBranch<uint8_t>    ( tree, "isValid_"  + m_jetStr,           &m_valid           );
-  connectBranch<uint8_t>    ( tree, "isCtrl_"   + m_jetStr,           &m_ctrl            );
-  connectBranch<float>      ( tree, "NJetHt_"   + m_jetStr,           &m_njetHt          );
+  if ( !m_truthLevelOnly ) {
+    connectBranch<uint8_t>    ( tree, "isSignal_" + m_jetStr,           &m_signal          );
+    connectBranch<uint8_t>    ( tree, "isValid_"  + m_jetStr,           &m_valid           );
+    connectBranch<uint8_t>    ( tree, "isCtrl_"   + m_jetStr,           &m_ctrl            );
+    connectBranch<float>      ( tree, "NJetHt_"   + m_jetStr,           &m_njetHt          );
   
-  connectBranch<float>      ( tree, "PV_x",                           &m_pv_x            );
-  connectBranch<float>      ( tree, "PV_y",                           &m_pv_y            );
-  connectBranch<float>      ( tree, "PV_z",                           &m_pv_z            );
-  connectBranch<float>      ( tree, "PV_r",                           &m_pv_r            );
-  connectBranch<float>      ( tree, "PV_phi",                         &m_pv_phi          );
-  connectBranch<uint32_t>   ( tree, "PV_nTracks",                     &m_pv_nTrk         );
-  connectBranch<int>        ( tree, "PV_location",                    &m_pv_location     );
+    connectBranch<float>      ( tree, "PV_x",                           &m_pv_x            );
+    connectBranch<float>      ( tree, "PV_y",                           &m_pv_y            );
+    connectBranch<float>      ( tree, "PV_z",                           &m_pv_z            );
+    connectBranch<float>      ( tree, "PV_r",                           &m_pv_r            );
+    connectBranch<float>      ( tree, "PV_phi",                         &m_pv_phi          );
+    connectBranch<uint32_t>   ( tree, "PV_nTracks",                     &m_pv_nTrk         );
+    connectBranch<int>        ( tree, "PV_location",                    &m_pv_location     );
+  }
 
   return StatusCode::SUCCESS;
 }
@@ -572,6 +618,32 @@ StatusCode EJsHistogramManager :: connectTruthDarkJets ( TTree* tree, const std:
 StatusCode EJsHistogramManager :: connectTruthParts ( TTree* tree, const std::string truthName )
 {
   if ( m_debug ) Info( "EJsHistogramManager::connectTruthParts()", "connecting truth particle branches" );
+
+  std::string name = truthName;
+  
+  using namespace EJsHelper;
+  connectBranch<int> ( tree, "n"+name, &m_tp_n );
+
+  using namespace HelperFunctions;
+  connectBranch<float>                ( name, tree, "pt",            &m_tp_pt            );
+  connectBranch<float>                ( name, tree, "eta",           &m_tp_eta           ); 
+  connectBranch<float>                ( name, tree, "phi",           &m_tp_phi           );
+  connectBranch<float>                ( name, tree, "E",             &m_tp_E             );
+  connectBranch<float>                ( name, tree, "M",             &m_tp_M             );
+  connectBranch<float>                ( name, tree, "charge",        &m_tp_charge        );
+  connectBranch<int>                  ( name, tree, "pdgId",         &m_tp_pdgId         );
+  connectBranch<int>                  ( name, tree, "status",        &m_tp_status        );
+  connectBranch<uint8_t>              ( name, tree, "isDark",        &m_tp_isDark        );
+  connectBranch<int>                  ( name, tree, "nParents",      &m_tp_nParents      );
+  connectBranch<std::vector<int>>     ( name, tree, "parent_pdgId",  &m_tp_parent_pdgId  );
+  connectBranch<std::vector<int>>     ( name, tree, "parent_status", &m_tp_parent_status );
+  connectBranch<int>                  ( name, tree, "nChildren",     &m_tp_nChildren     );
+  connectBranch<std::vector<int>>     ( name, tree, "child_pdgId",   &m_tp_child_pdgId   );
+  connectBranch<std::vector<int>>     ( name, tree, "child_status",  &m_tp_child_status  );
+  connectBranch<uint8_t>              ( name, tree, "hasProdVtx",    &m_tp_hasPVtx       );
+  connectBranch<float>                ( name, tree, "prodVtx_r",     &m_tp_pVtx_r        );
+  connectBranch<uint8_t>              ( name, tree, "hasDecayVtx",   &m_tp_hasDVtx       );
+  connectBranch<float>                ( name, tree, "decayVtx_r",    &m_tp_dVtx_r        );
 
   return StatusCode::SUCCESS;
 }
@@ -813,25 +885,41 @@ StatusCode EJsHistogramManager :: initialize ( const std::string jetName, const 
 
     // jets vs mu
     if ( m_histoInfoSwitch ->m_vsMu || m_histoInfoSwitch ->m_vsMu_jet )  {
-      h_jet_n_vs_avgMu             .push_back( book( name, hjet + "_n_vs_avgMu",           "< #mu >", 100, 0,  100, "n jets",                                       15, 0,   15 ) );
-      h_jet_pt_vs_avgMu            .push_back( book( name, hjet + "_pt_vs_avgMu",          "< #mu >", 100, 0,  100, "jet p_{T} [GeV]",                             100, 0, 1500 ) );
-      h_jet_n_vs_actMu             .push_back( book( name, hjet + "_n_vs_actMu",             "#mu",   100, 0,  100, "n jets",                                       15, 0,   15 ) );
-      h_jet_pt_vs_actMu            .push_back( book( name, hjet + "_pt_vs_actMu",            "#mu",   100, 0,  100, "jet p_{T} [GeV]",                             100, 0, 1500 ) );
+      h_jet_n_vs_avgMu             .push_back( book( name, hjet + "_n_vs_avgMu",           "< #mu >", 100, 0,  100,
+						     "n jets",                                         15, 0,   15 ) );
+      h_jet_pt_vs_avgMu            .push_back( book( name, hjet + "_pt_vs_avgMu",          "< #mu >", 100, 0,  100,
+						     "jet p_{T} [GeV]",                               100, 0, 1500 ) );
+      h_jet_n_vs_actMu             .push_back( book( name, hjet + "_n_vs_actMu",             "#mu",   100, 0,  100,
+						     "n jets",                                         15, 0,   15 ) );
+      h_jet_pt_vs_actMu            .push_back( book( name, hjet + "_pt_vs_actMu",            "#mu",   100, 0,  100,
+						     "jet p_{T} [GeV]",                               100, 0, 1500 ) );
       if ( m_histoInfoSwitch ->m_match || m_histoInfoSwitch ->m_match_jet || m_histoInfoSwitch ->m_match_jetTrk ) {
-	h_jet_trkCount_vs_avgMu    .push_back( book( name, hjet + "_trkCount_vs_avgMu",    "< #mu >", 100, 0,  100, "jet-matched track count",                     125, 0,  250 ) );
-	h_jet_trkPt_vs_avgMu       .push_back( book( name, hjet + "_trkPt_vs_avgMu",       "< #mu >", 100, 0,  100, "jet-matched track sum-p_{T} [GeV]",           100, 0, 2500 ) );
-	h_jet_trk_dR_vs_avgMu      .push_back( book( name, hjet + "_trk_dR_vs_avgMu",      "< #mu >", 100, 0,  100, "jet - matched track dR",                      100, 0,  0.4 ) );
-	h_jet_trkCount_vs_actMu    .push_back( book( name, hjet + "_trkCount_vs_actMu",      "#mu",   100, 0,  100, "jet-matched track count",                     125, 0,  250 ) );
-	h_jet_trkPt_vs_actMu       .push_back( book( name, hjet + "_trkPt_vs_actMu",         "#mu",   100, 0,  100, "jet-matched track sum-p_{T} [GeV]",           100, 0, 2500 ) );
-	h_jet_trk_dR_vs_actMu      .push_back( book( name, hjet + "_trk_dR_vs_actMu",        "#mu",   100, 0,  100, "jet - matched track dR",                      100, 0,  0.4 ) );
+	h_jet_trkCount_vs_avgMu    .push_back( book( name, hjet + "_trkCount_vs_avgMu",    "< #mu >", 100, 0,  100,
+						     "jet-matched track count",                       125, 0,  250 ) );
+	h_jet_trkPt_vs_avgMu       .push_back( book( name, hjet + "_trkPt_vs_avgMu",       "< #mu >", 100, 0,  100,
+						     "jet-matched track sum-p_{T} [GeV]",             100, 0, 2500 ) );
+	h_jet_trk_dR_vs_avgMu      .push_back( book( name, hjet + "_trk_dR_vs_avgMu",      "< #mu >", 100, 0,  100,
+						     "jet - matched track dR",                        100, 0,  0.4 ) );
+	h_jet_trkCount_vs_actMu    .push_back( book( name, hjet + "_trkCount_vs_actMu",      "#mu",   100, 0,  100,
+						     "jet-matched track count",                       125, 0,  250 ) );
+	h_jet_trkPt_vs_actMu       .push_back( book( name, hjet + "_trkPt_vs_actMu",         "#mu",   100, 0,  100,
+						     "jet-matched track sum-p_{T} [GeV]",             100, 0, 2500 ) );
+	h_jet_trk_dR_vs_actMu      .push_back( book( name, hjet + "_trk_dR_vs_actMu",        "#mu",   100, 0,  100,
+						     "jet - matched track dR",                        100, 0,  0.4 ) );
       }
       if ( m_histoInfoSwitch ->m_match || m_histoInfoSwitch ->m_match_jet || m_histoInfoSwitch ->m_match_jetVtx ) {
-	h_jet_secVtxCount_vs_avgMu .push_back( book( name, hjet + "_secVtxCount_vs_avgMu", "< #mu >", 100, 0, 100, "jet-matched secondary vertex count",             7, 0,   7 ) );
-	h_jet_secVtxPt_vs_avgMu    .push_back( book( name, hjet + "_secVtxPt_vs_avgMu",    "< #mu >", 100, 0, 100, "jet-matched secondary vertex sum-p_{T} [GeV]", 100, 0, 100 ) );
-	h_jet_secVtx_dR_vs_avgMu   .push_back( book( name, hjet + "_secVtx_dR_vs_avgMu",   "< #mu >", 100, 0, 100, "jet - matched secondary vertex dR",            100, 0, 0.4 ) );
-	h_jet_secVtxCount_vs_actMu .push_back( book( name, hjet + "_secVtxCount_vs_actMu",   "#mu",   100, 0, 100, "jet-matched secondary vertex count",             7, 0,   7 ) );
-	h_jet_secVtxPt_vs_actMu    .push_back( book( name, hjet + "_secVtxPt_vs_actMu",      "#mu",   100, 0, 100, "jet-matched secondary vertex sum-p_{T} [GeV]", 100, 0, 100 ) );
-	h_jet_secVtx_dR_vs_actMu   .push_back( book( name, hjet + "_secVtx_dR_vs_actMu",     "#mu",   100, 0, 100, "jet - matched secondary vertex dR",            100, 0, 0.4 ) );
+	h_jet_secVtxCount_vs_avgMu .push_back( book( name, hjet + "_secVtxCount_vs_avgMu", "< #mu >", 100, 0, 100,
+						     "jet-matched secondary vertex count",              7, 0,   7 ) );
+	h_jet_secVtxPt_vs_avgMu    .push_back( book( name, hjet + "_secVtxPt_vs_avgMu",    "< #mu >", 100, 0, 100,
+						     "jet-matched secondary vertex sum-p_{T} [GeV]",  100, 0, 100 ) );
+	h_jet_secVtx_dR_vs_avgMu   .push_back( book( name, hjet + "_secVtx_dR_vs_avgMu",   "< #mu >", 100, 0, 100,
+						     "jet - matched secondary vertex dR",             100, 0, 0.4 ) );
+	h_jet_secVtxCount_vs_actMu .push_back( book( name, hjet + "_secVtxCount_vs_actMu",   "#mu",   100, 0, 100,
+						     "jet-matched secondary vertex count",              7, 0,   7 ) );
+	h_jet_secVtxPt_vs_actMu    .push_back( book( name, hjet + "_secVtxPt_vs_actMu",      "#mu",   100, 0, 100,
+						     "jet-matched secondary vertex sum-p_{T} [GeV]",  100, 0, 100 ) );
+	h_jet_secVtx_dR_vs_actMu   .push_back( book( name, hjet + "_secVtx_dR_vs_actMu",     "#mu",   100, 0, 100,
+						     "jet - matched secondary vertex dR",             100, 0, 0.4 ) );
       }
     }
 
@@ -1070,7 +1158,139 @@ StatusCode EJsHistogramManager :: initialize ( const std::string jetName, const 
 	h_darkJet_n_vs_actMu  .push_back( book( name, "darkJet_n_vs_actMu",    "#mu",   100, 0, 100, "n dark jets",           50, 0,   50 ) );
 	h_darkJet_pt_vs_actMu .push_back( book( name, "darkJet_pt_vs_actMu",   "#mu",   100, 0, 100, "dark jet p_{T} [GeV]", 100, 0, 1500 ) );
       }
-    }
+    } // end if mc (truth (dark) jets)
+
+
+    if ( mc ) {
+      // heavy scalar mediator (Xd) basics
+      h_Xd_n                 .push_back( book( name, "Xd_n",                 "n scalar mediators",                                    5,       0,       5 ) );
+      h_Xd_pt                .push_back( book( name, "Xd_pt",                "scalar mediator p_{T} [GeV]",                         100,       0,    2500 ) );
+      h_Xd_eta               .push_back( book( name, "Xd_eta",               "scalar mediator eta",                                 100,      -5,       5 ) );
+      h_Xd_phi               .push_back( book( name, "Xd_phi",               "scalar mediator phi",                                 100,    -3.5,     3.5 ) );
+      h_Xd_E                 .push_back( book( name, "Xd_E",                 "scalar mediator energy [GeV]",                        100,       0,    4000 ) );
+      h_Xd_M                 .push_back( book( name, "Xd_M",                 "scalar mediator mass [GeV]",                          100,       0,    2000 ) );
+      h_Xd_charge            .push_back( book( name, "Xd_charge",            "scalar mediator charge",                              100,      -1,       1 ) );
+      h_Xd_nParents          .push_back( book( name, "Xd_nParents",          "n scalar mediator parents",                             5,       0,       5 ) );
+      h_Xd_parentPdgId       .push_back( book( name, "Xd_parentPdgId",       "scalar mediator parent pdgId",                          5, 4900000, 4900005 ) );
+      h_Xd_parentStatus      .push_back( book( name, "Xd_parentStatus",      "scalar mediator parent status",                       100,       0,     100 ) );
+      h_Xd_nChildren         .push_back( book( name, "Xd_nChildren",         "n scalar mediator children",                            5,       0,       5 ) );
+      h_Xd_childPdgId        .push_back( book( name, "Xd_childPdgId",        "scalar mediator child pdgId",                         100,       0, 4900105 ) );
+      h_Xd_childStatus       .push_back( book( name, "Xd_childStatus",       "scalar mediator child status",                        100,       0,     100 ) );
+      h_Xd_prodVtx_r         .push_back( book( name, "Xd_prodVtx_r",         "scalar mediator production vertex r-pos [mm]",        100,       0,       1 ) );
+      h_Xd_decayVtx_r        .push_back( book( name, "Xd_decayVtx_r",        "scalar mediator decay vertex r-pos [mm]",             100,       0,       1 ) );
+      // dark quark (qd) basics
+      h_qd_n                 .push_back( book( name, "qd_n",                 "n dark quarks",                                         5,       0,       5 ) );
+      h_qd_pt                .push_back( book( name, "qd_pt",                "dark quark p_{T} [GeV]",                              100,       0,    1500 ) );
+      h_qd_eta               .push_back( book( name, "qd_eta",               "dark quark eta",                                      100,      -5,       5 ) );
+      h_qd_phi               .push_back( book( name, "qd_phi",               "dark quark phi",                                      100,    -3.5,     3.5 ) );
+      h_qd_E                 .push_back( book( name, "qd_E",                 "dark quark energy [GeV]",                             100,       0,    2000 ) );
+      h_qd_M                 .push_back( book( name, "qd_M",                 "dark quark mass [GeV]",                               100,       0,      50 ) );
+      h_qd_charge            .push_back( book( name, "qd_charge",            "dark quark charge",                                   100,      -1,       1 ) );
+      h_qd_nParents          .push_back( book( name, "qd_nParents",          "n dark quark parents",                                  5,       0,       5 ) );
+      h_qd_parentPdgId       .push_back( book( name, "qd_parentPdgId",       "dark quarks parent pdgId",                              5, 4900100, 4900105 ) );
+      h_qd_parentStatus      .push_back( book( name, "qd_parentStatus",      "dark quark parent status",                            100,       0,     100 ) );
+      h_qd_nChildren         .push_back( book( name, "qd_nChildren",         "n dark quark children",                               100,       0,     100 ) );
+      h_qd_childPdgId        .push_back( book( name, "qd_childPdgId",        "dark quark child pdgId",                              125, 4900100, 4900225 ) );
+      h_qd_childStatus       .push_back( book( name, "qd_childStatus",       "dark quark child status",                             100,       0,     100 ) );
+      h_qd_prodVtx_r         .push_back( book( name, "qd_prodVtx_r",         "dark quark production vertex r-pos [mm]",             100,       0,       1 ) );
+      h_qd_decayVtx_r        .push_back( book( name, "qd_decayVtx_r",        "dark quark decay vertex r-pos [mm]",                  100,       0,       1 ) );
+      // dark pion (pid) basics
+      h_pid_n                .push_back( book( name, "pid_n",                "n dark pions",                                        150,       0,     150 ) );
+      h_pid_pt               .push_back( book( name, "pid_pt",               "dark pion p_{T} [GeV]",                               100,       0,     350 ) );
+      h_pid_eta              .push_back( book( name, "pid_eta",              "dark pion eta",                                       100,      -5,       5 ) );
+      h_pid_phi              .push_back( book( name, "pid_phi",              "dark pion phi",                                       100,    -3.5,     3.5 ) );
+      h_pid_E                .push_back( book( name, "pid_E",                "dark pion energy [GeV]",                              100,       0,     500 ) );
+      h_pid_M                .push_back( book( name, "pid_M",                "dark pion mass [GeV]",                                100,       0,      25 ) );
+      h_pid_charge           .push_back( book( name, "pid_charge",           "dark pion charge",                                    100,      -1,       1 ) );
+      h_pid_nParents         .push_back( book( name, "pid_nParents",         "n dark pion parents",                                   5,       0,       5 ) );
+      h_pid_parentPdgId      .push_back( book( name, "pid_parentPdgId",      "dark pion parent pdgId",                              125, 4900000, 4900125 ) );
+      h_pid_parentStatus     .push_back( book( name, "pid_parentStatus",     "dark pion parent status",                             100,       0,     100 ) );
+      h_pid_nChildren        .push_back( book( name, "pid_nChildren",        "n dark pion children",                                  5,       0,       5 ) );
+      h_pid_childPdgId       .push_back( book( name, "pid_childPdgId",       "dark pion child pdgId",                                 5,       0,       5 ) );
+      h_pid_childStatus      .push_back( book( name, "pid_childStatus",      "dark pion child status",                              100,       0,     100 ) );
+      h_pid_prodVtx_r        .push_back( book( name, "pid_prodVtx_r",        "dark pion production vertex r-pos [mm]",              100,       0,       1 ) );
+      h_pid_decayVtx_r       .push_back( book( name, "pid_decayVtx_r",       "dark pion decay vertex r-pos [mm]",                   100,       0,    2500 ) );
+      // off-diagonal dark pion (offpid) basics
+      h_offpid_n             .push_back( book( name, "offpid_n",             "n off-diagaonal dark pions",                          150,       0,     150 ) );
+      h_offpid_pt            .push_back( book( name, "offpid_pt",            "off-diagonal dark pion p_{T} [GeV]",                  100,       0,     350 ) );
+      h_offpid_eta           .push_back( book( name, "offpid_eta",           "off-diagonal dark pion eta",                          100,      -5,       5 ) );
+      h_offpid_phi           .push_back( book( name, "offpid_phi",           "off-diagonal dark pion phi",                          100,    -3.5,     3.5 ) );
+      h_offpid_E             .push_back( book( name, "offpid_E",             "off-diagonal dark pion energy [GeV]",                 100,       0,     500 ) );
+      h_offpid_M             .push_back( book( name, "offpid_M",             "off-diagonal dark pion mass [GeV]",                   100,       0,      25 ) );
+      h_offpid_charge        .push_back( book( name, "offpid_charge",        "off-diagonal dark pion charge",                       100,    -1.5,     1.5 ) );
+      h_offpid_nParents      .push_back( book( name, "offpid_nParents",      "off-diagonal n dark pion parents",                    100,       0,     100 ) );
+      h_offpid_parentPdgId   .push_back( book( name, "offpid_parentPdgId",   "off-diagonal dark pion parent pdgId",                 225, 4900000, 4900225 ) );
+      h_offpid_parentStatus  .push_back( book( name, "offpid_parentStatus",  "off-diagonal dark pion parent status",                100,       0,     100 ) );
+      h_offpid_nChildren     .push_back( book( name, "offpid_nChildren",     "n off-diagonal dark pion children",                     5,       0,       5 ) );
+      h_offpid_childPdgId    .push_back( book( name, "offpid_childPdgId",    "off-diagonal dark pion child pdgId",                    5,       0,       5 ) );
+      h_offpid_childStatus   .push_back( book( name, "offpid_childStatus",   "off-diagonal dark pion child status",                 100,       0,     100 ) );
+      h_offpid_prodVtx_r     .push_back( book( name, "offpid_prodVtx_r",     "off-diagonal dark pion production vertex r-pos [mm]", 100,       0,       1 ) );
+      h_offpid_decayVtx_r    .push_back( book( name, "offpid_decayVtx_r",    "off-diagonal dark pion decay vertex r-pos [mm]",      100,       0,    2500 ) );
+      // inclusive (standard + off-diagonal) dark pion (allpid) basics
+      h_allpid_n             .push_back( book( name, "allpid_n",             "n inclusive dark pions",                              150,       0,     150 ) );
+      h_allpid_pt            .push_back( book( name, "allpid_pt",            "inclusive dark pion p_{T} [GeV]",                     100,       0,     350 ) );
+      h_allpid_eta           .push_back( book( name, "allpid_eta",           "inclusive dark pion eta",                             100,      -5,       5 ) );
+      h_allpid_phi           .push_back( book( name, "allpid_phi",           "inclusive dark pion phi",                             100,    -3.5,     3.5 ) );
+      h_allpid_E             .push_back( book( name, "allpid_E",             "inclusive dark pion energy [GeV]",                    100,       0,     500 ) );
+      h_allpid_M             .push_back( book( name, "allpid_M",             "inclusive dark pion mass [GeV]",                      100,       0,      25 ) );
+      h_allpid_charge        .push_back( book( name, "allpid_charge",        "inclusive dark pion charge",                          100,    -1.5,     1.5 ) );
+      h_allpid_nParents      .push_back( book( name, "allpid_nParents",      "n inclusive dark pion parents",                       100,       0,     100 ) );
+      h_allpid_parentPdgId   .push_back( book( name, "allpid_parentPdgId",   "inclusive dark pion parent pdgId",                    225, 4900000, 4900225 ) );
+      h_allpid_parentStatus  .push_back( book( name, "allpid_parentStatus",  "inclusive dark pion parent status",                   100,       0,     100 ) );
+      h_allpid_nChildren     .push_back( book( name, "allpid_nChildren",     "n inclusive dark pion children",                        5,       0,       5 ) );
+      h_allpid_childPdgId    .push_back( book( name, "allpid_childPdgId",    "inclusive dark pion child pdgId",                       5,       0,       5 ) );
+      h_allpid_childStatus   .push_back( book( name, "allpid_childStatus",   "inclusive dark pion child status",                    100,       0,     100 ) );
+      h_allpid_prodVtx_r     .push_back( book( name, "allpid_prodVtx_r",     "inclusive dark pion production vertex r-pos [mm]",    100,       0,       1 ) );
+      h_allpid_decayVtx_r    .push_back( book( name, "allpid_decayVtx_r",    "inclusive dark pion decay vertex r-pos [mm]",         100,       0,    2500 ) );
+      // dark rho (rhod) basics
+      h_rhod_n               .push_back( book( name, "rhod_n",               "n dark rhos",                                          50,       0,      50 ) );
+      h_rhod_pt              .push_back( book( name, "rhod_pt",              "dark rho p_{T} [GeV]",                                100,       0,     500 ) );
+      h_rhod_eta             .push_back( book( name, "rhod_eta",             "dark rho eta",                                        100,      -5,       5 ) );
+      h_rhod_phi             .push_back( book( name, "rhod_phi",             "dark rho phi",                                        100,    -3.5,     3.5 ) );
+      h_rhod_E               .push_back( book( name, "rhod_E",               "dark rho energy [GeV]",                               100,       0,     750 ) );
+      h_rhod_M               .push_back( book( name, "rhod_M",               "dark rho mass [GeV]",                                 100,       0,     100 ) );
+      h_rhod_charge          .push_back( book( name, "rhod_charge",          "dark rho charge",                                     100,      -1,       1 ) );
+      h_rhod_nParents        .push_back( book( name, "rhod_nParents",        "n dark rho parents",                                  100,       0,     100 ) );
+      h_rhod_parentPdgId     .push_back( book( name, "rhod_parentPdgId",     "dark rho parent pdgId",                               125, 4900000, 4900125 ) );
+      h_rhod_parentStatus    .push_back( book( name, "rhod_parentStatus",    "dark rho parent status",                              100,       0,     100 ) );
+      h_rhod_nChildren       .push_back( book( name, "rhod_nChildren",       "n dark rho children",                                  15,       0,      15 ) );
+      h_rhod_childPdgId      .push_back( book( name, "rhod_childPdgId",      "dark rho child pdgId",                                100,       0, 4900125 ) );
+      h_rhod_childStatus     .push_back( book( name, "rhod_childStatus",     "dark rho child status",                               100,       0,     100 ) );
+      h_rhod_prodVtx_r       .push_back( book( name, "rhod_prodVtx_r",       "dark rho production vertex r-pos [mm]",               100,       0,       1 ) );
+      h_rhod_decayVtx_r      .push_back( book( name, "rhod_decayVtx_r",      "dark rho decay vertex r-pos [mm]",                    100,       0,       1 ) );
+      // off-diagonal dark rho (offrhod) basics
+      h_offrhod_n            .push_back( book( name, "offrhod_n",            "n off-diagaonal dark rhos",                            50,       0,      50 ) );
+      h_offrhod_pt           .push_back( book( name, "offrhod_pt",           "off-diagonal dark rho p_{T} [GeV]",                   100,       0,     500 ) );
+      h_offrhod_eta          .push_back( book( name, "offrhod_eta",          "off-diagonal dark rho eta",                           100,      -5,       5 ) );
+      h_offrhod_phi          .push_back( book( name, "offrhod_phi",          "off-diagonal dark rho phi",                           100,    -3.5,     3.5 ) );
+      h_offrhod_E            .push_back( book( name, "offrhod_E",            "off-diagonal dark rho energy [GeV]",                  100,       0,     750 ) );
+      h_offrhod_M            .push_back( book( name, "offrhod_M",            "off-diagonal dark rho mass [GeV]",                    100,       0,     100 ) );
+      h_offrhod_charge       .push_back( book( name, "offrhod_charge",       "off-diagonal dark rho charge",                        100,    -1.5,     1.5 ) );
+      h_offrhod_nParents     .push_back( book( name, "offrhod_nParents",     "off-diagonal n dark rho parents",                     100,       0,     100 ) );
+      h_offrhod_parentPdgId  .push_back( book( name, "offrhod_parentPdgId",  "off-diagonal dark rho parent pdgId",                  225, 4900000, 4900225 ) );
+      h_offrhod_parentStatus .push_back( book( name, "offrhod_parentStatus", "off-diagonal dark rho parent status",                 100,       0,     100 ) );
+      h_offrhod_nChildren    .push_back( book( name, "offrhod_nChildren",    "n off-diagonal dark rho children",                     15,       0,      15 ) );
+      h_offrhod_childPdgId   .push_back( book( name, "offrhod_childPdgId",   "off-diagonal dark rho child pdgId",                   100,       0, 4900225 ) );
+      h_offrhod_childStatus  .push_back( book( name, "offrhod_childStatus",  "off-diagonal dark rho child status",                  100,       0,     100 ) );
+      h_offrhod_prodVtx_r    .push_back( book( name, "offrhod_prodVtx_r",    "off-diagonal dark rho production vertex r-pos [mm]",  100,       0,       1 ) );
+      h_offrhod_decayVtx_r   .push_back( book( name, "offrhod_decayVtx_r",   "off-diagonal dark rho decay vertex r-pos [mm]",       100,       0,       1 ) );
+      // inclusive (standard + off-diagonal) dark rho (allrhod) basics
+      h_allrhod_n            .push_back( book( name, "allrhod_n",            "n inclusive dark rhos",                                50,       0,      50 ) );
+      h_allrhod_pt           .push_back( book( name, "allrhod_pt",           "inclusive dark rho p_{T} [GeV]",                      100,       0,     500 ) );
+      h_allrhod_eta          .push_back( book( name, "allrhod_eta",          "inclusive dark rho eta",                              100,      -5,       5 ) );
+      h_allrhod_phi          .push_back( book( name, "allrhod_phi",          "inclusive dark rho phi",                              100,    -3.5,     3.5 ) );
+      h_allrhod_E            .push_back( book( name, "allrhod_E",            "inclusive dark rho energy [GeV]",                     100,       0,     750 ) );
+      h_allrhod_M            .push_back( book( name, "allrhod_M",            "inclusive dark rho mass [GeV]",                       100,       0,     100 ) );
+      h_allrhod_charge       .push_back( book( name, "allrhod_charge",       "inclusive dark rho charge",                           100,    -1.5,     1.5 ) );
+      h_allrhod_nParents     .push_back( book( name, "allrhod_nParents",     "n inclusive dark rho parents",                        100,       0,     100 ) );
+      h_allrhod_parentPdgId  .push_back( book( name, "allrhod_parentPdgId",  "inclusive dark rho parent pdgId",                     225, 4900000, 4900225 ) );
+      h_allrhod_parentStatus .push_back( book( name, "allrhod_parentStatus", "inclusive dark rho parent status",                    100,       0,     100 ) );
+      h_allrhod_nChildren    .push_back( book( name, "allrhod_nChildren",    "n inclusive dark rho children",                        15,       0,      15 ) );
+      h_allrhod_childPdgId   .push_back( book( name, "allrhod_childPdgId",   "inclusive dark rho child pdgId",                      100,       0, 4900225 ) );
+      h_allrhod_childStatus  .push_back( book( name, "allrhod_childStatus",  "inclusive dark rho child status",                     100,       0,     100 ) );
+      h_allrhod_prodVtx_r    .push_back( book( name, "allrhod_prodVtx_r",    "inclusive dark rho production vertex r-pos [mm]",     100,       0,       1 ) );
+      h_allrhod_decayVtx_r   .push_back( book( name, "allrhod_decayVtx_r",   "inclusive dark rho decay vertex r-pos [mm]",          100,       0,       1 ) );
+    } // end if mc (truth particles)
 
 
     // secondary vertex basics
@@ -1161,32 +1381,58 @@ StatusCode EJsHistogramManager :: initialize ( const std::string jetName, const 
       std::vector<TH1F*> h_ntrk_ntrkAssoc;
       for ( int i = 1; i != m_numVtxTrk; ++i ) {
 	std::string ntrk = std::to_string(i+1);
-	h_ntrk_n         .push_back( book( name, ( "secVtx" + ntrk + "trk_n"               ), ( "n " + ntrk + "-track secondary vertices"                       ),  20,     0,   20 ) );
-	h_ntrk_x         .push_back( book( name, ( "secVtx" + ntrk + "trk_x"               ), ( ntrk + "-track secondary vertex x-pos [mm]"                     ), 100,  -500,  500 ) );
-	h_ntrk_y         .push_back( book( name, ( "secVtx" + ntrk + "trk_y"               ), ( ntrk + "-track secondary vertex y-pos [mm]"                     ), 100,  -500,  500 ) );
-	h_ntrk_z         .push_back( book( name, ( "secVtx" + ntrk + "trk_z"               ), ( ntrk + "-track secondary vertex z-pos [mm]"                     ), 100, -1000, 1000 ) );
-	h_ntrk_r         .push_back( book( name, ( "secVtx" + ntrk + "trk_r"               ), ( ntrk + "-track secondary vertex r-pos [mm]"                     ), 100,     0,  300 ) );
-	h_ntrk_r_l       .push_back( book( name, ( "secVtx" + ntrk + "trk_r_l"             ), ( ntrk + "-track secondary vertex r-pos [mm]"                     ), 100,     0,  500 ) );
-	h_ntrk_r_s       .push_back( book( name, ( "secVtx" + ntrk + "trk_r_s"             ), ( ntrk + "-track secondary vertex r-pos [mm]"                     ), 100,     0,  100 ) );
-	h_ntrk_pt        .push_back( book( name, ( "secVtx" + ntrk + "trk_pt"              ), ( ntrk + "-track secondary vertex p_{T} [GeV]"                    ), 100,     0,  100 ) );
-	h_ntrk_eta       .push_back( book( name, ( "secVtx" + ntrk + "trk_eta"             ), ( ntrk + "-track secondary vertex eta"                            ), 100,    -5,    5 ) );
-	h_ntrk_phi       .push_back( book( name, ( "secVtx" + ntrk + "trk_phi"             ), ( ntrk + "-track secondary vertex phi"                            ), 100,  -3.5,  3.5 ) );
-	h_ntrk_mass      .push_back( book( name, ( "secVtx" + ntrk + "trk_mass"            ), ( ntrk + "-track secondary vertex mass [GeV]"                     ), 100,     0,   50 ) );
-	h_ntrk_mass_l    .push_back( book( name, ( "secVtx" + ntrk + "trk_mass_l"          ), ( ntrk + "-track secondary vertex mass [GeV]"                     ), 100,     0,  100 ) );
-	h_ntrk_mass_s    .push_back( book( name, ( "secVtx" + ntrk + "trk_mass_s"          ), ( ntrk + "-track secondary vertex mass [GeV]"                     ), 100,     0,   25 ) );
-	h_ntrk_massNon   .push_back( book( name, ( "secVtx" + ntrk + "trk_mass_nonAssoc"   ), ( ntrk + "-track secondary vertex mass (excl. assoc. trks) [GeV]" ), 100,     0,   50 ) );
-	h_ntrk_massNon_l .push_back( book( name, ( "secVtx" + ntrk + "trk_mass_nonAssoc_l" ), ( ntrk + "-track secondary vertex mass (excl. assoc. trks) [GeV]" ), 100,     0,  100 ) );
-	h_ntrk_massNon_s .push_back( book( name, ( "secVtx" + ntrk + "trk_mass_nonAssoc_s" ), ( ntrk + "-track secondary vertex mass (excl. assoc. trks) [GeV]" ), 100,     0,   25 ) );
-	h_ntrk_chi2      .push_back( book( name, ( "secVtx" + ntrk + "trk_chi2"            ), ( ntrk + "-track secondary vertex chi2 / DoF"                     ), 100,     0,   20 ) );
-	h_ntrk_direction .push_back( book( name, ( "secVtx" + ntrk + "trk_direction"       ), ( ntrk + "-track secondary vertex direction"                      ), 100,  -1.1,  1.1 ) );
-	h_ntrk_charge    .push_back( book( name, ( "secVtx" + ntrk + "trk_charge"          ), ( ntrk + "-track secondary vertex charge"                         ), 100,    -5,    5 ) );
-	h_ntrk_Ht        .push_back( book( name, ( "secVtx" + ntrk + "trk_Ht"              ), ( ntrk + "-track secondary vertex scalar sum-p_{T} [GeV]"         ), 100,     0,  100 ) );
-	h_ntrk_minOpAng  .push_back( book( name, ( "secVtx" + ntrk + "trk_minOpAng"        ), ( ntrk + "-track secondary vertex minimum opening angle"          ), 100,  -1.1,  1.1 ) );
-	h_ntrk_maxOpAng  .push_back( book( name, ( "secVtx" + ntrk + "trk_maxOpAng"        ), ( ntrk + "-track secondary vertex maximum opening angle"          ), 100,  -1.1,  1.1 ) );
-	h_ntrk_mind0     .push_back( book( name, ( "secVtx" + ntrk + "trk_mind0"           ), ( ntrk + "-track secondary vertex minimum track d0"               ), 100,     0,  250 ) );
-	h_ntrk_maxd0     .push_back( book( name, ( "secVtx" + ntrk + "trk_maxd0"           ), ( ntrk + "-track secondary vertex maximum track d0"               ), 100,     0,  250 ) );
-	h_ntrk_ntrkSel   .push_back( book( name, ( "secVtx" + ntrk + "trk_ntrk_sel"        ), ( ntrk + "-track secondary vertex n selected tracks"              ),  10,     0,   10 ) );
-	h_ntrk_ntrkAssoc .push_back( book( name, ( "secVtx" + ntrk + "trk_ntrk_assoc"      ), ( ntrk + "-track secondary vertex n associated tracks"            ),  10,     0,   10 ) );
+	h_ntrk_n         .push_back( book( name, ( "secVtx" + ntrk + "trk_n"               ),
+					   ( "n " + ntrk + "-track secondary vertices"                       ),  20,     0,   20 ) );
+	h_ntrk_x         .push_back( book( name, ( "secVtx" + ntrk + "trk_x"               ),
+					   ( ntrk + "-track secondary vertex x-pos [mm]"                     ), 100,  -500,  500 ) );
+	h_ntrk_y         .push_back( book( name, ( "secVtx" + ntrk + "trk_y"               ),
+					   ( ntrk + "-track secondary vertex y-pos [mm]"                     ), 100,  -500,  500 ) );
+	h_ntrk_z         .push_back( book( name, ( "secVtx" + ntrk + "trk_z"               ),
+					   ( ntrk + "-track secondary vertex z-pos [mm]"                     ), 100, -1000, 1000 ) );
+	h_ntrk_r         .push_back( book( name, ( "secVtx" + ntrk + "trk_r"               ),
+					   ( ntrk + "-track secondary vertex r-pos [mm]"                     ), 100,     0,  300 ) );
+	h_ntrk_r_l       .push_back( book( name, ( "secVtx" + ntrk + "trk_r_l"             ),
+					   ( ntrk + "-track secondary vertex r-pos [mm]"                     ), 100,     0,  500 ) );
+	h_ntrk_r_s       .push_back( book( name, ( "secVtx" + ntrk + "trk_r_s"             ),
+					   ( ntrk + "-track secondary vertex r-pos [mm]"                     ), 100,     0,  100 ) );
+	h_ntrk_pt        .push_back( book( name, ( "secVtx" + ntrk + "trk_pt"              ),
+					   ( ntrk + "-track secondary vertex p_{T} [GeV]"                    ), 100,     0,  100 ) );
+	h_ntrk_eta       .push_back( book( name, ( "secVtx" + ntrk + "trk_eta"             ),
+					   ( ntrk + "-track secondary vertex eta"                            ), 100,    -5,    5 ) );
+	h_ntrk_phi       .push_back( book( name, ( "secVtx" + ntrk + "trk_phi"             ),
+					   ( ntrk + "-track secondary vertex phi"                            ), 100,  -3.5,  3.5 ) );
+	h_ntrk_mass      .push_back( book( name, ( "secVtx" + ntrk + "trk_mass"            ),
+					   ( ntrk + "-track secondary vertex mass [GeV]"                     ), 100,     0,   50 ) );
+	h_ntrk_mass_l    .push_back( book( name, ( "secVtx" + ntrk + "trk_mass_l"          ),
+					   ( ntrk + "-track secondary vertex mass [GeV]"                     ), 100,     0,  100 ) );
+	h_ntrk_mass_s    .push_back( book( name, ( "secVtx" + ntrk + "trk_mass_s"          ),
+					   ( ntrk + "-track secondary vertex mass [GeV]"                     ), 100,     0,   25 ) );
+	h_ntrk_massNon   .push_back( book( name, ( "secVtx" + ntrk + "trk_mass_nonAssoc"   ),
+					   ( ntrk + "-track secondary vertex mass (excl. assoc. trks) [GeV]" ), 100,     0,   50 ) );
+	h_ntrk_massNon_l .push_back( book( name, ( "secVtx" + ntrk + "trk_mass_nonAssoc_l" ),
+					   ( ntrk + "-track secondary vertex mass (excl. assoc. trks) [GeV]" ), 100,     0,  100 ) );
+	h_ntrk_massNon_s .push_back( book( name, ( "secVtx" + ntrk + "trk_mass_nonAssoc_s" ),
+					   ( ntrk + "-track secondary vertex mass (excl. assoc. trks) [GeV]" ), 100,     0,   25 ) );
+	h_ntrk_chi2      .push_back( book( name, ( "secVtx" + ntrk + "trk_chi2"            ),
+					   ( ntrk + "-track secondary vertex chi2 / DoF"                     ), 100,     0,   20 ) );
+	h_ntrk_direction .push_back( book( name, ( "secVtx" + ntrk + "trk_direction"       ),
+					   ( ntrk + "-track secondary vertex direction"                      ), 100,  -1.1,  1.1 ) );
+	h_ntrk_charge    .push_back( book( name, ( "secVtx" + ntrk + "trk_charge"          ),
+					   ( ntrk + "-track secondary vertex charge"                         ), 100,    -5,    5 ) );
+	h_ntrk_Ht        .push_back( book( name, ( "secVtx" + ntrk + "trk_Ht"              ),
+					   ( ntrk + "-track secondary vertex scalar sum-p_{T} [GeV]"         ), 100,     0,  100 ) );
+	h_ntrk_minOpAng  .push_back( book( name, ( "secVtx" + ntrk + "trk_minOpAng"        ),
+					   ( ntrk + "-track secondary vertex minimum opening angle"          ), 100,  -1.1,  1.1 ) );
+	h_ntrk_maxOpAng  .push_back( book( name, ( "secVtx" + ntrk + "trk_maxOpAng"        ),
+					   ( ntrk + "-track secondary vertex maximum opening angle"          ), 100,  -1.1,  1.1 ) );
+	h_ntrk_mind0     .push_back( book( name, ( "secVtx" + ntrk + "trk_mind0"           ),
+					   ( ntrk + "-track secondary vertex minimum track d0"               ), 100,     0,  250 ) );
+	h_ntrk_maxd0     .push_back( book( name, ( "secVtx" + ntrk + "trk_maxd0"           ),
+					   ( ntrk + "-track secondary vertex maximum track d0"               ), 100,     0,  250 ) );
+	h_ntrk_ntrkSel   .push_back( book( name, ( "secVtx" + ntrk + "trk_ntrk_sel"        ),
+					   ( ntrk + "-track secondary vertex n selected tracks"              ),  10,     0,   10 ) );
+	h_ntrk_ntrkAssoc .push_back( book( name, ( "secVtx" + ntrk + "trk_ntrk_assoc"      ),
+					   ( ntrk + "-track secondary vertex n associated tracks"            ),  10,     0,   10 ) );
       }
       h_secVtxNtrk_n               .push_back( h_ntrk_n         );
       h_secVtxNtrk_x               .push_back( h_ntrk_x         );
@@ -1218,24 +1464,42 @@ StatusCode EJsHistogramManager :: initialize ( const std::string jetName, const 
 
     // secondary vertices vs mu
     if ( m_histoInfoSwitch ->m_vsMu || m_histoInfoSwitch ->m_vsMu_vtx ) {
-      h_secVtx_n_vs_avgMu          .push_back( book( name, "secVtx_n_vs_avgMu",          "< #mu >", 100, 0, 100, "n secondary vertices",                 20,    0,  20 ) );
-      h_secVtx_r_vs_avgMu          .push_back( book( name, "secVtx_r_vs_avgMu",          "< #mu >", 100, 0, 100, "secondary vertex r-pos [mm]",         100,    0, 300 ) );
-      h_secVtx_pt_vs_avgMu         .push_back( book( name, "secVtx_pt_vs_avgMu",         "< #mu >", 100, 0, 100, "secondary vertex p_{T} [GeV]",        100,    0, 100 ) );
-      h_secVtx_eta_vs_avgMu        .push_back( book( name, "secVtx_eta_vs_avgMu",        "< #mu >", 100, 0, 100, "secondary vertex eta",                100,   -5,   5 ) );
-      h_secVtx_phi_vs_avgMu        .push_back( book( name, "secVtx_phi_vs_avgMu",        "< #mu >", 100, 0, 100, "secondary vertex phi",                100, -3.5, 3.5 ) );
-      h_secVtx_mass_vs_avgMu       .push_back( book( name, "secVtx_mass_vs_avgMu",       "< #mu >", 100, 0, 100, "secondary vertex mass [GeV]",         100,    0,  50 ) );
-      h_secVtx_ntrk_vs_avgMu       .push_back( book( name, "secVtx_ntrk_vs_avgMu",       "< #mu >", 100, 0, 100, "secondary vertex n tracks",            10,    2,  12 ) );
-      h_secVtx_ntrk_sel_vs_avgMu   .push_back( book( name, "secVtx_ntrk_sel_vs_avgMu",   "< #mu >", 100, 0, 100, "secondary vertex n selected tracks",   10,    0,  10 ) );
-      h_secVtx_ntrk_assoc_vs_avgMu .push_back( book( name, "secVtx_ntrk_assoc_vs_avgMu", "< #mu >", 100, 0, 100, "secondary vertex n associated tracks", 10,    0,  10 ) );
-      h_secVtx_n_vs_actMu          .push_back( book( name, "secVtx_n_vs_actMu",            "#mu",   100, 0, 100, "n secondary vertices",                 20,    0,  20 ) );
-      h_secVtx_r_vs_actMu          .push_back( book( name, "secVtx_r_vs_actMu",            "#mu",   100, 0, 100, "secondary vertex r-pos [mm]",         100,    0, 300 ) );
-      h_secVtx_pt_vs_actMu         .push_back( book( name, "secVtx_pt_vs_actMu",           "#mu",   100, 0, 100, "secondary vertex p_{T} [GeV]",        100,    0, 100 ) );
-      h_secVtx_eta_vs_actMu        .push_back( book( name, "secVtx_eta_vs_actMu",          "#mu",   100, 0, 100, "secondary vertex eta",                100,   -5,   5 ) );
-      h_secVtx_phi_vs_actMu        .push_back( book( name, "secVtx_phi_vs_actMu",          "#mu",   100, 0, 100, "secondary vertex phi",                100, -3.5, 3.5 ) );
-      h_secVtx_mass_vs_actMu       .push_back( book( name, "secVtx_mass_vs_actMu",         "#mu",   100, 0, 100, "secondary vertex mass [GeV]",         100,    0,  50 ) );
-      h_secVtx_ntrk_vs_actMu       .push_back( book( name, "secVtx_ntrk_vs_actMu",         "#mu",   100, 0, 100, "secondary vertex n tracks",            10,    2,  12 ) );
-      h_secVtx_ntrk_sel_vs_actMu   .push_back( book( name, "secVtx_ntrk_sel_vs_actMu",     "#mu",   100, 0, 100, "secondary vertex n selected tracks",   10,    0,  10 ) );
-      h_secVtx_ntrk_assoc_vs_actMu .push_back( book( name, "secVtx_ntrk_assoc_vs_actMu",   "#mu",   100, 0, 100, "secondary vertex n associated tracks", 10,    0,  10 ) );
+      h_secVtx_n_vs_avgMu          .push_back( book( name, "secVtx_n_vs_avgMu",          "< #mu >", 100,    0, 100,
+						     "n secondary vertices",                         20,    0,  20 ) );
+      h_secVtx_r_vs_avgMu          .push_back( book( name, "secVtx_r_vs_avgMu",          "< #mu >", 100,    0, 100,
+						     "secondary vertex r-pos [mm]",                 100,    0, 300 ) );
+      h_secVtx_pt_vs_avgMu         .push_back( book( name, "secVtx_pt_vs_avgMu",         "< #mu >", 100,    0, 100,
+						     "secondary vertex p_{T} [GeV]",                100,    0, 100 ) );
+      h_secVtx_eta_vs_avgMu        .push_back( book( name, "secVtx_eta_vs_avgMu",        "< #mu >", 100,    0, 100,
+						     "secondary vertex eta",                        100,   -5,   5 ) );
+      h_secVtx_phi_vs_avgMu        .push_back( book( name, "secVtx_phi_vs_avgMu",        "< #mu >", 100,    0, 100,
+						     "secondary vertex phi",                        100, -3.5, 3.5 ) );
+      h_secVtx_mass_vs_avgMu       .push_back( book( name, "secVtx_mass_vs_avgMu",       "< #mu >", 100,    0, 100,
+						     "secondary vertex mass [GeV]",                 100,    0,  50 ) );
+      h_secVtx_ntrk_vs_avgMu       .push_back( book( name, "secVtx_ntrk_vs_avgMu",       "< #mu >", 100,    0, 100,
+						     "secondary vertex n tracks",                    10,    2,  12 ) );
+      h_secVtx_ntrk_sel_vs_avgMu   .push_back( book( name, "secVtx_ntrk_sel_vs_avgMu",   "< #mu >", 100,    0, 100,
+						     "secondary vertex n selected tracks",           10,    0,  10 ) );
+      h_secVtx_ntrk_assoc_vs_avgMu .push_back( book( name, "secVtx_ntrk_assoc_vs_avgMu", "< #mu >", 100,    0, 100,
+						     "secondary vertex n associated tracks",         10,    0,  10 ) );
+      h_secVtx_n_vs_actMu          .push_back( book( name, "secVtx_n_vs_actMu",            "#mu",   100,    0, 100,
+						     "n secondary vertices",                         20,    0,  20 ) );
+      h_secVtx_r_vs_actMu          .push_back( book( name, "secVtx_r_vs_actMu",            "#mu",   100,    0, 100,
+						     "secondary vertex r-pos [mm]",                 100,    0, 300 ) );
+      h_secVtx_pt_vs_actMu         .push_back( book( name, "secVtx_pt_vs_actMu",           "#mu",   100,    0, 100,
+						     "secondary vertex p_{T} [GeV]",                100,    0, 100 ) );
+      h_secVtx_eta_vs_actMu        .push_back( book( name, "secVtx_eta_vs_actMu",          "#mu",   100,    0, 100,
+						     "secondary vertex eta",                        100,   -5,   5 ) );
+      h_secVtx_phi_vs_actMu        .push_back( book( name, "secVtx_phi_vs_actMu",          "#mu",   100,    0, 100,
+						     "secondary vertex phi",                        100, -3.5, 3.5 ) );
+      h_secVtx_mass_vs_actMu       .push_back( book( name, "secVtx_mass_vs_actMu",         "#mu",   100,    0, 100,
+						     "secondary vertex mass [GeV]",                 100,    0,  50 ) );
+      h_secVtx_ntrk_vs_actMu       .push_back( book( name, "secVtx_ntrk_vs_actMu",         "#mu",   100,    0, 100,
+						     "secondary vertex n tracks",                    10,    2,  12 ) );
+      h_secVtx_ntrk_sel_vs_actMu   .push_back( book( name, "secVtx_ntrk_sel_vs_actMu",     "#mu",   100,    0, 100,
+						     "secondary vertex n selected tracks",           10,    0,  10 ) );
+      h_secVtx_ntrk_assoc_vs_actMu .push_back( book( name, "secVtx_ntrk_assoc_vs_actMu",   "#mu",   100,    0, 100,
+						     "secondary vertex n associated tracks",         10,    0,  10 ) );
 
       // ntrk secondary vertices vs mu
       if ( m_numVtxTrk ) {
@@ -1734,6 +1998,234 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	}
       }
     }
+
+
+
+    // -------------------------------- //
+    // --- TRACKS / TRUTH PARTICLES --- //
+    // -------------------------------- //
+    
+    if ( mc ) {
+      
+      // truth particles
+      int n_Xd      = 0;
+      int n_qd      = 0;
+      int n_pid     = 0;
+      int n_rhod    = 0;
+      int n_offpid  = 0;
+      int n_offrhod = 0;
+      int n_allpid  = 0;
+      int n_allrhod = 0;
+      
+      for ( int i = 0; i != m_tp_n; ++i ) {
+
+	if ( !(m_tp_isDark ->at(i)) ) continue; // skip non-dark particles for now...
+
+	// dark scalar mediators (Xd)
+	if ( fabs( m_tp_pdgId ->at(i) ) == 4900001 && m_tp_status ->at(i) == 62 ) {
+	  ++n_Xd;
+	  h_Xd_pt             .at(ireg)->Fill( m_tp_pt                 ->at(i) );
+	  h_Xd_eta            .at(ireg)->Fill( m_tp_eta                ->at(i) );
+	  h_Xd_phi            .at(ireg)->Fill( m_tp_phi                ->at(i) );
+	  h_Xd_E              .at(ireg)->Fill( m_tp_E                  ->at(i) );
+	  h_Xd_M              .at(ireg)->Fill( m_tp_M                  ->at(i) );
+	  h_Xd_charge         .at(ireg)->Fill( m_tp_charge             ->at(i) );
+	  h_Xd_nParents       .at(ireg)->Fill( m_tp_nParents           ->at(i) );
+	  h_Xd_nChildren      .at(ireg)->Fill( m_tp_nChildren          ->at(i) );
+	  for ( int j = 0; j != m_tp_nParents->at(i); ++j ) {
+	    h_Xd_parentPdgId  .at(ireg)->Fill( fabs( m_tp_parent_pdgId ->at(i).at(j) ) );
+	    h_Xd_parentStatus .at(ireg)->Fill( m_tp_parent_status      ->at(i).at(j) );
+	  }
+	  for ( int j = 0; j != m_tp_nChildren->at(i); ++j ) {
+	    h_Xd_childPdgId   .at(ireg)->Fill( fabs( m_tp_child_pdgId  ->at(i).at(j) ) );
+	    h_Xd_childStatus  .at(ireg)->Fill( m_tp_child_status       ->at(i).at(j) );
+	  }
+	  if ( m_tp_hasPVtx )
+	    h_Xd_prodVtx_r    .at(ireg)->Fill( m_tp_pVtx_r             ->at(i) );
+	  if ( m_tp_hasDVtx )
+	    h_Xd_decayVtx_r   .at(ireg)->Fill( m_tp_dVtx_r             ->at(i) );
+	}
+	// dark quarks (qd)
+	else if ( fabs( m_tp_pdgId ->at(i) ) == 4900101 && m_tp_status ->at(i) == 71 ) {
+	  ++n_qd;
+	  h_qd_pt             .at(ireg)->Fill( m_tp_pt                 ->at(i) );
+	  h_qd_eta            .at(ireg)->Fill( m_tp_eta                ->at(i) );
+	  h_qd_phi            .at(ireg)->Fill( m_tp_phi                ->at(i) );
+	  h_qd_E              .at(ireg)->Fill( m_tp_E                  ->at(i) );
+	  h_qd_M              .at(ireg)->Fill( m_tp_M                  ->at(i) );
+	  h_qd_charge         .at(ireg)->Fill( m_tp_charge             ->at(i) );
+	  h_qd_nParents       .at(ireg)->Fill( m_tp_nParents           ->at(i) );
+	  h_qd_nChildren      .at(ireg)->Fill( m_tp_nChildren          ->at(i) );
+	  for ( int j = 0; j != m_tp_nParents->at(i); ++j ) {
+	    h_qd_parentPdgId  .at(ireg)->Fill( fabs( m_tp_parent_pdgId ->at(i).at(j) ) );
+	    h_qd_parentStatus .at(ireg)->Fill( m_tp_parent_status      ->at(i).at(j) );
+	  }
+	  for ( int j = 0; j != m_tp_nChildren->at(i); ++j ) {
+	    h_qd_childPdgId   .at(ireg)->Fill( fabs( m_tp_child_pdgId  ->at(i).at(j) ) );
+	    h_qd_childStatus  .at(ireg)->Fill( m_tp_child_status       ->at(i).at(j) );
+	  }
+	  if ( m_tp_hasPVtx )
+	    h_qd_prodVtx_r    .at(ireg)->Fill( m_tp_pVtx_r             ->at(i) );
+	  if ( m_tp_hasDVtx )
+	    h_qd_decayVtx_r   .at(ireg)->Fill( m_tp_dVtx_r             ->at(i) );
+	}
+	// inclusive (standard + off-diagonal) dark pions (allpid)
+	else if ( fabs( m_tp_pdgId ->at(i) ) == 4900111 || fabs( m_tp_pdgId ->at(i) ) == 4900211 ) {
+	  ++n_allpid;
+	  h_allpid_pt               .at(ireg)->Fill( m_tp_pt                 ->at(i) );
+	  h_allpid_eta              .at(ireg)->Fill( m_tp_eta                ->at(i) );
+	  h_allpid_phi              .at(ireg)->Fill( m_tp_phi                ->at(i) );
+	  h_allpid_E                .at(ireg)->Fill( m_tp_E                  ->at(i) );
+	  h_allpid_M                .at(ireg)->Fill( m_tp_M                  ->at(i) );
+	  h_allpid_charge           .at(ireg)->Fill( m_tp_charge             ->at(i) );
+	  h_allpid_nParents         .at(ireg)->Fill( m_tp_nParents           ->at(i) );
+	  h_allpid_nChildren        .at(ireg)->Fill( m_tp_nChildren          ->at(i) );
+	  for ( int j = 0; j != m_tp_nParents->at(i); ++j ) {
+	    h_allpid_parentPdgId    .at(ireg)->Fill( fabs( m_tp_parent_pdgId ->at(i).at(j) ) );
+	    h_allpid_parentStatus   .at(ireg)->Fill( m_tp_parent_status      ->at(i).at(j) );
+	  }
+	  for ( int j = 0; j != m_tp_nChildren->at(i); ++j ) {
+	    h_allpid_childPdgId     .at(ireg)->Fill( fabs( m_tp_child_pdgId  ->at(i).at(j) ) );
+	    h_allpid_childStatus    .at(ireg)->Fill( m_tp_child_status       ->at(i).at(j) );
+	  }
+	  if ( m_tp_hasPVtx )
+	    h_allpid_prodVtx_r      .at(ireg)->Fill( m_tp_pVtx_r             ->at(i) );
+	  if ( m_tp_hasDVtx )
+	    h_allpid_decayVtx_r     .at(ireg)->Fill( m_tp_dVtx_r             ->at(i) );
+	  // standard dark pions (pid)
+	  if ( fabs( m_tp_pdgId ->at(i) ) == 4900111 ) {
+	    ++n_pid;
+	    h_pid_pt                .at(ireg)->Fill( m_tp_pt                 ->at(i) );
+	    h_pid_eta               .at(ireg)->Fill( m_tp_eta                ->at(i) );
+	    h_pid_phi               .at(ireg)->Fill( m_tp_phi                ->at(i) );
+	    h_pid_E                 .at(ireg)->Fill( m_tp_E                  ->at(i) );
+	    h_pid_M                 .at(ireg)->Fill( m_tp_M                  ->at(i) );
+	    h_pid_charge            .at(ireg)->Fill( m_tp_charge             ->at(i) );
+	    h_pid_nParents          .at(ireg)->Fill( m_tp_nParents           ->at(i) );
+	    h_pid_nChildren         .at(ireg)->Fill( m_tp_nChildren          ->at(i) );
+	    for ( int j = 0; j != m_tp_nParents->at(i); ++j ) {
+	      h_pid_parentPdgId     .at(ireg)->Fill( fabs( m_tp_parent_pdgId ->at(i).at(j) ) );
+	      h_pid_parentStatus    .at(ireg)->Fill( m_tp_parent_status      ->at(i).at(j) );
+	    }
+	    for ( int j = 0; j != m_tp_nChildren->at(i); ++j ) {
+	      h_pid_childPdgId      .at(ireg)->Fill( fabs( m_tp_child_pdgId  ->at(i).at(j) ) );
+	      h_pid_childStatus     .at(ireg)->Fill( m_tp_child_status       ->at(i).at(j) );
+	    }
+	    if ( m_tp_hasPVtx )
+	      h_pid_prodVtx_r       .at(ireg)->Fill( m_tp_pVtx_r             ->at(i) );
+	    if ( m_tp_hasDVtx )
+	      h_pid_decayVtx_r      .at(ireg)->Fill( m_tp_dVtx_r             ->at(i) );
+	  }
+	  // off-diagonal dark pions (offpid)
+	  else if ( fabs( m_tp_pdgId ->at(i) ) == 4900211 ) {
+	    ++n_offpid;
+	    h_offpid_pt             .at(ireg)->Fill( m_tp_pt                 ->at(i) );
+	    h_offpid_eta            .at(ireg)->Fill( m_tp_eta                ->at(i) );
+	    h_offpid_phi            .at(ireg)->Fill( m_tp_phi                ->at(i) );
+	    h_offpid_E              .at(ireg)->Fill( m_tp_E                  ->at(i) );
+	    h_offpid_M              .at(ireg)->Fill( m_tp_M                  ->at(i) );
+	    h_offpid_charge         .at(ireg)->Fill( m_tp_charge             ->at(i) );
+	    h_offpid_nParents       .at(ireg)->Fill( m_tp_nParents           ->at(i) );
+	    h_offpid_nChildren      .at(ireg)->Fill( m_tp_nChildren          ->at(i) );
+	    for ( int j = 0; j != m_tp_nParents->at(i); ++j ) {
+	      h_offpid_parentPdgId  .at(ireg)->Fill( fabs( m_tp_parent_pdgId ->at(i).at(j) ) );
+	      h_offpid_parentStatus .at(ireg)->Fill( m_tp_parent_status      ->at(i).at(j) );
+	    }
+	    for ( int j = 0; j != m_tp_nChildren->at(i); ++j ) {
+	      h_offpid_childPdgId   .at(ireg)->Fill( fabs( m_tp_child_pdgId  ->at(i).at(j) ) );
+	      h_offpid_childStatus  .at(ireg)->Fill( m_tp_child_status       ->at(i).at(j) );
+	    }
+	    if ( m_tp_hasPVtx )
+	      h_offpid_prodVtx_r    .at(ireg)->Fill( m_tp_pVtx_r             ->at(i) );
+	    if ( m_tp_hasDVtx )
+	      h_offpid_decayVtx_r   .at(ireg)->Fill( m_tp_dVtx_r             ->at(i) );
+	  }
+	}
+	// inclusive (standard + off-diagonal) dark rhos (allrhod)
+	else if ( fabs( m_tp_pdgId ->at(i) ) == 4900113 || fabs( m_tp_pdgId ->at(i) ) == 4900213 ) {
+	  ++n_allrhod;
+	  h_allrhod_pt               .at(ireg)->Fill( m_tp_pt                 ->at(i) );
+	  h_allrhod_eta              .at(ireg)->Fill( m_tp_eta                ->at(i) );
+	  h_allrhod_phi              .at(ireg)->Fill( m_tp_phi                ->at(i) );
+	  h_allrhod_E                .at(ireg)->Fill( m_tp_E                  ->at(i) );
+	  h_allrhod_M                .at(ireg)->Fill( m_tp_M                  ->at(i) );
+	  h_allrhod_charge           .at(ireg)->Fill( m_tp_charge             ->at(i) );
+	  h_allrhod_nParents         .at(ireg)->Fill( m_tp_nParents           ->at(i) );
+	  h_allrhod_nChildren        .at(ireg)->Fill( m_tp_nChildren          ->at(i) );
+	  for ( int j = 0; j != m_tp_nParents->at(i); ++j ) {
+	    h_allrhod_parentPdgId    .at(ireg)->Fill( fabs( m_tp_parent_pdgId ->at(i).at(j) ) );
+	    h_allrhod_parentStatus   .at(ireg)->Fill( m_tp_parent_status      ->at(i).at(j) );
+	  }
+	  for ( int j = 0; j != m_tp_nChildren->at(i); ++j ) {
+	    h_allrhod_childPdgId     .at(ireg)->Fill( fabs( m_tp_child_pdgId  ->at(i).at(j) ) );
+	    h_allrhod_childStatus    .at(ireg)->Fill( m_tp_child_status       ->at(i).at(j) );
+	  }
+	  if ( m_tp_hasPVtx )
+	    h_allrhod_prodVtx_r      .at(ireg)->Fill( m_tp_pVtx_r             ->at(i) );
+	  if ( m_tp_hasDVtx )
+	    h_allrhod_decayVtx_r     .at(ireg)->Fill( m_tp_dVtx_r             ->at(i) );
+	  // standard dark rhos (rhod)
+	  if ( fabs( m_tp_pdgId ->at(i) ) == 4900113 ) {
+	    ++n_rhod;
+	    h_rhod_pt                .at(ireg)->Fill( m_tp_pt                 ->at(i) );
+	    h_rhod_eta               .at(ireg)->Fill( m_tp_eta                ->at(i) );
+	    h_rhod_phi               .at(ireg)->Fill( m_tp_phi                ->at(i) );
+	    h_rhod_E                 .at(ireg)->Fill( m_tp_E                  ->at(i) );
+	    h_rhod_M                 .at(ireg)->Fill( m_tp_M                  ->at(i) );
+	    h_rhod_charge            .at(ireg)->Fill( m_tp_charge             ->at(i) );
+	    h_rhod_nParents          .at(ireg)->Fill( m_tp_nParents           ->at(i) );
+	    h_rhod_nChildren         .at(ireg)->Fill( m_tp_nChildren          ->at(i) );
+	    for ( int j = 0; j != m_tp_nParents->at(i); ++j ) {
+	      h_rhod_parentPdgId     .at(ireg)->Fill( fabs( m_tp_parent_pdgId ->at(i).at(j) ) );
+	      h_rhod_parentStatus    .at(ireg)->Fill( m_tp_parent_status      ->at(i).at(j) );
+	    }
+	    for ( int j = 0; j != m_tp_nChildren->at(i); ++j ) {
+	      h_rhod_childPdgId      .at(ireg)->Fill( fabs( m_tp_child_pdgId  ->at(i).at(j) ) );
+	      h_rhod_childStatus     .at(ireg)->Fill( m_tp_child_status       ->at(i).at(j) );
+	    }
+	    if ( m_tp_hasPVtx )
+	      h_rhod_prodVtx_r       .at(ireg)->Fill( m_tp_pVtx_r             ->at(i) );
+	    if ( m_tp_hasDVtx )
+	      h_rhod_decayVtx_r      .at(ireg)->Fill( m_tp_dVtx_r             ->at(i) );
+	  }
+	  // off-diagonal dark rhos (offrhod)
+	  else if ( fabs( m_tp_pdgId ->at(i) ) == 4900213 ) {
+	    ++n_offrhod;
+	    h_offrhod_pt             .at(ireg)->Fill( m_tp_pt                 ->at(i) );
+	    h_offrhod_eta            .at(ireg)->Fill( m_tp_eta                ->at(i) );
+	    h_offrhod_phi            .at(ireg)->Fill( m_tp_phi                ->at(i) );
+	    h_offrhod_E              .at(ireg)->Fill( m_tp_E                  ->at(i) );
+	    h_offrhod_M              .at(ireg)->Fill( m_tp_M                  ->at(i) );
+	    h_offrhod_charge         .at(ireg)->Fill( m_tp_charge             ->at(i) );
+	    h_offrhod_nParents       .at(ireg)->Fill( m_tp_nParents           ->at(i) );
+	    h_offrhod_nChildren      .at(ireg)->Fill( m_tp_nChildren          ->at(i) );
+	    for ( int j = 0; j != m_tp_nParents->at(i); ++j ) {
+	      h_offrhod_parentPdgId  .at(ireg)->Fill( fabs( m_tp_parent_pdgId ->at(i).at(j) ) );
+	      h_offrhod_parentStatus .at(ireg)->Fill( m_tp_parent_status      ->at(i).at(j) );
+	    }
+	    for ( int j = 0; j != m_tp_nChildren->at(i); ++j ) {
+	      h_offrhod_childPdgId   .at(ireg)->Fill( fabs( m_tp_child_pdgId  ->at(i).at(j) ) );
+	      h_offrhod_childStatus  .at(ireg)->Fill( m_tp_child_status       ->at(i).at(j) );
+	    }
+	    if ( m_tp_hasPVtx )
+	      h_offrhod_prodVtx_r    .at(ireg)->Fill( m_tp_pVtx_r             ->at(i) );
+	    if ( m_tp_hasDVtx )
+	      h_offrhod_decayVtx_r   .at(ireg)->Fill( m_tp_dVtx_r             ->at(i) );
+	  }
+	}
+  
+      } // end loop over truth particles
+      
+      h_Xd_n      .at(ireg)->Fill( n_Xd      );
+      h_qd_n      .at(ireg)->Fill( n_qd      );
+      h_pid_n     .at(ireg)->Fill( n_pid     );
+      h_offpid_n  .at(ireg)->Fill( n_offpid  );
+      h_allpid_n  .at(ireg)->Fill( n_allpid  );
+      h_rhod_n    .at(ireg)->Fill( n_rhod    );
+      h_offrhod_n .at(ireg)->Fill( n_offrhod );
+      h_allrhod_n .at(ireg)->Fill( n_allrhod );
+      
+    } // end if mc (truth particles)
     
     
     

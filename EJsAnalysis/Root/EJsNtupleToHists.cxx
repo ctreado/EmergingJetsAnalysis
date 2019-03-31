@@ -83,7 +83,7 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
 
 
   // declare classes and add histograms to output
-  m_plots = new EJsHistogramManager ( m_name, m_detailStr, false, m_doEMTopo, m_doPFlow );
+  m_plots = new EJsHistogramManager ( m_name, m_detailStr, false, m_doEMTopo, m_doPFlow, m_truthLevelOnly );
   ANA_CHECK( m_plots ->initialize( m_jetBranchName, outFileName, m_regionNames, m_isMC ) );
   m_plots ->record( wk() );
 
@@ -121,19 +121,19 @@ EL::StatusCode EJsNtupleToHists :: changeInput ( bool /*firstFile*/ )
   TTree* tree = wk()->tree();
   tree->SetBranchStatus( "*", 0 ); // disables all branches
 
-  ANA_CHECK( m_plots ->connectEvents   ( tree, m_isMC ) );
-  ANA_CHECK( m_plots ->connectTriggers ( tree, m_isMC ) );
-  
-  ANA_CHECK( m_plots ->connectJets           ( tree, m_jetBranchName,             m_isMC ) );
-  ANA_CHECK( m_plots ->connectTrigJets       ( tree, m_trigJetBranchName,         m_isMC ) );
-  ANA_CHECK( m_plots ->connectTracks         ( tree, m_trackPartBranchName,       m_isMC ) );
-  ANA_CHECK( m_plots ->connectSecondaryVerts ( tree, m_secondaryVertexBranchName, m_isMC ) );
-
+  ANA_CHECK(   m_plots ->connectEvents         ( tree, m_isMC ) );
+  if ( !m_truthLevelOnly ) {
+    ANA_CHECK( m_plots ->connectTriggers       ( tree, m_isMC ) );
+    ANA_CHECK( m_plots ->connectJets           ( tree, m_jetBranchName,             m_isMC ) );
+    ANA_CHECK( m_plots ->connectTrigJets       ( tree, m_trigJetBranchName,         m_isMC ) );
+    ANA_CHECK( m_plots ->connectTracks         ( tree, m_trackPartBranchName,       m_isMC ) );
+    ANA_CHECK( m_plots ->connectSecondaryVerts ( tree, m_secondaryVertexBranchName, m_isMC ) );
+  }
   if ( m_isMC ) {
-    ANA_CHECK( m_plots ->connectTruthJets     ( tree, m_truthJetBranchName     ) );
-    ANA_CHECK( m_plots ->connectTruthDarkJets ( tree, m_truthDarkJetBranchName ) );
-    ANA_CHECK( m_plots ->connectTruthParts    ( tree, m_truthPartBranchName    ) );
-    ANA_CHECK( m_plots ->connectTruthVerts    ( tree, m_truthVertexBranchName  ) );
+    ANA_CHECK( m_plots ->connectTruthJets      ( tree, m_truthJetBranchName     ) );
+    ANA_CHECK( m_plots ->connectTruthDarkJets  ( tree, m_truthDarkJetBranchName ) );
+    ANA_CHECK( m_plots ->connectTruthParts     ( tree, m_truthPartBranchName    ) );
+    ANA_CHECK( m_plots ->connectTruthVerts     ( tree, m_truthVertexBranchName  ) );
   }
 
   return EL::StatusCode::SUCCESS;
