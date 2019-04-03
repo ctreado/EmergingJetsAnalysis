@@ -91,20 +91,24 @@ namespace EJs {
     std::vector<std::vector<int>>*     m_secVtx_ntrk; // ntrk_sel/assoc ... ??
     std::vector<std::vector<float>>*   m_secVtx_dR;
     std::vector<std::vector<uint8_t>>* m_secVtx_closestTruth_isDarkPionDecay;
+    std::vector<std::vector<uint8_t>>* m_secVtx_closestTruth_isOffdiagDarkPionDecay;
     std::vector<std::vector<int>>*     m_secVtx_closestTruth_ID;
     std::vector<std::vector<int>>*     m_secVtx_closestTruth_barcode;
     std::vector<std::vector<float>>*   m_secVtx_closestTruth_distance;
     std::vector<std::vector<uint8_t>>* m_secVtx_maxlinkTruth_isDarkPionDecay;
+    std::vector<std::vector<uint8_t>>* m_secVtx_maxlinkTruth_isOffdiagDarkPionDecay;
     std::vector<std::vector<int>>*     m_secVtx_maxlinkTruth_ID;
     std::vector<std::vector<int>>*     m_secVtx_maxlinkTruth_barcode;
     std::vector<std::vector<float>>*   m_secVtx_maxlinkTruth_score;
     std::vector<std::vector<uint8_t>>* m_secVtx_maxlinkParentTruth_isDarkPionDecay;
+    std::vector<std::vector<uint8_t>>* m_secVtx_maxlinkParentTruth_isOffdiagDarkPionDecay;
     std::vector<std::vector<int>>*     m_secVtx_maxlinkParentTruth_ID;
     std::vector<std::vector<int>>*     m_secVtx_maxlinkParentTruth_barcode;
     std::vector<std::vector<float>>*   m_secVtx_maxlinkParentTruth_score;
     std::vector<int>*                  m_truthVtxCount;
     std::vector<float>*                m_truthVtxPt;
     std::vector<std::vector<uint8_t>>* m_truthVtx_isDarkPionDecay;
+    std::vector<std::vector<uint8_t>>* m_truthVtx_isOffdiagDarkPionDecay;
     std::vector<std::vector<int>>*     m_truthVtx_ID;
     std::vector<std::vector<float>>*   m_truthVtx_x;
     std::vector<std::vector<float>>*   m_truthVtx_y;
@@ -142,7 +146,7 @@ namespace EJs {
     std::vector<std::vector<float>>*   m_trk_truthProb;
     std::vector<std::vector<int>>*     m_trk_truthID;
     std::vector<std::vector<int>>*     m_trk_truthBarcode;
-    std::vector<std::vector<int>>*     m_trk_truthPid;
+    std::vector<std::vector<int>>*     m_trk_truthPdgId;
     std::vector<int>*                  m_tpCount;
     std::vector<float>*                m_tpPt;
     std::vector<std::vector<int>>*     m_tp_ID;
@@ -152,7 +156,7 @@ namespace EJs {
     std::vector<std::vector<float>>*   m_tp_E;
     std::vector<std::vector<float>>*   m_tp_M;
     std::vector<std::vector<float>>*   m_tp_charge;
-    std::vector<std::vector<int>>*     m_tp_pid;
+    std::vector<std::vector<int>>*     m_tp_pdgId;
     std::vector<std::vector<int>>*     m_tp_status;
     std::vector<std::vector<int>>*     m_tp_barcode;
     std::vector<std::vector<float>>*   m_tp_dR;
@@ -161,6 +165,10 @@ namespace EJs {
     std::vector<std::vector<int>>*     m_tp_recoID;
     std::vector<std::vector<uint8_t>>* m_tp_recoIsSelected;
     std::vector<std::vector<uint8_t>>* m_tp_recoIsAssociated;
+    std::vector<std::vector<uint8_t>>* m_tp_isStable;
+    std::vector<std::vector<uint8_t>>* m_tp_isInteracting;
+    std::vector<std::vector<uint8_t>>* m_tp_isReconstructible;
+    std::vector<std::vector<uint8_t>>* m_tp_isDark;
     // --> want to add truth parents / ancestors ?? --> at least check if truth particle is dark pion descendant (and generation) 
 
     // ghost matched tracks / truth particles
@@ -176,7 +184,7 @@ namespace EJs {
     std::vector<std::vector<float>>*   m_GhostTrack_truthProb;
     std::vector<std::vector<int>>*     m_GhostTrack_truthID;
     std::vector<std::vector<int>>*     m_GhostTrack_truthBarcode;
-    std::vector<std::vector<int>>*     m_GhostTrack_truthPid;
+    std::vector<std::vector<int>>*     m_GhostTrack_truthPdgId;
     std::vector<int>*                  m_GhostTruthCount;
     std::vector<float>*                m_GhostTruthPt;
     std::vector<std::vector<int>>*     m_GhostTruth_ID;
@@ -186,7 +194,7 @@ namespace EJs {
     std::vector<std::vector<float>>*   m_GhostTruth_e;
     std::vector<std::vector<float>>*   m_GhostTruth_m;
     std::vector<std::vector<float>>*   m_GhostTruth_charge;
-    std::vector<std::vector<int>>*     m_GhostTruth_pid;
+    std::vector<std::vector<int>>*     m_GhostTruth_pdgId;
     std::vector<std::vector<int>>*     m_GhostTruth_status;
     std::vector<std::vector<int>>*     m_GhostTruth_barcode;
     std::vector<std::vector<uint8_t>>* m_GhostTruth_isReco;
@@ -194,13 +202,30 @@ namespace EJs {
     std::vector<std::vector<int>>*     m_GhostTruth_recoID;
     std::vector<std::vector<uint8_t>>* m_GhostTruth_recoIsSelected;
     std::vector<std::vector<uint8_t>>* m_GhostTruth_recoIsAssociated;
+    std::vector<std::vector<uint8_t>>* m_GhostTruth_isStable;
+    std::vector<std::vector<uint8_t>>* m_GhostTruth_isInteracting;
+    std::vector<std::vector<uint8_t>>* m_GhostTruth_isReconstructible;
+    std::vector<std::vector<uint8_t>>* m_GhostTruth_isDark;
     // --> want to add truth parents / ancestors ?? --> at least check if truth particle is dark pion descendant (and generation)
 
     // jet constituents
-    std::vector<float>*              m_girth;
-    std::vector<float>*              m_constituentPt;
-    std::vector<std::vector<float>>* m_constituent_dR;
-    std::vector<std::vector<float>>* m_constituent_m;
+    std::vector<float>*                m_girth;
+    std::vector<float>*                m_constituentPt;
+    std::vector<std::vector<float>>*   m_constituent_dR;
+    std::vector<std::vector<float>>*   m_constituent_m;
+    std::vector<std::vector<int>>*     m_constituent_ID;
+    std::vector<std::vector<float>>*   m_constituent_charge;
+    std::vector<std::vector<int>>*     m_constituent_pdgId;
+    std::vector<std::vector<int>>*     m_constituent_status;
+    std::vector<std::vector<int>>*     m_constituent_barcode;
+    std::vector<std::vector<uint8_t>>* m_constituent_isStable;
+    std::vector<std::vector<uint8_t>>* m_constituent_isInteracting;
+    std::vector<std::vector<uint8_t>>* m_constituent_isReconstructible;
+    std::vector<std::vector<uint8_t>>* m_constituent_isDark;
+    std::vector<std::vector<uint8_t>>* m_constituent_pVtx;
+    std::vector<std::vector<float>>*   m_constituent_pVtx_r;
+    std::vector<std::vector<uint8_t>>* m_constituent_dVtx;
+    std::vector<std::vector<float>>*   m_constituent_dVtx_r;
   };
 
 }

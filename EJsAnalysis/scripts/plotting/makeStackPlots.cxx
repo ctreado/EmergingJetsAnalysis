@@ -106,6 +106,7 @@ void makeStackPlots ( TString  hname  = "nPV",   TString htitle = "MC16d", TStri
   Double_t xr     = 0.9000;                             // right edge of legend (lxr) --> default = 0.88
   Double_t yint   = 0.0300;                             // y-length per line
   Double_t xint   = 0.0130;                             // x-width per character in fname
+  if ( htype.Contains("truth") ) xint = 0.0105;
   Double_t ysh    = yint * fname.size();                // y-length of legend
   Double_t xsh    = xint * fname.at(maxindex).Length(); // x-width of legend
   Double_t yb     = yt - ysh;                           // bottom of legend

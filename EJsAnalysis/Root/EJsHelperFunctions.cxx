@@ -45,7 +45,7 @@ namespace EJsHelper {
 
   bool selectDarkPion ( const xAOD::TruthVertex* truthVtx )
   {
-    if ( truthVtx->perp() < 0.1 )                               return false;
+    //if ( truthVtx->perp() < 0.1 )                               return false;
     if ( truthVtx->nIncomingParticles() != 1 )                  return false;
     auto& links = truthVtx->incomingParticleLinks();
     if ( links.size() != 1 )                                    return false;
@@ -53,6 +53,18 @@ namespace EJsHelper {
     if ( truthVtx->incomingParticle(0)->absPdgId() != 4900111 ) return false;
 
     // if we made it this far, truth vertex is a dark pion decay...
+    return true;
+  }
+
+  bool selectOffdiagDarkPion ( const xAOD::TruthVertex* truthVtx )
+  {
+    if ( truthVtx->nIncomingParticles() != 1 )                  return false;
+    auto& links = truthVtx->incomingParticleLinks();
+    if ( links.size() != 1 )                                    return false;
+    if ( !links.at(0).isValid() )                               return false;
+    if ( truthVtx->incomingParticle(0)->absPdgId() != 4900211 ) return false;
+
+    // if we made it this far, truth vertex is an off-diagonal dark pion decay...
     return true;
   }
   

@@ -1,7 +1,7 @@
 #!/bin/bash
 # script for running tree-to-histogram jobs
 
-inpath="$EJ_PATH/../run/local.MC16d/data-tree/"
+inpath="$EJ_PATH/../run/localOutput/tree/local.MC16d/data-tree/"
 #inpath="$EJ_PATH/../run/local.MC16d.EJ_ModelA_1400_20/data-tree/"
 input_A_1400_20="${inpath}*ModelA_1400_20*.root"
 input_A_1000_150="${inpath}*ModelA_1000_150*.root"

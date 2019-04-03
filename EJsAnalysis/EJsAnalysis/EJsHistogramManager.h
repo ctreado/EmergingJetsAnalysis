@@ -130,12 +130,12 @@ class EJsHistogramManager : public HistogramManager
   std::vector<int>*   m_jet_GhostTruthCount; //!
   std::vector<float>* m_jet_GhostTruthPt;    //!
   
-  std::vector<int>*                m_jet_trkCount;        //!
-  std::vector<float>*              m_jet_trkPt;           //!
-  std::vector<std::vector<float>>* m_jet_trk_dR;          //!
-  std::vector<int>*                m_jet_tpCount;         //!
-  std::vector<float>*              m_jet_tpPt;            //!
-  std::vector<std::vector<float>>* m_jet_tp_dR;           //!
+  std::vector<int>*                m_jet_trkCount; //!
+  std::vector<float>*              m_jet_trkPt;    //!
+  std::vector<std::vector<float>>* m_jet_trk_dR;   //!
+  std::vector<int>*                m_jet_tpCount;  //!
+  std::vector<float>*              m_jet_tpPt;     //!
+  std::vector<std::vector<float>>* m_jet_tp_dR;    //!
 
   std::vector<int>*                m_jet_secVtxCount;   //!
   std::vector<float>*              m_jet_secVtxPt;      //!
@@ -151,33 +151,51 @@ class EJsHistogramManager : public HistogramManager
   
 
   // branches -- truth jets
-  int                 m_truthJet_n;          //!
-  std::vector<float>* m_truthJet_pt;         //!
-  std::vector<float>* m_truthJet_eta;        //!
-  std::vector<float>* m_truthJet_phi;        //!
-  std::vector<float>* m_truthJet_E;          //!
-  std::vector<float>* m_truthJet_M;          //!
-  std::vector<float>* m_truthJet_rapid;      //!
+  int                 m_truthJet_n;     //!
+  std::vector<float>* m_truthJet_pt;    //!
+  std::vector<float>* m_truthJet_eta;   //!
+  std::vector<float>* m_truthJet_phi;   //!
+  std::vector<float>* m_truthJet_E;     //!
+  std::vector<float>* m_truthJet_M;     //!
+  std::vector<float>* m_truthJet_rapid; //!
   
-  std::vector<float>*              m_truthJet_width;      //!
-  std::vector<float>*              m_truthJet_girth;      //!
-  std::vector<int>*                m_truthJet_numConstit; //!
-  std::vector<float>*              m_truthJet_constitPt;  //!
-  std::vector<std::vector<float>>* m_truthJet_constit_dR; //!
+  std::vector<float>*                m_truthJet_width;          //!
+  std::vector<float>*                m_truthJet_girth;          //!
+  std::vector<int>*                  m_truthJet_numConstit;     //!
+  std::vector<float>*                m_truthJet_constitPt;      //!
+  std::vector<std::vector<float>>*   m_truthJet_constit_dR;     //!
+  std::vector<std::vector<float>>*   m_truthJet_constit_pt;     //!
+  std::vector<std::vector<float>>*   m_truthJet_constit_eta;    //!
+  std::vector<std::vector<float>>*   m_truthJet_constit_phi;    //!
+  std::vector<std::vector<float>>*   m_truthJet_constit_E;      //!
+  std::vector<std::vector<float>>*   m_truthJet_constit_charge; //!
+  std::vector<std::vector<int>>*     m_truthJet_constit_pdgId;  //!
+  std::vector<std::vector<uint8_t>>* m_truthJet_constit_pVtx;   //!
+  std::vector<std::vector<float>>*   m_truthJet_constit_pVtx_r; //!
 
-  std::vector<int>*                m_truthJet_trkCount; //!
-  std::vector<float>*              m_truthJet_trkPt;    //!
-  std::vector<std::vector<float>>* m_truthJet_trk_dR;   //!
-  std::vector<int>*                m_truthJet_tpCount;  //!
-  std::vector<float>*              m_truthJet_tpPt;     //!
-  std::vector<std::vector<float>>* m_truthJet_tp_dR;    //!
+  std::vector<int>*                  m_truthJet_trkCount;         //!
+  std::vector<float>*                m_truthJet_trkPt;            //!
+  std::vector<std::vector<float>>*   m_truthJet_trk_dR;           //!
+  std::vector<int>*                  m_truthJet_tpCount;          //!
+  std::vector<float>*                m_truthJet_tpPt;             //!
+  std::vector<std::vector<float>>*   m_truthJet_tp_dR;            //!
+  std::vector<std::vector<float>>*   m_truthJet_tp_pt;            //!
+  std::vector<std::vector<float>>*   m_truthJet_tp_charge;        //!
+  std::vector<std::vector<int>>*     m_truthJet_tp_pdgId;         //!
+  std::vector<std::vector<uint8_t>>* m_truthJet_tp_isStable;      //!
+  std::vector<std::vector<uint8_t>>* m_truthJet_tp_isInteracting; //!
+  std::vector<std::vector<uint8_t>>* m_truthJet_tp_isDark;        //!
 
-  std::vector<int>*                m_truthJet_secVtxCount;   //!
-  std::vector<float>*              m_truthJet_secVtxPt;      //!
-  std::vector<std::vector<float>>* m_truthJet_secVtx_dR;     //!
-  std::vector<int>*                m_truthJet_truthVtxCount; //!
-  std::vector<float>*              m_truthJet_truthVtxPt;    //!
-  std::vector<std::vector<float>>* m_truthJet_truthVtx_dR;   //!
+  std::vector<int>*                  m_truthJet_secVtxCount;       //!
+  std::vector<float>*                m_truthJet_secVtxPt;          //!
+  std::vector<std::vector<float>>*   m_truthJet_secVtx_dR;         //!
+  std::vector<int>*                  m_truthJet_truthVtxCount;     //!
+  std::vector<float>*                m_truthJet_truthVtxPt;        //!
+  std::vector<std::vector<float>>*   m_truthJet_truthVtx_dR;       //!
+  std::vector<std::vector<float>>*   m_truthJet_truthVtx_r;        //!
+  std::vector<std::vector<float>>*   m_truthJet_truthVtx_mass;     //!
+  std::vector<std::vector<uint8_t>>* m_truthJet_truthVtx_isPid;    //!
+  std::vector<std::vector<uint8_t>>* m_truthJet_truthVtx_isOffPid; //!
 
   std::vector<uint8_t>* m_truthJet_isDarkMatched;  //!
   std::vector<float>*   m_truthJet_darkMatch_dR;   //!
@@ -192,24 +210,42 @@ class EJsHistogramManager : public HistogramManager
   std::vector<float>* m_darkJet_M;          //!
   std::vector<float>* m_darkJet_rapid;      //!
 
-  std::vector<float>*              m_darkJet_girth;      //!
-  std::vector<int>*                m_darkJet_numConstit; //!
-  std::vector<float>*              m_darkJet_constitPt;  //!
-  std::vector<std::vector<float>>* m_darkJet_constit_dR; //!
+  std::vector<float>*                m_darkJet_girth;          //!
+  std::vector<int>*                  m_darkJet_numConstit;     //!
+  std::vector<float>*                m_darkJet_constitPt;      //!
+  std::vector<std::vector<float>>*   m_darkJet_constit_dR;     //!
+  std::vector<std::vector<float>>*   m_darkJet_constit_pt;     //!
+  std::vector<std::vector<float>>*   m_darkJet_constit_eta;    //!
+  std::vector<std::vector<float>>*   m_darkJet_constit_phi;    //!
+  std::vector<std::vector<float>>*   m_darkJet_constit_E;      //!
+  std::vector<std::vector<float>>*   m_darkJet_constit_charge; //!
+  std::vector<std::vector<int>>*     m_darkJet_constit_pdgId;  //!
+  std::vector<std::vector<uint8_t>>* m_darkJet_constit_dVtx;   //!
+  std::vector<std::vector<float>>*   m_darkJet_constit_dVtx_r; //!
 
-  std::vector<int>*                m_darkJet_trkCount; //!
-  std::vector<float>*              m_darkJet_trkPt;    //!
-  std::vector<std::vector<float>>* m_darkJet_trk_dR;   //!
-  std::vector<int>*                m_darkJet_tpCount;  //!
-  std::vector<float>*              m_darkJet_tpPt;     //!
-  std::vector<std::vector<float>>* m_darkJet_tp_dR;    //!
+  std::vector<int>*                  m_darkJet_trkCount;         //!
+  std::vector<float>*                m_darkJet_trkPt;            //!
+  std::vector<std::vector<float>>*   m_darkJet_trk_dR;           //!
+  std::vector<int>*                  m_darkJet_tpCount;          //!
+  std::vector<float>*                m_darkJet_tpPt;             //!
+  std::vector<std::vector<float>>*   m_darkJet_tp_dR;            //!
+  std::vector<std::vector<float>>*   m_darkJet_tp_pt;            //!
+  std::vector<std::vector<float>>*   m_darkJet_tp_charge;        //!
+  std::vector<std::vector<int>>*     m_darkJet_tp_pdgId;         //!
+  std::vector<std::vector<uint8_t>>* m_darkJet_tp_isStable;      //!
+  std::vector<std::vector<uint8_t>>* m_darkJet_tp_isInteracting; //!
+  std::vector<std::vector<uint8_t>>* m_darkJet_tp_isDark;        //!
   
-  std::vector<int>*                m_darkJet_secVtxCount;   //!
-  std::vector<float>*              m_darkJet_secVtxPt;      //!
-  std::vector<std::vector<float>>* m_darkJet_secVtx_dR;     //!
-  std::vector<int>*                m_darkJet_truthVtxCount; //!
-  std::vector<float>*              m_darkJet_truthVtxPt;    //!
-  std::vector<std::vector<float>>* m_darkJet_truthVtx_dR;   //!
+  std::vector<int>*                  m_darkJet_secVtxCount;       //!
+  std::vector<float>*                m_darkJet_secVtxPt;          //!
+  std::vector<std::vector<float>>*   m_darkJet_secVtx_dR;         //!
+  std::vector<int>*                  m_darkJet_truthVtxCount;     //!
+  std::vector<float>*                m_darkJet_truthVtxPt;        //!
+  std::vector<std::vector<float>>*   m_darkJet_truthVtx_dR;       //!
+  std::vector<std::vector<float>>*   m_darkJet_truthVtx_r;        //!
+  std::vector<std::vector<float>>*   m_darkJet_truthVtx_mass;     //!
+  std::vector<std::vector<uint8_t>>* m_darkJet_truthVtx_isPid;    //!
+  std::vector<std::vector<uint8_t>>* m_darkJet_truthVtx_isOffPid; //!
 
 
   // branches -- truth particles
@@ -222,6 +258,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<float>*                m_tp_charge;        //!
   std::vector<int>*                  m_tp_pdgId;         //!
   std::vector<int>*                  m_tp_status;        //!
+  std::vector<uint8_t>*              m_tp_isStable;      //!
   std::vector<uint8_t>*              m_tp_isDark;        //!
   std::vector<int>*                  m_tp_nParents;      //!
   std::vector<std::vector<int>>*     m_tp_parent_pdgId;  //!
@@ -233,6 +270,21 @@ class EJsHistogramManager : public HistogramManager
   std::vector<float>*                m_tp_pVtx_r;        //!
   std::vector<uint8_t>*              m_tp_hasDVtx;       //!
   std::vector<float>*                m_tp_dVtx_r;        //!
+
+
+  // branches -- truth vertices
+  int                   m_truthVtx_n;        //!
+  std::vector<uint8_t>* m_truthVtx_isPid;    //!
+  std::vector<uint8_t>* m_truthVtx_isOffPid; //!
+  std::vector<float>*   m_truthVtx_x;        //!
+  std::vector<float>*   m_truthVtx_y;        //!
+  std::vector<float>*   m_truthVtx_z;        //!
+  std::vector<float>*   m_truthVtx_r;        //!
+  std::vector<float>*   m_truthVtx_pt;       //!
+  std::vector<float>*   m_truthVtx_eta;      //!
+  std::vector<float>*   m_truthVtx_phi;      //!
+  std::vector<float>*   m_truthVtx_mass;     //!
+  std::vector<int>*     m_truthVtx_nOutP;    //!
 
    
   // branches -- secondary vertex
@@ -434,33 +486,53 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_truthJetN_Et_s;  //!
 
   // truth jet width, constituents
-  std::vector<TH1F*> h_truthJet_width;      //!
-  std::vector<TH1F*> h_truthJet_girth;      //!
-  std::vector<TH1F*> h_truthJet_numConstit; //!
-  std::vector<TH1F*> h_truthJet_constitPt;  //!
-  std::vector<TH1F*> h_truthJet_constit_dR; //!
+  std::vector<TH1F*> h_truthJet_width;          //!
+  std::vector<TH1F*> h_truthJet_girth;          //!
+  std::vector<TH1F*> h_truthJet_numConstit;     //!
+  std::vector<TH1F*> h_truthJet_constitPt;      //!
+  std::vector<TH1F*> h_truthJet_constit_dR;     //!
+  std::vector<TH1F*> h_truthJet_constit_pt;     //!
+  std::vector<TH1F*> h_truthJet_constit_eta;    //!
+  std::vector<TH1F*> h_truthJet_constit_phi;    //!
+  std::vector<TH1F*> h_truthJet_constit_E;      //!
+  std::vector<TH1F*> h_truthJet_constit_pdgId;  //!
+  std::vector<TH1F*> h_truthJet_constit_pVtx_r; //!
+  std::vector<TH1F*> h_truthJet_numChrgConstit; //!
+  std::vector<TH1F*> h_truthJet_numVisConstit;  //!
 
   // truth jet associated tracks / truth particles
-  std::vector<TH1F*> h_truthJet_trkCount; //!
-  std::vector<TH1F*> h_truthJet_trkPt;    //!
-  std::vector<TH1F*> h_truthJet_trkPt_l;  //!
-  std::vector<TH1F*> h_truthJet_trkPt_m;  //!
-  std::vector<TH1F*> h_truthJet_trkPt_s;  //!
-  std::vector<TH1F*> h_truthJet_trk_dR;   //!
-  std::vector<TH1F*> h_truthJet_tpCount;  //!
-  std::vector<TH1F*> h_truthJet_tpPt;     //!
-  std::vector<TH1F*> h_truthJet_tpPt_l;   //!
-  std::vector<TH1F*> h_truthJet_tpPt_m;   //!
-  std::vector<TH1F*> h_truthJet_tpPt_s;   //!
-  std::vector<TH1F*> h_truthJet_tp_dR;    //!
-
+  std::vector<TH1F*> h_truthJet_trkCount;      //!
+  std::vector<TH1F*> h_truthJet_trkPt;         //!
+  std::vector<TH1F*> h_truthJet_trkPt_l;       //!
+  std::vector<TH1F*> h_truthJet_trkPt_m;       //!
+  std::vector<TH1F*> h_truthJet_trkPt_s;       //!
+  std::vector<TH1F*> h_truthJet_trk_dR;        //!
+  std::vector<TH1F*> h_truthJet_tpCount;       //!
+  std::vector<TH1F*> h_truthJet_tpPt;          //!
+  std::vector<TH1F*> h_truthJet_tpPt_l;        //!
+  std::vector<TH1F*> h_truthJet_tpPt_m;        //!
+  std::vector<TH1F*> h_truthJet_tpPt_s;        //!
+  std::vector<TH1F*> h_truthJet_tp_dR;         //!
+  std::vector<TH1F*> h_truthJet_tp_pdgId;      //!
+  std::vector<TH1F*> h_truthJet_tpChrgCount;   //!
+  std::vector<TH1F*> h_truthJet_tpVisCount;    //!
+  std::vector<TH1F*> h_truthJet_tpDarkCount;   //!
+  std::vector<TH1F*> h_truthJet_tpPidCount;    //!
+  std::vector<TH1F*> h_truthJet_tpOffPidCount; //!
+  std::vector<TH1F*> h_truthJet_tpAllPidCount; //!
+         
   // truth jet associated vertices
-  std::vector<TH1F*> h_truthJet_secVtxCount;   //!
-  std::vector<TH1F*> h_truthJet_secVtxPt;      //!
-  std::vector<TH1F*> h_truthJet_secVtx_dR;     //!
-  std::vector<TH1F*> h_truthJet_truthVtxCount; //!
-  std::vector<TH1F*> h_truthJet_truthVtxPt;    //!
-  std::vector<TH1F*> h_truthJet_truthVtx_dR;   //!
+  std::vector<TH1F*> h_truthJet_secVtxCount;         //!
+  std::vector<TH1F*> h_truthJet_secVtxPt;            //!
+  std::vector<TH1F*> h_truthJet_secVtx_dR;           //!
+  std::vector<TH1F*> h_truthJet_truthVtxCount;       //!
+  std::vector<TH1F*> h_truthJet_truthVtxPt;          //!
+  std::vector<TH1F*> h_truthJet_truthVtx_dR;         //!
+  std::vector<TH1F*> h_truthJet_truthVtx_r;          //!
+  std::vector<TH1F*> h_truthJet_truthVtx_mass;       //!
+  std::vector<TH1F*> h_truthJet_truthVtxPidCount;    //!
+  std::vector<TH1F*> h_truthJet_truthVtxOffPidCount; //!
+  std::vector<TH1F*> h_truthJet_truthVtxAllPidCount; //!
 
   // truth jets vs pileup (average mu)
   std::vector<TH2F*> h_truthJet_n_vs_avgMu;  //!
@@ -468,7 +540,104 @@ class EJsHistogramManager : public HistogramManager
   // truth jets vs pileup (actual mu)
   std::vector<TH2F*> h_truthJet_n_vs_actMu;  //!
   std::vector<TH2F*> h_truthJet_pt_vs_actMu; //!
+
+  // dark-matched truth jets (truth emerging jets)
+  std::vector<TH1F*> h_truthEJ_n;     //!
+  std::vector<TH1F*> h_truthEJ_pt;    //!
+  std::vector<TH1F*> h_truthEJ_pt_l;  //!
+  std::vector<TH1F*> h_truthEJ_pt_m;  //!
+  std::vector<TH1F*> h_truthEJ_pt_s;  //!
+  std::vector<TH1F*> h_truthEJ_eta;   //!
+  std::vector<TH1F*> h_truthEJ_phi;   //!
+  std::vector<TH1F*> h_truthEJ_E;     //!
+  std::vector<TH1F*> h_truthEJ_M;     //!
+  std::vector<TH1F*> h_truthEJ_rapid; //!
+  // dark-matched truth jet width, constituents
+  std::vector<TH1F*> h_truthEJ_width;          //!
+  std::vector<TH1F*> h_truthEJ_girth;          //!
+  std::vector<TH1F*> h_truthEJ_numConstit;     //!
+  std::vector<TH1F*> h_truthEJ_constitPt;      //!
+  std::vector<TH1F*> h_truthEJ_constit_dR;     //!
+  std::vector<TH1F*> h_truthEJ_constit_pt;     //!
+  std::vector<TH1F*> h_truthEJ_constit_eta;    //!
+  std::vector<TH1F*> h_truthEJ_constit_phi;    //!
+  std::vector<TH1F*> h_truthEJ_constit_E;      //!
+  std::vector<TH1F*> h_truthEJ_constit_pdgId;  //!
+  std::vector<TH1F*> h_truthEJ_constit_pVtx_r; //!
+  std::vector<TH1F*> h_truthEJ_numChrgConstit; //!
+  std::vector<TH1F*> h_truthEJ_numVisConstit;  //!
+  // dark-matched truth jet dR-matched truth parts
+  std::vector<TH1F*> h_truthEJ_tpCount;       //!
+  std::vector<TH1F*> h_truthEJ_tpPt;          //!
+  std::vector<TH1F*> h_truthEJ_tpPt_l;        //!
+  std::vector<TH1F*> h_truthEJ_tpPt_m;        //!
+  std::vector<TH1F*> h_truthEJ_tpPt_s;        //!
+  std::vector<TH1F*> h_truthEJ_tp_dR;         //!
+  std::vector<TH1F*> h_truthEJ_tp_pdgId;      //!
+  std::vector<TH1F*> h_truthEJ_tpChrgCount;   //!
+  std::vector<TH1F*> h_truthEJ_tpVisCount;    //!
+  std::vector<TH1F*> h_truthEJ_tpDarkCount;   //!
+  std::vector<TH1F*> h_truthEJ_tpPidCount;    //!
+  std::vector<TH1F*> h_truthEJ_tpOffPidCount; //!
+  std::vector<TH1F*> h_truthEJ_tpAllPidCount; //!
+  // dark-matched truth jet dR-matched truth vertices
+  std::vector<TH1F*> h_truthEJ_truthVtxCount;       //!
+  std::vector<TH1F*> h_truthEJ_truthVtxPt;          //!
+  std::vector<TH1F*> h_truthEJ_truthVtx_dR;         //!
+  std::vector<TH1F*> h_truthEJ_truthVtx_r;          //!
+  std::vector<TH1F*> h_truthEJ_truthVtx_mass;       //!
+  std::vector<TH1F*> h_truthEJ_truthVtxPidCount;    //!
+  std::vector<TH1F*> h_truthEJ_truthVtxOffPidCount; //!
+  std::vector<TH1F*> h_truthEJ_truthVtxAllPidCount; //!
   
+  // non-dark-matched truth jets (truth qcd jets)
+  std::vector<TH1F*> h_truthQCDJ_n; //!
+  std::vector<TH1F*> h_truthQCDJ_pt;    //!
+  std::vector<TH1F*> h_truthQCDJ_pt_l;  //!
+  std::vector<TH1F*> h_truthQCDJ_pt_m;  //!
+  std::vector<TH1F*> h_truthQCDJ_pt_s;  //!
+  std::vector<TH1F*> h_truthQCDJ_eta;   //!
+  std::vector<TH1F*> h_truthQCDJ_phi;   //!
+  std::vector<TH1F*> h_truthQCDJ_E;     //!
+  std::vector<TH1F*> h_truthQCDJ_M;     //!
+  std::vector<TH1F*> h_truthQCDJ_rapid; //!
+  // dark-matched truth jet width, constituents
+  std::vector<TH1F*> h_truthQCDJ_width;          //!
+  std::vector<TH1F*> h_truthQCDJ_girth;          //!
+  std::vector<TH1F*> h_truthQCDJ_numConstit;     //!
+  std::vector<TH1F*> h_truthQCDJ_constitPt;      //!
+  std::vector<TH1F*> h_truthQCDJ_constit_dR;     //!
+  std::vector<TH1F*> h_truthQCDJ_constit_pt;     //!
+  std::vector<TH1F*> h_truthQCDJ_constit_eta;    //!
+  std::vector<TH1F*> h_truthQCDJ_constit_phi;    //!
+  std::vector<TH1F*> h_truthQCDJ_constit_E;      //!
+  std::vector<TH1F*> h_truthQCDJ_constit_pdgId;  //!
+  std::vector<TH1F*> h_truthQCDJ_constit_pVtx_r; //!
+  std::vector<TH1F*> h_truthQCDJ_numChrgConstit; //!
+  std::vector<TH1F*> h_truthQCDJ_numVisConstit;  //!
+  // dark-matched truth jet dR-matched truth parts
+  std::vector<TH1F*> h_truthQCDJ_tpCount;       //!
+  std::vector<TH1F*> h_truthQCDJ_tpPt;          //!
+  std::vector<TH1F*> h_truthQCDJ_tpPt_l;        //!
+  std::vector<TH1F*> h_truthQCDJ_tpPt_m;        //!
+  std::vector<TH1F*> h_truthQCDJ_tpPt_s;        //!
+  std::vector<TH1F*> h_truthQCDJ_tp_dR;         //!
+  std::vector<TH1F*> h_truthQCDJ_tp_pdgId;      //!
+  std::vector<TH1F*> h_truthQCDJ_tpChrgCount;   //!
+  std::vector<TH1F*> h_truthQCDJ_tpVisCount;    //!
+  std::vector<TH1F*> h_truthQCDJ_tpDarkCount;   //!
+  std::vector<TH1F*> h_truthQCDJ_tpPidCount;    //!
+  std::vector<TH1F*> h_truthQCDJ_tpOffPidCount; //!
+  std::vector<TH1F*> h_truthQCDJ_tpAllPidCount; //!
+  // dark-matched truth jet dR-matched truth vertices
+  std::vector<TH1F*> h_truthQCDJ_truthVtxCount;       //!
+  std::vector<TH1F*> h_truthQCDJ_truthVtxPt;          //!
+  std::vector<TH1F*> h_truthQCDJ_truthVtx_dR;         //!
+  std::vector<TH1F*> h_truthQCDJ_truthVtx_r;          //!
+  std::vector<TH1F*> h_truthQCDJ_truthVtx_mass;       //!
+  std::vector<TH1F*> h_truthQCDJ_truthVtxPidCount;    //!
+  std::vector<TH1F*> h_truthQCDJ_truthVtxOffPidCount; //!
+  std::vector<TH1F*> h_truthQCDJ_truthVtxAllPidCount; //!
 
 
   // histograms -- truth dark jets
@@ -508,32 +677,50 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_darkJetN_Et_s;  //!
 
   // dark jet constituents
-  std::vector<TH1F*> h_darkJet_girth;      //!
-  std::vector<TH1F*> h_darkJet_numConstit; //!
-  std::vector<TH1F*> h_darkJet_constitPt;  //!
-  std::vector<TH1F*> h_darkJet_constit_dR; //!
+  std::vector<TH1F*> h_darkJet_girth;          //!
+  std::vector<TH1F*> h_darkJet_numConstit;     //!
+  std::vector<TH1F*> h_darkJet_constitPt;      //!
+  std::vector<TH1F*> h_darkJet_constit_dR;     //!
+  std::vector<TH1F*> h_darkJet_constit_pt;     //!
+  std::vector<TH1F*> h_darkJet_constit_eta;    //!
+  std::vector<TH1F*> h_darkJet_constit_phi;    //!
+  std::vector<TH1F*> h_darkJet_constit_E;      //!
+  std::vector<TH1F*> h_darkJet_constit_pdgId;  //!
+  std::vector<TH1F*> h_darkJet_constit_dVtx_r; //!
 
   // dark jet associated tracks / truth particles
-  std::vector<TH1F*> h_darkJet_trkCount; //!
-  std::vector<TH1F*> h_darkJet_trkPt;    //!
-  std::vector<TH1F*> h_darkJet_trkPt_l;  //!
-  std::vector<TH1F*> h_darkJet_trkPt_m;  //!
-  std::vector<TH1F*> h_darkJet_trkPt_s;  //!
-  std::vector<TH1F*> h_darkJet_trk_dR;   //!
-  std::vector<TH1F*> h_darkJet_tpCount;  //!
-  std::vector<TH1F*> h_darkJet_tpPt;     //!
-  std::vector<TH1F*> h_darkJet_tpPt_l;   //!
-  std::vector<TH1F*> h_darkJet_tpPt_m;   //!
-  std::vector<TH1F*> h_darkJet_tpPt_s;   //!
-  std::vector<TH1F*> h_darkJet_tp_dR;    //!
+  std::vector<TH1F*> h_darkJet_trkCount;      //!
+  std::vector<TH1F*> h_darkJet_trkPt;         //!
+  std::vector<TH1F*> h_darkJet_trkPt_l;       //!
+  std::vector<TH1F*> h_darkJet_trkPt_m;       //!
+  std::vector<TH1F*> h_darkJet_trkPt_s;       //!
+  std::vector<TH1F*> h_darkJet_trk_dR;        //!
+  std::vector<TH1F*> h_darkJet_tpCount;       //!
+  std::vector<TH1F*> h_darkJet_tpPt;          //!
+  std::vector<TH1F*> h_darkJet_tpPt_l;        //!
+  std::vector<TH1F*> h_darkJet_tpPt_m;        //!
+  std::vector<TH1F*> h_darkJet_tpPt_s;        //!
+  std::vector<TH1F*> h_darkJet_tp_dR;         //!
+  std::vector<TH1F*> h_darkJet_tp_pdgId;      //!
+  std::vector<TH1F*> h_darkJet_tpChrgCount;   //!
+  std::vector<TH1F*> h_darkJet_tpVisCount;    //!
+  std::vector<TH1F*> h_darkJet_tpDarkCount;   //!
+  std::vector<TH1F*> h_darkJet_tpPidCount;    //!
+  std::vector<TH1F*> h_darkJet_tpOffPidCount; //!
+  std::vector<TH1F*> h_darkJet_tpAllPidCount; //!
 
   // dark jet associated vertices
-  std::vector<TH1F*> h_darkJet_secVtxCount;   //!
-  std::vector<TH1F*> h_darkJet_secVtxPt;      //!
-  std::vector<TH1F*> h_darkJet_secVtx_dR;     //!
-  std::vector<TH1F*> h_darkJet_truthVtxCount; //!
-  std::vector<TH1F*> h_darkJet_truthVtxPt;    //!
-  std::vector<TH1F*> h_darkJet_truthVtx_dR;   //!
+  std::vector<TH1F*> h_darkJet_secVtxCount;         //!
+  std::vector<TH1F*> h_darkJet_secVtxPt;            //!
+  std::vector<TH1F*> h_darkJet_secVtx_dR;           //!
+  std::vector<TH1F*> h_darkJet_truthVtxCount;       //!
+  std::vector<TH1F*> h_darkJet_truthVtxPt;          //!
+  std::vector<TH1F*> h_darkJet_truthVtx_dR;         //!
+  std::vector<TH1F*> h_darkJet_truthVtx_r;          //!
+  std::vector<TH1F*> h_darkJet_truthVtx_mass;       //!
+  std::vector<TH1F*> h_darkJet_truthVtxPidCount;    //!
+  std::vector<TH1F*> h_darkJet_truthVtxOffPidCount; //!
+  std::vector<TH1F*> h_darkJet_truthVtxAllPidCount; //!
 
   // dark jets vs pileup (average mu)
   std::vector<TH2F*> h_darkJet_n_vs_avgMu;  //!
@@ -544,6 +731,24 @@ class EJsHistogramManager : public HistogramManager
 
 
   // histograms -- truth particles
+  // truth particle basics
+  std::vector<TH1F*> h_tp_n;                //!
+  std::vector<TH1F*> h_tp_pt;               //!
+  std::vector<TH1F*> h_tp_eta;              //!
+  std::vector<TH1F*> h_tp_phi;              //!
+  std::vector<TH1F*> h_tp_E;                //!
+  std::vector<TH1F*> h_tp_M;                //!
+  std::vector<TH1F*> h_tp_sumPt;            //!
+  std::vector<TH1F*> h_tp_nCharged;         //!
+  std::vector<TH1F*> h_tp_sumPtCharged;     //!
+  std::vector<TH1F*> h_tp_nStable;          //!
+  std::vector<TH1F*> h_tp_sumPtStable;      //!
+  std::vector<TH1F*> h_tp_nVisible;         //!
+  std::vector<TH1F*> h_tp_sumPtVisible;     //!
+  std::vector<TH1F*> h_tp_nDark;            //!
+  std::vector<TH1F*> h_tp_sumPtDark;        //!
+  std::vector<TH1F*> h_tp_nChargedDark;     //!
+  std::vector<TH1F*> h_tp_sumPtChargedDark; //!
   // heavy scalar mediator (Xd) basics
   std::vector<TH1F*> h_Xd_n;            //!
   std::vector<TH1F*> h_Xd_pt;           //!
@@ -672,6 +877,53 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_allrhod_childStatus;  //!
   std::vector<TH1F*> h_allrhod_prodVtx_r;    //!
   std::vector<TH1F*> h_allrhod_decayVtx_r;   //!
+
+
+  // histograms -- truth vertex
+  // truth vertex basics
+  std::vector<TH1F*> h_truthVtx_n;     //!
+  std::vector<TH1F*> h_truthVtx_x;     //!
+  std::vector<TH1F*> h_truthVtx_y;     //!
+  std::vector<TH1F*> h_truthVtx_z;     //!
+  std::vector<TH1F*> h_truthVtx_r;     //!
+  std::vector<TH1F*> h_truthVtx_pt;    //!
+  std::vector<TH1F*> h_truthVtx_eta;   //!
+  std::vector<TH1F*> h_truthVtx_phi;   //!
+  std::vector<TH1F*> h_truthVtx_mass;  //!
+  std::vector<TH1F*> h_truthVtx_nOutP; //!
+  // dark pion decay vertex basics
+  std::vector<TH1F*> h_truthVtx_pid_n;     //!
+  std::vector<TH1F*> h_truthVtx_pid_x;     //!
+  std::vector<TH1F*> h_truthVtx_pid_y;     //!
+  std::vector<TH1F*> h_truthVtx_pid_z;     //!
+  std::vector<TH1F*> h_truthVtx_pid_r;     //!
+  std::vector<TH1F*> h_truthVtx_pid_pt;    //!
+  std::vector<TH1F*> h_truthVtx_pid_eta;   //!
+  std::vector<TH1F*> h_truthVtx_pid_phi;   //!
+  std::vector<TH1F*> h_truthVtx_pid_mass;  //!
+  std::vector<TH1F*> h_truthVtx_pid_nOutP; //!
+  // off-diagonal dark pion decay vertex basics
+  std::vector<TH1F*> h_truthVtx_offpid_n;     //!
+  std::vector<TH1F*> h_truthVtx_offpid_x;     //!
+  std::vector<TH1F*> h_truthVtx_offpid_y;     //!
+  std::vector<TH1F*> h_truthVtx_offpid_z;     //!
+  std::vector<TH1F*> h_truthVtx_offpid_r;     //!
+  std::vector<TH1F*> h_truthVtx_offpid_pt;    //!
+  std::vector<TH1F*> h_truthVtx_offpid_eta;   //!
+  std::vector<TH1F*> h_truthVtx_offpid_phi;   //!
+  std::vector<TH1F*> h_truthVtx_offpid_mass;  //!
+  std::vector<TH1F*> h_truthVtx_offpid_nOutP; //!
+  // all dark pion decay vertex basics
+  std::vector<TH1F*> h_truthVtx_allpid_n;     //!
+  std::vector<TH1F*> h_truthVtx_allpid_x;     //!
+  std::vector<TH1F*> h_truthVtx_allpid_y;     //!
+  std::vector<TH1F*> h_truthVtx_allpid_z;     //!
+  std::vector<TH1F*> h_truthVtx_allpid_r;     //!
+  std::vector<TH1F*> h_truthVtx_allpid_pt;    //!
+  std::vector<TH1F*> h_truthVtx_allpid_eta;   //!
+  std::vector<TH1F*> h_truthVtx_allpid_phi;   //!
+  std::vector<TH1F*> h_truthVtx_allpid_mass;  //!
+  std::vector<TH1F*> h_truthVtx_allpid_nOutP; //!
   
   
   // histograms -- secondary vertex

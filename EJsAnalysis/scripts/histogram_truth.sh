@@ -2,7 +2,7 @@
 # script for running tree-to-histogram jobs
 
 inpath="$EJ_PATH/../run/localOutput/tree/local.truth/data-tree/"
-#inpath="$EJ_PATH/../run/localOutput/tree/local.truth.pythia81.A/data-tree/"
+#inpath="$EJ_PATH/../run/localOutput/tree/local.truth.pythia82.A.211ctau/data-tree/"
 input_81_A="${inpath}modA_run.root"
 input_81_B="${inpath}modB_run.root"
 input_82_A="${inpath}modA_1000_150.root"

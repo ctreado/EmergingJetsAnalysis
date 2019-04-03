@@ -38,6 +38,7 @@ namespace EJs {
     
     // vector branches
     std::vector<uint8_t>* m_isDarkPionDecay;
+    std::vector<uint8_t>* m_isOffdiagDarkPionDecay;
 
     std::vector<int>*   m_ID;
     std::vector<float>* m_x;
@@ -58,7 +59,7 @@ namespace EJs {
     std::vector<float>* m_parent_E;
     std::vector<float>* m_parent_M;
     std::vector<float>* m_parent_charge;
-    std::vector<int>*   m_parent_pid;
+    std::vector<int>*   m_parent_pdgId;
     std::vector<int>*   m_parent_status;
     std::vector<int>*   m_parent_barcode;
 
@@ -78,7 +79,7 @@ namespace EJs {
     std::vector<std::vector<float>>*   m_outP_E;
     std::vector<std::vector<float>>*   m_outP_M;
     std::vector<std::vector<float>>*   m_outP_charge;
-    std::vector<std::vector<int>>*     m_outP_pid;
+    std::vector<std::vector<int>>*     m_outP_pdgId;
     std::vector<std::vector<int>>*     m_outP_status;
     std::vector<std::vector<int>>*     m_outP_barcode;
     std::vector<std::vector<uint8_t>>* m_outP_isReco;
@@ -86,6 +87,10 @@ namespace EJs {
     std::vector<std::vector<int>>*     m_outP_recoID;
     std::vector<std::vector<uint8_t>>* m_outP_recoIsSelected;
     std::vector<std::vector<uint8_t>>* m_outP_recoIsAssociated;
+    std::vector<std::vector<uint8_t>>* m_outP_isStable;
+    std::vector<std::vector<uint8_t>>* m_outP_isInteracting;
+    std::vector<std::vector<uint8_t>>* m_outP_isReconstructible;
+    std::vector<std::vector<uint8_t>>* m_outP_isDark;
     // --> add branches for corresponding isReco tracks (??) ...
     // --> also want to look at POTENTIALLY RECONSTRUCTIBLE tracks ...
 

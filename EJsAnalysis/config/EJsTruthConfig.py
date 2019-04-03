@@ -26,6 +26,7 @@ Dict_ObjectMatcher = {
 Dict_EJsMiniNtuple = {
     "m_name"                     : "EJsMiniNtup",
     "m_msgLevel"                 : "info",
+    "m_evtDetailStr"             : "",
     "m_truthJetDetailStr"        : "kinematic rapidity energyLight constituent constituentAll match",
     "m_truthJetContainerName"    : "AntiKt4TruthJets AntiKt4TruthDarkJets",
     "m_truthJetBranchName"       : "truthJet darkJet",
