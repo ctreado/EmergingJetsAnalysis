@@ -32,7 +32,7 @@ class EJsHelpTreeBase : public HelpTreeBase
  public:
   // create HelpTreeBase instance
   EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* file, const float units = 1e3,
-		    bool debug = false, xAOD::TStore* store = 0, bool emtopo = true, bool pflow = false );
+		    bool debug = false, xAOD::TStore* store = 0, bool emtopo = true, bool pflow = false, bool truth = false );
   // standard destructor
   virtual ~EJsHelpTreeBase ();
 
@@ -79,6 +79,7 @@ class EJsHelpTreeBase : public HelpTreeBase
   
   bool m_doEMTopoJets;
   bool m_doPFlowJets;
+  bool m_truthLevelOnly;
   
   // --- extra (vector) branches --- //
 
@@ -97,33 +98,48 @@ class EJsHelpTreeBase : public HelpTreeBase
   
   uint8_t m_signal_emtopo;
   uint8_t m_signal_pflow;
+  uint8_t m_signal_truth;
   uint8_t m_valid_emtopo;
   uint8_t m_valid_pflow;
+  uint8_t m_valid_truth;
   uint8_t m_ctrl_emtopo;
   uint8_t m_ctrl_pflow;
+  uint8_t m_ctrl_truth;
 
   uint8_t m_signalTrig;
   uint8_t m_signalNJet_emtopo;
   uint8_t m_signalNJet_pflow;
+  uint8_t m_signalNJet_truth;
   uint8_t m_signalJetPt_emtopo;
   uint8_t m_signalJetPt_pflow;
+  uint8_t m_signalJetPt_truth;
   uint8_t m_signalJetEta_emtopo;
   uint8_t m_signalJetEta_pflow;
+  uint8_t m_signalJetEta_truth;
   uint8_t m_signalNJetHt_emtopo;
   uint8_t m_signalNJetHt_pflow;
+  uint8_t m_signalNJetHt_truth;
+  //uint8_t m_signalNEJ_emtopo;
+  //uint8_t m_signalNEJ_pflow;
+  uint8_t m_signalNEJ_truth;
 
   uint8_t m_validTrig;
   uint8_t m_validNJetMin_emtopo;
   uint8_t m_validNJetMin_pflow;
+  uint8_t m_validNJetMin_truth;
   uint8_t m_validNJetMax_emtopo;
   uint8_t m_validNJetMax_pflow;
+  uint8_t m_validNJetMax_truth;
   uint8_t m_validJetPt_emtopo;
   uint8_t m_validJetPt_pflow;
+  uint8_t m_validJetPt_truth;
   uint8_t m_validJetEta_emtopo;
   uint8_t m_validJetEta_pflow;
+  uint8_t m_validJetEta_truth;
 
   float m_njetHt_emtopo;
   float m_njetHt_pflow;
+  float m_njetHt_truth;
 
   uint8_t m_cleanJets_emtopo;
   uint8_t m_cleanJets_pflow;

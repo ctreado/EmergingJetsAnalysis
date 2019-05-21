@@ -5,6 +5,9 @@
    selecting secondary vertices (primarily using the VsiBonsai toolkit);
    based on xAODAnaHelpers' *Selector algorithms */
 
+// --> IMPLEMENT VSI-BONSAI TRACK FILTERING (add config variables)
+// --> ADD SKELETON FOR MATERIAL MAP CUTS (w/ config variables)
+
 #include <string>
 
 #include <xAODTracking/Vertex.h>

@@ -4,11 +4,13 @@
 
 
 EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* file, const float units,
-				     bool debug, xAOD::TStore* store, bool emtopo, bool pflow ) :
+				     bool debug, xAOD::TStore* store, bool emtopo, bool pflow, bool truth ) :
   HelpTreeBase ( event, tree, file, units, debug, store )
 {
-  m_doEMTopoJets = emtopo;
-  m_doPFlowJets  = pflow;
+  m_doEMTopoJets   = emtopo;
+  m_doPFlowJets    = pflow;
+  m_truthLevelOnly = truth;
+  if ( m_truthLevelOnly ) { m_doEMTopoJets = false; m_doPFlowJets = false; }
   
   if ( m_debug ) Info( "EJsHelpTreeBase()", "creating output EJs TTree" );
 
@@ -24,8 +26,10 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
 
   m_eventIsMC = 0;
 
-  m_signalTrig          = 0;
-  m_validTrig           = 0;
+  if ( !m_truthLevelOnly ) {
+    m_signalTrig          = 0;
+    m_validTrig           = 0;
+  }
   if ( m_doEMTopoJets ) {
     m_signal_emtopo       = 0;
     m_valid_emtopo        = 0;
@@ -55,6 +59,21 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
     m_validJetEta_pflow   = 0;
     m_njetHt_pflow        = 0;
     m_cleanJets_pflow     = 0;
+  }
+  if ( m_truthLevelOnly ) {
+    m_signal_truth        = 0;
+    m_valid_truth         = 0;
+    m_ctrl_truth          = 0;
+    m_signalNJet_truth    = 0;
+    m_signalJetPt_truth   = 0;
+    m_signalJetEta_truth  = 0;
+    m_signalNJetHt_truth  = 0;
+    m_signalNEJ_truth     = 0;
+    m_validNJetMin_truth  = 0;
+    m_validNJetMax_truth  = 0;
+    m_validJetPt_truth    = 0;
+    m_validJetEta_truth   = 0;
+    m_njetHt_truth        = 0;
   }
   
   m_tp_ID               = new std::vector<int>;
@@ -271,8 +290,10 @@ void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
 
   m_tree->Branch( "isMC", &m_eventIsMC );
 
-  m_tree->Branch( "passesSignalTrigger", &m_signalTrig );
-  m_tree->Branch( "passesValidTrigger",  &m_validTrig  );
+  if ( !m_truthLevelOnly ) {
+    m_tree->Branch( "passesSignalTrigger", &m_signalTrig );
+    m_tree->Branch( "passesValidTrigger",  &m_validTrig  );
+  }
   
   if ( m_doEMTopoJets ) {
     m_tree->Branch( "isSignal_EMTopo", &m_signal_emtopo );
@@ -312,7 +333,26 @@ void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
     m_tree->Branch( "NJetHt_PFlow", &m_njetHt_pflow );
 
     m_tree->Branch( "cleanJetEvent_PFlow", &m_cleanJets_pflow );
-  } 
+  }
+
+  if ( m_truthLevelOnly ) {
+    m_tree->Branch( "isSignal_Truth", &m_signal_truth );
+    m_tree->Branch( "isValid_Truth",  &m_valid_truth  );
+    m_tree->Branch( "isCtrl_Truth",   &m_ctrl_truth   );
+
+    m_tree->Branch( "passesSignalNJet_Truth",   &m_signalNJet_truth   );
+    m_tree->Branch( "passesSignalJetPt_Truth",  &m_signalJetPt_truth  );
+    m_tree->Branch( "passesSignalJetEta_Truth", &m_signalJetEta_truth );
+    m_tree->Branch( "passesSignalNJetHt_Truth", &m_signalNJetHt_truth );
+    m_tree->Branch( "passesSignalNEJ_Truth",    &m_signalNEJ_truth    );
+    
+    m_tree->Branch( "passesValidNJetMin_Truth", &m_validNJetMin_truth );
+    m_tree->Branch( "passesValidNJetMax_Truth", &m_validNJetMax_truth );
+    m_tree->Branch( "passesValidJetPt_Truth",   &m_validJetPt_truth   );
+    m_tree->Branch( "passesValidJetEta_Truth",  &m_validJetEta_truth  );
+  
+    m_tree->Branch( "NJetHt_Truth", &m_njetHt_truth );
+  }
 }
 
 void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
@@ -412,15 +452,38 @@ void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
     if ( event->isAvailable<char>( "cleanEvent_JetSelect_AntiKt4EMPFlow" ) )
       m_cleanJets_pflow = event->auxdataConst<char>( "cleanEvent_JetSelect_AntiKt4EMPFlow" );
   }
+
+  if ( m_truthLevelOnly ) {
+    if ( event->isAvailable<char>( "passSignalSel_Truth" ) ) {
+      m_signal_truth  = event->auxdataConst<char>( "passSignalSel_Truth" );
+      m_valid_truth   = event->auxdataConst<char>( "passValidSel_Truth"  );
+      m_ctrl_truth    = event->auxdataConst<char>( "passCtrlSel_Truth"   );
+      
+      m_signalNJet_truth    = event->auxdataConst<char>( "passSignalNJetSel_Truth"   );
+      m_signalJetPt_truth   = event->auxdataConst<char>( "passSignalJetPtSel_Truth"  );
+      m_signalJetEta_truth  = event->auxdataConst<char>( "passSignalJetEtaSel_Truth" );
+      m_signalNJetHt_truth  = event->auxdataConst<char>( "passSignalNJetHtSel_Truth" );
+      m_signalNEJ_truth     = event->auxdataConst<char>( "passSignalNEJSel_Truth"    );
+
+      m_validNJetMin_truth  = event->auxdataConst<char>( "passValidNJetMinSel_Truth" );
+      m_validNJetMax_truth  = event->auxdataConst<char>( "passValidNJetMaxSel_Truth" );
+      m_validJetPt_truth    = event->auxdataConst<char>( "passValidJetPtSel_Truth"   );
+      m_validJetEta_truth   = event->auxdataConst<char>( "passValidJetEtaSel_Truth"  );
+    }
+    if ( event->isAvailable<double>( "NJetHt_Truth" ) )
+      m_njetHt_truth = event->auxdataConst<double>( "NJetHt_Truth" );
+  }
     
 }
 
 void EJsHelpTreeBase :: ClearEventUser ( )
 {
   m_eventIsMC = 0;
-  
-  m_signalTrig = 0;
-  m_validTrig  = 0;
+
+  if ( !m_truthLevelOnly ) {
+    m_signalTrig = 0;
+    m_validTrig  = 0;
+  }
 
   if ( m_doEMTopoJets ) {
     m_signal_emtopo = 0;
@@ -460,6 +523,25 @@ void EJsHelpTreeBase :: ClearEventUser ( )
     m_njetHt_pflow = 0;
 
     m_cleanJets_pflow = 0;
+  }
+
+  if ( m_truthLevelOnly ) {
+    m_signal_truth = 0;
+    m_valid_truth  = 0;
+    m_ctrl_truth   = 0;
+    
+    m_signalNJet_truth   = 0;  
+    m_signalJetPt_truth  = 0; 
+    m_signalJetEta_truth = 0;
+    m_signalNJetHt_truth = 0;
+    m_signalNEJ_truth    = 0;
+    
+    m_validNJetMin_truth = 0; 
+    m_validNJetMax_truth = 0; 
+    m_validJetPt_truth   = 0; 
+    m_validJetEta_truth  = 0;
+    
+    m_njetHt_truth = 0;
   }
 }
 

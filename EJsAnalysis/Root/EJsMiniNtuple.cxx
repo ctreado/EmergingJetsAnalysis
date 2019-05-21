@@ -199,7 +199,7 @@ EL::StatusCode EJsMiniNtuple :: addTree ( std::string syst )
     return EL::StatusCode::FAILURE;
   }
 
-  m_trees[syst] = new EJsHelpTreeBase( m_event, outTree, treeFile, 1e3, msgLvl(MSG::DEBUG), m_store, m_doEMTopo, m_doPFlow );
+  m_trees[syst] = new EJsHelpTreeBase( m_event, outTree, treeFile, 1e3, msgLvl(MSG::DEBUG), m_store, m_doEMTopo, m_doPFlow, m_truthLevelOnly );
   const auto& helpTree = m_trees[syst];
   helpTree->m_vertexContainerName = m_vertexContainerName;
 
@@ -470,10 +470,10 @@ EL::StatusCode EJsMiniNtuple :: execute ()
       // otherwise, skip
       else ANA_MSG_DEBUG( "Secondary vertex container, '" << m_secondaryVertexContainerName << ", is not available. Skipping..." );
     }
-
     
     // fill the tree
     helpTree->Fill();
+
   }
 
 

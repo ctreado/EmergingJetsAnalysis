@@ -4,6 +4,8 @@
 /* ObjectMatcher is the algorithm responsible for matching between 
    physics objects, including truth-matching */
 
+// --> SEPARATE DV-TRUTH MATCHING TO OWN ALGORITHM
+
 #include <string>
 #include <vector>
 
@@ -45,6 +47,10 @@ class ObjectMatcher : public xAH::Algorithm
 
   // protection when running on truth derivation
   bool m_truthLevelOnly = false;
+
+  // protection when running on samples w/o truth (dark) jets (i.e. xAODs)
+  bool m_haveTruthJets = true;
+  bool m_haveDarkJets  = true;
 
 
   // variables not filled at submission time

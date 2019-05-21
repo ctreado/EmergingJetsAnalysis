@@ -62,9 +62,9 @@ class EJsMiniNtuple : public xAH::Algorithm
   bool m_jetEMTopo = true;
   bool m_jetPFlow  = false;
 
-  bool m_retrievePV = true;
-
   bool m_truthLevelOnly = false;
+
+  bool m_retrievePV = true;
 
   // unit conversion from MeV; default is GeV
   float m_units = 1e3;

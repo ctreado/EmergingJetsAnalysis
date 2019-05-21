@@ -12,8 +12,9 @@ EJsHistogramManager :: EJsHistogramManager ( std::string name, std::string detai
   m_doPFlowJets     = pflow;
   m_truthLevelOnly  = truth;
   
-  if      ( m_doEMTopoJets ) m_jetStr = "EMTopo";
-  else if ( m_doPFlowJets  ) m_jetStr = "PFlow";
+  if      ( m_doEMTopoJets   ) m_jetStr = "EMTopo";
+  else if ( m_doPFlowJets    ) m_jetStr = "PFlow";
+  if      ( m_truthLevelOnly ) m_jetStr = "Truth";
 
   m_numLead   = m_histoInfoSwitch ->m_numLeading;
   m_numVtxTrk = m_histoInfoSwitch ->m_numVtxTrk;
@@ -497,12 +498,12 @@ StatusCode EJsHistogramManager :: connectEvents ( TTree* tree, bool mc )
   }
   connectBranch<uint8_t>    ( tree, "isMC",                           &m_isMC            );
 
+  connectBranch<uint8_t>  ( tree, "isSignal_" + m_jetStr,           &m_signal          );
+  connectBranch<uint8_t>  ( tree, "isValid_"  + m_jetStr,           &m_valid           );
+  connectBranch<uint8_t>  ( tree, "isCtrl_"   + m_jetStr,           &m_ctrl            );
+  connectBranch<float>    ( tree, "NJetHt_"   + m_jetStr,           &m_njetHt          );
+
   if ( !m_truthLevelOnly ) {
-    connectBranch<uint8_t>  ( tree, "isSignal_" + m_jetStr,           &m_signal          );
-    connectBranch<uint8_t>  ( tree, "isValid_"  + m_jetStr,           &m_valid           );
-    connectBranch<uint8_t>  ( tree, "isCtrl_"   + m_jetStr,           &m_ctrl            );
-    connectBranch<float>    ( tree, "NJetHt_"   + m_jetStr,           &m_njetHt          );
-  
     connectBranch<float>    ( tree, "PV_x",                           &m_pv_x            );
     connectBranch<float>    ( tree, "PV_y",                           &m_pv_y            );
     connectBranch<float>    ( tree, "PV_z",                           &m_pv_z            );
@@ -876,6 +877,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string jetName, const 
 
   std::string hjet      = jetName;
   std::string hjetUpper = jetName; hjetUpper[0] = toupper(hjetUpper[0]);
+  if ( m_truthLevelOnly ) hjetUpper = "TruthJet";
 
   for ( const auto& region : regions ) {
     const std::string name = m_name + outFileName + "/" + region + "/";
@@ -1202,14 +1204,15 @@ StatusCode EJsHistogramManager :: initialize ( const std::string jetName, const 
     	h_truthJet_secVtxPt    .push_back( book( name, "truthJet_secVtxPt",    "truth-jet-matched secondary vertex sum-p_{T} [GeV]", 100, 0,  100 ) );
     	h_truthJet_secVtx_dR   .push_back( book( name, "truthJet_secVtx_dR",   "truth-jet - matched-secondary-vertex dR",            100, 0,  0.4 ) );
     	// dR-matched TVs --> may want to add count / pt-sum histos for some subset of DV-like TVs ...
-    	h_truthJet_truthVtxCount       .push_back( book( name, "truthJet_truthVtxCount",       "truth-jet-matched truth vertex count",                  150, 0,  150 ) );
-    	h_truthJet_truthVtxPt          .push_back( book( name, "truthJet_truthVtxPt",          "truth-jet-matched truth vertex sum-p_{T} [GeV]",        100, 0, 2500 ) );
-    	h_truthJet_truthVtx_dR         .push_back( book( name, "truthJet_truthVtx_dR",         "truth-jet - matched-truth-vertex dR",                   100, 0,  0.4 ) );
-	h_truthJet_truthVtx_r          .push_back( book( name, "truthJet_truthVtx_r",          "truth-jet-matched truth vertex r-pos [mm]",             100, 0, 2500 ) );
-	h_truthJet_truthVtx_mass       .push_back( book( name, "truthJet_truthVtx_mass",       "truth-jet-matched truth vertex mass [GeV]",             100, 0, 5000 ) );
-	h_truthJet_truthVtxPidCount    .push_back( book( name, "truthJet_truthVtxPidCount",    "truth-jet-matched dark pion decay vtx count",           100, 0,  100 ) );
-	h_truthJet_truthVtxOffPidCount .push_back( book( name, "truthJet_truthVtxOffPidCount", "truth-jet-matched off-diag dark pion decay vtx count",  100, 0,  100 ) );
-	h_truthJet_truthVtxAllPidCount .push_back( book( name, "truthJet_truthVtxAllPidCount", "truth-jet-matched inclusive dark pion decay vtx count", 100, 0,  100 ) );
+    	h_truthJet_truthVtxCount           .push_back( book( name, "truthJet_truthVtxCount",       "truth-jet-matched truth vertex count",                  150, 0,  150 ) );
+    	h_truthJet_truthVtxPt              .push_back( book( name, "truthJet_truthVtxPt",          "truth-jet-matched truth vertex sum-p_{T} [GeV]",        100, 0, 2500 ) );
+    	h_truthJet_truthVtx_dR             .push_back( book( name, "truthJet_truthVtx_dR",         "truth-jet - matched-truth-vertex dR",                   100, 0,  0.4 ) );
+	h_truthJet_truthVtx_r              .push_back( book( name, "truthJet_truthVtx_r",          "truth-jet-matched truth vertex r-pos [mm]",             100, 0, 2500 ) );
+	h_truthJet_truthVtx_mass           .push_back( book( name, "truthJet_truthVtx_mass",       "truth-jet-matched truth vertex mass [GeV]",             100, 0, 5000 ) );
+	h_truthJet_truthVtxPidCount        .push_back( book( name, "truthJet_truthVtxPidCount",    "truth-jet-matched dark pion decay vtx count",           100, 0,  100 ) );
+	h_truthJet_truthVtxOffPidCount     .push_back( book( name, "truthJet_truthVtxOffPidCount", "truth-jet-matched off-diag dark pion decay vtx count",  100, 0,  100 ) );
+	h_truthJet_truthVtxAllPidCount     .push_back( book( name, "truthJet_truthVtxAllPidCount", "truth-jet-matched inclusive dark pion decay vtx count", 100, 0,  100 ) );
+	h_truthJet_truthVtxDispCount       .push_back( book( name, "truthJet_truthVtxDispCount",   "truth-jet-matched disp. (r > 0 mm) truth vtx count",    150, 0,  150 ) );
       }
 
       // truth jets vs mu
@@ -1274,6 +1277,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string jetName, const 
 	  h_truthEJ_truthVtxPidCount    .push_back( book( name, "truthEJ_truthVtxPidCount",    "truth-EJ-matched dark pion decay vtx count",           100, 0,  100 ) );
 	  h_truthEJ_truthVtxOffPidCount .push_back( book( name, "truthEJ_truthVtxOffPidCount", "truth-EJ-matched off-diag dark pion decay vtx count",  100, 0,  100 ) );
 	  h_truthEJ_truthVtxAllPidCount .push_back( book( name, "truthEJ_truthVtxAllPidCount", "truth-EJ-matched inclusive dark pion decay vtx count", 100, 0,  100 ) );
+	  h_truthEJ_truthVtxDispCount   .push_back( book( name, "truthEJ_truthVtxDispCount",   "truth-EJ-matched disp. (r > 0 mm) truth vtx count",    150, 0,  150 ) );
     	}
 
     	// not-dark-matched truth jets (truth qcd jets)
@@ -1329,6 +1333,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string jetName, const 
 	  h_truthQCDJ_truthVtxPidCount    .push_back( book( name, "truthQCDJ_truthVtxPidCount",    "truth-QCDJ-matched dark pion decay vtx count",           100, 0,  100 ) );
 	  h_truthQCDJ_truthVtxOffPidCount .push_back( book( name, "truthQCDJ_truthVtxOffPidCount", "truth-QCDJ-matched off-diag dark pion decay vtx count",  100, 0,  100 ) );
 	  h_truthQCDJ_truthVtxAllPidCount .push_back( book( name, "truthQCDJ_truthVtxAllPidCount", "truth-QCDJ-matched inclusive dark pion decay vtx count", 100, 0,  100 ) );
+	  h_truthQCDJ_truthVtxDispCount   .push_back( book( name, "truthQCDJ_truthVtxDispCount",   "truth-QCDJ-matched disp. (r > 0 mm) truth vtx count",    150, 0,  150 ) );
     	}
       }
       
@@ -1457,6 +1462,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string jetName, const 
 	h_darkJet_truthVtxPidCount    .push_back( book( name, "darkJet_truthVtxPidCount",    "dark-jet-matched dark pion decay vtx count",           100, 0,  100 ) );
 	h_darkJet_truthVtxOffPidCount .push_back( book( name, "darkJet_truthVtxOffPidCount", "dark-jet-matched off-diag dark pion decay vtx count",  100, 0,  100 ) );
 	h_darkJet_truthVtxAllPidCount .push_back( book( name, "darkJet_truthVtxAllPidCount", "dark-jet-matched inclusive dark pion decay vtx count", 100, 0,  100 ) );
+	h_darkJet_truthVtxDispCount   .push_back( book( name, "darkJet_truthVtxDispCount",   "dark-jet-matched disp. (r > 0 mm) truth vtx count",    150, 0,  150 ) );
       }
 
       // dark jets vs mu
@@ -1664,6 +1670,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string jetName, const 
       h_truthVtx_allpid_phi   .push_back( book( name, "truthVtx_allpid_phi",   "truth inclusive dark pion decay vertex phi",                  100,  -3.5,  3.5 ) );
       h_truthVtx_allpid_mass  .push_back( book( name, "truthVtx_allpid_mass",  "truth inclusive dark pion decay vertex mass [GeV]",           100,     0,   25 ) );
       h_truthVtx_allpid_nOutP .push_back( book( name, "truthVtx_allpid_nOutP", "n truth inclusive dark pion decay vertex outgoing particles",  12,     0,   12 ) );
+      // displaced truth vertices
+      h_truthVtx_disp_n .push_back( book( name, "truthVtx_disp_n", "n displaced (r > 0 mm) truth vertices", 100, 0, 1200 ) );
     } // end if mc (truth vertices)
 
 
@@ -2301,6 +2309,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  int n_tv_pid    = 0;
 	  int n_tv_offpid = 0;
 	  int n_tv_allpid = 0;
+	  int n_tv_disp   = 0;
     	  for ( int j = 0; j != m_truthJet_truthVtxCount->at(i); ++j ) {
     	    h_truthJet_truthVtx_dR   .at(ireg)->Fill( m_truthJet_truthVtx_dR   ->at(i).at(j) );
 	    h_truthJet_truthVtx_r    .at(ireg)->Fill( m_truthJet_truthVtx_r    ->at(i).at(j) );
@@ -2310,10 +2319,13 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	      if ( m_truthJet_truthVtx_isPid    ->at(i).at(j) ) ++n_tv_pid;
 	      if ( m_truthJet_truthVtx_isOffPid ->at(i).at(j) ) ++n_tv_offpid;
 	    }
+	    if ( m_truthJet_truthVtx_r ->at(i).at(j) > 0 )
+	      ++n_tv_disp;
 	  }
 	  h_truthJet_truthVtxPidCount    .at(ireg)->Fill( n_tv_pid    );
 	  h_truthJet_truthVtxOffPidCount .at(ireg)->Fill( n_tv_offpid );
 	  h_truthJet_truthVtxAllPidCount .at(ireg)->Fill( n_tv_allpid );
+	  h_truthJet_truthVtxDispCount   .at(ireg)->Fill( n_tv_disp   );
     	}
 
     	// truth jets vs mu
@@ -2402,6 +2414,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	      int n_ej_tv_pid    = 0;
 	      int n_ej_tv_offpid = 0;
 	      int n_ej_tv_allpid = 0;
+	      int n_ej_tv_disp   = 0;
     	      for ( int j = 0; j != m_truthJet_truthVtxCount->at(i); ++j ) {
     		h_truthEJ_truthVtx_dR   .at(ireg)->Fill( m_truthJet_truthVtx_dR   ->at(i).at(j) );
 		h_truthEJ_truthVtx_r    .at(ireg)->Fill( m_truthJet_truthVtx_r    ->at(i).at(j) );
@@ -2411,10 +2424,13 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 		  if ( m_truthJet_truthVtx_isPid    ->at(i).at(j) ) ++n_ej_tv_pid;
 		  if ( m_truthJet_truthVtx_isOffPid ->at(i).at(j) ) ++n_ej_tv_offpid;
 		}
+		if ( m_truthJet_truthVtx_r ->at(i).at(j) > 0 )
+		  ++n_ej_tv_disp;
 	      }
 	      h_truthEJ_truthVtxPidCount    .at(ireg)->Fill( n_ej_tv_pid    );
 	      h_truthEJ_truthVtxOffPidCount .at(ireg)->Fill( n_ej_tv_offpid );
 	      h_truthEJ_truthVtxAllPidCount .at(ireg)->Fill( n_ej_tv_allpid );
+	      h_truthEJ_truthVtxDispCount   .at(ireg)->Fill( n_ej_tv_disp   );
     	    }
     	  }
     	  // count NOT dark-matched truth jets (truth QCDJs)
@@ -2495,6 +2511,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	      int n_qj_tv_pid    = 0;
 	      int n_qj_tv_offpid = 0;
 	      int n_qj_tv_allpid = 0;
+	      int n_qj_tv_disp   = 0;
     	      for ( int j = 0; j != m_truthJet_truthVtxCount->at(i); ++j ) {
     		h_truthQCDJ_truthVtx_dR   .at(ireg)->Fill( m_truthJet_truthVtx_dR   ->at(i).at(j) );
 		h_truthQCDJ_truthVtx_r    .at(ireg)->Fill( m_truthJet_truthVtx_r    ->at(i).at(j) );
@@ -2504,10 +2521,13 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 		  if ( m_truthJet_truthVtx_isPid    ->at(i).at(j) ) ++n_qj_tv_pid;
 		  if ( m_truthJet_truthVtx_isOffPid ->at(i).at(j) ) ++n_qj_tv_offpid;
 		}
+		if ( m_truthJet_truthVtx_r ->at(i).at(j) > 0 )
+		  ++n_qj_tv_disp;
 	      }
 	      h_truthQCDJ_truthVtxPidCount    .at(ireg)->Fill( n_qj_tv_pid    );
 	      h_truthQCDJ_truthVtxOffPidCount .at(ireg)->Fill( n_qj_tv_offpid );
 	      h_truthQCDJ_truthVtxAllPidCount .at(ireg)->Fill( n_qj_tv_allpid );
+	      h_truthQCDJ_truthVtxDispCount   .at(ireg)->Fill( n_qj_tv_disp   );
     	    }
     	  }
     	}
@@ -2645,6 +2665,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  int n_dtv_pid    = 0;
 	  int n_dtv_offpid = 0;
 	  int n_dtv_allpid = 0;
+	  int n_dtv_disp   = 0;
     	  for ( int j = 0; j != m_darkJet_truthVtxCount->at(i); ++j ) {
     	    h_darkJet_truthVtx_dR   .at(ireg)->Fill( m_darkJet_truthVtx_dR   ->at(i).at(j) );
 	    h_darkJet_truthVtx_r    .at(ireg)->Fill( m_darkJet_truthVtx_r    ->at(i).at(j) );
@@ -2654,10 +2675,13 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	      if ( m_darkJet_truthVtx_isPid    ->at(i).at(j) ) ++n_dtv_pid;
 	      if ( m_darkJet_truthVtx_isOffPid ->at(i).at(j) ) ++n_dtv_offpid;
 	    }
+	    if ( m_darkJet_truthVtx_r ->at(i).at(j) > 0 )
+	      ++n_dtv_disp;
 	  }
 	  h_darkJet_truthVtxPidCount    .at(ireg)->Fill( n_dtv_pid    );
 	  h_darkJet_truthVtxOffPidCount .at(ireg)->Fill( n_dtv_offpid );
 	  h_darkJet_truthVtxAllPidCount .at(ireg)->Fill( n_dtv_allpid );
+	  h_darkJet_truthVtxDispCount   .at(ireg)->Fill( n_dtv_disp   );
     	}
 
     	// dark jets vs mu
@@ -2950,66 +2974,75 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // --- VERTICES --- //
     // ---------------- //
 
-    // truth vertices
-    int n_truthVtx_pid    = 0;
-    int n_truthVtx_offpid = 0;
-    int n_truthVtx_allpid = 0;
+    if ( mc ) {
+      
+      // truth vertices
+      int n_truthVtx_pid    = 0;
+      int n_truthVtx_offpid = 0;
+      int n_truthVtx_allpid = 0;
+      int n_truthVtx_disp   = 0;
     
-    h_truthVtx_n .at(ireg)->Fill( m_truthVtx_n );
-    
-    for ( int i = 0; i != m_truthVtx_n; ++i ) {
-      h_truthVtx_x     .at(ireg)->Fill( m_truthVtx_x     ->at(i) );
-      h_truthVtx_y     .at(ireg)->Fill( m_truthVtx_y     ->at(i) );
-      h_truthVtx_z     .at(ireg)->Fill( m_truthVtx_z     ->at(i) );
-      h_truthVtx_r     .at(ireg)->Fill( m_truthVtx_r     ->at(i) );
-      h_truthVtx_pt    .at(ireg)->Fill( m_truthVtx_pt    ->at(i) );
-      h_truthVtx_eta   .at(ireg)->Fill( m_truthVtx_eta   ->at(i) );
-      h_truthVtx_phi   .at(ireg)->Fill( m_truthVtx_phi   ->at(i) );
-      h_truthVtx_mass  .at(ireg)->Fill( m_truthVtx_mass  ->at(i) );
-      h_truthVtx_nOutP .at(ireg)->Fill( m_truthVtx_nOutP ->at(i) );
-      // inclusive dark pion decay vertices
-      if ( m_truthVtx_isPid->at(i) || m_truthVtx_isOffPid->at(i) ) {
-    	++n_truthVtx_allpid;
-    	h_truthVtx_allpid_x     .at(ireg)->Fill( m_truthVtx_x     ->at(i) );
-    	h_truthVtx_allpid_y     .at(ireg)->Fill( m_truthVtx_y     ->at(i) );
-    	h_truthVtx_allpid_z     .at(ireg)->Fill( m_truthVtx_z     ->at(i) );
-    	h_truthVtx_allpid_r     .at(ireg)->Fill( m_truthVtx_r     ->at(i) );
-    	h_truthVtx_allpid_pt    .at(ireg)->Fill( m_truthVtx_pt    ->at(i) );
-    	h_truthVtx_allpid_eta   .at(ireg)->Fill( m_truthVtx_eta   ->at(i) );
-    	h_truthVtx_allpid_phi   .at(ireg)->Fill( m_truthVtx_phi   ->at(i) );
-    	h_truthVtx_allpid_mass  .at(ireg)->Fill( m_truthVtx_mass  ->at(i) );
-    	h_truthVtx_allpid_nOutP .at(ireg)->Fill( m_truthVtx_nOutP ->at(i) );
-    	// standard dark pion decay vertices
-    	if ( m_truthVtx_isPid->at(i) ) {
-    	  ++n_truthVtx_pid;
-    	  h_truthVtx_pid_x     .at(ireg)->Fill( m_truthVtx_x     ->at(i) );
-    	  h_truthVtx_pid_y     .at(ireg)->Fill( m_truthVtx_y     ->at(i) );
-    	  h_truthVtx_pid_z     .at(ireg)->Fill( m_truthVtx_z     ->at(i) );
-    	  h_truthVtx_pid_r     .at(ireg)->Fill( m_truthVtx_r     ->at(i) );
-    	  h_truthVtx_pid_pt    .at(ireg)->Fill( m_truthVtx_pt    ->at(i) );
-    	  h_truthVtx_pid_eta   .at(ireg)->Fill( m_truthVtx_eta   ->at(i) );
-    	  h_truthVtx_pid_phi   .at(ireg)->Fill( m_truthVtx_phi   ->at(i) );
-    	  h_truthVtx_pid_mass  .at(ireg)->Fill( m_truthVtx_mass  ->at(i) );
-    	  h_truthVtx_pid_nOutP .at(ireg)->Fill( m_truthVtx_nOutP ->at(i) );
-    	}
-    	else if ( m_truthVtx_isOffPid->at(i) ) {
-    	  ++n_truthVtx_offpid;
-    	  h_truthVtx_offpid_x     .at(ireg)->Fill( m_truthVtx_x     ->at(i) );
-    	  h_truthVtx_offpid_y     .at(ireg)->Fill( m_truthVtx_y     ->at(i) );
-    	  h_truthVtx_offpid_z     .at(ireg)->Fill( m_truthVtx_z     ->at(i) );
-    	  h_truthVtx_offpid_r     .at(ireg)->Fill( m_truthVtx_r     ->at(i) );
-    	  h_truthVtx_offpid_pt    .at(ireg)->Fill( m_truthVtx_pt    ->at(i) );
-    	  h_truthVtx_offpid_eta   .at(ireg)->Fill( m_truthVtx_eta   ->at(i) );
-    	  h_truthVtx_offpid_phi   .at(ireg)->Fill( m_truthVtx_phi   ->at(i) );
-    	  h_truthVtx_offpid_mass  .at(ireg)->Fill( m_truthVtx_mass  ->at(i) );
-    	  h_truthVtx_offpid_nOutP .at(ireg)->Fill( m_truthVtx_nOutP ->at(i) );
-    	}
+      h_truthVtx_n .at(ireg)->Fill( m_truthVtx_n );
+      
+      for ( int i = 0; i != m_truthVtx_n; ++i ) {
+	h_truthVtx_x     .at(ireg)->Fill( m_truthVtx_x     ->at(i) );
+	h_truthVtx_y     .at(ireg)->Fill( m_truthVtx_y     ->at(i) );
+	h_truthVtx_z     .at(ireg)->Fill( m_truthVtx_z     ->at(i) );
+	h_truthVtx_r     .at(ireg)->Fill( m_truthVtx_r     ->at(i) );
+	h_truthVtx_pt    .at(ireg)->Fill( m_truthVtx_pt    ->at(i) );
+	h_truthVtx_eta   .at(ireg)->Fill( m_truthVtx_eta   ->at(i) );
+	h_truthVtx_phi   .at(ireg)->Fill( m_truthVtx_phi   ->at(i) );
+	h_truthVtx_mass  .at(ireg)->Fill( m_truthVtx_mass  ->at(i) );
+	h_truthVtx_nOutP .at(ireg)->Fill( m_truthVtx_nOutP ->at(i) );
+	// inclusive dark pion decay vertices
+	if ( m_truthVtx_isPid->at(i) || m_truthVtx_isOffPid->at(i) ) {
+	  ++n_truthVtx_allpid;
+	  h_truthVtx_allpid_x     .at(ireg)->Fill( m_truthVtx_x     ->at(i) );
+	  h_truthVtx_allpid_y     .at(ireg)->Fill( m_truthVtx_y     ->at(i) );
+	  h_truthVtx_allpid_z     .at(ireg)->Fill( m_truthVtx_z     ->at(i) );
+	  h_truthVtx_allpid_r     .at(ireg)->Fill( m_truthVtx_r     ->at(i) );
+	  h_truthVtx_allpid_pt    .at(ireg)->Fill( m_truthVtx_pt    ->at(i) );
+	  h_truthVtx_allpid_eta   .at(ireg)->Fill( m_truthVtx_eta   ->at(i) );
+	  h_truthVtx_allpid_phi   .at(ireg)->Fill( m_truthVtx_phi   ->at(i) );
+	  h_truthVtx_allpid_mass  .at(ireg)->Fill( m_truthVtx_mass  ->at(i) );
+	  h_truthVtx_allpid_nOutP .at(ireg)->Fill( m_truthVtx_nOutP ->at(i) );
+	  // standard dark pion decay vertices
+	  if ( m_truthVtx_isPid->at(i) ) {
+	    ++n_truthVtx_pid;
+	    h_truthVtx_pid_x     .at(ireg)->Fill( m_truthVtx_x     ->at(i) );
+	    h_truthVtx_pid_y     .at(ireg)->Fill( m_truthVtx_y     ->at(i) );
+	    h_truthVtx_pid_z     .at(ireg)->Fill( m_truthVtx_z     ->at(i) );
+	    h_truthVtx_pid_r     .at(ireg)->Fill( m_truthVtx_r     ->at(i) );
+	    h_truthVtx_pid_pt    .at(ireg)->Fill( m_truthVtx_pt    ->at(i) );
+	    h_truthVtx_pid_eta   .at(ireg)->Fill( m_truthVtx_eta   ->at(i) );
+	    h_truthVtx_pid_phi   .at(ireg)->Fill( m_truthVtx_phi   ->at(i) );
+	    h_truthVtx_pid_mass  .at(ireg)->Fill( m_truthVtx_mass  ->at(i) );
+	    h_truthVtx_pid_nOutP .at(ireg)->Fill( m_truthVtx_nOutP ->at(i) );
+	  }
+	  else if ( m_truthVtx_isOffPid->at(i) ) {
+	    ++n_truthVtx_offpid;
+	    h_truthVtx_offpid_x     .at(ireg)->Fill( m_truthVtx_x     ->at(i) );
+	    h_truthVtx_offpid_y     .at(ireg)->Fill( m_truthVtx_y     ->at(i) );
+	    h_truthVtx_offpid_z     .at(ireg)->Fill( m_truthVtx_z     ->at(i) );
+	    h_truthVtx_offpid_r     .at(ireg)->Fill( m_truthVtx_r     ->at(i) );
+	    h_truthVtx_offpid_pt    .at(ireg)->Fill( m_truthVtx_pt    ->at(i) );
+	    h_truthVtx_offpid_eta   .at(ireg)->Fill( m_truthVtx_eta   ->at(i) );
+	    h_truthVtx_offpid_phi   .at(ireg)->Fill( m_truthVtx_phi   ->at(i) );
+	    h_truthVtx_offpid_mass  .at(ireg)->Fill( m_truthVtx_mass  ->at(i) );
+	    h_truthVtx_offpid_nOutP .at(ireg)->Fill( m_truthVtx_nOutP ->at(i) );
+	  }
+	}
+	// displaced vertices
+	if ( m_truthVtx_r ->at(i) > 0 )
+	  ++n_truthVtx_disp;
       }
-    }
-    
-    h_truthVtx_pid_n    .at(ireg)->Fill( n_truthVtx_pid    );
-    h_truthVtx_offpid_n .at(ireg)->Fill( n_truthVtx_offpid );
-    h_truthVtx_allpid_n .at(ireg)->Fill( n_truthVtx_allpid );
+      
+      h_truthVtx_pid_n    .at(ireg)->Fill( n_truthVtx_pid    );
+      h_truthVtx_offpid_n .at(ireg)->Fill( n_truthVtx_offpid );
+      h_truthVtx_allpid_n .at(ireg)->Fill( n_truthVtx_allpid );
+      h_truthVtx_disp_n   .at(ireg)->Fill( n_truthVtx_disp   );
+      
+    } // end if mc (truth vertices)
     
 
     

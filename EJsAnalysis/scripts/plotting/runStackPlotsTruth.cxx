@@ -3,10 +3,48 @@
 #include "makeStackPlots.cxx"
 #include "makeCutflowStackPlots.cxx"
 
-void runStackPlots( TString hjet = "jet" )
+void runStackPlotsTruth()
 { 
   std::vector<TString> ptitle;
-  ptitle.push_back( "MC16d (update test)"  );
+  //ptitle.push_back( "modelA truth (mc15 update)"       );
+  //ptitle.push_back( "modelB truth (mc15 update)"       );
+  //ptitle.push_back( "modelC truth (mc15 update)"       );
+  //ptitle.push_back( "modelD truth (mc15 update)"       );
+  //ptitle.push_back( "modelE truth (mc15 update)"       );
+  //ptitle.push_back( "modelA truth (mc15 old-official)" );
+  //ptitle.push_back( "modelB truth (mc15 old-official)" );
+  //ptitle.push_back( "modelC truth (mc15 old-official)" );
+  //ptitle.push_back( "modelD truth (mc15 old-official)" );
+  //ptitle.push_back( "modelE truth (mc15 old-official)" );
+  ptitle.push_back( "ctau-300 truth (mc15 update)" );
+  //ptitle.push_back( "ctau-150 truth (mc15 update)" );
+  //ptitle.push_back( "ctau-75 truth (mc15 update)"  );
+  //ptitle.push_back( "ctau-20 truth (mc15 update)"  );
+  ptitle.push_back( "ctau-5 truth (mc15 update)"   );
+  //ptitle.push_back( "ctau-2 truth (mc15 update)"   );
+  //ptitle.push_back( "ctau-1 truth (mc15 update)"   );
+  ptitle.push_back( "ctau-0.5 truth (mc15 update)" );
+  //ptitle.push_back( "ctau-300 truth (mc15 old-official)" );
+  //ptitle.push_back( "ctau-150 truth (mc15 old-official)" );
+  //ptitle.push_back( "ctau-75 truth (mc15 old-official)"  );
+  //ptitle.push_back( "ctau-20 truth (mc15 old-official)"  );
+  //ptitle.push_back( "ctau-5 truth (mc15 old-official)"   );
+  //ptitle.push_back( "xdm-1400 ctau-300 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-1000 ctau-300 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-600 ctau-300 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-1400 ctau-150 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-1000 ctau-150 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-600 ctau-150 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-1400 ctau-75 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-1000 ctau-75 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-600 ctau-75 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-1400 ctau-20 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-1000 ctau-20 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-600 ctau-20 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-1400 ctau-5 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-1000 ctau-5 truth (mc15 old vs new)" );
+  //ptitle.push_back( "xdm-600 ctau-5 truth (mc15 old vs new)" );
+  
 
   std::vector<TString> pregion;
   pregion.push_back( "all"    );
@@ -27,7 +65,48 @@ void runStackPlots( TString hjet = "jet" )
     // set plot type
     TString lowtitle = ptitle.at(i); lowtitle.ToLower();
     TString ptype    = "";
-    if ( lowtitle.Contains("mc16d") && lowtitle.Contains("update test") ) ptype = "mc16d_updatetest";
+    if ( lowtitle.Contains( "truth" ) ) {
+      if      ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "modela"   ) ) ptype = "truth_mc15update_modelA";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "modelb"   ) ) ptype = "truth_mc15update_modelB";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "modelc"   ) ) ptype = "truth_mc15update_modelC";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "modeld"   ) ) ptype = "truth_mc15update_modelD";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "modele"   ) ) ptype = "truth_mc15update_modelE";
+      else if ( lowtitle.Contains( "old-off" ) && lowtitle.Contains( "modela"   ) ) ptype = "truth_mc15oldoff_modelA";
+      else if ( lowtitle.Contains( "old-off" ) && lowtitle.Contains( "modelb"   ) ) ptype = "truth_mc15oldoff_modelB";
+      else if ( lowtitle.Contains( "old-off" ) && lowtitle.Contains( "modelc"   ) ) ptype = "truth_mc15oldoff_modelC";
+      else if ( lowtitle.Contains( "old-off" ) && lowtitle.Contains( "modeld"   ) ) ptype = "truth_mc15oldoff_modelD";
+      else if ( lowtitle.Contains( "old-off" ) && lowtitle.Contains( "modele"   ) ) ptype = "truth_mc15oldoff_modelE";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "ctau-300" ) ) ptype = "truth_mc15update_ctau300";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "ctau-150" ) ) ptype = "truth_mc15update_ctau150";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "ctau-75"  ) ) ptype = "truth_mc15update_ctau75";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "ctau-20"  ) ) ptype = "truth_mc15update_ctau20";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "ctau-5"   ) ) ptype = "truth_mc15update_ctau5";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "ctau-2"   ) ) ptype = "truth_mc15update_ctau2";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "ctau-1"   ) ) ptype = "truth_mc15update_ctau1";
+      else if ( lowtitle.Contains( "update"  ) && lowtitle.Contains( "ctau-0.5" ) ) ptype = "truth_mc15update_ctau0p5";
+      else if ( lowtitle.Contains( "old-off" ) && lowtitle.Contains( "ctau-300" ) ) ptype = "truth_mc15oldoff_ctau300";
+      else if ( lowtitle.Contains( "old-off" ) && lowtitle.Contains( "ctau-150" ) ) ptype = "truth_mc15oldoff_ctau150";
+      else if ( lowtitle.Contains( "old-off" ) && lowtitle.Contains( "ctau-75"  ) ) ptype = "truth_mc15oldoff_ctau75";
+      else if ( lowtitle.Contains( "old-off" ) && lowtitle.Contains( "ctau-20"  ) ) ptype = "truth_mc15oldoff_ctau20";
+      else if ( lowtitle.Contains( "old-off" ) && lowtitle.Contains( "ctau-5"   ) ) ptype = "truth_mc15oldoff_ctau5";
+      else if ( lowtitle.Contains( "vs" ) ) {
+	if      ( lowtitle.Contains( "xdm-1400" ) && lowtitle.Contains( "ctau-300" ) ) ptype = "truth_mc15vs_xdm1400_ctau300";
+	else if ( lowtitle.Contains( "xdm-1000" ) && lowtitle.Contains( "ctau-300" ) ) ptype = "truth_mc15vs_xdm1000_ctau300";
+	else if ( lowtitle.Contains( "xdm-600"  ) && lowtitle.Contains( "ctau-300" ) ) ptype = "truth_mc15vs_xdm600_ctau300";
+	else if ( lowtitle.Contains( "xdm-1400" ) && lowtitle.Contains( "ctau-150" ) ) ptype = "truth_mc15vs_xdm1400_ctau150";
+	else if ( lowtitle.Contains( "xdm-1000" ) && lowtitle.Contains( "ctau-150" ) ) ptype = "truth_mc15vs_xdm1000_ctau150";
+	else if ( lowtitle.Contains( "xdm-600"  ) && lowtitle.Contains( "ctau-150" ) ) ptype = "truth_mc15vs_xdm600_ctau150";
+	else if ( lowtitle.Contains( "xdm-1400" ) && lowtitle.Contains( "ctau-75"  ) ) ptype = "truth_mc15vs_xdm1400_ctau75";
+	else if ( lowtitle.Contains( "xdm-1000" ) && lowtitle.Contains( "ctau-75"  ) ) ptype = "truth_mc15vs_xdm1000_ctau75";
+	else if ( lowtitle.Contains( "xdm-600"  ) && lowtitle.Contains( "ctau-75"  ) ) ptype = "truth_mc15vs_xdm600_ctau75";
+	else if ( lowtitle.Contains( "xdm-1400" ) && lowtitle.Contains( "ctau-20"  ) ) ptype = "truth_mc15vs_xdm1400_ctau20";
+	else if ( lowtitle.Contains( "xdm-1000" ) && lowtitle.Contains( "ctau-20"  ) ) ptype = "truth_mc15vs_xdm1000_ctau20";
+	else if ( lowtitle.Contains( "xdm-600"  ) && lowtitle.Contains( "ctau-20"  ) ) ptype = "truth_mc15vs_xdm600_ctau20";
+	else if ( lowtitle.Contains( "xdm-1400" ) && lowtitle.Contains( "ctau-5"   ) ) ptype = "truth_mc15vs_xdm1400_ctau5";
+	else if ( lowtitle.Contains( "xdm-1000" ) && lowtitle.Contains( "ctau-5"   ) ) ptype = "truth_mc15vs_xdm1000_ctau5";
+	else if ( lowtitle.Contains( "xdm-600"  ) && lowtitle.Contains( "ctau-5"   ) ) ptype = "truth_mc15vs_xdm600_ctau5";
+      }
+    }
 
     // loop over plot regions
     for ( size_t j = 0; j != pregion.size(); ++j ) {
@@ -39,173 +118,10 @@ void runStackPlots( TString hjet = "jet" )
       else if ( region == "valid"  ) region_title = "validation region";
       
       TString title  = ptitle.at(i) + ": " + region_title;   
-	
-      // event info
-      makeStackPlots( "nPV",       title, "n PV",                              "", ptype, region );
-      makeStackPlots( "actualMu",  title, "actual interactions per crossing",  "", ptype, region );
-      makeStackPlots( "averageMu", title, "average interactions per crossing", "", ptype, region );
-      makeStackPlots( "NJetHt",    title, "N-jet H_{T} [GeV]",                 "", ptype, region );
-      // pv info
-      makeStackPlots( "pv_x",      title, "PV x-pos [mm]",                     "", ptype, region );
-      makeStackPlots( "pv_y",      title, "PV y-pos [mm]",                     "", ptype, region );
-      makeStackPlots( "pv_z",      title, "PV z-pos [mm]",                     "", ptype, region );
-      makeStackPlots( "pv_r",      title, "PV r-pos [mm]",                     "", ptype, region );
-      makeStackPlots( "pv_phi",    title, "PV phi",                            "", ptype, region );
-      makeStackPlots( "pv_nTrk",   title, "n PV tracks",                       "", ptype, region );
 
-      
-      // jets
-      makeStackPlots( hjet + "_n",     title, "n jets",           "", ptype, region );
-      makeStackPlots( hjet + "_pt",    title, "jet p_{T} [GeV]",  "", ptype, region );
-      makeStackPlots( hjet + "_pt_l",  title, "jet p_{T} [GeV]",  "", ptype, region );
-      makeStackPlots( hjet + "_pt_m",  title, "jet p_{T} [GeV]",  "", ptype, region );
-      makeStackPlots( hjet + "_pt_s",  title, "jet p_{T} [GeV]",  "", ptype, region );
-      makeStackPlots( hjet + "_eta",   title, "jet eta",          "", ptype, region );
-      makeStackPlots( hjet + "_phi",   title, "jet phi",          "", ptype, region );
-      makeStackPlots( hjet + "_E",     title, "jet energy [GeV]", "", ptype, region );
-      makeStackPlots( hjet + "_M",     title, "jet mass [GeV]",   "", ptype, region );
-      makeStackPlots( hjet + "_rapid", title, "jet rapidity",     "", ptype, region );
-      makeStackPlots( hjet + "_px",    title, "jet p_{x} [GeV]",  "", ptype, region );
-      makeStackPlots( hjet + "_py",    title, "jet p_{y} [GeV]",  "", ptype, region );
-      makeStackPlots( hjet + "_pz",    title, "jet p_{z} [GeV]",  "", ptype, region );
-      makeStackPlots( hjet + "_Et",    title, "jet E_{T} [GeV]",  "", ptype, region );
-      makeStackPlots( hjet + "_Et_l",  title, "jet E_{T} [GeV]",  "", ptype, region );
-      makeStackPlots( hjet + "_Et_m",  title, "jet E_{T} [GeV]",  "", ptype, region );
-      makeStackPlots( hjet + "_Et_s",  title, "jet E_{T} [GeV]",  "", ptype, region );
-      for ( int ijet = 0; ijet != nJets; ++ijet ) {
-      	std::string njet = std::to_string(ijet);
-      	makeStackPlots( hjet + njet + "_pt",    title, "jet-" + njet + " p_{T} [GeV]",  "", ptype, region );
-      	makeStackPlots( hjet + njet + "_pt_l",  title, "jet-" + njet + " p_{T} [GeV]",  "", ptype, region );
-      	makeStackPlots( hjet + njet + "_pt_m",  title, "jet-" + njet + " p_{T} [GeV]",  "", ptype, region );
-      	makeStackPlots( hjet + njet + "_pt_s",  title, "jet-" + njet + " p_{T} [GeV]",  "", ptype, region );
-      	makeStackPlots( hjet + njet + "_eta",   title, "jet-" + njet + " eta",          "", ptype, region );
-      	makeStackPlots( hjet + njet + "_phi",   title, "jet-" + njet + " phi",          "", ptype, region );
-      	makeStackPlots( hjet + njet + "_E",     title, "jet-" + njet + " energy [GeV]", "", ptype, region );
-      	makeStackPlots( hjet + njet + "_M",     title, "jet-" + njet + " mass [GeV]",   "", ptype, region );
-      	makeStackPlots( hjet + njet + "_rapid", title, "jet-" + njet + " rapidity",     "", ptype, region );
-      }
-      
-      makeStackPlots( hjet + "_hecFrac",    title, "jet HEC calo energy fraction", "", ptype, region );
-      makeStackPlots( hjet + "_emFrac",     title, "jet EM calo energy fraction",  "", ptype, region );
-      makeStackPlots( hjet + "_centroidR",  title, "jet centroid R",               "", ptype, region );
-      makeStackPlots( hjet + "_width",      title, "jet width",                    "", ptype, region );
-      makeStackPlots( hjet + "_numConstit", title, "n jet constituents",           "", ptype, region );
-
-      makeStackPlots( hjet + "_numTrkPt1000",     title, "n p_{T} > 1.0 GeV jet-tracks",        "", ptype, region );
-      makeStackPlots( hjet + "_sumPtTrkPt1000",   title, "p_{T} > 1.0 GeV jet-track sum-p_{T}", "", ptype, region );
-      makeStackPlots( hjet + "_sumPtTrkPt1000_l", title, "p_{T} > 1.0 GeV jet-track sum-p_{T}", "", ptype, region );
-      makeStackPlots( hjet + "_sumPtTrkPt1000_m", title, "p_{T} > 1.0 GeV jet-track sum-p_{T}", "", ptype, region );
-      makeStackPlots( hjet + "_sumPtTrkPt1000_s", title, "p_{T} > 1.0 GeV jet-track sum-p_{T}", "", ptype, region );
-      makeStackPlots( hjet + "_trkWidthPt1000",   title, "p_{T} > 1.0 GeV jet-track width",     "", ptype, region );
-      makeStackPlots( hjet + "_numTrkPt500",      title, "n p_{T} > 1.0 GeV jet-tracks",        "", ptype, region );
-      makeStackPlots( hjet + "_sumPtTrkPt500",    title, "p_{T} > 0.5 GeV jet-track sum-p_{T}", "", ptype, region );
-      makeStackPlots( hjet + "_sumPtTrkPt500_l",  title, "p_{T} > 0.5 GeV jet-track sum-p_{T}", "", ptype, region );
-      makeStackPlots( hjet + "_sumPtTrkPt500_m",  title, "p_{T} > 0.5 GeV jet-track sum-p_{T}", "", ptype, region );
-      makeStackPlots( hjet + "_sumPtTrkPt500_s",  title, "p_{T} > 0.5 GeV jet-track sum-p_{T}", "", ptype, region );
-      makeStackPlots( hjet + "_trkWidthPt500",    title, "p_{T} > 0.5 GeV jet-track width",     "", ptype, region );
-
-      makeStackPlots(   hjet + "_GhostTrackCount", title, "ghost-associated jet-track count",           "", ptype, region );
-      makeStackPlots(   hjet + "_GhostTrackPt",    title, "ghost-associated jet-track sum-p_{T} [GeV]", "", ptype, region );
-      makeStackPlots(   hjet + "_GhostTrackPt_l",  title, "ghost-associated jet-track sum-p_{T} [GeV]", "", ptype, region );
-      makeStackPlots(   hjet + "_GhostTrackPt_m",  title, "ghost-associated jet-track sum-p_{T} [GeV]", "", ptype, region );
-      makeStackPlots(   hjet + "_GhostTrackPt_s",  title, "ghost-associated jet-track sum-p_{T} [GeV]", "", ptype, region );
-      if ( !ptype.Contains("data") ) {
-      	makeStackPlots( hjet + "_GhostTruthCount", title, "ghost-associated jet-truth count",           "", ptype, region );
-      	makeStackPlots( hjet + "_GhostTruthPt",    title, "ghost-associated jet-truth sum-p_{T} [GeV]", "", ptype, region );
-      	makeStackPlots( hjet + "_GhostTruthPt_l",  title, "ghost-associated jet-truth sum-p_{T} [GeV]", "", ptype, region );
-      	makeStackPlots( hjet + "_GhostTruthPt_m",  title, "ghost-associated jet-truth sum-p_{T} [GeV]", "", ptype, region );
-      	makeStackPlots( hjet + "_GhostTruthPt_s",  title, "ghost-associated jet-truth sum-p_{T} [GeV]", "", ptype, region );
-      }
-
-      makeStackPlots(   hjet + "_trkCount", title, "jet-matched track count",                    "", ptype, region );
-      makeStackPlots(   hjet + "_trkPt",    title, "jet-matched track sum-p_{T} [GeV]",          "", ptype, region );
-      makeStackPlots(   hjet + "_trkPt_l",  title, "jet-matched track sum-p_{T} [GeV]",          "", ptype, region );
-      makeStackPlots(   hjet + "_trkPt_m",  title, "jet-matched track sum-p_{T} [GeV]",          "", ptype, region );
-      makeStackPlots(   hjet + "_trkPt_s",  title, "jet-matched track sum-p_{T} [GeV]",          "", ptype, region );
-      makeStackPlots(   hjet + "_trk_dR",   title, "jet - matched-track dR",                     "", ptype, region );
-      if ( !ptype.Contains("data") ) {
-      	makeStackPlots( hjet + "_tpCount",  title, "jet-matched truth particle count",           "", ptype, region );
-      	makeStackPlots( hjet + "_tpPt",     title, "jet-matched truth particle sum-p_{T} [GeV]", "", ptype, region );
-      	makeStackPlots( hjet + "_tpPt_l",   title, "jet-matched truth particle sum-p_{T} [GeV]", "", ptype, region );
-      	makeStackPlots( hjet + "_tpPt_m",   title, "jet-matched truth particle sum-p_{T} [GeV]", "", ptype, region );
-      	makeStackPlots( hjet + "_tpPt_s",   title, "jet-matched truth particle sum-p_{T} [GeV]", "", ptype, region );
-      	makeStackPlots( hjet + "_tp_dR",    title, "jet - matched-truth-particle dR",            "", ptype, region );
-      }
-
-      makeStackPlots(   hjet + "_secVtxCount",   title, "jet-matched secondary vertex count",           "", ptype, region );
-      makeStackPlots(   hjet + "_secVtxPt",      title, "jet-matched secondary vertex sum-p_{T} [GeV]", "", ptype, region );
-      makeStackPlots(   hjet + "_secVtx_dR",     title, "jet - matched-secondary vertex dR",            "", ptype, region );
-      if ( !ptype.Contains("data") ) {
-      	makeStackPlots( hjet + "_truthVtxCount", title, "jet-matched truth vertex count",               "", ptype, region );
-      	makeStackPlots( hjet + "_truthVtxPt",    title, "jet-matched truth vertex sum-p_{T} [GeV]",     "", ptype, region );
-      	makeStackPlots( hjet + "_truthVtx_dR",   title, "jet - matched-truth-vertex dR",                "", ptype, region );
-      }
-      
-
-      // secondary vertices
-      makeStackPlots( "secVtx_n",                title, "n secondary vertices",                            "", ptype, region );
-      makeStackPlots( "secVtx_x",                title, "secondary vertex x-pos [mm]",                     "", ptype, region );
-      makeStackPlots( "secVtx_y",                title, "secondary vertex y-pos [mm]",                     "", ptype, region );
-      makeStackPlots( "secVtx_z",                title, "secondary vertex z-pos [mm]",                     "", ptype, region );
-      makeStackPlots( "secVtx_r",                title, "secondary vertex r-pos [mm]",                     "", ptype, region );
-      makeStackPlots( "secVtx_r_l",              title, "secondary vertex r-pos [mm]",                     "", ptype, region );
-      makeStackPlots( "secVtx_r_s",              title, "secondary vertex r-pos [mm]",                     "", ptype, region );
-      makeStackPlots( "secVtx_pt",               title, "secondary vertex p_{T} [GeV]",                    "", ptype, region );
-      makeStackPlots( "secVtx_eta",              title, "secondary vertex eta",                            "", ptype, region );
-      makeStackPlots( "secVtx_phi",              title, "secondary vertex phi",                            "", ptype, region );
-      makeStackPlots( "secVtx_mass",             title, "secondary vertex mass [GeV]",                     "", ptype, region );
-      makeStackPlots( "secVtx_mass_l",           title, "secondary vertex mass [GeV]",                     "", ptype, region );
-      makeStackPlots( "secVtx_mass_s",           title, "secondary vertex mass [GeV]",                     "", ptype, region );
-      makeStackPlots( "secVtx_mass_nonAssoc",    title, "secondary vertex mass (excl. assoc. trks) [GeV]", "", ptype, region );
-      makeStackPlots( "secVtx_mass_nonAssoc_l",  title, "secondary vertex mass (excl. assoc. trks) [GeV]", "", ptype, region );
-      makeStackPlots( "secVtx_mass_nonAssoc_s",  title, "secondary vertex mass (excl. assoc. trks) [GeV]", "", ptype, region );
-      makeStackPlots( "secVtx_chi2",             title, "secondary vertex chi2 / DoF",                     "", ptype, region );
-      makeStackPlots( "secVtx_direction",        title, "secondary vertex direction",                      "", ptype, region );
-      makeStackPlots( "secVtx_charge",           title, "secondary vertex charge",                         "", ptype, region );
-      makeStackPlots( "secVtx_Ht",               title, "secondary vertex scalar sum-p_{T} [GeV]",         "", ptype, region );
-      makeStackPlots( "secVtx_minOpAng",         title, "secondary vertex minimum opening angle",          "", ptype, region );
-      makeStackPlots( "secVtx_maxOpAng",         title, "secondary vertex maximum opening angle",          "", ptype, region );
-      makeStackPlots( "secVtx_mind0",            title, "secondary vertex minimum track d0",               "", ptype, region );
-      makeStackPlots( "secVtx_maxd0",            title, "secondary vertex maximum track d0",               "", ptype, region );
-      makeStackPlots( "secVtx_minOneTrkRmvMass", title, "secondary vertex minimum n-1-track mass [GeV]",   "", ptype, region );
-      makeStackPlots( "secVtx_twoTrkMass",       title, "secondary vertex arbitrary 2-track mass [GeV]",   "", ptype, region );
-      makeStackPlots( "secVtx_twoTrkMassRest",   title, "secondary vertex arbitrary n-2-track mass [GeV]", "", ptype, region );
-      makeStackPlots( "secVtx_twoTrkCharge",     title, "secondary vertex arbitrary 2-track charge",       "", ptype, region );
-      makeStackPlots( "secVtx_ntrk",             title, "secondary vertex n tracks",                       "", ptype, region );
-      makeStackPlots( "secVtx_ntrk_sel",         title, "secondary vertex n selected tracks",              "", ptype, region );
-      makeStackPlots( "secVtx_ntrk_assoc",       title, "secondary vertex n associated tracks",            "", ptype, region );
-      for ( int ivtrk = 1; ivtrk != nVtxTrks; ++ivtrk ) {
-      	std::string ntrk = std::to_string(ivtrk+1);
-      	makeStackPlots( "secVtx" + ntrk + "trk_n",               title, "n " + ntrk + "-track secondary vertices",                       "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_x",               title, ntrk + "-track secondary vertex x-pos [mm]",                     "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_y",               title, ntrk + "-track secondary vertex y-pos [mm]",                     "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_z",               title, ntrk + "-track secondary vertex z-pos [mm]",                     "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_r",               title, ntrk + "-track secondary vertex r-pos [mm]",                     "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_r_l",             title, ntrk + "-track secondary vertex r-pos [mm]",                     "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_r_s",             title, ntrk + "-track secondary vertex r-pos [mm]",                     "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_pt",              title, ntrk + "-track secondary vertex p_{T} [GeV]",                    "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_eta",             title, ntrk + "-track secondary vertex eta",                            "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_phi",             title, ntrk + "-track secondary vertex phi",                            "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_mass",            title, ntrk + "-track secondary vertex mass [GeV]",                     "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_mass_l",          title, ntrk + "-track secondary vertex mass [GeV]",                     "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_mass_s",          title, ntrk + "-track secondary vertex mass [GeV]",                     "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_mass_nonAssoc",   title, ntrk + "-track secondary vertex mass (excl. assoc. trks) [GeV]", "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_mass_nonAssoc_l", title, ntrk + "-track secondary vertex mass (excl. assoc. trks) [GeV]", "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_mass_nonAssoc_s", title, ntrk + "-track secondary vertex mass (excl. assoc. trks) [GeV]", "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_chi2",            title, ntrk + "-track secondary vertex chi2 / DoF",                     "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_direction",       title, ntrk + "-track secondary vertex direction",                      "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_charge",          title, ntrk + "-track secondary vertex charge",                         "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_Ht",              title, ntrk + "-track secondary vertex scalar sum-p_{T} [GeV]",         "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_minOpAng",        title, ntrk + "-track secondary vertex minimum opening angle",          "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_maxOpAng",        title, ntrk + "-track secondary vertex maximum opening angle",          "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_mind0",           title, ntrk + "-track secondary vertex minimum track d0",               "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_maxd0",           title, ntrk + "-track secondary vertex maximum track d0",               "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_ntrk_sel",        title, ntrk + "-track secondary vertex n selected tracks",              "", ptype, region );
-      	makeStackPlots( "secVtx" + ntrk + "trk_ntrk_assoc",      title, ntrk + "-track secondary vertex n associated tracks",            "", ptype, region );
-      }
-
-	
       // truth jets
+      //makeStackPlots( "NTruthJetHt", title, "N-truth-jet H_{T} [GeV]", "", ptype, region );
+      
       makeStackPlots( "truthJet_n",     title, "n truth jets",           "", ptype, region );
       makeStackPlots( "truthJet_pt",    title, "truth jet p_{T} [GeV]",  "", ptype, region );
       makeStackPlots( "truthJet_pt_l",  title, "truth jet p_{T} [GeV]",  "", ptype, region );
@@ -216,7 +132,7 @@ void runStackPlots( TString hjet = "jet" )
       makeStackPlots( "truthJet_E",     title, "truth jet energy [GeV]", "", ptype, region );
       makeStackPlots( "truthJet_M",     title, "truth jet mass [GeV]",   "", ptype, region );
       makeStackPlots( "truthJet_rapid", title, "truth jet rapidity",     "", ptype, region );
-      
+
       makeStackPlots( "truthJet_girth",          title, "truth jet girth",                                    "", ptype, region );
       makeStackPlots( "truthJet_numConstit",     title, "n truth jet constituents",                           "", ptype, region );
       makeStackPlots( "truthJet_constitPt",      title, "truth jet constituent sum-p_{T} [GeV]",              "", ptype, region );
@@ -596,14 +512,12 @@ void runStackPlots( TString hjet = "jet" )
       // truth vertices -- displaced
       makeStackPlots( "truthVtx_disp_n", title, "n displaced (r > 0 mm) truth vertices", "", ptype, region );
       
-   } // end loop over regions
+    } // end loop over regions
 
     // cutflows
-    if ( !ptype.Contains("truth") ) {
-      makeCutflowStackPlots( "cutflow",        ptitle.at(i) + " cutflow: all regions",       "", "", ptype );
-      makeCutflowStackPlots( "cutflow_signal", ptitle.at(i) + " cutflow: signal region",     "", "", ptype );
-      makeCutflowStackPlots( "cutflow_valid",  ptitle.at(i) + " cutflow: validation region", "", "", ptype );
-    }
+    makeCutflowStackPlots( "cutflow",        ptitle.at(i) + " cutflow: all regions",       "", "", ptype );
+    makeCutflowStackPlots( "cutflow_signal", ptitle.at(i) + " cutflow: signal region",     "", "", ptype );
+    makeCutflowStackPlots( "cutflow_valid",  ptitle.at(i) + " cutflow: validation region", "", "", ptype );
     
   } // end loop over data types
   

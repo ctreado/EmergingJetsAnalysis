@@ -145,11 +145,15 @@ EL::StatusCode ObjectMatcher :: execute ()
   }
   
   if ( isMC() ) {
-    ANA_MSG_DEBUG( "Getting input truth jet container: " << m_inTruthJetContainerName );
-    ANA_CHECK( HelperFunctions::retrieve( inTruthJets, m_inTruthJetContainerName, m_event, m_store, msg() ) );
-  
-    ANA_MSG_DEBUG( "Getting input truth dark jet container: " << m_inTruthDarkJetContainerName );
-    ANA_CHECK( HelperFunctions::retrieve( inTruthDarkJets, m_inTruthDarkJetContainerName, m_event, m_store, msg() ) );
+    if ( m_haveTruthJets ) {
+      ANA_MSG_DEBUG( "Getting input truth jet container: " << m_inTruthJetContainerName );
+      ANA_CHECK( HelperFunctions::retrieve( inTruthJets, m_inTruthJetContainerName, m_event, m_store, msg() ) );
+    }
+
+    if ( m_haveDarkJets ) {
+      ANA_MSG_DEBUG( "Getting input truth dark jet container: " << m_inTruthDarkJetContainerName );
+      ANA_CHECK( HelperFunctions::retrieve( inTruthDarkJets, m_inTruthDarkJetContainerName, m_event, m_store, msg() ) );
+    }
 
     ANA_MSG_DEBUG( "Getting input truth particle container: " << m_inTruthPartContainerName );
     ANA_CHECK( HelperFunctions::retrieve( inTruthParts, m_inTruthPartContainerName, m_event, m_store, msg() ) );
@@ -181,13 +185,17 @@ EL::StatusCode ObjectMatcher :: execute ()
     }
   }
   if ( isMC() ) {
-    for ( const auto& truthJet : *inTruthJets )
-      truthJet->auxdecor<int>("ID") = truthJet->index();
-    for ( const auto& truthDarkJet : *inTruthDarkJets ) {
-      truthDarkJet->auxdecor<int>("ID")              = truthDarkJet->index();
-      truthDarkJet->auxdecor<char>("isTruthMatched") = false;
-      truthDarkJet->auxdecor<int>("truthMatchID")    = AlgConsts::invalidInt;
-      truthDarkJet->auxdecor<double>("truthMatchDR") = AlgConsts::invalidFloat;
+    if ( inTruthJets ) {
+      for ( const auto& truthJet : *inTruthJets )
+	truthJet->auxdecor<int>("ID") = truthJet->index();
+    }
+    if ( inTruthDarkJets ) {
+      for ( const auto& truthDarkJet : *inTruthDarkJets ) {
+	truthDarkJet->auxdecor<int>("ID")              = truthDarkJet->index();
+	truthDarkJet->auxdecor<char>("isTruthMatched") = false;
+	truthDarkJet->auxdecor<int>("truthMatchID")    = AlgConsts::invalidInt;
+	truthDarkJet->auxdecor<double>("truthMatchDR") = AlgConsts::invalidFloat;
+      }
     }
     for ( const auto& truthPart : *inTruthParts ) {
       truthPart->auxdecor<int>("ID")                              = truthPart->index();
@@ -245,24 +253,33 @@ EL::StatusCode ObjectMatcher :: execute ()
       matchLinkedTruthToSecVerts( inSecVerts, inTruthVerts );
       
       // match reco secondary vertices to truth (dark) jets
-      matchSecVertsToJets( inTruthJets,     inSecVerts, TRUTH, "" );
-      matchSecVertsToJets( inTruthDarkJets, inSecVerts, DARK,  "" );
+      if ( inTruthJets )
+	matchSecVertsToJets( inTruthJets,     inSecVerts, TRUTH, "" );
+      if ( inTruthDarkJets )
+	matchSecVertsToJets( inTruthDarkJets, inSecVerts, DARK,  "" );
       
       // match tracks to truth (dark) jets
-      matchTracksToJets( inTruthJets,     inTrackParts, TRUTH, "" );
-      matchTracksToJets( inTruthDarkJets, inTrackParts, DARK,  "" );
+      if ( inTruthJets )
+	matchTracksToJets( inTruthJets,     inTrackParts, TRUTH, "" );
+      if ( inTruthDarkJets )
+	matchTracksToJets( inTruthDarkJets, inTrackParts, DARK,  "" );
     }
 
     // match truth dark jets to truth jets
-    matchTruthJets( inTruthJets, inTruthDarkJets, TRUTH, DARK, "" );
+    if ( inTruthJets && inTruthDarkJets )
+      matchTruthJets( inTruthJets, inTruthDarkJets, TRUTH, DARK, "" );
 
     // match truth vertices to truth (dark) jets
-    matchTruthVertsToJets( inTruthJets,     inTruthVerts, TRUTH, "" );
-    matchTruthVertsToJets( inTruthDarkJets, inTruthVerts, DARK,  "" );
+    if ( inTruthJets )
+      matchTruthVertsToJets( inTruthJets,     inTruthVerts, TRUTH, "" );
+    if ( inTruthDarkJets )
+      matchTruthVertsToJets( inTruthDarkJets, inTruthVerts, DARK,  "" );
 
     // match truth particles to truth (dark) jets
-    matchTruthPartsToJets( inTruthJets,     inTruthParts, TRUTH, "" );
-    matchTruthPartsToJets( inTruthDarkJets, inTruthParts, DARK,  "" );
+    if ( inTruthJets )
+      matchTruthPartsToJets( inTruthJets,     inTruthParts, TRUTH, "" );
+    if ( inTruthDarkJets )
+      matchTruthPartsToJets( inTruthDarkJets, inTruthParts, DARK,  "" );
 
   }
   
@@ -297,8 +314,10 @@ EL::StatusCode ObjectMatcher :: execute ()
 
 	if ( isMC() ) {
 	  // match truth (dark) jets to reco jets
-	  matchTruthJets( inJets, inTruthJets,     RECO, TRUTH, jetStr );
-	  matchTruthJets( inJets, inTruthDarkJets, RECO, DARK,  jetStr );
+	  if ( inTruthJets )
+	    matchTruthJets( inJets, inTruthJets,     RECO, TRUTH, jetStr );
+	  if ( inTruthDarkJets )
+	    matchTruthJets( inJets, inTruthDarkJets, RECO, DARK,  jetStr );
 	
 	  // match truth particles to reco jets
 	  matchTruthPartsToJets( inJets, inTruthParts, RECO, jetStr );
@@ -351,8 +370,10 @@ EL::StatusCode ObjectMatcher :: execute ()
       
 	    if ( isMC() ) {
 	      // match truth (dark) jets to reco jets
-	      matchTruthJets( inJets, inTruthJets,     RECO, TRUTH, jetStr + systName );
-	      matchTruthJets( inJets, inTruthDarkJets, RECO, DARK,  jetStr + systName );
+	      if ( inTruthJets )
+		matchTruthJets( inJets, inTruthJets,     RECO, TRUTH, jetStr + systName );
+	      if ( inTruthDarkJets )
+		matchTruthJets( inJets, inTruthDarkJets, RECO, DARK,  jetStr + systName );
 
 	      // match truth particles to reco jets
 	      matchTruthPartsToJets( inJets, inTruthParts, RECO, jetStr + systName );

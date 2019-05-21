@@ -533,6 +533,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_truthJet_truthVtxPidCount;    //!
   std::vector<TH1F*> h_truthJet_truthVtxOffPidCount; //!
   std::vector<TH1F*> h_truthJet_truthVtxAllPidCount; //!
+  std::vector<TH1F*> h_truthJet_truthVtxDispCount;   //!
 
   // truth jets vs pileup (average mu)
   std::vector<TH2F*> h_truthJet_n_vs_avgMu;  //!
@@ -589,6 +590,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_truthEJ_truthVtxPidCount;    //!
   std::vector<TH1F*> h_truthEJ_truthVtxOffPidCount; //!
   std::vector<TH1F*> h_truthEJ_truthVtxAllPidCount; //!
+  std::vector<TH1F*> h_truthEJ_truthVtxDispCount;   //!
   
   // non-dark-matched truth jets (truth qcd jets)
   std::vector<TH1F*> h_truthQCDJ_n; //!
@@ -638,6 +640,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_truthQCDJ_truthVtxPidCount;    //!
   std::vector<TH1F*> h_truthQCDJ_truthVtxOffPidCount; //!
   std::vector<TH1F*> h_truthQCDJ_truthVtxAllPidCount; //!
+  std::vector<TH1F*> h_truthQCDJ_truthVtxDispCount;   //!
 
 
   // histograms -- truth dark jets
@@ -721,6 +724,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_darkJet_truthVtxPidCount;    //!
   std::vector<TH1F*> h_darkJet_truthVtxOffPidCount; //!
   std::vector<TH1F*> h_darkJet_truthVtxAllPidCount; //!
+  std::vector<TH1F*> h_darkJet_truthVtxDispCount;   //!
 
   // dark jets vs pileup (average mu)
   std::vector<TH2F*> h_darkJet_n_vs_avgMu;  //!
@@ -924,6 +928,8 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_truthVtx_allpid_phi;   //!
   std::vector<TH1F*> h_truthVtx_allpid_mass;  //!
   std::vector<TH1F*> h_truthVtx_allpid_nOutP; //!
+  // displaced truth vertex basics
+  std::vector<TH1F*> h_truthVtx_disp_n;       //!
   
   
   // histograms -- secondary vertex

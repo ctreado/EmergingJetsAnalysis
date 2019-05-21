@@ -20,7 +20,17 @@ Dict_ObjectMatcher = {
     "m_name"           : "ObjectMatch",
     "m_msgLevel"       : "info",
     "m_truthLevelOnly" : True,
-}   
+}
+
+# analysis selection
+Dict_EJsxAODAnalysis = {
+    "m_name"               : "EJsAna",
+    "m_msgLevel"           : "info",
+    "m_inJetContainerName" : "AntiKt4TruthJets",
+    "m_inJetBinName"       : "Truth",
+    "m_applyRegionCuts"    : False,
+    "m_truthLevelOnly"     : True,
+}
 
 # tree output
 Dict_EJsMiniNtuple = {
@@ -44,10 +54,13 @@ Dict_EJsMiniNtuple = {
 ## --- algorithms to run --- ##
 
 # Basic Setup
-c.algorithm ( "BasicEventSelection",     Dict_BasicEventSelection     )
+c.algorithm ( "BasicEventSelection", Dict_BasicEventSelection )
 
 # Object Matching
-c.algorithm ( "ObjectMatcher",           Dict_ObjectMatcher           )
+c.algorithm ( "ObjectMatcher",       Dict_ObjectMatcher       )
+
+# EJs Analysis Selection
+c.algorithm ( "EJsxAODAnalysis",     Dict_EJsxAODAnalysis     )
 
 # EJs Ntuple
-c.algorithm ( "EJsMiniNtuple",           Dict_EJsMiniNtuple           )
+c.algorithm ( "EJsMiniNtuple",       Dict_EJsMiniNtuple       )

@@ -14,81 +14,152 @@
 
 #include <iostream>
 
-void makeCutflowStackPlots ( TString hname = "cutflow", TString htitle = "MC16d cutflow", TString xtitle  = "",
-			     TString ytitle = "",       TString htype  = "mc16d",         TString hext    = "pdf",
-			     Bool_t  doLogy = true,     Bool_t  doNorm = true,            Bool_t  doLocal = true )
+void makeCutflowStackPlots ( TString hname = "",    TString htitle = "",   TString xtitle  = "",
+			     TString ytitle = "",   TString htype  = "",   TString hext    = "pdf",
+			     Bool_t  doLogy = true, Bool_t  doNorm = true, Bool_t  doLocal = true )
 {
   std::cout << "in makeCutflowStackPlots()" << std::endl;
+
+  // build signal points
+  std::vector<TString> mod;
+  mod.push_back( "A" );
+  mod.push_back( "B" );
+  mod.push_back( "C" );
+  mod.push_back( "D" );
+  mod.push_back( "E" );
+  std::vector<TString> xdm;
+  xdm.push_back( "1400" );
+  xdm.push_back( "1000" );
+  xdm.push_back( "600"  );
+  std::vector<TString> ctau;
+  ctau.push_back( "300" );
+  ctau.push_back( "150" );
+  ctau.push_back( "75"  );
+  ctau.push_back( "20"  );
+  ctau.push_back( "5"   );
+  if ( htype.Contains("update") ) {
+    ctau.push_back( "2"   );
+    ctau.push_back( "1"   );
+    ctau.push_back( "0p5" );
+  }
+  TString fsuf = "";
+  std::vector<TString> fsufvec;
+  if ( htype.Contains("truth") ) {
+    fsufvec.push_back( "211ctau_4TJF" );
+    fsufvec.push_back( "4TJF"         );
+    if      ( htype.Contains("update") ) fsuf = fsufvec.at(0);
+    else if ( htype.Contains("oldoff") ) fsuf = fsufvec.at(1);
+  }
+  std::vector<TString> prodtype;
+  if ( htype.Contains("truth") ) {
+    prodtype.push_back( "mc15update" );
+    prodtype.push_back( "mc15oldoff" );
+  }
   
   // set path and file names
   // --> paths + root file names may change ...
   TString path = "$EJ_PATH/../run/"; // make sure $EJ_PATH set to local repo dir; 'export EJ_PATH=$(pwd)'
-  TString hpath = "";
   if ( doLocal ) path += "localOutput/";
-  
-  std::vector<TString> fname;
-  std::vector<TString> lname;
-  if ( htype.Contains("mc16d") ) {
-    if ( doLocal ) {
-      hpath = "tree/local.MC16d/data-cutflow/";
-      TString pre1 = "mc16_13TeV.3103";
-      TString pre2 = ".Pythia8EvtGen_A14NNPDF23LO_EJ_Model";
-      TString suf  = "_4jetFilter.deriv.DAOD_EXOT23.e6853_e5984_s3126_r10739_p3663.root";
-      std::vector<TString> dsid;
-      dsid.push_back( "25" );
-      dsid.push_back( "40" );
-      dsid.push_back( "55" );
-      dsid.push_back( "28" );
-      dsid.push_back( "46" );
-      dsid.push_back( "59" );
-      dsid.push_back( "65" );
-      dsid.push_back( "77" );
-      dsid.push_back( "94" );
-      lname.push_back( "A_1400_20"  );
-      lname.push_back( "B_1400_20"  );
-      lname.push_back( "C_1400_20"  );
-      lname.push_back( "A_1000_150" );
-      lname.push_back( "B_1000_5"   );
-      lname.push_back( "C_1000_75"  );
-      lname.push_back( "C_600_20"   );
-      lname.push_back( "D_600_300"  );
-      lname.push_back( "E_600_75"   );
-      for ( size_t i = 0; i != lname.size(); ++i )
-	fname.push_back( pre1 + dsid.at(i) + pre2 + lname.at(i) + suf );
+
+  TString hpath = "";
+  if ( htype.Contains("truth") ) {
+    if      ( htype.Contains("update") ) {
+      if ( doLocal ) hpath = "tree/local.truth.mc15update.";
+    }
+    else if ( htype.Contains("oldoff") ) {
+      if ( doLocal ) hpath = "tree/local.truth.mc15oldoff.";
+    }
+    else if ( htype.Contains("vs") ) {
+      if ( doLocal ) hpath = "tree/local.truth.";
     }
   }
-  else if ( htype.Contains("data") ) {
-    if ( doLocal ) {
-      hpath = "tree/local.data/data-cutflow/";
-      TString suf1 = ".physics_Main.deriv.DAOD_EXOT23.";
-      TString suf2 = "_p3578_p3664.root";
-      lname.push_back( "17.00328333" );
-      lname.push_back( "16.00302872" );
-      lname.push_back( "15.00284285" );
-      fname.push_back( "data17_13TeV.00328333" + suf1 + "r10203_r10658" + suf2 );
-      fname.push_back( "data16_13TeV.00302872" + suf1 + "r9264_r10573"  + suf2 );
-      fname.push_back( "data15_13TeV.00284285" + suf1 + "r9264_r10573"  + suf2 );
+  else if ( htype.Contains("mc16d") ) {
+    if ( htype.Contains("updatetest") ) {
+      if ( doLocal ) hpath = "tree/local.MC16d.updatetest/";
+    }
+  }
+  
+  // string together file names / legend strings
+  std::vector<TString> fname;
+  std::vector<TString> lname;
+  if ( htype.Contains("model") ) {
+    TString mod = "";
+    if      ( htype.Contains("modelA") )
+      mod = "A";
+    else if ( htype.Contains("modelB") )
+      mod = "B";
+    else if ( htype.Contains("modelC") )
+      mod = "C";
+    else if ( htype.Contains("modelD") )
+      mod = "D";
+    else if ( htype.Contains("modelE") )
+      mod = "E";
+    for ( size_t i = 0; i != xdm.size(); ++i ) {
+      for ( size_t j = 0; j != ctau.size(); ++j ) {
+	fname.push_back( mod + "/data-cutflow/mod" + mod + "_" + xdm.at(i) + "_" + ctau.at(j) + "_" + fsuf + ".root" );
+	lname.push_back( xdm.at(i) + "_" + ctau.at(j) );
+      }
+    }
+  }
+  else if ( htype.Contains("ctau") ) {
+    TString ctau = "";
+    if      ( htype.Contains("ctau300") ) ctau = "300";
+    else if ( htype.Contains("ctau150") ) ctau = "150";
+    else if ( htype.Contains("ctau75")  ) ctau = "75";
+    else if ( htype.Contains("ctau20")  ) ctau = "20";
+    else if ( htype.Contains("ctau5")   ) ctau = "5";
+    else if ( htype.Contains("ctau2")   ) ctau = "2";
+    else if ( htype.Contains("ctau1")   ) ctau = "1";
+    else if ( htype.Contains("ctau0p5") ) ctau = "0p5";
+    if ( !htype.Contains("xdm") ) {
+      for ( size_t i = 0; i != xdm.size(); ++i ) {
+	for ( size_t j = 0; j != mod.size(); ++j ) {
+	  fname.push_back( mod.at(j) + "/data-cutflow/mod" + mod.at(j) + "_" + xdm.at(i) + "_" + ctau + "_" + fsuf + ".root" );
+	  lname.push_back( mod.at(j) + "_" + xdm.at(i) );
+	}
+      }
+    }
+    else {
+      TString xdm = "";
+      if      ( htype.Contains("xdm1400") ) xdm = "1400";
+      else if ( htype.Contains("xdm1000") ) xdm = "1000";
+      else if ( htype.Contains("xdm600")  ) xdm = "600";
+      for ( size_t i = 0; i != prodtype.size(); ++i ) {
+	for ( size_t j = 0; j != mod.size(); ++j ) {
+	  fname.push_back( prodtype.at(i) + "." + mod.at(j) + "/data-cutflow/mod" + mod.at(j) + "_" + xdm + "_" + ctau + "_" + fsufvec.at(i) + ".root" );
+	  lname.push_back( prodtype.at(i) + "_" + mod.at(j) );
+	}
+      }
+    }
+  }
+  else if ( htype.Contains("updatetest") ) {
+    if ( htype.Contains("mc16d") ) {
+      fname.push_back( "/data-cutflow/999999.EJ_ModelA_1000_150_4TJF_update.r10739.exot23.root" );
+      fname.push_back( "/data-cutflow/999999.EJ_ModelB_1000_5_4TJF_update.r10739.exot23.root"   );
+      fname.push_back( "/data-cutflow/310328.EJ_ModelA_1000_150_4TJF_update.r10739.exot23.root" );
+      fname.push_back( "/data-cutflow/310346.EJ_ModelB_1000_5_4TJF_update.r10739.exot23.root"   );
+      lname.push_back( "A_1000_150 (updated)"      );
+      lname.push_back( "B_1000_5 (updated)"        );
+      lname.push_back( "A_1000_150 (old official)" );
+      lname.push_back( "B_1000_5 (old official)"   );
     }
   }
 
+
   // set line attributes
   std::vector<Color_t> hcolor;
-  if ( htype.Contains("mc16d") ) {
-    hcolor.push_back( kRed       ); // Xdm-1400
-    hcolor.push_back( kRed       );
-    hcolor.push_back( kRed       );
-    hcolor.push_back( kBlue      ); // Xdm-1000
-    hcolor.push_back( kBlue      );
-    hcolor.push_back( kBlue      );
-    hcolor.push_back( kGreen + 1 ); // Xdm-600 
-    hcolor.push_back( kGreen + 1 );
-    hcolor.push_back( kGreen + 1 );
-  }
-  else if ( htype.Contains("data") ) {
-    hcolor.push_back( kRed       ); // data17
-    hcolor.push_back( kBlue      ); // data16
-    hcolor.push_back( kGreen + 1 ); // data15
-  }
+  hcolor.push_back( kRed );
+  hcolor.push_back( kMagenta );
+  hcolor.push_back( kBlue );
+  hcolor.push_back( kCyan + 1 );
+  hcolor.push_back( kGreen + 1 );
+  hcolor.push_back( kOrange - 3 );
+  hcolor.push_back( kPink + 10 );
+  hcolor.push_back( kViolet - 3 );
+
+  // initialize canvas
+  TCanvas *c1 = new TCanvas( "c1", "", 1000, 650 );
+  c1->SetRightMargin ( 0.2 );
 
   // configure legend
   // find fname element w/ longest length
@@ -103,9 +174,17 @@ void makeCutflowStackPlots ( TString hname = "cutflow", TString htitle = "MC16d 
   }
   // set position + size of legend box
   Double_t yt     = 0.9000;                             // top of legend (lyt) ---------> default = 0.87
-  Double_t xr     = 0.9000;                             // right edge of legend (lxr) --> default = 0.88
+  Double_t xr     = 0.9750;                             // right edge of legend (lxr) --> default = 0.88
   Double_t yint   = 0.0300;                             // y-length per line
-  Double_t xint   = 0.0130;                             // x-width per character in lname
+  Double_t xint   = 0.0185;                             // x-width per character in lname
+  if ( htype.Contains("ctau") ) {
+    if      ( !htype.Contains("xdm") ) xint = 0.0250;
+    else if (  htype.Contains("xdm") ) xint = 0.0125;
+  }
+  else if ( htype.Contains("updatetest") ) {
+    xint = 0.0078;
+    xr   = 0.9950;
+  }
   Double_t ysh    = yint * lname.size();                // y-length of legend
   Double_t xsh    = xint * lname.at(maxindex).Length(); // x-width of legend
   Double_t yb     = yt - ysh;                           // bottom of legend
@@ -118,7 +197,7 @@ void makeCutflowStackPlots ( TString hname = "cutflow", TString htitle = "MC16d 
   l1->SetTextSize(txt_sz);
  
   // configure extra text
-  Double_t xtxt    = 0.795;
+  Double_t xtxt    = 0.850;
   Double_t ytxt    = 0.950;
   Double_t ttxt    = 0.0235;
   TString atlStr   = "#it{ATLAS} Internal";
@@ -133,9 +212,6 @@ void makeCutflowStackPlots ( TString hname = "cutflow", TString htitle = "MC16d 
   // set normalization
   Double_t norm_factor = 1.;
   TString norm_name = "one";
-
-  // initialize canvas
-  TCanvas* c1 = new TCanvas();
 
   // initialize stack
   TFile*   f = 0;
@@ -162,12 +238,25 @@ void makeCutflowStackPlots ( TString hname = "cutflow", TString htitle = "MC16d 
 
     // set line attributes
     h->SetLineWidth( 2 );
-    h->SetLineColor( hcolor.at(i) );
-    h->SetLineStyle( 1 );
-    if      ( lname.at(i).Contains( "B_" ) ) h->SetLineStyle( 2 );
-    else if ( lname.at(i).Contains( "C_" ) ) h->SetLineStyle( 3 );
-    else if ( lname.at(i).Contains( "D_" ) ) h->SetLineStyle( 7 );
-    else if ( lname.at(i).Contains( "E_" ) ) h->SetLineStyle( 8 );
+    if      ( htype.Contains("model") )
+      h->SetLineColor( hcolor.at(i % ctau.size()) );
+    else if ( htype.Contains("ctau")  )
+      h->SetLineColor( hcolor.at(i  % mod.size()) );
+    if ( htype.Contains("model") || ( htype.Contains("ctau") && !htype.Contains("xdm") ) ) {
+      if      ( fname.at(i).Contains( "1400" ) ) h->SetLineStyle( 1 );
+      else if ( fname.at(i).Contains( "1000" ) ) h->SetLineStyle( 2 );
+      else if ( fname.at(i).Contains( "600"  ) ) h->SetLineStyle( 3 );
+    }
+    else if ( htype.Contains("truth") && htype.Contains("ctau") && htype.Contains("xdm") ) {
+      if      ( fname.at(i).Contains( "update" ) ) h->SetLineStyle( 1 );
+      else if ( fname.at(i).Contains( "oldoff" ) ) h->SetLineStyle( 2 );
+    }
+    else if ( htype.Contains("updatetest") ) {
+      if ( fname.at(i).Contains("A_1000_150" )   ) h->SetLineColor( kRed  );
+      else if ( fname.at(i).Contains("B_1000_5") ) h->SetLineColor( kBlue );
+      if ( fname.at(i).Contains("999999")        ) h->SetLineStyle( 1     );
+      else                                         h->SetLineStyle( 2     );
+    }
 
     // add legend entries
     l1->AddEntry( h, lname.at(i), "l" );
@@ -202,8 +291,8 @@ void makeCutflowStackPlots ( TString hname = "cutflow", TString htitle = "MC16d 
   lumiText ->Draw( "same" );
 
   // save plot
-  TString hdir  = path + "/plots/cutflow_plots/" + htype + "/";
-  TString hout = hdir + hname;
+  TString hdir  = path + "/plots/" + htype + "/";
+  TString hout = hdir + "h_" + hname;
   c1->SaveAs( hout + "." + hext );
   if ( doLogy ) {
     gPad->SetLogy();

@@ -93,6 +93,8 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
   std::istringstream ss_jet_containers( m_inJetContainerName );
   while ( std::getline( ss_jet_containers, token, ' ' ) )
     m_inJetContainers.push_back( token );
+  if ( m_truthLevelOnly && m_inJetContainers.empty() )
+    m_inJetContainers.push_back( m_inTruthJetContainerName );
 
   // check for input containers
   if ( m_inJetContainers.empty() ) {
@@ -151,7 +153,7 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
     
     m_cutflowHist  ->GetXaxis()->FindBin( ( m_name ).c_str() );
     m_cutflowHistW ->GetXaxis()->FindBin( ( m_name ).c_str() );
-    
+
     for ( size_t i = 0; i != m_inJetContainers.size(); ++i ) {
       m_cutflowHist  ->GetXaxis()->FindBin( ( m_name + "Signal_" + m_inJetBins.at(i) ).c_str() );
       m_cutflowHistW ->GetXaxis()->FindBin( ( m_name + "Signal_" + m_inJetBins.at(i) ).c_str() );
@@ -162,7 +164,6 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
       m_cutflowHist  ->GetXaxis()->FindBin( ( m_name + "SignalValid_" + m_inJetBins.at(i) ).c_str() );
       m_cutflowHistW ->GetXaxis()->FindBin( ( m_name + "SignalValid_" + m_inJetBins.at(i) ).c_str() );
     }
-
   }
 
   if ( m_outputAlgo.empty() ) {
@@ -178,7 +179,7 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
     m_numValidEvents             .push_back(0);
     m_numCtrlEvents              .push_back(0);
     m_numSignalValidEvents       .push_back(0);
-
+      
     m_numSignalWeightEvents      .push_back(0);
     m_numValidWeightEvents       .push_back(0);
     m_numCtrlWeightEvents        .push_back(0);
@@ -187,7 +188,6 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
 
   m_isNominalCase       = true;
   m_isFirstJetContainer = false;
-  
 
   return EL::StatusCode::SUCCESS;
 }
@@ -260,7 +260,8 @@ EL::StatusCode EJsxAODAnalysis :: execute ()
   ++m_eventNumber;
 
   // skip events failing all cuts
-  if ( !pass ) wk()->skipEvent();
+  if ( m_applyRegionCuts )
+    if ( !pass ) wk()->skipEvent();
 
   ++m_numPassEvents;
   m_numPassWeightEvents += m_mcEventWeight;
@@ -391,6 +392,7 @@ EL::StatusCode EJsxAODAnalysis :: executeSelection ( const xAOD::EventInfo* even
       std::string jetStr = "";
       if      ( m_inJetContainers.at(i).find("EMTopo") != std::string::npos ) jetStr = "EMTopo";
       else if ( m_inJetContainers.at(i).find("PFlow")  != std::string::npos ) jetStr = "PFlow";
+      else if ( m_inJetContainers.at(i).find("Truth")  != std::string::npos ) jetStr = "Truth";
       std::string decorLabel = jetStr + systName;
 
       // calculate N-jet Ht
@@ -423,9 +425,9 @@ EL::StatusCode EJsxAODAnalysis :: executeSelection ( const xAOD::EventInfo* even
       }
 
       if ( m_isNominalCase ) { // only count for nominal cases
-      	m_numSignalEvents            .at(i) += passSignalSel;
-      	m_numValidEvents             .at(i) += passValidSel;
-      	m_numCtrlEvents              .at(i) += passCtrlSel;
+	m_numSignalEvents            .at(i) += passSignalSel;
+	m_numValidEvents             .at(i) += passValidSel;
+	m_numCtrlEvents              .at(i) += passCtrlSel;
 	m_numSignalValidEvents       .at(i) += ( passSignalSel && passValidSel );
 
 	m_numSignalWeightEvents      .at(i) += ( passSignalSel * m_mcEventWeight                     );
@@ -453,9 +455,14 @@ int EJsxAODAnalysis :: PassSignalCuts ( const xAOD::EventInfo* eventInfo, const 
 					const std::string& bin_label,     const std::string& decor_label )
 {
   // set bins
-  int trig_bin     = m_cutflowSignalHist  ->GetXaxis()->FindBin( "multijetTrig"                    );
-  int trig_bin_w   = m_cutflowSignalHistW ->GetXaxis()->FindBin( "multijetTrig"                    );
+  int trig_bin   = 0;
+  int trig_bin_w = 0;
   // trig match bins ...
+  if ( !m_truthLevelOnly ) {
+    trig_bin   = m_cutflowSignalHist  ->GetXaxis()->FindBin( "multijetTrig" );
+    trig_bin_w = m_cutflowSignalHistW ->GetXaxis()->FindBin( "multijetTrig" );
+    // trig match bins ...
+  }
   int njet_bin     = m_cutflowSignalHist  ->GetXaxis()->FindBin( ( "NJets_"  + bin_label ).c_str() );
   int njet_bin_w   = m_cutflowSignalHistW ->GetXaxis()->FindBin( ( "NJets_"  + bin_label ).c_str() );
   int jetpt_bin    = m_cutflowSignalHist  ->GetXaxis()->FindBin( ( "jetPt_"  + bin_label ).c_str() );
@@ -464,8 +471,12 @@ int EJsxAODAnalysis :: PassSignalCuts ( const xAOD::EventInfo* eventInfo, const 
   int jeteta_bin_w = m_cutflowSignalHistW ->GetXaxis()->FindBin( ( "jetEta_" + bin_label ).c_str() );
   int njetHt_bin   = m_cutflowSignalHist  ->GetXaxis()->FindBin( ( "njetHt_" + bin_label ).c_str() );
   int njetHt_bin_w = m_cutflowSignalHistW ->GetXaxis()->FindBin( ( "njetHt_" + bin_label ).c_str() );
-  // int nej_bin      = m_cutflowSignalHist  ->GetXaxis()->FindBin( ( "nEJs_"   + bin_label ).c_str() );
-  // int nej_bin_w    = m_cutflowSignalHistW ->GetXaxis()->FindBin( ( "nEJs_"   + bin_label ).c_str() );
+  int nej_bin   = 0;
+  int nej_bin_w = 0;
+  if ( m_truthLevelOnly ) {
+    nej_bin   = m_cutflowSignalHist  ->GetXaxis()->FindBin( ( "nEJs_"   + bin_label ).c_str() );
+    nej_bin_w = m_cutflowSignalHistW ->GetXaxis()->FindBin( ( "nEJs_"   + bin_label ).c_str() );
+  }
 
   // initialize decorators
   if ( m_isNominalCase && m_isFirstJetContainer )
@@ -474,29 +485,32 @@ int EJsxAODAnalysis :: PassSignalCuts ( const xAOD::EventInfo* eventInfo, const 
   eventInfo->auxdecor<char>("passSignalJetPtSel_"  + decor_label) = false;
   eventInfo->auxdecor<char>("passSignalJetEtaSel_" + decor_label) = false;
   eventInfo->auxdecor<char>("passSignalNJetHtSel_" + decor_label) = false;
+  eventInfo->auxdecor<char>("passSignalNEJSel_"    + decor_label) = false;
   
   // trigger selection
-  bool passTrigSel = false;
-  for ( size_t i = 0; i != m_passedTriggers.size(); ++i ) {
-    for ( size_t j = 0; j != m_signalTrigs.size(); ++j ) {
-      if ( m_passedTriggers.at(i) == m_signalTrigs.at(j) ) {
-	passTrigSel = true;
-	break;
+  if ( !m_truthLevelOnly ) {
+    bool passTrigSel = false;
+    for ( size_t i = 0; i != m_passedTriggers.size(); ++i ) {
+      for ( size_t j = 0; j != m_signalTrigs.size(); ++j ) {
+	if ( m_passedTriggers.at(i) == m_signalTrigs.at(j) ) {
+	  passTrigSel = true;
+	  break;
+	}
       }
+      if ( passTrigSel ) break;
     }
-    if ( passTrigSel ) break;
-  }
-  if ( m_isNominalCase && m_isFirstJetContainer ) {
-    if ( m_useCutFlow && passTrigSel ) {   
-      m_cutflowSignalHist  ->Fill( trig_bin,   1               );
-      m_cutflowSignalHistW ->Fill( trig_bin_w, m_mcEventWeight );
+    if ( m_isNominalCase && m_isFirstJetContainer ) {
+      if ( m_useCutFlow && passTrigSel ) {   
+	m_cutflowSignalHist  ->Fill( trig_bin,   1               );
+	m_cutflowSignalHistW ->Fill( trig_bin_w, m_mcEventWeight );
+      }
+      if ( m_decorateSelectedEvents )
+	eventInfo->auxdecor<char>("passSignalTrigSel") = passTrigSel;
     }
-    if ( m_decorateSelectedEvents )
-      eventInfo->auxdecor<char>("passSignalTrigSel") = passTrigSel;
+    if ( !passTrigSel ) return 0;
+    
+    // trigger matching ???
   }
-  if ( !passTrigSel ) return 0;
-
-  // trigger matching ???
 
   // n-jet selection
   bool passNJetSel = true;
@@ -550,13 +564,16 @@ int EJsxAODAnalysis :: PassSignalCuts ( const xAOD::EventInfo* eventInfo, const 
     eventInfo->auxdecor<char>("passSignalNJetHtSel_" + decor_label) = passNJetHtSel;
   if ( !passNJetHtSel ) return 0;
 
-  // if ( m_isNominalCase && m_useCutFlow && passNEJSel ) { // nej
-  //   m_cutflowSignalHist  ->Fill( nej_bin,   1               );
-  //   m_cutflowSignalHistW ->Fill( nej_bin_w, m_mcEventWeight );
-  // }
-  // if ( m_decorateSelectedEvents )
-  //   eventInfo->auxdecor<char>("passSignalNEJSel_" + decor_label ) = passNEJSel;
-  // if ( !passNEJSel ) return 0;
+  // only apply EJ selection for truth derivations for now...
+  if ( m_truthLevelOnly ) {
+    if ( m_isNominalCase && m_useCutFlow && passNEJSel ) { // nej
+      m_cutflowSignalHist  ->Fill( nej_bin,   1               );
+      m_cutflowSignalHistW ->Fill( nej_bin_w, m_mcEventWeight );
+    }
+    if ( m_decorateSelectedEvents )
+      eventInfo->auxdecor<char>("passSignalNEJSel_" + decor_label ) = passNEJSel;
+    if ( !passNEJSel ) return 0;
+  }
   
   return 1;
 }
@@ -567,9 +584,14 @@ int EJsxAODAnalysis :: PassValidationCuts ( const xAOD::EventInfo* eventInfo, co
 					    const std::string& bin_label,     const std::string& decor_label )
 {
   // set bins
-  int trig_bin       = m_cutflowValidHist  ->GetXaxis()->FindBin( "singlejetTrig"                   );
-  int trig_bin_w     = m_cutflowValidHistW ->GetXaxis()->FindBin( "singlejetTrig"                   );
+  int trig_bin   = 0;
+  int trig_bin_w = 0;
   // trig match bins ...
+  if ( !m_truthLevelOnly ) {
+    trig_bin       = m_cutflowValidHist  ->GetXaxis()->FindBin( "singlejetTrig" );
+    trig_bin_w     = m_cutflowValidHistW ->GetXaxis()->FindBin( "singlejetTrig" );
+    // trig match bins ...
+  }
   int njetmin_bin    = m_cutflowValidHist  ->GetXaxis()->FindBin( ( "NJetsMin_" + bin_label ).c_str() );
   int njetmin_bin_w  = m_cutflowValidHistW ->GetXaxis()->FindBin( ( "NJetsMin_" + bin_label ).c_str() );
   int njetmax_bin    = m_cutflowValidHist  ->GetXaxis()->FindBin( ( "NJetsMax_" + bin_label ).c_str() );
@@ -590,27 +612,29 @@ int EJsxAODAnalysis :: PassValidationCuts ( const xAOD::EventInfo* eventInfo, co
   eventInfo->auxdecor<char>("passValidJetEtaSel_"  + decor_label) = false;
 
   // trigger selection
-  bool passTrigSel  = false;
-  for ( size_t i = 0; i != m_passedTriggers.size(); ++i ) {
-    for ( size_t j = 0; j != m_validTrigs.size(); ++j ) {
-      if ( m_passedTriggers.at(i) == m_validTrigs.at(j) ) {
-	passTrigSel = true;
-	break;
+  if ( !m_truthLevelOnly ) {
+    bool passTrigSel  = false;
+    for ( size_t i = 0; i != m_passedTriggers.size(); ++i ) {
+      for ( size_t j = 0; j != m_validTrigs.size(); ++j ) {
+	if ( m_passedTriggers.at(i) == m_validTrigs.at(j) ) {
+	  passTrigSel = true;
+	  break;
+	}
       }
+      if ( passTrigSel ) break;
     }
-    if ( passTrigSel ) break;
-  }
-  if ( m_isNominalCase && m_isFirstJetContainer ) {
-    if ( m_useCutFlow && passTrigSel ) {
-      m_cutflowValidHist  ->Fill( trig_bin,   1               );
-      m_cutflowValidHistW ->Fill( trig_bin_w, m_mcEventWeight );
+    if ( m_isNominalCase && m_isFirstJetContainer ) {
+      if ( m_useCutFlow && passTrigSel ) {
+	m_cutflowValidHist  ->Fill( trig_bin,   1               );
+	m_cutflowValidHistW ->Fill( trig_bin_w, m_mcEventWeight );
+      }
+      if ( m_decorateSelectedEvents )
+	eventInfo->auxdecor<char>("passValidTrigSel") = passTrigSel;
     }
-    if ( m_decorateSelectedEvents )
-      eventInfo->auxdecor<char>("passValidTrigSel") = passTrigSel;
+    if ( !passTrigSel ) return 0;
+    
+    // trigger matching ???
   }
-  if ( !passTrigSel ) return 0;
-
-  // trigger matching ???
 
   // n-jet min selection
   bool passNJetMinSel = true;
@@ -675,10 +699,16 @@ int EJsxAODAnalysis :: PassControlCuts ( const xAOD::EventInfo* eventInfo, const
 
 
 
-bool EJsxAODAnalysis :: selectEmergingJet ( const xAOD::Jet* )
+bool EJsxAODAnalysis :: selectEmergingJet ( const xAOD::Jet* jet )
 {
-  // until we fill in, fail all...
-  return false;
+  // until we fill in, fail all reco jets...
+  if ( !m_truthLevelOnly )
+    return false;
+
+  // for truth jets, count as emerging if matched to dark jets
+  if ( m_truthLevelOnly && jet->isAvailable<char>("hasDarkJetMatch") )
+    if ( !jet->auxdataConst<char>("hasDarkJetMatch") )
+      return false;
 
   // if we made it this far, jet is emerging...
   return true;

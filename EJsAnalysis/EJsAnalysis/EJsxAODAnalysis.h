@@ -25,7 +25,8 @@ class EJsxAODAnalysis : public xAH::Algorithm
   bool m_useCutFlow = true;
 
   // input container names
-  std::string m_inJetContainerName = "";
+  std::string m_inJetContainerName      = "";
+  std::string m_inTruthJetContainerName = "AntiKt4TruthJets";
 
   // output histogram bin names
   std::string m_inJetBinName = "";
@@ -37,6 +38,9 @@ class EJsxAODAnalysis : public xAH::Algorithm
 
   // decorate selected events? default "pass*Sel" + corresponding input jet container name
   bool m_decorateSelectedEvents = true;
+
+  // cut on events failing region cuts
+  bool m_applyRegionCuts = true;
 
   // index of jet container to run systematics over
   unsigned m_jetSystsContainerIndex = 0;
@@ -56,8 +60,10 @@ class EJsxAODAnalysis : public xAH::Algorithm
   unsigned m_nValidJets  = 2;
   double   m_validJetPt  = 50.; // GeV
   double   m_validJetEta = 2.7; // --> do we even need this ??
-  
 
+  // protection when running on truth derivation
+  bool m_truthLevelOnly = false;
+  
   // units conversion from MeV; default is GeV
   float m_units = 1e3;
   
