@@ -29,7 +29,7 @@ if [ $(ver ${GIT_VERSION}) -lt $(ver 2.0.0) ]; then
     lsetup git
 fi
 
-ANALYSIS_BASE_VERSION=21.2.51
+ANALYSIS_BASE_VERSION=21.2.79
 asetup AnalysisBase,${ANALYSIS_BASE_VERSION}
 
 if [ ! -d ../build/ ]; then

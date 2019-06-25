@@ -84,6 +84,8 @@ Dict_BasicEventSelection = {
     "m_storePassHLT"          : True,  # --> do we need this ?? set to False ??
     "m_storeTrigKeys"         : True,  # --> do we need this ?? set to False ??
     "m_useMetaData"           : False, # --> for testing only; set to True before submitting jobs
+    #"m_checkDuplicatesData"   : True,
+    #"m_checkDuplicatesMC"     : True,  # --> removing almost all events in private samples; look into, but keep off for now...
 }
 
 
@@ -140,10 +142,10 @@ Dict_JetSelector_EMTopo = { # require two jets ??
     "m_inputAlgo"               : "AntiKt4EMTopoJets_Calib_Algo",
     "m_outputAlgo"              : "AntiKt4EMTopoJets_Calib_Select_Algo",
     "m_writeSystToMetadata"     : True,  # --> True for testing only; set to False
-    "m_decorateSelectedObjects" : True,  # --> do we want to cut or decorate ?? both ??
-    "m_createSelectedContainer" : True,  # --> do we want to cut or decorate ?? both ??
+    "m_decorateSelectedObjects" : True,
+    "m_createSelectedContainer" : True,
     "m_cleanJets"               : True,
-    "m_cleanEvent"              : False, # --> recommendation to kill events w/ any unclean jets
+    "m_cleanEvent"              : False, # --> recommendation to kill events w/ any unclean jets -- set to true ??
     "m_markCleanEvent"          : True,  # --> --> but do we want to cut here or just decorate ??
     "m_pT_min"                  : 50e3,  # --> CHECK
     "m_eta_max"                 : 2.7,   # --> CHECK

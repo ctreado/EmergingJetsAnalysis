@@ -76,16 +76,16 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
     m_njetHt_truth        = 0;
   }
   
-  m_tp_ID               = new std::vector<int>;
-  m_tp_M                = new std::vector<float>;
-  m_tp_charge           = new std::vector<float>;
-  m_tp_isReco           = new std::vector<uint8_t>;
-  m_tp_recoProb         = new std::vector<float>;
-  m_tp_recoID           = new std::vector<int>;
-  m_tp_recoIsSelected   = new std::vector<uint8_t>;
-  m_tp_recoIsAssociated = new std::vector<uint8_t>;
-  m_tp_isStable         = new std::vector<uint8_t>;
-  m_tp_isInteracting    = new std::vector<uint8_t>;
+  m_tp_ID                = new std::vector<int>;
+  m_tp_M                 = new std::vector<float>;
+  m_tp_charge            = new std::vector<float>;
+  m_tp_isReco            = new std::vector<uint8_t>;
+  m_tp_recoProb          = new std::vector<float>;
+  m_tp_recoID            = new std::vector<int>;
+  m_tp_recoIsSelected    = new std::vector<uint8_t>;
+  m_tp_recoIsAssociated  = new std::vector<uint8_t>;
+  m_tp_isStable          = new std::vector<uint8_t>;
+  m_tp_isInteracting     = new std::vector<uint8_t>;
   m_tp_isReconstructible = new std::vector<uint8_t>;
   m_tp_isDark            = new std::vector<uint8_t>;
 
@@ -119,12 +119,12 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
   m_tp_dVtx_barcode         = new std::vector<int>;
   m_tp_dVtx_r               = new std::vector<float>;
 
-  m_tp_truthJetMatch     = new std::vector<uint8_t>;
-  m_tp_truthJetMatch_ID  = new std::vector<std::vector<int>>;
-  m_tp_truthJetMatch_dR  = new std::vector<std::vector<float>>;
-  m_tp_darkJetMatch      = new std::vector<uint8_t>;
-  m_tp_darkJetMatch_ID   = new std::vector<std::vector<int>>;
-  m_tp_darkJetMatch_dR   = new std::vector<std::vector<float>>;
+  m_tp_truthJetMatch       = new std::vector<uint8_t>;
+  m_tp_truthJetMatch_ID    = new std::vector<std::vector<int>>;
+  m_tp_truthJetMatch_dR    = new std::vector<std::vector<float>>;
+  m_tp_darkJetMatch        = new std::vector<uint8_t>;
+  m_tp_darkJetMatch_ID     = new std::vector<std::vector<int>>;
+  m_tp_darkJetMatch_dR     = new std::vector<std::vector<float>>;
   if ( m_doEMTopoJets ) {
     m_tp_emtopoJetMatch    = new std::vector<uint8_t>;
     m_tp_emtopoJetMatch_ID = new std::vector<std::vector<int>>;
@@ -143,8 +143,8 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
   m_trk_chi2         = new std::vector<float>;
   m_trk_isSelected   = new std::vector<uint8_t>;
   m_trk_isAssociated = new std::vector<uint8_t>;
-  m_trk_nSelected   = 0;
-  m_trk_nAssociated = 0;
+  m_trk_nSelected    = 0;
+  m_trk_nAssociated  = 0;
 }
 
 EJsHelpTreeBase :: ~EJsHelpTreeBase()
