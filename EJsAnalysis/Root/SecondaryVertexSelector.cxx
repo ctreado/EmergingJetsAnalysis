@@ -11,6 +11,7 @@
 #include <xAODAnaHelpers/HelperFunctions.h>
 
 #include "EJsAnalysis/SecondaryVertexSelector.h"
+#include "EJsAnalysis/EJsHelperFunctions.h"
 
 // needed to distribute algorithm to workers
 ClassImp ( SecondaryVertexSelector )
@@ -91,12 +92,103 @@ EL::StatusCode SecondaryVertexSelector :: initialize ()
   m_event = wk()->xaodEvent();
   m_store = wk()->xaodStore();
 
-  // cutflow
-
+  // check for input secondary vertex container
   if ( m_inContainerName.empty() ) {
     ANA_MSG_ERROR( "No input container provided! Exiting." );
     return EL::StatusCode::FAILURE;
   }
+
+  // initialize cutflows
+  if ( m_useCutFlow ) {
+
+    // retrieve file in which cutflow hists are stored
+    TFile *file = wk()->getOutputFile( "cutflow" );
+
+    // retrieve event cutflows
+    m_cutflowHist  = (TH1D*)file->Get( "cutflow"          );
+    m_cutflowHistW = (TH1D*)file->Get( "cutflow_weighted" );
+
+    m_cutflow_bin = m_cutflowHist->GetXaxis()->FindBin( ( m_name ).c_str() );
+
+    m_cutflowHist  ->GetXaxis()->FindBin( ( m_name ).c_str() );
+    m_cutflowHistW ->GetXaxis()->FindBin( ( m_name ).c_str() );
+
+    // initialize object cutflow
+    m_secVtx_cutflowHist = new TH1D( "cutflow_secVerts", "cutflow_secVerts", 1, 1, 2 );
+    m_secVtx_cutflowHist ->SetCanExtend( TH1::kAllAxes);
+    
+    m_secVtx_cutflow_all     = m_secVtx_cutflowHist->GetXaxis()->FindBin( "all"              );
+    m_secVtx_cutflow_filtTrk = m_secVtx_cutflowHist->GetXaxis()->FindBin( "filtTrk_cut"      );
+    m_secVtx_cutflow_matVeto = m_secVtx_cutflowHist->GetXaxis()->FindBin( "matMapVeto_cut"   );
+    m_secVtx_cutflow_rmin    = m_secVtx_cutflowHist->GetXaxis()->FindBin( "r_min_cut"        );
+    m_secVtx_cutflow_rmax    = m_secVtx_cutflowHist->GetXaxis()->FindBin( "r_max_cut"        );
+    m_secVtx_cutflow_zmin    = m_secVtx_cutflowHist->GetXaxis()->FindBin( "z_min_cut"        );
+    m_secVtx_cutflow_zmax    = m_secVtx_cutflowHist->GetXaxis()->FindBin( "z_max_cut"        );
+    m_secVtx_cutflow_ntrkmin = m_secVtx_cutflowHist->GetXaxis()->FindBin( "nTrk_min_cut"     );
+    m_secVtx_cutflow_ntrkmax = m_secVtx_cutflowHist->GetXaxis()->FindBin( "nTrk_max_cut"     );
+    m_secVtx_cutflow_chi2min = m_secVtx_cutflowHist->GetXaxis()->FindBin( "chi2_min_cut"     );
+    m_secVtx_cutflow_chi2max = m_secVtx_cutflowHist->GetXaxis()->FindBin( "chi2_max_cut"     );
+    m_secVtx_cutflow_massmin = m_secVtx_cutflowHist->GetXaxis()->FindBin( "mass_min_cut"     );
+    m_secVtx_cutflow_massmax = m_secVtx_cutflowHist->GetXaxis()->FindBin( "mass_max_cut"     );
+    m_secVtx_cutflow_distmin = m_secVtx_cutflowHist->GetXaxis()->FindBin( "distToPV_min_cut" );
+    m_secVtx_cutflow_distmax = m_secVtx_cutflowHist->GetXaxis()->FindBin( "distToPV_max_cut" );
+  }
+
+  // initialize counters
+  m_eventNumber         = 0;
+  m_numPassEvents       = 0;
+  m_numPassWeightEvents = 0;
+
+  // configure VsiBonsai tool
+  if ( !m_doChi2Filter       )
+    m_trkChi2Cut = AlgConsts::maxValue;
+  if ( !m_doHitPatternFilter )
+    m_hitPatternCond = VsiTool::HitPatternCondition::NONE;
+  if ( !m_doIpWrtSVFilter    ) {
+    m_d0_wrtSVCut       = AlgConsts::invalidFloat;
+    m_z0_wrtSVCut       = AlgConsts::invalidFloat;
+    m_errd0_wrtSVCut    = AlgConsts::invalidFloat;
+    m_errz0_wrtSVCut    = AlgConsts::invalidFloat;
+    m_d0signif_wrtSVCut = AlgConsts::invalidFloat;
+    m_z0signif_wrtSVCut = AlgConsts::invalidFloat;
+    m_chi2_toSVCut      = AlgConsts::invalidFloat;
+  }
+  VsiBonsai::setDefaultConfig( m_bonsaiCfg );				
+  m_bonsaiCfg[ VsiBonsai::Config::trackChi2Cut        ] = m_trkChi2Cut;
+  m_bonsaiCfg[ VsiBonsai::Config::hitPatternCondition ] = m_hitPatternCond;
+  m_bonsaiCfg[ VsiBonsai::Config::d0_wrtSVCut         ] = m_d0_wrtSVCut;
+  m_bonsaiCfg[ VsiBonsai::Config::z0_wrtSVCut         ] = m_z0_wrtSVCut;
+  m_bonsaiCfg[ VsiBonsai::Config::errd0_wrtSVCut      ] = m_errd0_wrtSVCut;
+  m_bonsaiCfg[ VsiBonsai::Config::errz0_wrtSVCut      ] = m_errz0_wrtSVCut;
+  m_bonsaiCfg[ VsiBonsai::Config::d0signif_wrtSVCut   ] = m_d0signif_wrtSVCut;
+  m_bonsaiCfg[ VsiBonsai::Config::z0signif_wrtSVCut   ] = m_z0signif_wrtSVCut;
+  m_bonsaiCfg[ VsiBonsai::Config::chi2_toSVCut        ] = m_chi2_toSVCut;
+  m_bonsaiCfg[ VsiBonsai::Config::dropAssociated      ] = m_doDropAssociated;
+  m_bonsaiCfg[ VsiBonsai::Config::dropNonSelected     ] = m_doDropNonSelected;
+
+  // initialize material map(s)
+  m_matMapInnerFile = new TFile( m_matMapInnerFileName.c_str(), "READ" );
+  if ( m_matMapInnerFile->IsOpen() ) {
+    m_matMapInnerFile->GetObject( m_matMapInnerHistName.c_str(),   m_materialMap_Inner  );
+    m_matMapInnerFile->GetObject( m_matMapInnerMatrixName.c_str(), m_materialMap_Matrix );
+    if ( m_materialMap_Inner ) {
+      ANA_MSG_INFO( "Inner material map open!" );
+      m_materialMap_Inner->SetDirectory(0);
+    }
+  }
+  m_matMapInnerFile->Close();
+  delete m_matMapInnerFile;
+
+  m_matMapOuterFile = new TFile( m_matMapOuterFileName.c_str(), "READ" );
+  if ( m_matMapOuterFile->IsOpen() ) {
+    m_matMapOuterFile->GetObject( m_matMapOuterHistName.c_str(), m_materialMap_Outer );
+    if ( m_materialMap_Outer ) {
+      ANA_MSG_INFO( "Outer material map open!" );
+      m_materialMap_Outer->SetDirectory(0);
+    }
+  }
+  m_matMapOuterFile->Close();
+  delete m_matMapOuterFile;
 
   ANA_MSG_DEBUG( "SecondaryVertexSelector Interface successfully initialized!" );
 
@@ -113,33 +205,78 @@ EL::StatusCode SecondaryVertexSelector :: execute ()
 
   ANA_MSG_DEBUG( "Applying Secondary Vertex Selection..." );
 
-  // count number of events
+  // retrieve event info container
+  const xAOD::EventInfo* eventInfo = 0;
+  ANA_CHECK( HelperFunctions::retrieve( eventInfo, "EventInfo", m_event, m_store, msg() ) );
+
+  // get MC event weight
+  m_mcEventWeight = 1.0;
+  if ( eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION ) )
+    m_mcEventWeight = eventInfo->mcEventWeight();
+
+  // get primary vertex
+  const xAOD::VertexContainer* vertices = 0;
+  ANA_CHECK( HelperFunctions::retrieve( vertices, m_vertexContainerName, m_event, m_store, msg() ) );
+  const xAOD::Vertex* primaryVertex = HelperFunctions::getPrimaryVertex( vertices, msg() );
 
   // get secondary vertex collection from TEvent or TStore
   const xAOD::VertexContainer* inSecVerts = 0;
   ANA_CHECK( HelperFunctions::retrieve( inSecVerts, m_inContainerName, m_event, m_store, msg() ) );
 
   // create output container (if requested) -- deep copy
-  auto selectedSecVerts =
-    std::make_unique<ConstDataVector<xAOD::VertexContainer>>(SG::VIEW_ELEMENTS);
+  ConstDataVector<xAOD::VertexContainer>* selectedSecVerts = 0;
+  if ( m_createSelectedContainer )
+    selectedSecVerts = new ConstDataVector<xAOD::VertexContainer>(SG::VIEW_ELEMENTS);
+
+  int nObj  = 0;
+  int nPass = 0;
   
+  // loop over secondary vertices
   for ( const auto& vtx : *inSecVerts ) {
-    int passSel = this->PassCuts( vtx );
-    if ( m_decorateSelectedObjects ) vtx->auxdecor<char>( "passSel" ) = passSel;
+    
+    // make sure all vertices decorated in case only processing subset
+    if ( m_decorateSelectedObjects ) {
+      vtx->auxdecor<char>( m_decor     ) = -1;
+      vtx->auxdecor<char>( m_decorTrim ) = -1;
+      for ( size_t i = 0; i != vtx->nTrackParticles(); ++i ) {
+	const auto* trk = vtx->trackParticle(i);
+	trk->auxdecor<char>( "isFiltered" ) = -1;
+      }
+    }
+    if ( m_nToProcess > 0 && nObj >= m_nToProcess ) continue;
+
+    ++nObj;
+
+    // do vertex selections
+    int passSel = this->PassCuts( vtx, primaryVertex );
+    if ( m_decorateSelectedObjects ) vtx->auxdecor<char>( m_decor ) = passSel;
 
     if ( !passSel ) continue;
+
+    ++nPass;
     
     // copy selected vertex to ouput container (if requested)
     if ( m_createSelectedContainer ) selectedSecVerts->push_back( vtx );
   }
 
+  ++m_eventNumber;
+
   // apply event selected based on min/max requirements on number of objects passing cuts per event
+  if ( m_pass_min > 0 && nPass < m_pass_min ) {
+    wk()->skipEvent();
+    return EL::StatusCode::SUCCESS;
+  }
+  if ( m_pass_max > 0 && nPass > m_pass_max ) {
+    wk()->skipEvent();
+    return EL::StatusCode::SUCCESS;
+  }
 
   // add output container to TStore
   if ( m_createSelectedContainer )
-    ANA_CHECK( m_store->record( selectedSecVerts.release(), m_outContainerName ) );
+    ANA_CHECK( m_store->record( selectedSecVerts, m_outContainerName ) );
 
-  // cutflow
+  ++m_numPassEvents;
+  m_numPassWeightEvents += m_mcEventWeight;
 
   return EL::StatusCode::SUCCESS;
 }
@@ -163,6 +300,18 @@ EL::StatusCode SecondaryVertexSelector :: finalize ()
   // in initialize() before they're written to disk; only gets
   // called on worker nodes that processed input events
 
+  if ( m_useCutFlow ) {
+    ANA_MSG_DEBUG( "Filling cutflows + writing to output" );
+    m_cutflowHist  ->SetBinContent( m_cutflow_bin, m_numPassEvents       );
+    m_cutflowHistW ->SetBinContent( m_cutflow_bin, m_numPassWeightEvents );
+
+    // write new object cutflow to output file
+    TFile *file = wk()->getOutputFile( "cutflow" );
+    file->cd();
+    m_secVtx_cutflowHist ->LabelsDeflate("X");
+    m_secVtx_cutflowHist ->Write();
+  }
+
   return EL::StatusCode::SUCCESS;
 }
 
@@ -182,30 +331,146 @@ EL::StatusCode SecondaryVertexSelector :: histFinalize ()
 
 
 
-int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx )
+int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::Vertex* pv )
 {
   // here's where we do the cuts --> if vertex fails cuts, return 0
 
+  // fill cutflow bin 'all' before any cut
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_all, 1 );
+  
+  // set vector of trimmers to apply
+  std::vector<VsiBonsai::Trimmer> trimmers = {
+    VsiBonsai::chi2Filter,
+    VsiBonsai::hitPatternFilter,
+    VsiBonsai::ipWrtSVFilter,
+    VsiBonsai::dropAssociated,
+    VsiBonsai::dropNonSelected,
+  };
+  
   // filter vertex tracks using VsiBonsai config
   std::vector<const xAOD::TrackParticle*> filteredTracks;
-  
+
   for ( size_t i = 0; i != vtx->nTrackParticles(); ++i ) {
     bool failedTrimmers = false;
     const auto* trk = vtx->trackParticle(i);
     
-    // do trimming... --> have config option, "do_trackTrimming" ...
+    // do track trimming
+    if ( m_doTrackTrimming ) {
+      for ( auto trimmer : trimmers ) {
+    	if ( !trimmer( vtx, trk, pv, m_bonsaiCfg ) ) {
+    	  failedTrimmers = true;
+    	  break;
+	}
+      }
+    }
 
+    // decorate tracks w/ trimming results
     trk->auxdecor<char>( "isFiltered" ) = !failedTrimmers;
 
+    // save filtered tracks
     if ( failedTrimmers ) continue;
-    filteredTracks.push_back( trk ); // save filtered tracks
+    filteredTracks.push_back( trk );
   }
 
-  // material map veto... --> have config option, "do_matMapVeto" ...
+  // apply track trimming selection + decorate vertices
+  if ( m_decorateSelectedObjects ) vtx->auxdecor<char>( m_decorTrim ) = true;
+  if ( filteredTracks.size() < 2 ) {
+    if ( m_decorateSelectedObjects ) vtx->auxdecor<char>( m_decorTrim ) = false;
+    return 0;
+  }
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_filtTrk, 1 );
 
-  if ( filteredTracks.size() < 2 ) return 0;
 
-  // other vertex cuts...
+  // material map veto
+  if ( m_doMatMapVeto ) {
+    bool passMaterialVeto = false;
+    
+    // use inner / outer map based on vtx position
+    auto pos = vtx->position();
+    if ( pos.perp() > 150 )
+      passMaterialVeto =
+  	( m_materialMap_Outer->GetBinContent( m_materialMap_Outer->FindBin( pos.perp(),
+  									    pos.phi(),
+  									    pos.z() ) ) == 0 );
+    else {
+      for ( int i = 0; i != 5; ++i ) {
+  	if ( pos.perp() < (*m_materialMap_Matrix)[i][0] ) {
+	  float test_x = pos.x() + (*m_materialMap_Matrix)[i][1];
+	  float test_y = pos.y() + (*m_materialMap_Matrix)[i][2];
+	  double calc_phi = fmod( TMath::ATan2( test_y, test_x ),
+				  TMath::Pi() / (*m_materialMap_Matrix)[i][3] );
+	  if ( calc_phi < 0 ) calc_phi = calc_phi + TMath::Pi() / (*m_materialMap_Matrix)[i][3];
+	  passMaterialVeto =
+	    ( m_materialMap_Inner->GetBinContent( m_materialMap_Inner->FindBin( sqrt( test_x*test_x + test_y*test_y ),
+										calc_phi,
+										pos.z() ) ) == 0 );
+	  break;
+	}
+      }
+    }
+ 
+    if ( !passMaterialVeto ) return 0;
+    
+  }
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_matVeto, 1 );
+
+  
+  // fiducial region cuts
+  if ( m_r_min != AlgConsts::maxValue )
+    if ( vtx->position().perp() < m_r_min ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_rmin, 1 );
+
+  if ( m_r_max != AlgConsts::maxValue )
+    if ( vtx->position().perp() > m_r_max ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_rmax, 1 );
+
+  if ( m_z_min != AlgConsts::maxValue )
+    if ( fabs( vtx->z() ) < m_z_min ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_zmin, 1 );
+
+  if ( m_z_max != AlgConsts::maxValue )
+    if ( fabs( vtx->z() ) > m_z_max ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_zmax, 1 );
+
+  // n-track cuts
+  if ( m_ntrk_min > 0 )
+    if ( filteredTracks.size() < m_ntrk_min ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_ntrkmin, 1 );
+
+  if ( m_ntrk_max > 0 )
+    if ( filteredTracks.size() > m_ntrk_max ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_ntrkmax, 1 );
+
+  // chi-squared cuts
+  if ( m_chi2_min != AlgConsts::maxValue )
+    if ( vtx->chiSquared() / vtx->numberDoF() < m_chi2_min ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_chi2min, 1 );
+
+  if ( m_chi2_max != AlgConsts::maxValue )
+    if ( vtx->chiSquared() / vtx->numberDoF() > m_chi2_max ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_chi2max, 1 );
+
+  // mass cuts
+  const TLorentzVector& sumP4 = VsiBonsai::sumP4( filteredTracks );
+  if ( m_mass_min != AlgConsts::maxValue )
+    if ( sumP4.M() < m_mass_min ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_massmin, 1 );
+
+  if ( m_mass_max != AlgConsts::maxValue )
+    if ( sumP4.M() > m_mass_max ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_massmax, 1 );
+
+  // distance (to pv) cuts
+  auto dv_pos = vtx ->position();
+  auto pv_pos = pv  ->position();
+  if ( m_dist_min != AlgConsts::maxValue )
+    if ( ( pv_pos - dv_pos ).perp() < m_dist_min ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_distmin, 1 );
+
+  if ( m_dist_max != AlgConsts::maxValue )
+    if ( ( pv_pos - dv_pos ).perp() > m_dist_max ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_distmax, 1 );
+
   
   return 1;
 }

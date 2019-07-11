@@ -128,11 +128,11 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
   // initialize cutflows
   if ( m_useCutFlow ) {
     
-    // retrieve file in which cutflow hists are store
+    // retrieve file in which cutflow hists are stored
     TFile *file = wk()->getOutputFile( "cutflow" );
     
     // retrieve event cutflows
-    m_cutflowHist  = (TH1D*)file->Get( "cutflow" );
+    m_cutflowHist  = (TH1D*)file->Get( "cutflow"          );
     m_cutflowHistW = (TH1D*)file->Get( "cutflow_weighted" );
 
     // initialize new EJs cutflows
@@ -260,8 +260,12 @@ EL::StatusCode EJsxAODAnalysis :: execute ()
   ++m_eventNumber;
 
   // skip events failing all cuts
-  if ( m_applyRegionCuts )
-    if ( !pass ) wk()->skipEvent();
+  if ( m_applyRegionCuts ) {
+    if ( !pass ) {
+      wk()->skipEvent();
+      return EL::StatusCode::SUCCESS;
+    }
+  }
 
   ++m_numPassEvents;
   m_numPassWeightEvents += m_mcEventWeight;
@@ -289,7 +293,7 @@ EL::StatusCode EJsxAODAnalysis :: finalize ()
   // called on worker nodes that processed input events
 
   if ( m_useCutFlow ) {
-    ANA_MSG_INFO( "filling cutflows + writing to output" );
+    ANA_MSG_DEBUG( "filling cutflows + writing to output" );
 
     unsigned j = m_cutflow_bin;
     m_cutflowHist  ->SetBinContent( j, m_numPassEvents       );

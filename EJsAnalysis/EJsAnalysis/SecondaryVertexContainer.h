@@ -30,7 +30,8 @@ namespace EJs {
     virtual void setTree             ( TTree* tree );
     virtual void setBranches         ( TTree* tree );
     virtual void clear               ( );
-    virtual void FillSecondaryVertex ( const xAOD::Vertex* secVtx, const std::string treeName = "" );
+    virtual void FillSecondaryVertex ( const xAOD::Vertex* secVtx, const std::string treeName = "",
+				       const xAOD::Vertex* pv = 0 );
 
 
   private:   
@@ -64,6 +65,7 @@ namespace EJs {
     std::vector<float>*              m_maxOpAng;
     std::vector<float>*              m_mind0;
     std::vector<float>*              m_maxd0;
+    std::vector<float>*              m_distToPV;
     
     std::vector<float>*              m_minOneTrackRemovedMass;
     std::vector<std::vector<float>>* m_twoTracksMass;

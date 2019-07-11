@@ -47,8 +47,10 @@ class EJsHelpTreeBase : public HelpTreeBase
   void ClearTruthVerts ( const std::string truthVtxName = "truthVtx"                                               );
 
   void AddSecondaryVerts   ( const std::string detailStr = "",      const std::string secVtxName = "secVtx" );
-  void FillSecondaryVerts  ( const xAOD::VertexContainer* secVerts, const std::string secVtxName = "secVtx" );
-  void FillSecondaryVertex ( const xAOD::Vertex* secVtx,            const std::string secVtxName = "secVtx" );
+  void FillSecondaryVerts  ( const xAOD::VertexContainer* secVerts, const std::string secVtxName = "secVtx",
+			     const xAOD::Vertex* pv = 0 );
+  void FillSecondaryVertex ( const xAOD::Vertex* secVtx,            const std::string secVtxName = "secVtx",
+			     const xAOD::Vertex* pv = 0 );
   void ClearSecondaryVerts ( const std::string secVtxName = "secVtx"                                        );
 
   // new branches for existing objects
@@ -141,9 +143,6 @@ class EJsHelpTreeBase : public HelpTreeBase
   float m_njetHt_pflow;
   float m_njetHt_truth;
 
-  uint8_t m_cleanJets_emtopo;
-  uint8_t m_cleanJets_pflow;
-
   
   // truth particles
   std::vector<int>*     m_tp_ID;
@@ -158,27 +157,10 @@ class EJsHelpTreeBase : public HelpTreeBase
   std::vector<uint8_t>* m_tp_isInteracting;
   std::vector<uint8_t>* m_tp_isReconstructible;
   std::vector<uint8_t>* m_tp_isDark;
+  // --> eventually, "isDarkPionDescendant" + "darkPionDescGeneration" (or something like that)
+  std::vector<std::vector<int>>* m_tp_parent_ID;
+  std::vector<std::vector<int>>* m_tp_child_ID;
   
-  std::vector<std::vector<int>>*     m_tp_parent_ID;
-  std::vector<std::vector<uint8_t>>* m_tp_parent_isReco;
-  std::vector<std::vector<float>>*   m_tp_parent_recoProb;
-  std::vector<std::vector<int>>*     m_tp_parent_recoID;
-  std::vector<std::vector<uint8_t>>* m_tp_parent_isStable;
-  std::vector<std::vector<uint8_t>>* m_tp_parent_isInteracting;
-  std::vector<std::vector<uint8_t>>* m_tp_parent_isReconstructible;
-  std::vector<std::vector<uint8_t>>* m_tp_parent_isDark;
-
-  std::vector<std::vector<int>>*     m_tp_child_ID;
-  std::vector<std::vector<uint8_t>>* m_tp_child_isReco;
-  std::vector<std::vector<float>>*   m_tp_child_recoProb;
-  std::vector<std::vector<int>>*     m_tp_child_recoID;
-  std::vector<std::vector<uint8_t>>* m_tp_child_isStable;
-  std::vector<std::vector<uint8_t>>* m_tp_child_isInteracting;
-  std::vector<std::vector<uint8_t>>* m_tp_child_isReconstructible;
-  std::vector<std::vector<uint8_t>>* m_tp_child_isDark;
-  
-  // --> eventually, "isDarkPionDescendant" + "darkPionDescGeneration" (or something like that) for tp, parent, child ...
-
   std::vector<uint8_t>* m_tp_pVtx;
   std::vector<uint8_t>* m_tp_pVtx_isDarkPionDecay;
   std::vector<int>*     m_tp_pVtx_ID;
@@ -207,12 +189,17 @@ class EJsHelpTreeBase : public HelpTreeBase
   
   // tracks
   std::vector<int>*     m_trk_ID;
+  std::vector<uint8_t>* m_trk_expectInnerPixelHit;
+  std::vector<uint8_t>* m_trk_expectNextInnerPixelHit;
   std::vector<float>*   m_trk_d0;
   std::vector<float>*   m_trk_errd0;
   std::vector<float>*   m_trk_errz0;
+  std::vector<float>*   m_trk_chiSquared;
+  std::vector<float>*   m_trk_numberDoF;
   std::vector<float>*   m_trk_chi2;
   std::vector<uint8_t>* m_trk_isSelected;
   std::vector<uint8_t>* m_trk_isAssociated;
+  std::vector<uint8_t>* m_trk_passSel; // REMOVE
   uint32_t m_trk_nSelected;
   uint32_t m_trk_nAssociated;
   // --> definitely at least add info from jet class (i.e. charge, truth match, etc.)

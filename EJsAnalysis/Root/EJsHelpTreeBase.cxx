@@ -43,7 +43,6 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
     m_validJetPt_emtopo   = 0;
     m_validJetEta_emtopo  = 0;
     m_njetHt_emtopo       = 0;
-    m_cleanJets_emtopo    = 0;
   }
   if ( m_doPFlowJets ) {
     m_signal_pflow        = 0;
@@ -58,7 +57,6 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
     m_validJetPt_pflow    = 0;
     m_validJetEta_pflow   = 0;
     m_njetHt_pflow        = 0;
-    m_cleanJets_pflow     = 0;
   }
   if ( m_truthLevelOnly ) {
     m_signal_truth        = 0;
@@ -88,24 +86,8 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
   m_tp_isInteracting     = new std::vector<uint8_t>;
   m_tp_isReconstructible = new std::vector<uint8_t>;
   m_tp_isDark            = new std::vector<uint8_t>;
-
-  m_tp_parent_ID                = new std::vector<std::vector<int>>;
-  m_tp_parent_isReco            = new std::vector<std::vector<uint8_t>>;
-  m_tp_parent_recoProb          = new std::vector<std::vector<float>>;
-  m_tp_parent_recoID            = new std::vector<std::vector<int>>;
-  m_tp_parent_isStable          = new std::vector<std::vector<uint8_t>>;
-  m_tp_parent_isInteracting     = new std::vector<std::vector<uint8_t>>;
-  m_tp_parent_isReconstructible = new std::vector<std::vector<uint8_t>>;
-  m_tp_parent_isDark            = new std::vector<std::vector<uint8_t>>;
-
-  m_tp_child_ID                = new std::vector<std::vector<int>>;
-  m_tp_child_isReco            = new std::vector<std::vector<uint8_t>>;
-  m_tp_child_recoProb          = new std::vector<std::vector<float>>;
-  m_tp_child_recoID            = new std::vector<std::vector<int>>;
-  m_tp_child_isStable          = new std::vector<std::vector<uint8_t>>;
-  m_tp_child_isInteracting     = new std::vector<std::vector<uint8_t>>;
-  m_tp_child_isReconstructible = new std::vector<std::vector<uint8_t>>;
-  m_tp_child_isDark            = new std::vector<std::vector<uint8_t>>;
+  m_tp_parent_ID         = new std::vector<std::vector<int>>;
+  m_tp_child_ID          = new std::vector<std::vector<int>>;
 
   m_tp_pVtx                 = new std::vector<uint8_t>;
   m_tp_pVtx_isDarkPionDecay = new std::vector<uint8_t>;
@@ -136,15 +118,20 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
     m_tp_pflowJetMatch_dR  = new std::vector<std::vector<float>>;
   }
 
-  m_trk_ID           = new std::vector<int>;
-  m_trk_d0           = new std::vector<float>;
-  m_trk_errd0        = new std::vector<float>;
-  m_trk_errz0        = new std::vector<float>;
-  m_trk_chi2         = new std::vector<float>;
-  m_trk_isSelected   = new std::vector<uint8_t>;
-  m_trk_isAssociated = new std::vector<uint8_t>;
-  m_trk_nSelected    = 0;
-  m_trk_nAssociated  = 0;
+  m_trk_ID                      = new std::vector<int>;
+  m_trk_expectInnerPixelHit     = new std::vector<uint8_t>;
+  m_trk_expectNextInnerPixelHit = new std::vector<uint8_t>;
+  m_trk_d0                      = new std::vector<float>;
+  m_trk_errd0                   = new std::vector<float>;
+  m_trk_errz0                   = new std::vector<float>;
+  m_trk_chiSquared              = new std::vector<float>;
+  m_trk_numberDoF               = new std::vector<float>;
+  m_trk_chi2                    = new std::vector<float>;
+  m_trk_isSelected              = new std::vector<uint8_t>;
+  m_trk_isAssociated            = new std::vector<uint8_t>;
+  m_trk_passSel                 = new std::vector<uint8_t>;
+  m_trk_nSelected               = 0;
+  m_trk_nAssociated             = 0;
 }
 
 EJsHelpTreeBase :: ~EJsHelpTreeBase()
@@ -215,19 +202,20 @@ void EJsHelpTreeBase :: AddSecondaryVerts ( const std::string detailStr, const s
   thisSecVtx->setBranches( m_tree );
 }
 
-void EJsHelpTreeBase :: FillSecondaryVerts ( const xAOD::VertexContainer* secVerts, const std::string secVtxName )
+void EJsHelpTreeBase :: FillSecondaryVerts ( const xAOD::VertexContainer* secVerts, const std::string secVtxName,
+					     const xAOD::Vertex* pv )
 {
   this->ClearSecondaryVerts ( secVtxName );
 
   for ( const auto& secVtx : *secVerts )
-    this->FillSecondaryVertex( secVtx, secVtxName );
+    this->FillSecondaryVertex( secVtx, secVtxName, pv );
 }
 
-void EJsHelpTreeBase :: FillSecondaryVertex ( const xAOD::Vertex* secVtx, const std::string secVtxName )
+void EJsHelpTreeBase :: FillSecondaryVertex ( const xAOD::Vertex* secVtx, const std::string secVtxName,
+					      const xAOD::Vertex* pv )
 {
-  //std::string treeName = m_tree->GetName();
   EJs::SecondaryVertexContainer* thisSecVtx = m_secVerts[ secVtxName ];
-  thisSecVtx->FillSecondaryVertex( secVtx, m_treeName );
+  thisSecVtx->FillSecondaryVertex( secVtx, m_treeName, pv );
 }
 
 void EJsHelpTreeBase :: ClearSecondaryVerts ( const std::string secVtxName )
@@ -311,8 +299,6 @@ void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
     m_tree->Branch( "passesValidJetEta_EMTopo",  &m_validJetEta_emtopo  );
     
     m_tree->Branch( "NJetHt_EMTopo", &m_njetHt_emtopo );
-
-    m_tree->Branch( "cleanJetEvent_EMTopo", &m_cleanJets_emtopo );
   }
   
   if ( m_doPFlowJets ) {
@@ -331,8 +317,6 @@ void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
     m_tree->Branch( "passesValidJetEta_PFlow",  &m_validJetEta_pflow  );
   
     m_tree->Branch( "NJetHt_PFlow", &m_njetHt_pflow );
-
-    m_tree->Branch( "cleanJetEvent_PFlow", &m_cleanJets_pflow );
   }
 
   if ( m_truthLevelOnly ) {
@@ -405,9 +389,6 @@ void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
       m_njetHt_emtopo = event->auxdataConst<double>( "NJetHt_EMTopo" + treeName );
     else if ( event->isAvailable<double>( "NJetHt_EMTopo" ) )
       m_njetHt_emtopo = event->auxdataConst<double>( "NJetHt_EMTopo" );
-
-    if ( event->isAvailable<char>( "cleanEvent_JetSelect_AntiKt4EMTopo" ) )
-      m_cleanJets_emtopo = event->auxdataConst<char>( "cleanEvent_JetSelect_AntiKt4EMTopo" );
   }
 
   if ( m_doPFlowJets ) {
@@ -448,9 +429,6 @@ void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
       m_njetHt_pflow = event->auxdataConst<double>( "NJetHt_PFlow" + treeName );
     else if ( event->isAvailable<double>( "NJetHt_PFlow" ) )
       m_njetHt_pflow = event->auxdataConst<double>( "NJetHt_PFlow" );
-
-    if ( event->isAvailable<char>( "cleanEvent_JetSelect_AntiKt4EMPFlow" ) )
-      m_cleanJets_pflow = event->auxdataConst<char>( "cleanEvent_JetSelect_AntiKt4EMPFlow" );
   }
 
   if ( m_truthLevelOnly ) {
@@ -501,8 +479,6 @@ void EJsHelpTreeBase :: ClearEventUser ( )
     m_validJetEta_emtopo  = 0;
     
     m_njetHt_emtopo = 0;
-
-    m_cleanJets_emtopo = 0;
   }
 
   if ( m_doPFlowJets ) {
@@ -521,8 +497,6 @@ void EJsHelpTreeBase :: ClearEventUser ( )
     m_validJetEta_pflow  = 0;
     
     m_njetHt_pflow = 0;
-
-    m_cleanJets_pflow = 0;
   }
 
   if ( m_truthLevelOnly ) {
@@ -582,36 +556,20 @@ void EJsHelpTreeBase :: AddTruthUser ( const std::string truthName, const std::s
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddTruthUser()", "adding EJs-user truth particle variables" );
 
-  setBranch<int>     ( truthName, "ID",                m_tp_ID                );
-  setBranch<float>   ( truthName, "M",                 m_tp_M                 );
-  setBranch<float>   ( truthName, "charge",            m_tp_charge            );
-  setBranch<uint8_t> ( truthName, "isReco",            m_tp_isReco            );
-  setBranch<float>   ( truthName, "recoProb",          m_tp_recoProb          );
-  setBranch<int>     ( truthName, "recoID",            m_tp_recoID            );
-  setBranch<uint8_t> ( truthName, "recoIsSelected",    m_tp_recoIsSelected    );
-  setBranch<uint8_t> ( truthName, "recoIsAssociated",  m_tp_recoIsAssociated  );
-  setBranch<uint8_t> ( truthName, "isStable",          m_tp_isStable          );
-  setBranch<uint8_t> ( truthName, "isInteracting",     m_tp_isInteracting     );
-  setBranch<uint8_t> ( truthName, "isReconstructible", m_tp_isReconstructible );
-  setBranch<uint8_t> ( truthName, "isDark",            m_tp_isDark            );
-
-  setBranch<std::vector<int>>     ( truthName, "parent_ID",                m_tp_parent_ID                );
-  setBranch<std::vector<uint8_t>> ( truthName, "parent_isReco",            m_tp_parent_isReco            );
-  setBranch<std::vector<float>>   ( truthName, "parent_recoProb",          m_tp_parent_recoProb          );
-  setBranch<std::vector<int>>     ( truthName, "parent_recoID",            m_tp_parent_recoID            );
-  setBranch<std::vector<uint8_t>> ( truthName, "parent_isStable",          m_tp_parent_isStable          );
-  setBranch<std::vector<uint8_t>> ( truthName, "parent_isInteracting",     m_tp_parent_isInteracting     );
-  setBranch<std::vector<uint8_t>> ( truthName, "parent_isReconstructible", m_tp_parent_isReconstructible );
-  setBranch<std::vector<uint8_t>> ( truthName, "parent_isDark",            m_tp_parent_isDark            );
-
-  setBranch<std::vector<int>>     ( truthName, "child_ID",                m_tp_child_ID                );
-  setBranch<std::vector<uint8_t>> ( truthName, "child_isReco",            m_tp_child_isReco            );
-  setBranch<std::vector<float>>   ( truthName, "child_recoProb",          m_tp_child_recoProb          );
-  setBranch<std::vector<int>>     ( truthName, "child_recoID",            m_tp_child_recoID            );
-  setBranch<std::vector<uint8_t>> ( truthName, "child_isStable",          m_tp_child_isStable          );
-  setBranch<std::vector<uint8_t>> ( truthName, "child_isInteracting",     m_tp_child_isInteracting     );
-  setBranch<std::vector<uint8_t>> ( truthName, "child_isReconstructible", m_tp_child_isReconstructible );
-  setBranch<std::vector<uint8_t>> ( truthName, "child_isDark",            m_tp_child_isDark            );
+  setBranch<int>              ( truthName, "ID",                m_tp_ID                );
+  setBranch<float>            ( truthName, "M",                 m_tp_M                 );
+  setBranch<float>            ( truthName, "charge",            m_tp_charge            );
+  setBranch<uint8_t>          ( truthName, "isReco",            m_tp_isReco            );
+  setBranch<float>            ( truthName, "recoProb",          m_tp_recoProb          );
+  setBranch<int>              ( truthName, "recoID",            m_tp_recoID            );
+  setBranch<uint8_t>          ( truthName, "recoIsSelected",    m_tp_recoIsSelected    );
+  setBranch<uint8_t>          ( truthName, "recoIsAssociated",  m_tp_recoIsAssociated  );
+  setBranch<uint8_t>          ( truthName, "isStable",          m_tp_isStable          );
+  setBranch<uint8_t>          ( truthName, "isInteracting",     m_tp_isInteracting     );
+  setBranch<uint8_t>          ( truthName, "isReconstructible", m_tp_isReconstructible );
+  setBranch<uint8_t>          ( truthName, "isDark",            m_tp_isDark            );
+  setBranch<std::vector<int>> ( truthName, "parent_ID",         m_tp_parent_ID         );
+  setBranch<std::vector<int>> ( truthName, "child_ID",          m_tp_child_ID          );
 
   setBranch<uint8_t> ( truthName, "hasProdVtx",              m_tp_pVtx                 );
   setBranch<uint8_t> ( truthName, "prodVtx_isDarkPionDecay", m_tp_pVtx_isDarkPionDecay );
@@ -655,7 +613,7 @@ void EJsHelpTreeBase :: FillTruthUser ( const std::string truthName, const xAOD:
   if ( recoAccess.isAvailable( *truthPart ) ) {
     try {
       const EJsHelper::TrackLink_t& recoLink = recoAccess( *truthPart );
-      tp_recoID      = AUXDYN( (*recoLink), int,   "ID"           );
+      tp_recoID      = AUXDYN( (*recoLink), int,  "ID"            );
       tp_recoIsSel   = AUXDYN( (*recoLink), char, "is_selected"   );
       tp_recoIsAssoc = AUXDYN( (*recoLink), char, "is_associated" );
     } catch(...) {}
@@ -673,75 +631,21 @@ void EJsHelpTreeBase :: FillTruthUser ( const std::string truthName, const xAOD:
   m_tp_isReconstructible ->push_back( EJsHelper::isReconstructible ( truthPart ) );
   m_tp_isDark            ->push_back( EJsHelper::isDark            ( truthPart ) );
 
-  std::vector<int>     parent_ID;
-  std::vector<uint8_t> parent_isReco;
-  std::vector<float>   parent_recoProb;
-  std::vector<int>     parent_recoID;
-  std::vector<uint8_t> parent_isStable;
-  std::vector<uint8_t> parent_isInteracting;
-  std::vector<uint8_t> parent_isReconstructible;
-  std::vector<uint8_t> parent_isDark;
+  std::vector<int> parent_ID;
   for ( size_t i = 0; i != truthPart->nParents(); ++i ) {
     const auto* parent = truthPart->parent(i);
     if ( !parent ) continue;
-    parent_ID       .push_back( AUXDYN( parent, int,    "ID"                    ) );
-    parent_isReco   .push_back( AUXDYN( parent, char,   "isTrackMatch"          ) );
-    parent_recoProb .push_back( AUXDYN( parent, double, "trackMatchProbability" ) );
-    static SG::AuxElement::ConstAccessor<EJsHelper::TrackLink_t> parentRecoAccess("trackLink");
-    if ( parentRecoAccess.isAvailable( *parent ) ) {
-      try {
-	const EJsHelper::TrackLink_t& parentRecoLink = parentRecoAccess( *parent );
-	parent_recoID .push_back( AUXDYN( (*parentRecoLink), int, "ID" ) );
-      } catch(...) {}
-    }
-    parent_isStable          .push_back( EJsHelper::isStable          ( parent ) );
-    parent_isInteracting     .push_back( EJsHelper::isInteracting     ( parent ) );
-    parent_isReconstructible .push_back( EJsHelper::isReconstructible ( parent ) );
-    parent_isDark            .push_back( EJsHelper::isDark            ( parent ) );
+    parent_ID .push_back( AUXDYN( parent, int, "ID" ) );
   }
-  m_tp_parent_ID                ->push_back( parent_ID                );
-  m_tp_parent_isReco            ->push_back( parent_isReco            );
-  m_tp_parent_recoProb          ->push_back( parent_recoProb          );
-  m_tp_parent_recoID            ->push_back( parent_recoID            );
-  m_tp_parent_isStable          ->push_back( parent_isStable          );
-  m_tp_parent_isInteracting     ->push_back( parent_isInteracting     );
-  m_tp_parent_isReconstructible ->push_back( parent_isReconstructible );
-  m_tp_parent_isDark            ->push_back( parent_isDark            );
+  m_tp_parent_ID ->push_back( parent_ID );
 
-  std::vector<int>     child_ID;
-  std::vector<uint8_t> child_isReco;
-  std::vector<float>   child_recoProb;
-  std::vector<int>     child_recoID;
-  std::vector<uint8_t> child_isStable;
-  std::vector<uint8_t> child_isInteracting;
-  std::vector<uint8_t> child_isReconstructible;
-  std::vector<uint8_t> child_isDark;
+  std::vector<int> child_ID;
   for ( size_t i = 0; i != truthPart->nChildren(); ++i ) {
     const auto* child = truthPart->child(i);
     if ( !child ) continue;
     child_ID .push_back( AUXDYN( child, int, "ID" ) );
-    child_isReco .push_back( AUXDYN( child, char, "isTrackMatch" ) );
-    child_recoProb .push_back( AUXDYN( child, double, "trackMatchProbability" ) );
-    static SG::AuxElement::ConstAccessor<EJsHelper::TrackLink_t> childRecoAccess("trackLink");
-    if ( childRecoAccess.isAvailable( *child ) ) {
-      try {
-  	const EJsHelper::TrackLink_t& childRecoLink = childRecoAccess( *child );
-  	child_recoID .push_back( AUXDYN( (*childRecoLink), int, "ID" ) );
-      } catch(...) {}
-    }
-    child_isStable          .push_back( EJsHelper::isStable          ( child ) );
-    child_isInteracting     .push_back( EJsHelper::isInteracting     ( child ) );
-    child_isReconstructible .push_back( EJsHelper::isReconstructible ( child ) );
-    child_isDark            .push_back( EJsHelper::isDark            ( child ) );
   }
-  m_tp_child_ID                ->push_back( child_ID                );
-  m_tp_child_isReco            ->push_back( child_isReco            );
-  m_tp_child_recoProb          ->push_back( child_recoProb          );
-  m_tp_child_recoID            ->push_back( child_recoID            );
-  m_tp_child_isStable          ->push_back( child_isStable          );
-  m_tp_child_isInteracting     ->push_back( child_isInteracting     );
-  m_tp_child_isReconstructible ->push_back( child_isReconstructible );
-  m_tp_child_isDark            ->push_back( child_isDark            );
+  m_tp_child_ID ->push_back( child_ID );
 
   bool  pVtx_isDarkPionDecay = false;
   int   pVtx_ID              = AlgConsts::invalidInt;
@@ -833,24 +737,8 @@ void EJsHelpTreeBase :: ClearTruthUser ( const std::string truthName )
   m_tp_isInteracting     ->clear();
   m_tp_isReconstructible ->clear();
   m_tp_isDark            ->clear();
-
-  m_tp_parent_ID                ->clear();
-  m_tp_parent_isReco            ->clear();
-  m_tp_parent_recoProb          ->clear();
-  m_tp_parent_recoID            ->clear();
-  m_tp_parent_isStable          ->clear();
-  m_tp_parent_isInteracting     ->clear();
-  m_tp_parent_isReconstructible ->clear();
-  m_tp_parent_isDark            ->clear();
-
-  m_tp_child_ID                ->clear();
-  m_tp_child_isReco            ->clear();
-  m_tp_child_recoProb          ->clear();
-  m_tp_child_recoID            ->clear();
-  m_tp_child_isStable          ->clear();
-  m_tp_child_isInteracting     ->clear();
-  m_tp_child_isReconstructible ->clear();
-  m_tp_child_isDark            ->clear();
+  m_tp_parent_ID         ->clear();
+  m_tp_child_ID          ->clear();
 
   m_tp_pVtx                 ->clear();
   m_tp_pVtx_isDarkPionDecay ->clear();
@@ -891,13 +779,18 @@ void EJsHelpTreeBase :: AddTracksUser ( const std::string trackName, const std::
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddTracksUser()", "adding EJs-user track variables" );
 
-  setBranch<int>      ( trackName, "ID",           m_trk_ID           );
-  setBranch<float>    ( trackName, "d0",           m_trk_d0           );
-  setBranch<float>    ( trackName, "errd0",        m_trk_errd0        );
-  setBranch<float>    ( trackName, "errz0",        m_trk_errz0        );
-  setBranch<float>    ( trackName, "chi2",         m_trk_chi2         );
-  setBranch<uint8_t>  ( trackName, "isSelected",   m_trk_isSelected   );
-  setBranch<uint8_t>  ( trackName, "isAssociated", m_trk_isAssociated );
+  setBranch<int>      ( trackName, "ID",                                 m_trk_ID                      );
+  setBranch<uint8_t>  ( trackName, "expectInnermostPixelLayerHit",       m_trk_expectInnerPixelHit     );
+  setBranch<uint8_t>  ( trackName, "expectNextToInnermostPixelLayerHit", m_trk_expectNextInnerPixelHit );
+  setBranch<float>    ( trackName, "d0",                                 m_trk_d0                      );
+  setBranch<float>    ( trackName, "errd0",                              m_trk_errd0                   );
+  setBranch<float>    ( trackName, "errz0",                              m_trk_errz0                   );
+  setBranch<float>    ( trackName, "chiSquared",                         m_trk_chiSquared              );
+  setBranch<float>    ( trackName, "numberDoF",                          m_trk_numberDoF               );
+  setBranch<float>    ( trackName, "chi2",                               m_trk_chi2                    );
+  setBranch<uint8_t>  ( trackName, "isSelected",                         m_trk_isSelected              );
+  setBranch<uint8_t>  ( trackName, "isAssociated",                       m_trk_isAssociated            );
+  setBranch<uint8_t>  ( trackName, "passSel",                            m_trk_passSel                 );
 
   std::string selCounterName   = "n" + trackName + "Selected";
   std::string assocCounterName = "n" + trackName + "Associated";
@@ -921,14 +814,24 @@ void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName, const xAOD
       m_trk_nAssociated++;
     }
   }
+  
+  bool passSel = true;
+  if ( track->isAvailable<char>("passSel") )
+    if ( !track->auxdataConst<char>("passSel") )
+      passSel = false;
 
-  m_trk_ID           ->push_back( AUXDYN( track, int, "ID" )                                            );
-  m_trk_d0           ->push_back( track->d0()                                                           );
-  m_trk_errd0        ->push_back( track->definingParametersCovMatrix()(0,0)                             );
-  m_trk_errz0        ->push_back( track->definingParametersCovMatrix()(1,1)                             );
-  m_trk_chi2         ->push_back( track->chiSquared() / (track->numberDoF() + AlgConsts::infinitesimal) );
-  m_trk_isSelected   ->push_back( is_selected                                                           );
-  m_trk_isAssociated ->push_back( is_associated                                                         );
+  m_trk_ID                      ->push_back( AUXDYN( track, int,     "ID" )                                        );
+  m_trk_expectInnerPixelHit     ->push_back( AUXDYN( track, uint8_t, "expectInnermostPixelLayerHit" )              );
+  m_trk_expectNextInnerPixelHit ->push_back( AUXDYN( track, uint8_t, "expectNextToInnermostPixelLayerHit" )        );
+  m_trk_d0                      ->push_back( track->d0()                                                           );
+  m_trk_errd0                   ->push_back( track->definingParametersCovMatrix()(0,0)                             );
+  m_trk_errz0                   ->push_back( track->definingParametersCovMatrix()(1,1)                             );
+  m_trk_chiSquared              ->push_back( track->chiSquared()                                                   );
+  m_trk_numberDoF               ->push_back( track->numberDoF()                                                    );
+  m_trk_chi2                    ->push_back( track->chiSquared() / (track->numberDoF() + AlgConsts::infinitesimal) );
+  m_trk_isSelected              ->push_back( is_selected                                                           );
+  m_trk_isAssociated            ->push_back( is_associated                                                         );
+  m_trk_passSel                 ->push_back( passSel                                                               );
 }
 
 void EJsHelpTreeBase :: ClearTracksUser ( const std::string trackName )
@@ -936,11 +839,16 @@ void EJsHelpTreeBase :: ClearTracksUser ( const std::string trackName )
   m_trk_nSelected   = 0;
   m_trk_nAssociated = 0;
 
-  m_trk_ID           ->clear();
-  m_trk_d0           ->clear();
-  m_trk_errd0        ->clear();
-  m_trk_errz0        ->clear();
-  m_trk_chi2         ->clear();
-  m_trk_isSelected   ->clear();
-  m_trk_isAssociated ->clear();
+  m_trk_ID                      ->clear();
+  m_trk_expectInnerPixelHit     ->clear();
+  m_trk_expectNextInnerPixelHit ->clear();
+  m_trk_d0                      ->clear();
+  m_trk_errd0                   ->clear();
+  m_trk_errz0                   ->clear();
+  m_trk_chiSquared              ->clear();
+  m_trk_numberDoF               ->clear();
+  m_trk_chi2                    ->clear();
+  m_trk_isSelected              ->clear();
+  m_trk_isAssociated            ->clear();
+  m_trk_passSel                 ->clear();
 }

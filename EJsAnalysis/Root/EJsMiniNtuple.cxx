@@ -170,10 +170,12 @@ EL::StatusCode EJsMiniNtuple :: initialize ()
 
   // set emtopo / pflow booleans
   m_doEMTopo = false; m_doPFlow = false;
+  if ( m_jetEMTopo ) m_doEMTopo = true;
+  if ( m_jetPFlow  ) m_doPFlow  = true;
   for ( size_t i = 0; i != m_jetContainers.size(); ++i ) {
-    if ( m_jetContainers.at(i).find("EMTopo") != std::string::npos || m_jetContainers.at(i).find("emtopo") != std::string::npos || m_jetEMTopo )
+    if ( m_jetContainers.at(i).find("EMTopo") != std::string::npos || m_jetContainers.at(i).find("emtopo") != std::string::npos )
       m_doEMTopo = true;
-    if ( m_jetContainers.at(i).find("PFlow")  != std::string::npos || m_jetContainers.at(i).find("pflow")  != std::string::npos || m_jetPFlow  )
+    if ( m_jetContainers.at(i).find("PFlow")  != std::string::npos || m_jetContainers.at(i).find("pflow")  != std::string::npos )
       m_doPFlow  = true;
   }
 
@@ -465,7 +467,7 @@ EL::StatusCode EJsMiniNtuple :: execute ()
 	const xAOD::VertexContainer* inSecVerts = 0;
 	ANA_CHECK( HelperFunctions::retrieve( inSecVerts, m_secondaryVertexContainerName, m_event, m_store, msg() ) );
 	ANA_MSG_DEBUG( "Filling '" << m_secondaryVertexBranchName << "' secondary vertex branches" );
-	helpTree->FillSecondaryVerts( inSecVerts, m_secondaryVertexBranchName );
+	helpTree->FillSecondaryVerts( inSecVerts, m_secondaryVertexBranchName, primaryVertex );
       }
       // otherwise, skip
       else ANA_MSG_DEBUG( "Secondary vertex container, '" << m_secondaryVertexContainerName << ", is not available. Skipping..." );

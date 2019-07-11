@@ -58,8 +58,8 @@ class EJsxAODAnalysis : public xAH::Algorithm
   unsigned m_nSignalEJs   = 2;
 
   unsigned m_nValidJets  = 2;
-  double   m_validJetPt  = 50.; // GeV
-  double   m_validJetEta = 2.7; // --> do we even need this ??
+  double   m_validJetPt  = 50.; // GeV --> tighten to 100 (dijet filter) ??
+  double   m_validJetEta = 2.7; // ------> tighten to 2.5 (dijet filter) ??
 
   // protection when running on truth derivation
   bool m_truthLevelOnly = false;
@@ -97,6 +97,7 @@ class EJsxAODAnalysis : public xAH::Algorithm
   std::vector<int> m_numCtrlWeightEvents; //!
   std::vector<int> m_numSignalValidWeightEvents; //!
 
+  // FIX CUTFLOW IMPLEMENTATION --> ADD DO CONFIG; MOVE BIN INTEGERS HER; ETC.
   int m_cutflow_bin; //!
   
   TH1D* m_cutflowHist        = 0; //!

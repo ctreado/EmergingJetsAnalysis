@@ -40,6 +40,7 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, 
   m_maxOpAng      = new std::vector<float>;
   m_mind0         = new std::vector<float>;
   m_maxd0         = new std::vector<float>;
+  m_distToPV      = new std::vector<float>;
   
   m_minOneTrackRemovedMass = new std::vector<float>;
   m_twoTracksMass          = new std::vector<std::vector<float>>;
@@ -320,6 +321,7 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
   delete m_maxOpAng;
   delete m_mind0;
   delete m_maxd0;
+  delete m_distToPV;
   
   delete m_minOneTrackRemovedMass;
   delete m_twoTracksMass;
@@ -601,6 +603,7 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
   connectBranch<float>              ( tree, "maxOpAng",      &m_maxOpAng      );
   connectBranch<float>              ( tree, "mind0",         &m_mind0         );
   connectBranch<float>              ( tree, "maxd0",         &m_maxd0         );
+  connectBranch<float>              ( tree, "distToPV",      &m_distToPV      );
   
   connectBranch<float>              ( tree, "minOneTrackRemovedMass", &m_minOneTrackRemovedMass );
   connectBranch<std::vector<float>> ( tree, "twoTracksMass",          &m_twoTracksMass          );
@@ -883,6 +886,7 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
   setBranch<float>              ( tree, "maxOpAng",      m_maxOpAng      );
   setBranch<float>              ( tree, "mind0",         m_mind0         );
   setBranch<float>              ( tree, "maxd0",         m_maxd0         );
+  setBranch<float>              ( tree, "distToPV",      m_distToPV      );
 
   setBranch<float>              ( tree, "minOneTrackRemovedMass", m_minOneTrackRemovedMass );
   setBranch<std::vector<float>> ( tree, "twoTracksMass",          m_twoTracksMass          );
@@ -1162,6 +1166,7 @@ void SecondaryVertexContainer :: clear ()
   m_maxOpAng      ->clear();
   m_mind0         ->clear();
   m_maxd0         ->clear();
+  m_distToPV      ->clear();
   
   m_minOneTrackRemovedMass ->clear();
   m_twoTracksMass          ->clear();
@@ -1417,21 +1422,26 @@ void SecondaryVertexContainer :: clear ()
 }
 
 
-void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVtx, const std::string treeName )
+void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVtx, const std::string treeName,
+						       const xAOD::Vertex* pv )
 {
   if ( m_debug ) Info( "EJs::SecondaryVertexContainer::FillSecondaryVertex()", "filling branches" );
-  
-  VertexContainer::FillVertex ();
 
-  // // check if vertex passed selections ...
-  // bool secVtx_passSel = secVtx->auxdataConst<char>("passSel");
-  // std::cout << "SECONDARY VERTEX: passed selections ?? " << secVtx_passSel << std::endl;
+  // skip vertex if failed track trimming selections
+  bool secVtx_passTrimSel = true;
+  if ( secVtx->isAvailable<char>("passTrimSel") )
+    secVtx_passTrimSel = secVtx->auxdataConst<char>("passTrimSel");
+  if ( !secVtx_passTrimSel ) return;
 
-  const TVector3 pos( secVtx->x(), secVtx->y(), secVtx->z() );
-  
   // get vector of filtered tracks
   std::vector< const xAOD::TrackParticle* > filteredTracks;
   EJsHelper::getFilteredTracks( secVtx, filteredTracks );
+  if ( filteredTracks.size() < 2 ) return; // skip if less than two filtered tracks
+
+  // fill common vertex container branches
+  VertexContainer::FillVertex ();
+
+  const TVector3 pos( secVtx->x(), secVtx->y(), secVtx->z() );
   
   // re-calculate vertex kinematic variables using filtered tracks
   const TLorentzVector& sumP4       = VsiBonsai::sumP4       ( filteredTracks );
@@ -1479,6 +1489,10 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
   m_maxOpAng      ->push_back( maxOpAngle                                 );
   m_mind0         ->push_back( mind0                                      );
   m_maxd0         ->push_back( maxd0                                      );
+
+  float dv_distToPV = secVtx->position().perp();
+  if ( pv ) dv_distToPV = ( pv->position() - secVtx->position() ).perp();
+  m_distToPV ->push_back( dv_distToPV );
 
   const double minOneTrackRemovedMass = VsiBonsai::minOneTrackRemovedMass       ( filteredTracks );
   const auto   twoTrackMassTuples     = VsiBonsai::allTwoTracksMassCombinations ( filteredTracks );

@@ -1,2 +1,3 @@
 .asetup*
 EJsAnalysis/scripts/plotting/*_cxx*
+EJsAnalysis/config/*.pyc
