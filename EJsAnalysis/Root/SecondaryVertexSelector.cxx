@@ -223,7 +223,7 @@ EL::StatusCode SecondaryVertexSelector :: execute ()
   const xAOD::VertexContainer* inSecVerts = 0;
   ANA_CHECK( HelperFunctions::retrieve( inSecVerts, m_inContainerName, m_event, m_store, msg() ) );
 
-  // create output container (if requested) -- deep copy
+  // create output container (if requested)
   ConstDataVector<xAOD::VertexContainer>* selectedSecVerts = 0;
   if ( m_createSelectedContainer )
     selectedSecVerts = new ConstDataVector<xAOD::VertexContainer>(SG::VIEW_ELEMENTS);
@@ -261,7 +261,7 @@ EL::StatusCode SecondaryVertexSelector :: execute ()
 
   ++m_eventNumber;
 
-  // apply event selected based on min/max requirements on number of objects passing cuts per event
+  // apply event selection based on min/max requirements on number of objects passing cuts per event
   if ( m_pass_min > 0 && nPass < m_pass_min ) {
     wk()->skipEvent();
     return EL::StatusCode::SUCCESS;

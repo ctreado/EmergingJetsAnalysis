@@ -16,8 +16,8 @@ TruthVertexContainer :: TruthVertexContainer ( const std::string& name, const st
   
   if ( m_debug ) Info( "EJs::TruthVertexContainer()", "setting up" );
 
+  m_passSel                = new std::vector<uint8_t>;
   m_isDarkPionDecay        = new std::vector<uint8_t>;
-  m_isOffdiagDarkPionDecay = new std::vector<uint8_t>;
   m_ID                     = new std::vector<int>;
   m_x                      = new std::vector<float>;
   m_y                      = new std::vector<float>;
@@ -112,8 +112,8 @@ TruthVertexContainer :: ~TruthVertexContainer ()
 {
   if ( m_debug ) Info( "EJs::TruthVertexContainer()", "deleting" );
 
+  delete m_passSel;
   delete m_isDarkPionDecay;
-  delete m_isOffdiagDarkPionDecay;
   delete m_ID;
   delete m_x;
   delete m_y;
@@ -210,8 +210,8 @@ void TruthVertexContainer :: setTree ( TTree* tree )
   
   VertexContainer::setTree ( tree );
 
+  connectBranch<uint8_t>              ( tree, "passSel",                &m_passSel                );
   connectBranch<uint8_t>              ( tree, "isDarkPionDecay",        &m_isDarkPionDecay        );
-  connectBranch<uint8_t>              ( tree, "isOffdiagDarkPionDecay", &m_isOffdiagDarkPionDecay );
   connectBranch<int>                  ( tree, "ID",                     &m_ID                     );
   connectBranch<float>                ( tree, "x",                      &m_x                      );
   connectBranch<float>                ( tree, "y",                      &m_y                      );
@@ -308,8 +308,8 @@ void TruthVertexContainer :: setBranches ( TTree* tree )
   
   VertexContainer::setBranches ( tree );
 
+  setBranch<uint8_t>              ( tree, "passSel",                m_passSel                );
   setBranch<uint8_t>              ( tree, "isDarkPionDecay",        m_isDarkPionDecay        );
-  setBranch<uint8_t>              ( tree, "isOffdiagDarkPionDecay", m_isOffdiagDarkPionDecay );
   setBranch<int>                  ( tree, "ID",                     m_ID                     );
   setBranch<float>                ( tree, "x",                      m_x                      );
   setBranch<float>                ( tree, "y",                      m_y                      );
@@ -406,8 +406,8 @@ void TruthVertexContainer :: clear ()
   
   VertexContainer::clear ();
 
+  m_passSel                ->clear();
   m_isDarkPionDecay        ->clear();
-  m_isOffdiagDarkPionDecay ->clear();
   m_ID                     ->clear();
   m_x                      ->clear();
   m_y                      ->clear();
@@ -504,8 +504,12 @@ void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx
   
   VertexContainer::FillVertex ();
 
+  bool passSel = true;
+  if ( truthVtx->isAvailable<char>("passSel") )
+    if ( !truthVtx->auxdataConst<char>("passSel") )
+      passSel = false;
+  m_passSel                ->push_back( passSel                                       );
   m_isDarkPionDecay        ->push_back( EJsHelper::selectDarkPion        ( truthVtx ) );
-  m_isOffdiagDarkPionDecay ->push_back( EJsHelper::selectOffdiagDarkPion ( truthVtx ) );
 
   m_ID      ->push_back( AUXDYN( truthVtx, int, "ID" )  );
   m_x       ->push_back( truthVtx->x()                  );

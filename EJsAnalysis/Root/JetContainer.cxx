@@ -89,24 +89,20 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
     m_secVtx_dR                                          = new std::vector<std::vector<float>>;
     if ( m_mc ) {
       m_secVtx_closestTruth_isDarkPionDecay              = new std::vector<std::vector<uint8_t>>;
-      m_secVtx_closestTruth_isOffdiagDarkPionDecay       = new std::vector<std::vector<uint8_t>>;
       m_secVtx_closestTruth_ID                           = new std::vector<std::vector<int>>;
       m_secVtx_closestTruth_barcode                      = new std::vector<std::vector<int>>;
       m_secVtx_closestTruth_distance                     = new std::vector<std::vector<float>>;
       m_secVtx_maxlinkTruth_isDarkPionDecay              = new std::vector<std::vector<uint8_t>>;
-      m_secVtx_maxlinkTruth_isOffdiagDarkPionDecay       = new std::vector<std::vector<uint8_t>>;
       m_secVtx_maxlinkTruth_ID                           = new std::vector<std::vector<int>>;
       m_secVtx_maxlinkTruth_barcode                      = new std::vector<std::vector<int>>;
       m_secVtx_maxlinkTruth_score                        = new std::vector<std::vector<float>>;
       m_secVtx_maxlinkParentTruth_isDarkPionDecay        = new std::vector<std::vector<uint8_t>>;
-      m_secVtx_maxlinkParentTruth_isOffdiagDarkPionDecay = new std::vector<std::vector<uint8_t>>;
       m_secVtx_maxlinkParentTruth_ID                     = new std::vector<std::vector<int>>;
       m_secVtx_maxlinkParentTruth_barcode                = new std::vector<std::vector<int>>;
       m_secVtx_maxlinkParentTruth_score                  = new std::vector<std::vector<float>>;
       m_truthVtxCount                                    = new std::vector<int>;
       m_truthVtxPt                                       = new std::vector<float>;
       m_truthVtx_isDarkPionDecay                         = new std::vector<std::vector<uint8_t>>;
-      m_truthVtx_isOffdiagDarkPionDecay                  = new std::vector<std::vector<uint8_t>>;
       m_truthVtx_ID                                      = new std::vector<std::vector<int>>;
       m_truthVtx_x                                       = new std::vector<std::vector<float>>;
       m_truthVtx_y                                       = new std::vector<std::vector<float>>;
@@ -306,24 +302,20 @@ JetContainer :: ~JetContainer ()
     delete m_secVtx_dR;
     if ( m_mc ) {
       delete m_secVtx_closestTruth_isDarkPionDecay;
-      delete m_secVtx_closestTruth_isOffdiagDarkPionDecay;
       delete m_secVtx_closestTruth_ID;
       delete m_secVtx_closestTruth_barcode;
       delete m_secVtx_closestTruth_distance;
       delete m_secVtx_maxlinkTruth_isDarkPionDecay;
-      delete m_secVtx_maxlinkTruth_isOffdiagDarkPionDecay;
       delete m_secVtx_maxlinkTruth_ID;
       delete m_secVtx_maxlinkTruth_barcode;
       delete m_secVtx_maxlinkTruth_score;
       delete m_secVtx_maxlinkParentTruth_isDarkPionDecay;
-      delete m_secVtx_maxlinkParentTruth_isOffdiagDarkPionDecay;
       delete m_secVtx_maxlinkParentTruth_ID;
       delete m_secVtx_maxlinkParentTruth_barcode;
       delete m_secVtx_maxlinkParentTruth_score;
       delete m_truthVtxCount;
       delete m_truthVtxPt;
       delete m_truthVtx_isDarkPionDecay;
-      delete m_truthVtx_isOffdiagDarkPionDecay;
       delete m_truthVtx_ID;
       delete m_truthVtx_x;
       delete m_truthVtx_y;
@@ -523,24 +515,20 @@ void JetContainer :: setTree ( TTree* tree )
     connectBranch<std::vector<float>>     ( tree, "secVtx_dR",                                        &m_secVtx_dR                                        );
     if ( m_mc ) {
       connectBranch<std::vector<uint8_t>> ( tree, "secVtx_closestTruth_isDarkPionDecay",              &m_secVtx_closestTruth_isDarkPionDecay              );
-      connectBranch<std::vector<uint8_t>> ( tree, "secVtx_closestTruth_isOffdiagDarkPionDecay",       &m_secVtx_closestTruth_isOffdiagDarkPionDecay       );
       connectBranch<std::vector<int>>     ( tree, "secVtx_closestTruth_ID",                           &m_secVtx_closestTruth_ID                           );
       connectBranch<std::vector<int>>     ( tree, "secVtx_closestTruth_barcode",                      &m_secVtx_closestTruth_barcode                      );
       connectBranch<std::vector<float>>   ( tree, "secVtx_closestTruth_distance",                     &m_secVtx_closestTruth_distance                     );
       connectBranch<std::vector<uint8_t>> ( tree, "secVtx_maxlinkTruth_isDarkPionDecay",              &m_secVtx_maxlinkTruth_isDarkPionDecay              );
-      connectBranch<std::vector<uint8_t>> ( tree, "secVtx_maxlinkTruth_isOffdiagDarkPionDecay",       &m_secVtx_maxlinkTruth_isOffdiagDarkPionDecay       );
       connectBranch<std::vector<int>>     ( tree, "secVtx_maxlinkTruth_ID",                           &m_secVtx_maxlinkTruth_ID                           );
       connectBranch<std::vector<int>>     ( tree, "secVtx_maxlinkTruth_barcode",                      &m_secVtx_maxlinkTruth_barcode                      );
       connectBranch<std::vector<float>>   ( tree, "secVtx_maxlinkTruth_score",                        &m_secVtx_maxlinkTruth_score                        );
       connectBranch<std::vector<uint8_t>> ( tree, "secVtx_maxlinkParentTruth_isDarkPionDecay",        &m_secVtx_maxlinkParentTruth_isDarkPionDecay        );
-      connectBranch<std::vector<uint8_t>> ( tree, "secVtx_maxlinkParentTruth_isOffdiagDarkPionDecay", &m_secVtx_maxlinkParentTruth_isOffdiagDarkPionDecay );
       connectBranch<std::vector<int>>     ( tree, "secVtx_maxlinkParentTruth_ID",                     &m_secVtx_maxlinkParentTruth_ID                     );
       connectBranch<std::vector<int>>     ( tree, "secVtx_maxlinkParentTruth_barcode",                &m_secVtx_maxlinkParentTruth_barcode                );
       connectBranch<std::vector<float>>   ( tree, "secVtx_maxlinkParentTruth_score",                  &m_secVtx_maxlinkParentTruth_score                  );
       connectBranch<int>                  ( tree, "truthVtxCount",                                    &m_truthVtxCount                                    );
       connectBranch<float>                ( tree, "truthVtxPt",                                       &m_truthVtxPt                                       );
       connectBranch<std::vector<uint8_t>> ( tree, "truthVtx_isDarkPionDecay",                         &m_truthVtx_isDarkPionDecay                         );
-      connectBranch<std::vector<uint8_t>> ( tree, "truthVtx_isOffdiagDarkPionDecay",                  &m_truthVtx_isOffdiagDarkPionDecay                  );
       connectBranch<std::vector<int>>     ( tree, "truthVtx_ID",                                      &m_truthVtx_ID                                      );
       connectBranch<std::vector<float>>   ( tree, "truthVtx_x",                                       &m_truthVtx_x                                       );
       connectBranch<std::vector<float>>   ( tree, "truthVtx_y",                                       &m_truthVtx_y                                       );
@@ -740,24 +728,20 @@ void JetContainer :: setBranches ( TTree* tree )
     setBranch<std::vector<float>>     ( tree, "secVtx_dR",                                        m_secVtx_dR                                        );
     if ( m_mc ) {
       setBranch<std::vector<uint8_t>> ( tree, "secVtx_closestTruth_isDarkPionDecay",              m_secVtx_closestTruth_isDarkPionDecay              );
-      setBranch<std::vector<uint8_t>> ( tree, "secVtx_closestTruth_isOffdiagDarkPionDecay",       m_secVtx_closestTruth_isOffdiagDarkPionDecay       );
       setBranch<std::vector<int>>     ( tree, "secVtx_closestTruth_ID",                           m_secVtx_closestTruth_ID                           );
       setBranch<std::vector<int>>     ( tree, "secVtx_closestTruth_barcode",                      m_secVtx_closestTruth_barcode                      );
       setBranch<std::vector<float>>   ( tree, "secVtx_closestTruth_distance",                     m_secVtx_closestTruth_distance                     );
       setBranch<std::vector<uint8_t>> ( tree, "secVtx_maxlinkTruth_isDarkPionDecay",              m_secVtx_maxlinkTruth_isDarkPionDecay              );
-      setBranch<std::vector<uint8_t>> ( tree, "secVtx_maxlinkTruth_isOffdiagDarkPionDecay",       m_secVtx_maxlinkTruth_isOffdiagDarkPionDecay       );
       setBranch<std::vector<int>>     ( tree, "secVtx_maxlinkTruth_ID",                           m_secVtx_maxlinkTruth_ID                           );
       setBranch<std::vector<int>>     ( tree, "secVtx_maxlinkTruth_barcode",                      m_secVtx_maxlinkTruth_barcode                      );
       setBranch<std::vector<float>>   ( tree, "secVtx_maxlinkTruth_score",                        m_secVtx_maxlinkTruth_score                        );
       setBranch<std::vector<uint8_t>> ( tree, "secVtx_maxlinkParentTruth_isDarkPionDecay",        m_secVtx_maxlinkParentTruth_isDarkPionDecay        );
-      setBranch<std::vector<uint8_t>> ( tree, "secVtx_maxlinkParentTruth_isOffdiagDarkPionDecay", m_secVtx_maxlinkParentTruth_isOffdiagDarkPionDecay );
       setBranch<std::vector<int>>     ( tree, "secVtx_maxlinkParentTruth_ID",                     m_secVtx_maxlinkParentTruth_ID                     );
       setBranch<std::vector<int>>     ( tree, "secVtx_maxlinkParentTruth_barcode",                m_secVtx_maxlinkParentTruth_barcode                );
       setBranch<std::vector<float>>   ( tree, "secVtx_maxlinkParentTruth_score",                  m_secVtx_maxlinkParentTruth_score                  );
       setBranch<int>                  ( tree, "truthVtxCount",                                    m_truthVtxCount                                    );
       setBranch<float>                ( tree, "truthVtxPt",                                       m_truthVtxPt                                       );
       setBranch<std::vector<uint8_t>> ( tree, "truthVtx_isDarkPionDecay",                         m_truthVtx_isDarkPionDecay                         );
-      setBranch<std::vector<uint8_t>> ( tree, "truthVtx_isOffdiagDarkPionDecay",                  m_truthVtx_isOffdiagDarkPionDecay                  );
       setBranch<std::vector<int>>     ( tree, "truthVtx_ID",                                      m_truthVtx_ID                                      );
       setBranch<std::vector<float>>   ( tree, "truthVtx_x",                                       m_truthVtx_x                                       );
       setBranch<std::vector<float>>   ( tree, "truthVtx_y",                                       m_truthVtx_y                                       );
@@ -957,24 +941,20 @@ void JetContainer :: clear ( )
     m_secVtx_dR                                          ->clear();
     if ( m_mc ) {
       m_secVtx_closestTruth_isDarkPionDecay              ->clear();
-      m_secVtx_closestTruth_isOffdiagDarkPionDecay       ->clear();
       m_secVtx_closestTruth_ID                           ->clear();
       m_secVtx_closestTruth_barcode                      ->clear();
       m_secVtx_closestTruth_distance                     ->clear();
       m_secVtx_maxlinkTruth_isDarkPionDecay              ->clear();
-      m_secVtx_maxlinkTruth_isOffdiagDarkPionDecay       ->clear();
       m_secVtx_maxlinkTruth_ID                           ->clear();
       m_secVtx_maxlinkTruth_barcode                      ->clear();
       m_secVtx_maxlinkTruth_score                        ->clear();
       m_secVtx_maxlinkParentTruth_isDarkPionDecay        ->clear();
-      m_secVtx_maxlinkParentTruth_isOffdiagDarkPionDecay ->clear();
       m_secVtx_maxlinkParentTruth_ID                     ->clear();
       m_secVtx_maxlinkParentTruth_barcode                ->clear();
       m_secVtx_maxlinkParentTruth_score                  ->clear();
       m_truthVtxCount                                    ->clear();
       m_truthVtxPt                                       ->clear();
       m_truthVtx_isDarkPionDecay                         ->clear();
-      m_truthVtx_isOffdiagDarkPionDecay                  ->clear();
       m_truthVtx_ID                                      ->clear();
       m_truthVtx_x                                       ->clear();
       m_truthVtx_y                                       ->clear();
@@ -1239,24 +1219,20 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
     std::vector<float>   matchDV_chi2;
     std::vector<int>     matchDV_ntrk;
     std::vector<uint8_t> matchDV_closeTV_isPid;
-    std::vector<uint8_t> matchDV_closeTV_isOffPid;
     std::vector<int>     matchDV_closeTV_ID;
     std::vector<int>     matchDV_closeTV_barcode;
     std::vector<float>   matchDV_closeTV_dist;
     std::vector<uint8_t> matchDV_maxTV_isPid;
-    std::vector<uint8_t> matchDV_maxTV_isOffPid;
     std::vector<int>     matchDV_maxTV_ID;
     std::vector<int>     matchDV_maxTV_barcode;
     std::vector<float>   matchDV_maxTV_score;
     std::vector<uint8_t> matchDV_maxPTV_isPid;
-    std::vector<uint8_t> matchDV_maxPTV_isOffPid;
     std::vector<int>     matchDV_maxPTV_ID;
     std::vector<int>     matchDV_maxPTV_barcode;
     std::vector<float>   matchDV_maxPTV_score;
     int                  matchTVCount = 0;
     double               matchTVPt    = 0;
     std::vector<uint8_t> matchTV_isPid;
-    std::vector<uint8_t> matchTV_isOffPid;
     std::vector<int>     matchTV_ID;
     std::vector<float>   matchTV_x;
     std::vector<float>   matchTV_y;
@@ -1306,7 +1282,6 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
       
 	// get closest TV link
 	uint8_t closeTV_isPid    = AlgConsts::invalidUnsigned;
-	uint8_t closeTV_isOffPid = AlgConsts::invalidUnsigned;
 	int     closeTV_ID       = AlgConsts::invalidInt;
 	int     closeTV_barcode  = AlgConsts::invalidInt;
 	static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t> closeTVAccess("closestTruthVertexLink");
@@ -1314,20 +1289,17 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
 	  try {
 	    const EJsHelper::TruthVertexLink_t& closeTVLink = closeTVAccess( **dvlink );
 	    closeTV_isPid    = EJsHelper::selectDarkPion        ( (*closeTVLink) );
-	    closeTV_isOffPid = EJsHelper::selectOffdiagDarkPion ( (*closeTVLink) );
 	    closeTV_ID       = AUXDYN( (*closeTVLink), int, "ID" );
 	    closeTV_barcode  = (*closeTVLink)->barcode();
 	  } catch(...) {}
 	}
 	matchDV_closeTV_isPid    .push_back( closeTV_isPid    );
-	matchDV_closeTV_isOffPid .push_back( closeTV_isOffPid );
 	matchDV_closeTV_ID       .push_back( closeTV_ID       );
 	matchDV_closeTV_barcode  .push_back( closeTV_barcode  );
 	matchDV_closeTV_dist     .push_back( AUXDYN( (*dvlink), double, "closestTruthVertex_dist" ) );
 
 	// get max-linked TV link
 	uint8_t maxTV_isPid    = AlgConsts::invalidUnsigned;
-	uint8_t maxTV_isOffPid = AlgConsts::invalidUnsigned;
 	int     maxTV_ID       = AlgConsts::invalidInt;
 	int     maxTV_barcode  = AlgConsts::invalidInt;
 	static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t> maxTVAccess("maxlinkedTruthVertexLink");
@@ -1335,20 +1307,17 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
 	  try {
 	    const EJsHelper::TruthVertexLink_t& maxTVLink = maxTVAccess( **dvlink );
 	    maxTV_isPid    = EJsHelper::selectDarkPion        ( (*maxTVLink) );
-	    maxTV_isOffPid = EJsHelper::selectOffdiagDarkPion ( (*maxTVLink) );
 	    maxTV_ID       = AUXDYN( (*maxTVLink), int, "ID" );
 	    maxTV_barcode  = (*maxTVLink)->barcode();
 	  } catch(...) {}
 	}
 	matchDV_maxTV_isPid    .push_back( maxTV_isPid    );
-	matchDV_maxTV_isOffPid .push_back( maxTV_isOffPid );
 	matchDV_maxTV_ID       .push_back( maxTV_ID       );
 	matchDV_maxTV_barcode  .push_back( maxTV_barcode  );
 	matchDV_maxTV_score    .push_back( AUXDYN( (*dvlink), double, "maxlinkedTruthVertex_score" ) );
 
 	// get max-linked PTV link
 	uint8_t maxPTV_isPid    = AlgConsts::invalidUnsigned;
-	uint8_t maxPTV_isOffPid = AlgConsts::invalidUnsigned;
 	int     maxPTV_ID       = AlgConsts::invalidInt;
 	int     maxPTV_barcode  = AlgConsts::invalidInt;
 	static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t> maxPTVAccess("maxlinkedParentTruthVertexLink");
@@ -1356,13 +1325,11 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
 	  try {
 	    const EJsHelper::TruthVertexLink_t& maxPTVLink = maxPTVAccess( **dvlink );
 	    maxPTV_isPid    = EJsHelper::selectDarkPion        ( (*maxPTVLink ) );
-	    maxPTV_isOffPid = EJsHelper::selectOffdiagDarkPion ( (*maxPTVLink ) );
 	    maxPTV_ID       = AUXDYN( (*maxPTVLink), int, "ID" );
 	    maxPTV_barcode  = (*maxPTVLink)->barcode();
 	  } catch(...) {}
 	}
 	matchDV_maxPTV_isPid    .push_back( maxPTV_isPid    );
-	matchDV_maxPTV_isOffPid .push_back( maxPTV_isOffPid );
 	matchDV_maxPTV_ID       .push_back( maxPTV_ID       );
 	matchDV_maxPTV_barcode  .push_back( maxPTV_barcode  );
 	matchDV_maxPTV_score    .push_back( AUXDYN( (*dvlink), double, "maxlinkedParentTruthVertex_score" ) );
@@ -1392,7 +1359,6 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
 	matchTVPt += tvP4.Pt();
 	
 	matchTV_isPid    .push_back( EJsHelper::selectDarkPion        ( (*tvlink) ) );
-	matchTV_isOffPid .push_back( EJsHelper::selectOffdiagDarkPion ( (*tvlink) ) );
 	matchTV_ID       .push_back( AUXDYN( (*tvlink), int, "ID" )                 );
 	matchTV_x        .push_back( (*tvlink)->x()                                 );
 	matchTV_y        .push_back( (*tvlink)->y()                                 );
@@ -1423,24 +1389,20 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::string treeName 
     m_secVtx_dR                                          ->push_back( AUXDYNVEC( jet, float, "matchedSecondaryVertex_dR" ) );
     if ( m_mc ) {
       m_secVtx_closestTruth_isDarkPionDecay              ->push_back( matchDV_closeTV_isPid                                );
-      m_secVtx_closestTruth_isOffdiagDarkPionDecay       ->push_back( matchDV_closeTV_isOffPid                             );
       m_secVtx_closestTruth_ID                           ->push_back( matchDV_closeTV_ID                                   );
       m_secVtx_closestTruth_barcode                      ->push_back( matchDV_closeTV_barcode                              );
       m_secVtx_closestTruth_distance                     ->push_back( matchDV_closeTV_dist                                 );
       m_secVtx_maxlinkTruth_isDarkPionDecay              ->push_back( matchDV_maxTV_isPid                                  );
-      m_secVtx_maxlinkTruth_isOffdiagDarkPionDecay       ->push_back( matchDV_maxTV_isOffPid                               );
       m_secVtx_maxlinkTruth_ID                           ->push_back( matchDV_maxTV_ID                                     );
       m_secVtx_maxlinkTruth_barcode                      ->push_back( matchDV_maxTV_barcode                                );
       m_secVtx_maxlinkTruth_score                        ->push_back( matchDV_maxTV_score                                  );
       m_secVtx_maxlinkParentTruth_isDarkPionDecay        ->push_back( matchDV_maxPTV_isPid                                 );
-      m_secVtx_maxlinkParentTruth_isOffdiagDarkPionDecay ->push_back( matchDV_maxPTV_isOffPid                              );
       m_secVtx_maxlinkParentTruth_ID                     ->push_back( matchDV_maxPTV_ID                                    );
       m_secVtx_maxlinkParentTruth_barcode                ->push_back( matchDV_maxPTV_barcode                               );
       m_secVtx_maxlinkParentTruth_score                  ->push_back( matchDV_maxPTV_score                                 );
       m_truthVtxCount                                    ->push_back( matchTVCount                                         );
       m_truthVtxPt                                       ->push_back( matchTVPt / m_units                                  );
       m_truthVtx_isDarkPionDecay                         ->push_back( matchTV_isPid                                        );
-      m_truthVtx_isOffdiagDarkPionDecay                  ->push_back( matchTV_isOffPid                                     );
       m_truthVtx_ID                                      ->push_back( matchTV_ID                                           );
       m_truthVtx_x                                       ->push_back( matchTV_x                                            );
       m_truthVtx_y                                       ->push_back( matchTV_y                                            );

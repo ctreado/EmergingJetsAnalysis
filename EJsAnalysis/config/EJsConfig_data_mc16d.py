@@ -54,6 +54,9 @@ c.algorithm ( "TrackSelector",           Dict_TrackSelector           )
 # Secondary Vertex Selection
 c.algorithm ( "SecondaryVertexSelector", Dict_SecondaryVertexSelector )
 
+# Truth Vertex Selection
+c.algorithm ( "TruthVertexSelector",     Dict_TruthVertexSelector     )
+
 # EJs Analysis Selection
 c.algorithm ( "EJsxAODAnalysis",         Dict_EJsxAODAnalysis         )
 

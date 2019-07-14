@@ -91,24 +91,20 @@ namespace EJs {
     std::vector<std::vector<int>>*     m_secVtx_ntrk; // ntrk_sel/assoc ... ??
     std::vector<std::vector<float>>*   m_secVtx_dR;
     std::vector<std::vector<uint8_t>>* m_secVtx_closestTruth_isDarkPionDecay;
-    std::vector<std::vector<uint8_t>>* m_secVtx_closestTruth_isOffdiagDarkPionDecay;
     std::vector<std::vector<int>>*     m_secVtx_closestTruth_ID;
     std::vector<std::vector<int>>*     m_secVtx_closestTruth_barcode;
     std::vector<std::vector<float>>*   m_secVtx_closestTruth_distance;
     std::vector<std::vector<uint8_t>>* m_secVtx_maxlinkTruth_isDarkPionDecay;
-    std::vector<std::vector<uint8_t>>* m_secVtx_maxlinkTruth_isOffdiagDarkPionDecay;
     std::vector<std::vector<int>>*     m_secVtx_maxlinkTruth_ID;
     std::vector<std::vector<int>>*     m_secVtx_maxlinkTruth_barcode;
     std::vector<std::vector<float>>*   m_secVtx_maxlinkTruth_score;
     std::vector<std::vector<uint8_t>>* m_secVtx_maxlinkParentTruth_isDarkPionDecay;
-    std::vector<std::vector<uint8_t>>* m_secVtx_maxlinkParentTruth_isOffdiagDarkPionDecay;
     std::vector<std::vector<int>>*     m_secVtx_maxlinkParentTruth_ID;
     std::vector<std::vector<int>>*     m_secVtx_maxlinkParentTruth_barcode;
     std::vector<std::vector<float>>*   m_secVtx_maxlinkParentTruth_score;
     std::vector<int>*                  m_truthVtxCount;
     std::vector<float>*                m_truthVtxPt;
     std::vector<std::vector<uint8_t>>* m_truthVtx_isDarkPionDecay;
-    std::vector<std::vector<uint8_t>>* m_truthVtx_isOffdiagDarkPionDecay;
     std::vector<std::vector<int>>*     m_truthVtx_ID;
     std::vector<std::vector<float>>*   m_truthVtx_x;
     std::vector<std::vector<float>>*   m_truthVtx_y;

@@ -72,10 +72,11 @@ namespace EJsHelper {
 
   // --- truth helper functions (some taken from VsiPerf/VsiTruthHelper) --- //
 
-  // selects specified particle decay truth vertices
-  bool selectDarkPion        ( const xAOD::TruthVertex* );
-  bool selectOffdiagDarkPion ( const xAOD::TruthVertex* );
-  // other TVs for validation ??
+  // particle decay truth vertex selectors
+  bool selectDarkPion ( const xAOD::TruthVertex* );
+  bool selectKshort   ( const xAOD::TruthVertex* );
+  
+  extern std::map<std::string, bool (*) ( const xAOD::TruthVertex* )> pdgIdFuncs;
 
   // look for (reconstructible) descendants in (LLP) decay chain
 

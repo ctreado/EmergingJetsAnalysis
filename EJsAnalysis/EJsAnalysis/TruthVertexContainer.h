@@ -37,8 +37,8 @@ namespace EJs {
     bool m_doPFlow;
     
     // vector branches
+    std::vector<uint8_t>* m_passSel;
     std::vector<uint8_t>* m_isDarkPionDecay;
-    std::vector<uint8_t>* m_isOffdiagDarkPionDecay;
 
     std::vector<int>*   m_ID;
     std::vector<float>* m_x;

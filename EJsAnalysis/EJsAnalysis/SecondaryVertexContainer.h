@@ -149,14 +149,12 @@ namespace EJs {
     // close truth
     std::vector<std::vector<float>>*   m_closeTruth_distance;
     std::vector<std::vector<uint8_t>>* m_closeTruth_isDarkPionDecay;
-    std::vector<std::vector<uint8_t>>* m_closeTruth_isOffdiagDarkPionDecay;
     std::vector<std::vector<int>>*     m_closeTruth_ID;
     std::vector<std::vector<int>>*     m_closeTruth_barcode;
     
     // closest truth
     std::vector<float>*   m_closestTruth_distance;
     std::vector<uint8_t>* m_closestTruth_isDarkPionDecay;
-    std::vector<uint8_t>* m_closestTruth_isOffdiagDarkPionDecay;
 
     std::vector<int>*   m_closestTruth_ID;
     std::vector<float>* m_closestTruth_x;
@@ -207,20 +205,17 @@ namespace EJs {
     // linked (parent) truth
     std::vector<std::vector<float>>*   m_linkTruth_score;
     std::vector<std::vector<uint8_t>>* m_linkTruth_isDarkPionDecay;
-    std::vector<std::vector<uint8_t>>* m_linkTruth_isOffdiagDarkPionDecay;
     std::vector<std::vector<int>>*     m_linkTruth_ID;
     std::vector<std::vector<int>>*     m_linkTruth_barcode;
 
     std::vector<std::vector<float>>*   m_linkParentTruth_score;
     std::vector<std::vector<uint8_t>>* m_linkParentTruth_isDarkPionDecay;
-    std::vector<std::vector<uint8_t>>* m_linkParentTruth_isOffdiagDarkPionDecay;
     std::vector<std::vector<int>>*     m_linkParentTruth_ID;
     std::vector<std::vector<int>>*     m_linkParentTruth_barcode;
     
     // max-linked (parent) truth
     std::vector<float>*   m_maxlinkTruth_score;
     std::vector<uint8_t>* m_maxlinkTruth_isDarkPionDecay;
-    std::vector<uint8_t>* m_maxlinkTruth_isOffdiagDarkPionDecay;
 
     std::vector<int>*   m_maxlinkTruth_ID;
     std::vector<float>* m_maxlinkTruth_x;
@@ -268,7 +263,6 @@ namespace EJs {
 
     std::vector<float>*   m_maxlinkParentTruth_score;
     std::vector<uint8_t>* m_maxlinkParentTruth_isDarkPionDecay;
-    std::vector<uint8_t>* m_maxlinkParentTruth_isOffdiagDarkPionDecay;
 
     std::vector<int>*   m_maxlinkParentTruth_ID;
     std::vector<float>* m_maxlinkParentTruth_x;

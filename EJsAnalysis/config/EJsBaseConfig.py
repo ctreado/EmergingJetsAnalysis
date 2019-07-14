@@ -200,13 +200,13 @@ Dict_TrackSelector = {
 
 Dict_SecondaryVertexSelector = {
     "m_name"                    : "SecVtxSelect",
-    "m_msgLevel"                : "debug",
+    "m_msgLevel"                : "info",
     "m_inContainerName"         : "VrtSecInclusive_SecondaryVertices",
     "m_outContainerName"        : "VrtSecInclusive_SecondaryVertices_Select",
     "m_decorateSelectedObjects" : True,
     "m_createSelectedContainer" : True,
-    "m_doTrackTrimming"         : True,  ## --> TESTING --> turn off for now until re-vertexing study done / cuts optimized
-    "m_doMatMapVeto"            : True,  ## --> TESTING --> run on + off and compare (want on in the end) ...
+    "m_doTrackTrimming"         : False,  ## --> eventually want to turn on; need to optimize trimmer cuts...
+    "m_doMatMapVeto"            : True,   ## --> compare vertices w/ material on and off ???
     "m_matMapInnerFileName"     : matMapPath + "MaterialMap_v3.2_Inner.root",
     "m_matMapInnerHistName"     : "FinalMap_inner",
     "m_matMapInnerMatrixName"   : "FoldingInfo",
@@ -215,7 +215,13 @@ Dict_SecondaryVertexSelector = {
 }
 
 Dict_TruthVertexSelector = {
-
+    "m_name"                    : "TruthVtxSelect",
+    "m_msgLevel"                : "debug",
+    "m_inContainerName"         : "TruthVertices",
+    "m_outContainerName"        : "TruthVertices_Select",
+    "m_decorateSelectedObjects" : True,
+    "m_createSelectedContainer" : True,
+    "m_truthLLP"                : "DarkPion",
 }
 
     
@@ -258,7 +264,10 @@ Dict_EJsMiniNtuple = {
     #"m_truthPartContainerName"       : "TruthParticles",
     #"m_truthPartBranchName"          : "truthPart",
     ## --> truth vertices, secondary vertices
-    "m_secondaryVertexDetailStr"     : "",
-    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select", ## --> change to selected DVs
-    "m_secondaryVertexBranchName"    : "secVtx",
+    #"m_secondaryVertexDetailStr"     : "",
+    #"m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select", ## --> change to selected DVs
+    #"m_secondaryVertexBranchName"    : "secVtx",
+    "m_truthVertexDetailStr"          : "",
+    "m_truthVertexContainerName"      : "TruthVertices_Select",
+    "m_truthVertexBranchName"         : "truthVtx",
 }
