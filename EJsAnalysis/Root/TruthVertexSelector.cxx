@@ -117,6 +117,7 @@ EL::StatusCode TruthVertexSelector :: initialize ()
     m_truthVtx_cutflowHist ->SetCanExtend( TH1::kAllAxes );
 
     m_truthVtx_cutflow_all         = m_truthVtx_cutflowHist->GetXaxis()->FindBin( "all"              );
+    m_truthVtx_cutflow_llp         = m_truthVtx_cutflowHist->GetXaxis()->FindBin( "llp_decay_cut"    );
     m_truthVtx_cutflow_rmin        = m_truthVtx_cutflowHist->GetXaxis()->FindBin( "r_min_cut"        );
     m_truthVtx_cutflow_rmax        = m_truthVtx_cutflowHist->GetXaxis()->FindBin( "r_max_cut"        );
     m_truthVtx_cutflow_zmin        = m_truthVtx_cutflowHist->GetXaxis()->FindBin( "z_min_cut"        );
@@ -131,6 +132,12 @@ EL::StatusCode TruthVertexSelector :: initialize ()
   m_eventNumber         = 0;
   m_numPassEvents       = 0;
   m_numPassWeightEvents = 0;
+
+  // to handle more than one type of llp decay vertex
+  std::string token;
+  std::istringstream ss_llp_decays( m_truthLLP );
+  while ( std::getline( ss_llp_decays, token, ' ' ) )
+    m_truthLLP_decays.push_back( token );
 
   ANA_MSG_DEBUG( "TruthVertexSelector Interface successfully initialized!" );
 
@@ -158,7 +165,7 @@ EL::StatusCode TruthVertexSelector :: execute ()
 
   // get truth vertex collection from TEvent or TStore
   const xAOD::TruthVertexContainer* inTruthVerts = 0;
-  ANA_CHECK( HelperFunctions::retrieve( inTruthVerts, m_inContainerName, m_event, m_store, msg() ) );
+    ANA_CHECK( HelperFunctions::retrieve( inTruthVerts, m_inContainerName, m_event, m_store, msg() ) );
 
   // create output container (if requested)
   ConstDataVector<xAOD::TruthVertexContainer>* selectedTruthVerts = 0;
@@ -270,8 +277,13 @@ int TruthVertexSelector :: PassCuts ( const xAOD::TruthVertex* tv )
   if ( m_useCutFlow ) m_truthVtx_cutflowHist ->Fill( m_truthVtx_cutflow_all, 1 );
 
   // select LLP decay(s) of interest
-  //if ( !EJsHelper::selectDarkPion( tv ) ) return 0;
-  if ( !EJsHelper::pdgIdFuncs[m_truthLLP]( tv ) ) return 0;
+  if ( !m_truthLLP_decays.empty() ) {
+    bool isLLP = false;
+    for ( size_t i = 0; i != m_truthLLP_decays.size(); ++i )
+      if ( EJsHelper::pdgIdFuncs[m_truthLLP_decays.at(i)]( tv ) ) isLLP = true;
+    if ( !isLLP ) return 0;
+  }
+  if ( m_useCutFlow ) m_truthVtx_cutflowHist ->Fill( m_truthVtx_cutflow_llp, 1 );
 
   // fiducial region cuts
   if ( m_r_min != AlgConsts::maxValue )

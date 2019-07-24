@@ -31,8 +31,9 @@ class EJsHelpTreeBase : public HelpTreeBase
 {  
  public:
   // create HelpTreeBase instance
-  EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* file, const float units = 1e3,
-		    bool debug = false, xAOD::TStore* store = 0, bool emtopo = true, bool pflow = false, bool truth = false );
+  EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* file, const float units = 1e3, bool debug = false,
+		    xAOD::TStore* store = 0, bool emtopo = true, bool pflow = false, bool truth = false,
+		    const std::vector<std::string>& truthVtxLLPs = std::vector<std::string>() );
   // standard destructor
   virtual ~EJsHelpTreeBase ();
 
@@ -44,14 +45,14 @@ class EJsHelpTreeBase : public HelpTreeBase
   void AddTruthVerts   ( const std::string detailStr = "",             const std::string truthVtxName = "truthVtx" );
   void FillTruthVerts  ( const xAOD::TruthVertexContainer* truthVerts, const std::string truthVtxName = "truthVtx" );
   void FillTruthVertex ( const xAOD::TruthVertex* truthVtx,            const std::string truthVtxName = "truthVtx" );
-  void ClearTruthVerts ( const std::string truthVtxName = "truthVtx"                                               );
+  void ClearTruthVerts ( const std::string truthVtxName = "truthVtx"  );
 
   void AddSecondaryVerts   ( const std::string detailStr = "",      const std::string secVtxName = "secVtx" );
   void FillSecondaryVerts  ( const xAOD::VertexContainer* secVerts, const std::string secVtxName = "secVtx",
 			     const xAOD::Vertex* pv = 0 );
   void FillSecondaryVertex ( const xAOD::Vertex* secVtx,            const std::string secVtxName = "secVtx",
 			     const xAOD::Vertex* pv = 0 );
-  void ClearSecondaryVerts ( const std::string secVtxName = "secVtx"                                        );
+  void ClearSecondaryVerts ( const std::string secVtxName = "secVtx" );
 
   // new branches for existing objects
   void AddEventUser    ( const std::string detailStr = "" );
@@ -82,6 +83,7 @@ class EJsHelpTreeBase : public HelpTreeBase
   bool m_doEMTopoJets;
   bool m_doPFlowJets;
   bool m_truthLevelOnly;
+  std::vector<std::string> m_truthVtxLLPs;
   
   // --- extra (vector) branches --- //
 
@@ -145,65 +147,103 @@ class EJsHelpTreeBase : public HelpTreeBase
 
   
   // truth particles
-  std::vector<int>*     m_tp_ID;
-  std::vector<float>*   m_tp_M;
-  std::vector<float>*   m_tp_charge;
-  std::vector<uint8_t>* m_tp_isReco;
-  std::vector<float>*   m_tp_recoProb;
-  std::vector<int>*     m_tp_recoID;
-  std::vector<uint8_t>* m_tp_recoIsSelected;
-  std::vector<uint8_t>* m_tp_recoIsAssociated;
-  std::vector<uint8_t>* m_tp_isStable;
-  std::vector<uint8_t>* m_tp_isInteracting;
-  std::vector<uint8_t>* m_tp_isReconstructible;
-  std::vector<uint8_t>* m_tp_isDark;
-  // --> eventually, "isDarkPionDescendant" + "darkPionDescGeneration" (or something like that)
+  std::vector<int>*              m_tp_ID;
+  std::vector<int>*              m_tp_index;
+  std::vector<float>*            m_tp_M;
+  std::vector<float>*            m_tp_charge;
+  std::vector<uint8_t>*          m_tp_isReco;
+  std::vector<float>*            m_tp_recoProb;
+  std::vector<int>*              m_tp_recoID;
+  std::vector<int>*              m_tp_recoIndex;
+  std::vector<uint8_t>*          m_tp_isSelected;
+  std::vector<uint8_t>*          m_tp_isAssociated;
+  std::vector<uint8_t>*          m_tp_isStable;
+  std::vector<uint8_t>*          m_tp_isInteracting;
+  std::vector<uint8_t>*          m_tp_isDark;
+  // --> llp descendant (and generation?)
   std::vector<std::vector<int>>* m_tp_parent_ID;
+  std::vector<std::vector<int>>* m_tp_parent_index;
   std::vector<std::vector<int>>* m_tp_child_ID;
-  
-  std::vector<uint8_t>* m_tp_pVtx;
-  std::vector<uint8_t>* m_tp_pVtx_isDarkPionDecay;
-  std::vector<int>*     m_tp_pVtx_ID;
-  std::vector<int>*     m_tp_pVtx_barcode;
-  std::vector<float>*   m_tp_pVtx_r;
-   
-  std::vector<uint8_t>* m_tp_dVtx;
-  std::vector<uint8_t>* m_tp_dVtx_isDarkPionDecay;
-  std::vector<int>*     m_tp_dVtx_ID;
-  std::vector<int>*     m_tp_dVtx_barcode;
-  std::vector<float>*   m_tp_dVtx_r;
-
-  std::vector<uint8_t>*            m_tp_truthJetMatch;
-  std::vector<std::vector<int>>*   m_tp_truthJetMatch_ID;
-  std::vector<std::vector<float>>* m_tp_truthJetMatch_dR;
-  std::vector<uint8_t>*            m_tp_darkJetMatch;
-  std::vector<std::vector<int>>*   m_tp_darkJetMatch_ID;
-  std::vector<std::vector<float>>* m_tp_darkJetMatch_dR;
-  std::vector<uint8_t>*            m_tp_emtopoJetMatch;
-  std::vector<std::vector<int>>*   m_tp_emtopoJetMatch_ID;
-  std::vector<std::vector<float>>* m_tp_emtopoJetMatch_dR;
-  std::vector<uint8_t>*            m_tp_pflowJetMatch;
-  std::vector<std::vector<int>>*   m_tp_pflowJetMatch_ID;
-  std::vector<std::vector<float>>* m_tp_pflowJetMatch_dR;
+  std::vector<std::vector<int>>* m_tp_child_index;
+  // production vertices
+  std::vector<uint8_t>*          m_tp_pVtx;
+  std::vector<std::string>*      m_tp_pVtx_llpDecay;
+  std::vector<int>*              m_tp_pVtx_ID;
+  std::vector<int>*              m_tp_pVtx_index;
+  std::vector<int>*              m_tp_pVtx_barcode;
+  std::vector<float>*            m_tp_pVtx_r;
+  // decay vertices
+  std::vector<uint8_t>*          m_tp_dVtx;
+  std::vector<std::string>*      m_tp_dVtx_llpDecay;
+  std::vector<int>*              m_tp_dVtx_ID;
+  std::vector<int>*              m_tp_dVtx_index;
+  std::vector<int>*              m_tp_dVtx_barcode;
+  std::vector<float>*            m_tp_dVtx_r;
+  // matching jets (jets to which truth particles are dR-matched)
+  std::vector<uint8_t>*          m_tp_truthJetMatch;
+  std::vector<int>*              m_tp_truthJetMatch_ID;
+  std::vector<int>*              m_tp_truthJetMatch_index;
+  std::vector<float>*            m_tp_truthJetMatch_dR;
+  std::vector<uint8_t>*          m_tp_darkJetMatch;
+  std::vector<int>*              m_tp_darkJetMatch_ID;
+  std::vector<int>*              m_tp_darkJetMatch_index;
+  std::vector<float>*            m_tp_darkJetMatch_dR;
+  std::vector<uint8_t>*          m_tp_emtopoJetMatch;
+  std::vector<int>*              m_tp_emtopoJetMatch_ID;
+  std::vector<int>*              m_tp_emtopoJetMatch_index;
+  std::vector<float>*            m_tp_emtopoJetMatch_dR;
+  std::vector<uint8_t>*          m_tp_pflowJetMatch;
+  std::vector<int>*              m_tp_pflowJetMatch_ID;
+  std::vector<int>*              m_tp_pflowJetMatch_index;
+  std::vector<float>*            m_tp_pflowJetMatch_dR;
 
   
   // tracks
+  uint32_t m_trk_nSelected;
+  uint32_t m_trk_nAssociated;
   std::vector<int>*     m_trk_ID;
+  std::vector<int>*     m_trk_index;
   std::vector<uint8_t>* m_trk_expectInnerPixelHit;
   std::vector<uint8_t>* m_trk_expectNextInnerPixelHit;
+  std::vector<float>*   m_trk_M;
   std::vector<float>*   m_trk_d0;
   std::vector<float>*   m_trk_errd0;
   std::vector<float>*   m_trk_errz0;
   std::vector<float>*   m_trk_chiSquared;
   std::vector<float>*   m_trk_numberDoF;
   std::vector<float>*   m_trk_chi2;
+  std::vector<float>*   m_trk_charge;
   std::vector<uint8_t>* m_trk_isSelected;
   std::vector<uint8_t>* m_trk_isAssociated;
-  std::vector<uint8_t>* m_trk_passSel; // REMOVE
-  uint32_t m_trk_nSelected;
-  uint32_t m_trk_nAssociated;
-  // --> definitely at least add info from jet class (i.e. charge, truth match, etc.)
-  // --> do we want to add more info here (i.e. VSI track info) ???
+  std::vector<uint8_t>* m_trk_passSel;
+  std::vector<uint8_t>* m_trk_isTruth;
+  std::vector<float>*   m_trk_truthProb;
+  std::vector<int>*     m_trk_truthID;
+  std::vector<int>*     m_trk_truthIndex;
+  std::vector<int>*     m_trk_truthBarcode;
+  std::vector<int>*     m_trk_truthPdgId;
+  // corresponding secondary vertices
+  std::vector<uint8_t>* m_trk_isSecVtxTrk;
+  std::vector<int>*     m_trk_secVtxID;
+  std::vector<int>*     m_trk_secVtxIndex;
+  // --> do we want more VSI-specific (track / corresponding vertex) info ??
+  // matching jets (jets to which tracks are dR-matched)
+  std::vector<uint8_t>* m_trk_truthJetMatch;
+  std::vector<int>*     m_trk_truthJetMatch_ID;
+  std::vector<int>*     m_trk_truthJetMatch_index;
+  std::vector<float>*   m_trk_truthJetMatch_dR;
+  std::vector<uint8_t>* m_trk_darkJetMatch;
+  std::vector<int>*     m_trk_darkJetMatch_ID;
+  std::vector<int>*     m_trk_darkJetMatch_index;
+  std::vector<float>*   m_trk_darkJetMatch_dR;
+  std::vector<uint8_t>* m_trk_emtopoJetMatch;
+  std::vector<int>*     m_trk_emtopoJetMatch_ID;
+  std::vector<int>*     m_trk_emtopoJetMatch_index;
+  std::vector<float>*   m_trk_emtopoJetMatch_dR;
+  std::vector<uint8_t>* m_trk_pflowJetMatch;
+  std::vector<int>*     m_trk_pflowJetMatch_ID;
+  std::vector<int>*     m_trk_pflowJetMatch_index;
+  std::vector<float>*   m_trk_pflowJetMatch_dR;
 
 };
 

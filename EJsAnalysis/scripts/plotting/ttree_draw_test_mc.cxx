@@ -1,6 +1,11 @@
 // ROOT macro to run quick plot tests w/ TTree->Draw() for MC samples
 
 void ttree_draw_test_mc() {
+
+  gROOT->ProcessLine("#include <vector>");
+  gROOT->ProcessLine("#include <string>");
+  gInterpreter->GenerateDictionary("vector<vector<int>>", "vector");
+  gInterpreter->GenerateDictionary("vector<vector<string>>", "vector");
   
   // build signal points
   std::vector<TString> dsid;
@@ -57,7 +62,7 @@ void ttree_draw_test_mc() {
   TTree   *t = 0;
   for ( size_t i = 0; i != fname.size(); ++i ) {
     // set canvas
-    c = new TCanvas( "c"+dsid.at(i), "c"+dsid.at(i) );
+    //c = new TCanvas( "c"+dsid.at(i), "c"+dsid.at(i) );
     
     // open file
     f = TFile::Open( fpath.at(i) + fname.at(i), "READ" );
@@ -70,13 +75,30 @@ void ttree_draw_test_mc() {
     // get nominal tree
     t = (TTree*)gDirectory->Get("nominal");
 
+    std::vector<float>* darkJet_pt = 0;
+    t->SetBranchAddress( "darkJet_pt", &darkJet_pt );
+
+    for ( Long64_t j = 0; j != t->GetEntries(); ++j ) {
+      t->GetEntry(j);
+      // std::cout << "entry " << j << ": ";
+      // for ( size_t k = 0; k != darkJet_pt->size(); ++k )
+      // 	//if ( j == 5 || j == 50 )
+      // 	  std::cout << darkJet_pt->at(k) << " ";
+      // //if ( j == 5 || j == 50 )
+      // 	std::cout << std::endl;
+      std::cout << "entry " << j << ": " << darkJet_pt->size() << std::endl;
+    }
+    
+
     // draw variables
     //t->Draw("track_isSelected","track_passSel==0");
 
     //t->Draw("truthPart_pt","truthPart_pt<10"); 
     //t->Draw("truthPart_pdgId","truthPart_barcode==5000");
     //t->Draw("truthPart_prodVtx_r","truthPart_prodVtx_r!=std::numeric_limits<double>   :: quiet_NaN();");
-    t->Draw("truthPart_prodVtx_r","truthPart_hasProdVtx");
+    //t->Draw("truthPart_prodVtx_r","truthPart_hasProdVtx");
+    //t->Draw("truthVtx_llpDecay");
+    //t->Draw("jet_GhostTruth_pVtx_llpDecay");
 
   }
  

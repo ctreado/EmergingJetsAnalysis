@@ -3,27 +3,34 @@
 namespace EJsHelperClasses {
 
   void SecondaryVertexInfoSwitch::initialize() {
-    m_tracks     = has_exact( "tracks"     );
-    m_jets       = has_exact( "jets"       );
-    m_truth      = has_exact( "truth"      );
-    m_close      = has_exact( "close"      );
-    m_linked     = has_exact( "linked"     );
-    m_jetMatched = has_exact( "jetMatched" );
+    m_tracks          = has_exact( "tracks"          );
+    //m_jets            = has_exact( "jets"            );
+    //m_truth           = has_exact( "truth"           );
+    //m_close           = has_exact( "close"           );
+    //m_linked          = has_exact( "linked"          );
+    m_jetMatched      = has_exact( "jetMatched"      );
+    m_recoJetMatched  = has_exact( "recoJetMatched"  );
+    m_truthJetMatched = has_exact( "truthJetMatched" );
   }
 
   void TruthVertexInfoSwitch::initialize() {
-    m_isMatched = has_exact( "isMatched" );
-    m_recoVerts = has_exact( "recoVerts" );
-    m_jets      = has_exact( "jets"      );
+    m_jetMatched      = has_exact( "jetMatched"      );
+    m_recoJetMatched  = has_exact( "recoJetMatched"  );
+    m_truthJetMatched = has_exact( "truthJetMatched" );
   }
 
   void JetInfoSwitch::initialize() {
     m_constituentAll = has_exact( "constituentAll" );
     m_ghost          = has_exact( "ghost"          );
+    m_ghostTracks    = has_exact( "ghostTracks"    );
+    m_ghostTruth     = has_exact( "ghostTruth"     );
     m_match          = has_exact( "match"          );
     m_truthJets      = has_exact( "truthJets"      );
     m_vertices       = has_exact( "vertices"       );
+    m_recoVerts      = has_exact( "recoVerts"      );
+    m_truthVerts     = has_exact( "truthVerts"     );
     m_trackParts     = has_exact( "trackParts"     );
+    m_truthParts     = has_exact( "truthParts"     );
   }
 
   void HistogramInfoSwitch::initialize() {

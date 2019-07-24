@@ -73,6 +73,7 @@ class TruthVertexSelector : public xAH::Algorithm
   // object-level cutflow
   TH1D* m_truthVtx_cutflowHist = 0;     //!
   int   m_truthVtx_cutflow_all;         //!
+  int   m_truthVtx_cutflow_llp;         //!
   int   m_truthVtx_cutflow_rmin;        //!
   int   m_truthVtx_cutflow_rmax;        //!
   int   m_truthVtx_cutflow_zmin;        //!
@@ -81,6 +82,9 @@ class TruthVertexSelector : public xAH::Algorithm
   int   m_truthVtx_cutflow_nVisOutPmax; //!
   int   m_truthVtx_cutflow_massmin;     //!
   int   m_truthVtx_cutflow_massmax;     //!
+
+  // llp decays vector
+  std::vector<std::string> m_truthLLP_decays; //!
 
 
  public:

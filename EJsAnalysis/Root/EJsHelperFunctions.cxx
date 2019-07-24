@@ -145,15 +145,14 @@ namespace EJsHelper {
     return true;
   }
 
-  bool isReconstructible ( const xAOD::TruthParticle* tp )
-  {
-    // FILL IN...
-    return true;
-  }
-
   bool isDark ( const xAOD::TruthParticle* tp )
   {
     return ( tp->absPdgId() > 4.9e6 && tp->absPdgId() < 5.0e6 );
+  }
+
+  bool isReconstructible ( const xAOD::TruthParticle* tp )
+  {
+    return true;
   }
 
   // ------------------------------------------------------------------------------------------ //

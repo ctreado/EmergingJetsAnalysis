@@ -9,7 +9,7 @@ from EJsBaseConfig import *
 c = xAH_config()
 
 
-# --- update configurations for data17 / mc16d --- ##
+# --- update configurations for all data18 --- ##
 
 data_path   = "$EJ_PATH/EJsAnalysis/data/"
 data18_path = data_path + "data18/"
@@ -53,6 +53,9 @@ c.algorithm ( "TrackSelector",           Dict_TrackSelector           )
 
 # Secondary Vertex Selection
 c.algorithm ( "SecondaryVertexSelector", Dict_SecondaryVertexSelector )
+
+# Object Matching
+c.algorithm ( "ObjectMatcher",           Dict_ObjectMatcher           )
 
 # EJs Analysis Selection
 c.algorithm ( "EJsxAODAnalysis",         Dict_EJsxAODAnalysis         )

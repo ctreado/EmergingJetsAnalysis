@@ -216,17 +216,41 @@ Dict_SecondaryVertexSelector = {
 
 Dict_TruthVertexSelector = {
     "m_name"                    : "TruthVtxSelect",
-    "m_msgLevel"                : "debug",
+    "m_msgLevel"                : "info",
     "m_inContainerName"         : "TruthVertices",
     "m_outContainerName"        : "TruthVertices_Select",
     "m_decorateSelectedObjects" : True,
     "m_createSelectedContainer" : True,
-    "m_truthLLP"                : "DarkPion",
+    "m_truthLLP"                : "DarkPion Kshort",
 }
 
-    
 
-# object matcher(s) --> reco-truth vertex matcher + all-other-object matcher...
+# object matching
+Dict_VertexMatcher = {
+    "m_name"                           : "VtxMatch",
+    "m_msgLevel"                       : "info",
+    "m_inTruthVertexContainerName"     : "TruthVertices_Select",
+    "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
+    "m_truthLLP"                       : "DarkPion Kshort",
+    "m_vtx_matchDistance"              : 10.0,
+}
+
+Dict_ObjectMatcher = {
+    "m_name"                           : "ObjectMatch",
+    "m_msgLevel"                       : "info",
+    "m_inTruthJetContainerName"        : "AntiKt4TruthJets",
+    "m_inTruthDarkJetContainerName"    : "AntiKt4TruthDarkJets",
+    "m_inJetContainerName"             : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
+    "m_inTruthPartContainerName"       : "TruthParticles",
+    "m_inTrackPartContainerName"       : "InDetTrackParticles_Select",
+    "m_inTruthVertexContainerName"     : "TruthVertices_Select",
+    "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
+    "m_inputAlgo"                      : "AntiKt4EMPFlowJets_Calib_Select_Algo",    # --> PFlow = rec R21 jet container
+    "m_jetSystsContainerIndex"         : 1,
+    "m_jet_matchRadius"                : 0.1,
+    "m_jet_vtx_matchRadius"            : 1.0,
+    "m_jet_trk_matchRadius"            : 1.0,
+}
 
 
 # analysis selection
@@ -246,28 +270,28 @@ Dict_EJsxAODAnalysis = {
 # tree output
 Dict_EJsMiniNtuple = {
     "m_name"                         : "EJsMiniNtup",
-    "m_msgLevel"                     : "info", ## --> TEST
-    #"m_evtDetailStr"                 : "pileup pileupsys",
-    #"m_trigDetailStr"                : "basic passTriggers prescales",
-    #"m_jetDetailStr"                 : "kinematic rapidity clean energy trackAll trackPV allTrack allTrackDetail constituent area truth charge", ## --> btagging ?? truth_details (have to add branches manually to avoid errors in data ("nonexistent aux data item `::GhostPartons'") ?? --> EJs matching (update EJs jet container class as needed) ...
-    #"m_jetContainerName"             : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
-    #"m_jetBranchName"                : "jet pflowJet",
-    #"m_jetSystsVec"                  : "AntiKt4EMPFlowJets_Calib_Select_EJsxAODAna_Algo", # --> PFlow = rec R21 jet container
-    #"m_jetSystsContainerIndex"       : 1,
-    #"m_truthJetDetailStr"            : "kinematic rapidity energyLight constituent constituentAll area truth truth_details",
-    #"m_truthJetContainerName"        : "AntiKt4TruthJets AntiKt4TruthDarkJets",
-    #"m_truthJetBranchName"           : "truthJet darkJet",
-    #"m_trackPartDetailStr"           : "kinematic numbers vertex",
-    #"m_trackPartContainerName"       : "InDetTrackParticles_Select",
-    #"m_trackPartBranchName"          : "track",
-    #"m_truthPartDetailStr"           : "kinematic parents children",
-    #"m_truthPartContainerName"       : "TruthParticles",
-    #"m_truthPartBranchName"          : "truthPart",
-    ## --> truth vertices, secondary vertices
-    #"m_secondaryVertexDetailStr"     : "",
-    #"m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select", ## --> change to selected DVs
-    #"m_secondaryVertexBranchName"    : "secVtx",
-    "m_truthVertexDetailStr"          : "",
-    "m_truthVertexContainerName"      : "TruthVertices_Select",
-    "m_truthVertexBranchName"         : "truthVtx",
+    "m_msgLevel"                     : "info",
+    "m_evtDetailStr"                 : "pileup pileupsys",
+    "m_trigDetailStr"                : "basic passTriggers prescales",
+    "m_jetDetailStr"                 : "kinematic rapidity clean energy trackAll trackPV allTrack allTrackDetail constituent area truth charge ghost truthJets recoVerts trackParts", ## --> match (include truth + reco objects matched to reco jets) ??
+    "m_jetContainerName"             : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
+    "m_jetBranchName"                : "jet pflowJet",
+    "m_jetSystsVec"                  : "AntiKt4EMPFlowJets_Calib_Select_EJsxAODAna_Algo", # --> PFlow = rec R21 jet container
+    "m_jetSystsContainerIndex"       : 1,
+    "m_truthJetDetailStr"            : "kinematic rapidity energyLight constituent constituentAll area truthJets truthVerts truthParts", ## --> match (include reco + truth objects matched to truth jets) ??
+    "m_truthJetContainerName"        : "AntiKt4TruthJets AntiKt4TruthDarkJets",
+    "m_truthJetBranchName"           : "truthJet darkJet",
+    "m_trackPartDetailStr"           : "kinematic numbers vertex",
+    "m_trackPartContainerName"       : "InDetTrackParticles_Select",
+    "m_trackPartBranchName"          : "track",
+    "m_truthPartDetailStr"           : "kinematic parents children",
+    "m_truthPartContainerName"       : "TruthParticles",
+    "m_truthPartBranchName"          : "truthPart",
+    "m_secondaryVertexDetailStr"     : "jetMatched", ## --> tracks, truth vertices
+    "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
+    "m_secondaryVertexBranchName"    : "secVtx",
+    "m_truthVertexDetailStr"         : "jetMatched", ## --> DVs
+    "m_truthVertexContainerName"     : "TruthVertices_Select",
+    "m_truthVertexBranchName"        : "truthVtx",
+    "m_truthLLP"                     : "DarkPion Kshort",
 }

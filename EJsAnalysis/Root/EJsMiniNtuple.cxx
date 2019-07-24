@@ -168,6 +168,11 @@ EL::StatusCode EJsMiniNtuple :: initialize ()
     return EL::StatusCode::FAILURE;
   }
 
+  // to handle more than one type of llp decay vertex
+  std::istringstream ss_llp_decays( m_truthLLP );
+  while ( std::getline( ss_llp_decays, token, ' ' ) )
+    m_truthLLP_decays.push_back( token );
+
   // set emtopo / pflow booleans
   m_doEMTopo = false; m_doPFlow = false;
   if ( m_jetEMTopo ) m_doEMTopo = true;
@@ -201,7 +206,8 @@ EL::StatusCode EJsMiniNtuple :: addTree ( std::string syst )
     return EL::StatusCode::FAILURE;
   }
 
-  m_trees[syst] = new EJsHelpTreeBase( m_event, outTree, treeFile, 1e3, msgLvl(MSG::DEBUG), m_store, m_doEMTopo, m_doPFlow, m_truthLevelOnly );
+  m_trees[syst] = new EJsHelpTreeBase( m_event, outTree, treeFile, 1e3, msgLvl(MSG::DEBUG), m_store,
+				       m_doEMTopo, m_doPFlow, m_truthLevelOnly, m_truthLLP_decays );
   const auto& helpTree = m_trees[syst];
   helpTree->m_vertexContainerName = m_vertexContainerName;
 

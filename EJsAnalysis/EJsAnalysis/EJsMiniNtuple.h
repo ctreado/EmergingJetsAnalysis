@@ -52,6 +52,9 @@ class EJsMiniNtuple : public xAH::Algorithm
   std::string m_truthVertexBranchName     = "";
   std::string m_secondaryVertexBranchName = "";
 
+  // truth vertex llp decay types to process
+  std::string m_truthLLP = "DarkPion";
+
   // systematics being processed over
   std::string m_jetSystsVec = "";
 
@@ -89,6 +92,8 @@ class EJsMiniNtuple : public xAH::Algorithm
   std::vector<std::string> m_trigJetBranches;  //!
   std::vector<std::string> m_truthJetBranches; //!
 
+  std::vector<std::string> m_truthLLP_decays; //!
+  
   std::map< std::string, EJsHelpTreeBase* > m_trees; //!
 
   bool m_doEMTopo; //!

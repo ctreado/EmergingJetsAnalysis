@@ -14,11 +14,13 @@ namespace EJsHelperClasses {
   {
   public:
     bool m_tracks;
-    bool m_jets;
-    bool m_truth;
-    bool m_close;
-    bool m_linked;
+    //bool m_jets;
+    //bool m_truth;
+    //bool m_close;
+    //bool m_linked;
     bool m_jetMatched;
+    bool m_recoJetMatched;
+    bool m_truthJetMatched;
     
     SecondaryVertexInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
     virtual ~SecondaryVertexInfoSwitch() {}
@@ -31,9 +33,9 @@ namespace EJsHelperClasses {
   class TruthVertexInfoSwitch : public HelperClasses::InfoSwitch
   {
   public:
-    bool m_isMatched;
-    bool m_recoVerts;
-    bool m_jets;
+    bool m_jetMatched;
+    bool m_recoJetMatched;
+    bool m_truthJetMatched;
     
     TruthVertexInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
     virtual ~TruthVertexInfoSwitch() {}
@@ -48,10 +50,15 @@ namespace EJsHelperClasses {
   public:
     bool m_constituentAll;
     bool m_ghost;
+    bool m_ghostTracks;
+    bool m_ghostTruth;
     bool m_match;
     bool m_truthJets;
     bool m_vertices;
+    bool m_recoVerts;
+    bool m_truthVerts;
     bool m_trackParts;
+    bool m_truthParts;
     
     JetInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
     virtual ~JetInfoSwitch() {}

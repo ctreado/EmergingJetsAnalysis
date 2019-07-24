@@ -2,18 +2,15 @@
 #define EJsAnalysis_ObjectMatcher_H
 
 /* ObjectMatcher is the algorithm responsible for matching between 
-   physics objects, including truth-matching */
-
-// --> SEPARATE DV-TRUTH MATCHING TO OWN ALGORITHM
+   physics objects, including truth-matching; note: truth-reco vertex
+   matching is done in a separate algorithm */
 
 #include <string>
 #include <vector>
 
 #include <xAODJet/JetContainer.h>
-#include <xAODTracking/TrackParticleContainer.h>
-#include <xAODTracking/VertexContainer.h>
 #include <xAODTruth/TruthParticleContainer.h>
-#include <xAODTruth/TruthVertexContainer.h>
+#include <xAODTracking/TrackParticleContainer.h>
 
 #include <xAODAnaHelpers/Algorithm.h>
 
@@ -26,9 +23,10 @@ class ObjectMatcher : public xAH::Algorithm
   // float cutValue;
 
   // input container names
-  std::string m_inJetContainerName             = "";
+  
   std::string m_inTruthJetContainerName        = "AntiKt4TruthJets";
   std::string m_inTruthDarkJetContainerName    = "AntiKt4TruthDarkJets";
+  std::string m_inJetContainerName             = "";
   std::string m_inTruthPartContainerName       = "TruthParticles";
   std::string m_inTrackPartContainerName       = "";
   std::string m_inTruthVertexContainerName     = "TruthVertices";
@@ -40,15 +38,17 @@ class ObjectMatcher : public xAH::Algorithm
   // index of jet container to run systematics over
   unsigned m_jetSystsContainerIndex = 0;
 
-  // truth - jet dR-matching radius
-  double m_jet_matchRadius = 0.1;
-  // truth - vertex matching distance
-  double m_vtx_matchDist   = 5.0;
+  // object matching criteria
+  double m_jet_matchRadius     = 0.1; // truth-jet matching dR
+  double m_jet_vtx_matchRadius = 0.4; // jet-vertex matching dR --> 0.6 ?? 1.0 ??
+  double m_jet_trk_matchRadius = 0.4; // jet-track matching dR  --> 0.6 ?? 1.0 ??
+  
+  
 
   // protection when running on truth derivation
   bool m_truthLevelOnly = false;
 
-  // protection when running on samples w/o truth (dark) jets (i.e. xAODs)
+  // protection when running on samples w/o truth (dark) jets
   bool m_haveTruthJets = true;
   bool m_haveDarkJets  = true;
 
@@ -58,7 +58,7 @@ class ObjectMatcher : public xAH::Algorithm
  public:
   // TTree *myTree; //!
   // TH1 *myHist; //!
- 
+
  protected:
   std::vector<std::string> m_inJetContainers; //!
 
@@ -83,28 +83,21 @@ class ObjectMatcher : public xAH::Algorithm
   virtual EL::StatusCode histFinalize ();
 
   // added functions not from Algorithm
-  void matchTruthJets ( const xAOD::JetContainer*, const xAOD::JetContainer*,
-			const enum jetType&,       const enum jetType&,
-			const std::string );
-
-  void matchTruthVertsToJets ( const xAOD::JetContainer*, const xAOD::TruthVertexContainer*,
-			       const enum jetType&,       const std::string );
-  void matchSecVertsToJets   ( const xAOD::JetContainer*, const xAOD::VertexContainer*,
-			       const enum jetType&,       const std::string );
-
-  void matchTruthPartsToJets ( const xAOD::JetContainer*, const xAOD::TruthParticleContainer*,
-			       const enum jetType&,       const std::string );
-  void matchTracksToJets     ( const xAOD::JetContainer*, const xAOD::TrackParticleContainer*,
-			       const enum jetType&,       const std::string );
-
   void matchTracksToTruthParts ( const xAOD::TruthParticleContainer*, const xAOD::TrackParticleContainer* );
+  void matchSecVertsToTracks   ( const xAOD::TrackParticleContainer*, const xAOD::VertexContainer*        );
 
-  void matchTracksToSecVerts ( const xAOD::VertexContainer*, const xAOD::TrackParticleContainer* );
+  void matchTruthJets          ( const xAOD::JetContainer*, const xAOD::JetContainer*,
+				 const enum jetType&,       const enum jetType&,
+				 std::string );
 
-  void matchCloseTruthToSecVerts  ( const xAOD::VertexContainer*, const xAOD::TruthVertexContainer* );
-  void matchLinkedTruthToSecVerts ( const xAOD::VertexContainer*, const xAOD::TruthVertexContainer* );
-
-  // reco to truth vertex matching (see VsiPerf efficiency processor) ...
+  void matchTruthVertsToJets   ( const xAOD::JetContainer*, const xAOD::TruthVertexContainer*,
+				 const enum jetType&,       const std::string );
+  void matchSecVertsToJets     ( const xAOD::JetContainer*, const xAOD::VertexContainer*,
+				 const enum jetType&,       const std::string );
+  void matchTruthPartsToJets   ( const xAOD::JetContainer*, const xAOD::TruthParticleContainer*,
+				 const enum jetType&,       const std::string );
+  void matchTracksToJets       ( const xAOD::JetContainer*, const xAOD::TrackParticleContainer*,
+				 const enum jetType&,       const std::string );
 
   // needed to distribute algorithm to workers
   ClassDef ( ObjectMatcher, 1 );

@@ -21,7 +21,7 @@ class TLorentzVector;
 
 namespace EJsHelper {
 
-  // --- generic helper functions --- //
+  // --------------- generic helper functions --------------- //
 
   // element link typedefs
   typedef ElementLink<xAOD::JetContainer>                        JetLink_t;
@@ -57,7 +57,8 @@ namespace EJsHelper {
     }
 
 
-  // --- region info --- //
+  
+  // --------------- region info --------------- //
 
   // region enums
   enum RegionType { ALL, SIGNAL, VALIDATION, CONTROL };
@@ -70,7 +71,8 @@ namespace EJsHelper {
   void fillRegion ( Region&, const std::string );
 
 
-  // --- truth helper functions (some taken from VsiPerf/VsiTruthHelper) --- //
+  
+  // --------------- truth helper functions (some taken from VsiPerf/VsiTruthHelper) --------------- //
 
   // particle decay truth vertex selectors
   bool selectDarkPion ( const xAOD::TruthVertex* );
@@ -95,9 +97,8 @@ namespace EJsHelper {
   // is truth particle stable / interacting / reconstructible / dark ?
   bool isStable          ( const xAOD::TruthParticle* );
   bool isInteracting     ( const xAOD::TruthParticle* );
-  bool isReconstructible ( const xAOD::TruthParticle* );
   bool isDark            ( const xAOD::TruthParticle* );
-  
+  bool isReconstructible ( const xAOD::TruthParticle* ); // REMOVE
   
 }
 

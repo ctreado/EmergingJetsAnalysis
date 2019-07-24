@@ -242,6 +242,7 @@ EL::StatusCode SecondaryVertexSelector :: execute ()
 	const auto* trk = vtx->trackParticle(i);
 	trk->auxdecor<char>( "isFiltered" ) = -1;
       }
+      vtx->auxdecor<float>( "distToPV" ) = AlgConsts::invalidFloat;
     }
     if ( m_nToProcess > 0 && nObj >= m_nToProcess ) continue;
 
@@ -337,6 +338,12 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
 
   // fill cutflow bin 'all' before any cut
   if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_all, 1 );
+
+  // decorate vertices w/ distance to primary vertex
+  auto dv_pos = vtx ->position();
+  auto pv_pos = pv  ->position();
+  float dv_pv_dist = ( pv_pos - dv_pos ).perp();
+  if ( m_decorateSelectedObjects ) vtx->auxdecor<float>( "distToPV" ) = dv_pv_dist;
   
   // set vector of trimmers to apply
   std::vector<VsiBonsai::Trimmer> trimmers = {
@@ -461,14 +468,13 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
   if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_massmax, 1 );
 
   // distance (to pv) cuts
-  auto dv_pos = vtx ->position();
-  auto pv_pos = pv  ->position();
+  
   if ( m_dist_min != AlgConsts::maxValue )
-    if ( ( pv_pos - dv_pos ).perp() < m_dist_min ) return 0;
+    if ( dv_pv_dist < m_dist_min ) return 0;
   if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_distmin, 1 );
 
   if ( m_dist_max != AlgConsts::maxValue )
-    if ( ( pv_pos - dv_pos ).perp() > m_dist_max ) return 0;
+    if ( dv_pv_dist > m_dist_max ) return 0;
   if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_distmax, 1 );
 
   
