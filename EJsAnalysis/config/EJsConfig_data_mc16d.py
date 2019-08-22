@@ -22,6 +22,7 @@ LumiCalc_files  = [
     ]
 PRW_files       = [
     data_path   + "prw.EJs.mc16d.root",
+    data_path   + "prw.bkgd.mc16d.root",
     data17_path + "physics_25ns_Triggerno17e33prim.actualMu.OflLumi-13TeV-010.root",
     ]
 
@@ -33,8 +34,6 @@ Dict_BasicEventSelection.update ( { "m_applyGRLCut"       : True            } )
 Dict_BasicEventSelection.update ( { "m_GRLxml"            : GRL_config      } )
 Dict_BasicEventSelection.update ( { "m_lumiCalcFileNames" : LumiCalc_config } )
 Dict_BasicEventSelection.update ( { "m_PRWFileNames"      : PRW_config      } )
-
-# --> update EJsMiniNtuple dictionary to remove truth branches ??
 
 
 ## --- configure algorithms to run --- ##

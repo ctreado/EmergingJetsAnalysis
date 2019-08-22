@@ -49,7 +49,7 @@ class TruthVertexSelector : public xAH::Algorithm
   float m_outP_ptThresh = 1000;
 
   // LLP-decay selections
-  std::string m_truthLLP = "DarkPion";
+  std::string m_truthLLP = "";
 
 
   // variables not filled at submission time
@@ -68,7 +68,7 @@ class TruthVertexSelector : public xAH::Algorithm
   // cutflow
   TH1D* m_cutflowHist  = 0; //!
   TH1D* m_cutflowHistW = 0; //!
-  int   m_cutflow_bin  = 0; //!
+  int   m_cutflow_bin;      //!
 
   // object-level cutflow
   TH1D* m_truthVtx_cutflowHist = 0;     //!

@@ -167,7 +167,7 @@ EL::StatusCode SecondaryVertexSelector :: initialize ()
   m_bonsaiCfg[ VsiBonsai::Config::dropNonSelected     ] = m_doDropNonSelected;
 
   // initialize material map(s)
-  m_matMapInnerFile = new TFile( m_matMapInnerFileName.c_str(), "READ" );
+  TFile* m_matMapInnerFile = new TFile( m_matMapInnerFileName.c_str(), "READ" );
   if ( m_matMapInnerFile->IsOpen() ) {
     m_matMapInnerFile->GetObject( m_matMapInnerHistName.c_str(),   m_materialMap_Inner  );
     m_matMapInnerFile->GetObject( m_matMapInnerMatrixName.c_str(), m_materialMap_Matrix );
@@ -179,7 +179,7 @@ EL::StatusCode SecondaryVertexSelector :: initialize ()
   m_matMapInnerFile->Close();
   delete m_matMapInnerFile;
 
-  m_matMapOuterFile = new TFile( m_matMapOuterFileName.c_str(), "READ" );
+  TFile* m_matMapOuterFile = new TFile( m_matMapOuterFileName.c_str(), "READ" );
   if ( m_matMapOuterFile->IsOpen() ) {
     m_matMapOuterFile->GetObject( m_matMapOuterHistName.c_str(), m_materialMap_Outer );
     if ( m_materialMap_Outer ) {
@@ -313,6 +313,12 @@ EL::StatusCode SecondaryVertexSelector :: finalize ()
     m_secVtx_cutflowHist ->Write();
   }
 
+  delete m_secVtx_cutflowHist;
+  
+  delete m_materialMap_Inner;
+  delete m_materialMap_Outer;
+  delete m_materialMap_Matrix;
+
   return EL::StatusCode::SUCCESS;
 }
 
@@ -356,11 +362,9 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
   
   // filter vertex tracks using VsiBonsai config
   std::vector<const xAOD::TrackParticle*> filteredTracks;
-
   for ( size_t i = 0; i != vtx->nTrackParticles(); ++i ) {
     bool failedTrimmers = false;
     const auto* trk = vtx->trackParticle(i);
-    
     // do track trimming
     if ( m_doTrackTrimming ) {
       for ( auto trimmer : trimmers ) {
@@ -370,23 +374,20 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
 	}
       }
     }
-
     // decorate tracks w/ trimming results
     trk->auxdecor<char>( "isFiltered" ) = !failedTrimmers;
-
     // save filtered tracks
     if ( failedTrimmers ) continue;
     filteredTracks.push_back( trk );
   }
 
-  // apply track trimming selection + decorate vertices
+  // apply track trimming selection + decorate vertices --> ADD USER-CONFIG TO APPLY FILTERED-TRACK CUT
   if ( m_decorateSelectedObjects ) vtx->auxdecor<char>( m_decorTrim ) = true;
   if ( filteredTracks.size() < 2 ) {
     if ( m_decorateSelectedObjects ) vtx->auxdecor<char>( m_decorTrim ) = false;
     return 0;
   }
   if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_filtTrk, 1 );
-
 
   // material map veto
   if ( m_doMatMapVeto ) {
@@ -396,9 +397,9 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
     auto pos = vtx->position();
     if ( pos.perp() > 150 )
       passMaterialVeto =
-  	( m_materialMap_Outer->GetBinContent( m_materialMap_Outer->FindBin( pos.perp(),
-  									    pos.phi(),
-  									    pos.z() ) ) == 0 );
+  	( m_materialMap_Outer->
+	  GetBinContent( m_materialMap_Outer->
+			 FindBin( pos.perp(), pos.phi(), pos.z() ) ) == 0 );
     else {
       for ( int i = 0; i != 5; ++i ) {
   	if ( pos.perp() < (*m_materialMap_Matrix)[i][0] ) {
@@ -408,20 +409,17 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
 				  TMath::Pi() / (*m_materialMap_Matrix)[i][3] );
 	  if ( calc_phi < 0 ) calc_phi = calc_phi + TMath::Pi() / (*m_materialMap_Matrix)[i][3];
 	  passMaterialVeto =
-	    ( m_materialMap_Inner->GetBinContent( m_materialMap_Inner->FindBin( sqrt( test_x*test_x + test_y*test_y ),
-										calc_phi,
-										pos.z() ) ) == 0 );
+	    ( m_materialMap_Inner->
+	      GetBinContent( m_materialMap_Inner->
+			     FindBin( sqrt( test_x*test_x + test_y*test_y ), calc_phi, pos.z() ) ) == 0 );
 	  break;
 	}
       }
     }
- 
-    if ( !passMaterialVeto ) return 0;
-    
+    if ( !passMaterialVeto ) return 0; 
   }
   if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_matVeto, 1 );
 
-  
   // fiducial region cuts
   if ( m_r_min != AlgConsts::maxValue )
     if ( vtx->position().perp() < m_r_min ) return 0;

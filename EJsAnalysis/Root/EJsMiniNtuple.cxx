@@ -247,7 +247,7 @@ EL::StatusCode EJsMiniNtuple :: addTree ( std::string syst )
     }
   }
 
-  if ( !m_truthJetContainerName.empty() ) {
+  if ( !m_truthJetContainerName.empty() && xAH::Algorithm::isMC() ) {
     for ( size_t i = 0; i != m_truthJetContainers.size(); ++i ) {
       if ( m_truthJetDetails.size() == 1 )
 	helpTree->AddJets( m_truthJetDetails.at(0), m_truthJetBranches.at(i).c_str() );
@@ -256,13 +256,13 @@ EL::StatusCode EJsMiniNtuple :: addTree ( std::string syst )
     }
   }
 
-  if ( !m_truthPartContainerName.empty() )
+  if ( !m_truthPartContainerName.empty() && xAH::Algorithm::isMC() )
     helpTree->AddTruthParts( m_truthPartBranchName, m_truthPartDetailStr );
 
   if ( !m_trackPartContainerName.empty() )
     helpTree->AddTrackParts( m_trackPartBranchName, m_trackPartDetailStr );
 
-  if ( !m_truthVertexContainerName.empty() )
+  if ( !m_truthVertexContainerName.empty() && xAH::Algorithm::isMC() )
     helpTree->AddTruthVerts( m_truthVertexDetailStr, m_truthVertexBranchName );
 
   if ( !m_secondaryVertexContainerName.empty() )

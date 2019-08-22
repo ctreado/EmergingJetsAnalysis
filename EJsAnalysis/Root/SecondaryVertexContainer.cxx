@@ -20,70 +20,71 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, 
   
   if ( m_debug ) Info( "EJs::SecondaryVertexContainer()", "setting up" );
 
-  m_ID            = new std::vector<int>;
-  m_index         = new std::vector<int>;
-  m_x             = new std::vector<float>;
-  m_y             = new std::vector<float>;
-  m_z             = new std::vector<float>;
-  m_r             = new std::vector<float>;
-  m_pt            = new std::vector<float>;
-  m_eta           = new std::vector<float>;
-  m_phi           = new std::vector<float>;
-  m_mass          = new std::vector<float>;
-  m_mass_nonAssoc = new std::vector<float>;
-  m_covariance    = new std::vector<std::vector<float>>;
-  m_chi2          = new std::vector<float>;
-  m_direction     = new std::vector<float>;
-  m_charge        = new std::vector<int>;
-  m_H             = new std::vector<float>;
-  m_Ht            = new std::vector<float>;
-  m_minOpAng      = new std::vector<float>;
-  m_maxOpAng      = new std::vector<float>;
-  m_mind0         = new std::vector<float>;
-  m_maxd0         = new std::vector<float>;
-  m_distToPV      = new std::vector<float>;
+  m_ID                     = new std::vector<int>;
+  m_index                  = new std::vector<int>;
+  m_x                      = new std::vector<float>;
+  m_y                      = new std::vector<float>;
+  m_z                      = new std::vector<float>;
+  m_r                      = new std::vector<float>;
+  m_pt                     = new std::vector<float>;
+  m_eta                    = new std::vector<float>;
+  m_phi                    = new std::vector<float>;
+  m_mass                   = new std::vector<float>;
+  m_mass_nonAssoc          = new std::vector<float>;
+  m_covariance             = new std::vector<std::vector<float>>;
+  m_chi2                   = new std::vector<float>;
+  m_direction              = new std::vector<float>;
+  m_charge                 = new std::vector<int>;
+  m_H                      = new std::vector<float>;
+  m_Ht                     = new std::vector<float>;
+  m_minOpAng               = new std::vector<float>;
+  m_maxOpAng               = new std::vector<float>;
+  m_mind0                  = new std::vector<float>;
+  m_maxd0                  = new std::vector<float>;
+  m_distToPV               = new std::vector<float>;
   
   m_minOneTrackRemovedMass = new std::vector<float>;
   m_twoTracksMass          = new std::vector<std::vector<float>>;
   m_twoTracksMassRest      = new std::vector<std::vector<float>>;
   m_twoTracksCharge        = new std::vector<std::vector<int>>;
   
-  m_ntrk       = new std::vector<uint32_t>;
-  m_ntrk_sel   = new std::vector<uint32_t>;
-  m_ntrk_assoc = new std::vector<uint32_t>;
+  m_ntrk                   = new std::vector<int>;
+  m_ntrk_sel               = new std::vector<int>;
+  m_ntrk_assoc             = new std::vector<int>;
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
-    m_trk_ID     = new std::vector<std::vector<int>>;
-    m_trk_index  = new std::vector<std::vector<int>>;
-    m_trk_qOverP = new std::vector<std::vector<float>>;
-    m_trk_theta  = new std::vector<std::vector<float>>;
-    m_trk_vz     = new std::vector<std::vector<float>>;
-    m_trk_E      = new std::vector<std::vector<float>>;
-    m_trk_M      = new std::vector<std::vector<float>>;
-    m_trk_pt     = new std::vector<std::vector<float>>;
-    m_trk_eta    = new std::vector<std::vector<float>>;
-    m_trk_phi    = new std::vector<std::vector<float>>;
-    m_trk_d0     = new std::vector<std::vector<float>>;
-    m_trk_z0     = new std::vector<std::vector<float>>;
-    m_trk_errd0  = new std::vector<std::vector<float>>;
-    m_trk_errz0  = new std::vector<std::vector<float>>;
-    m_trk_chi2   = new std::vector<std::vector<float>>;
+    m_trk_ID                 = new std::vector<std::vector<int>>;
+    m_trk_index              = new std::vector<std::vector<int>>;
+    m_trk_qOverP             = new std::vector<std::vector<float>>;
+    m_trk_theta              = new std::vector<std::vector<float>>;
+    m_trk_vz                 = new std::vector<std::vector<float>>;
+    m_trk_E                  = new std::vector<std::vector<float>>;
+    m_trk_M                  = new std::vector<std::vector<float>>;
+    m_trk_pt                 = new std::vector<std::vector<float>>;
+    m_trk_eta                = new std::vector<std::vector<float>>;
+    m_trk_phi                = new std::vector<std::vector<float>>;
+    m_trk_d0                 = new std::vector<std::vector<float>>;
+    m_trk_z0                 = new std::vector<std::vector<float>>;
+    m_trk_errd0              = new std::vector<std::vector<float>>;
+    m_trk_errz0              = new std::vector<std::vector<float>>;
+    m_trk_chi2               = new std::vector<std::vector<float>>;
 
-    m_trk_pt_wrtSV    = new std::vector<std::vector<float>>;
-    m_trk_eta_wrtSV   = new std::vector<std::vector<float>>;
-    m_trk_phi_wrtSV   = new std::vector<std::vector<float>>;
-    m_trk_d0_wrtSV    = new std::vector<std::vector<float>>;
-    m_trk_z0_wrtSV    = new std::vector<std::vector<float>>;
-    m_trk_errd0_wrtSV = new std::vector<std::vector<float>>;
-    m_trk_errz0_wrtSV = new std::vector<std::vector<float>>;
-    m_trk_errP_wrtSV  = new std::vector<std::vector<float>>;
-    m_trk_chi2_toSV   = new std::vector<std::vector<float>>;
+    m_trk_pt_wrtSV           = new std::vector<std::vector<float>>;
+    m_trk_eta_wrtSV          = new std::vector<std::vector<float>>;
+    m_trk_phi_wrtSV          = new std::vector<std::vector<float>>;
+    m_trk_d0_wrtSV           = new std::vector<std::vector<float>>;
+    m_trk_z0_wrtSV           = new std::vector<std::vector<float>>;
+    m_trk_errd0_wrtSV        = new std::vector<std::vector<float>>;
+    m_trk_errz0_wrtSV        = new std::vector<std::vector<float>>;
+    m_trk_errP_wrtSV         = new std::vector<std::vector<float>>;
+    m_trk_chi2_toSV          = new std::vector<std::vector<float>>;
 
     m_trk_charge             = new std::vector<std::vector<int>>;
     m_trk_isFinal            = new std::vector<std::vector<uint8_t>>;
     m_trk_isSelected         = new std::vector<std::vector<uint8_t>>;
     m_trk_isAssociated       = new std::vector<std::vector<uint8_t>>;
+    m_trk_isFiltered         = new std::vector<std::vector<uint8_t>>;
     m_trk_nPixelHits         = new std::vector<std::vector<uint8_t>>;
     m_trk_nSCTHits           = new std::vector<std::vector<uint8_t>>;
     m_trk_nTRTHits           = new std::vector<std::vector<uint8_t>>;
@@ -98,12 +99,75 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, 
     m_trk_radiusOfFirstHit   = new std::vector<std::vector<float>>;
  
     if ( m_mc ) {
-      m_trk_truthProb    = new std::vector<std::vector<float>>;
-      m_trk_truthID      = new std::vector<std::vector<int>>;
-      m_trk_truthIndex   = new std::vector<std::vector<int>>;
-      m_trk_truthBarcode = new std::vector<std::vector<int>>;
-      m_trk_truthPdgId   = new std::vector<std::vector<int>>;
+      m_trk_truthProb        = new std::vector<std::vector<float>>;
+      m_trk_truthID          = new std::vector<std::vector<int>>;
+      m_trk_truthIndex       = new std::vector<std::vector<int>>;
+      m_trk_truthBarcode     = new std::vector<std::vector<int>>;
+      m_trk_truthPdgId       = new std::vector<std::vector<int>>;
+      m_trk_truthIsDesc      = new std::vector<std::vector<uint8_t>>;
     }
+  }
+
+  // truth vertex matching
+  if ( m_infoSwitch.m_truthMatching && m_mc ) {
+    m_closestTruthVtx_llpDecay          = new std::vector<std::string>;
+    m_closestTruthVtx_isReconstructible = new std::vector<uint8_t>;
+    m_closestTruthVtx_ID                = new std::vector<int>;
+    m_closestTruthVtx_index             = new std::vector<int>;
+    m_closestTruthVtx_x                 = new std::vector<float>;
+    m_closestTruthVtx_y                 = new std::vector<float>;
+    m_closestTruthVtx_z                 = new std::vector<float>;
+    m_closestTruthVtx_r                 = new std::vector<float>;
+    m_closestTruthVtx_phi               = new std::vector<float>;
+    m_closestTruthVtx_barcode           = new std::vector<int>;
+    m_closestTruthVtx_distance          = new std::vector<float>;
+    m_closestTruthVtxPhysPos_ID         = new std::vector<int>;
+    m_closestTruthVtxPhysPos_x          = new std::vector<float>;
+    m_closestTruthVtxPhysPos_y          = new std::vector<float>;
+    m_closestTruthVtxPhysPos_z          = new std::vector<float>;
+    m_closestTruthVtxPhysPos_r          = new std::vector<float>;
+    m_closestTruthVtxPhysPos_phi        = new std::vector<float>;
+    m_closestTruthVtxPhysPos_distance   = new std::vector<float>;
+
+    m_matchedTruthVtx_n                 = new std::vector<int>;
+    m_matchedTruthVtx_llpDecay          = new std::vector<std::vector<std::string>>;
+    m_matchedTruthVtx_ID                = new std::vector<std::vector<int>>;
+    m_matchedTruthVtx_index             = new std::vector<std::vector<int>>;
+    m_matchedTruthVtx_x                 = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_y                 = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_z                 = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_r                 = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_pt                = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_eta               = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_phi               = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_mass              = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_barcode           = new std::vector<std::vector<int>>;
+    m_matchedTruthVtx_distance          = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_nDesc             = new std::vector<std::vector<int>>;
+    m_matchedTruthVtx_descSumPt         = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_descSumEta        = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_descSumPhi        = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_descSumM          = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_nRecoDesc         = new std::vector<std::vector<int>>;
+    m_matchedTruthVtx_recoDescSumPt     = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_recoDescSumEta    = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_recoDescSumPhi    = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_recoDescSumM      = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_massFraction      = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_multFraction      = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_matchScore        = new std::vector<std::vector<float>>;
+    m_matchedTruthVtxReprPhysPos_ID     = new std::vector<std::vector<int>>;
+    m_matchedTruthVtxReprPhysPos_x      = new std::vector<std::vector<float>>;
+    m_matchedTruthVtxReprPhysPos_y      = new std::vector<std::vector<float>>;
+    m_matchedTruthVtxReprPhysPos_z      = new std::vector<std::vector<float>>;
+    m_matchedTruthVtxReprPhysPos_r      = new std::vector<std::vector<float>>;
+    m_matchedTruthVtxReprPhysPos_phi    = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_residual_x        = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_residual_y        = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_residual_z        = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_residual_r        = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_residual_phi      = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_residual_distance = new std::vector<std::vector<float>>;
   }
 
   // matched to jets
@@ -204,6 +268,7 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
     delete m_trk_isFinal;
     delete m_trk_isSelected;
     delete m_trk_isAssociated;
+    delete m_trk_isFiltered;
     delete m_trk_nPixelHits;
     delete m_trk_nSCTHits;
     delete m_trk_nTRTHits;
@@ -223,7 +288,70 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
       delete m_trk_truthIndex;
       delete m_trk_truthBarcode;
       delete m_trk_truthPdgId;
+      delete m_trk_truthIsDesc;
     }
+  }
+
+  // truth vertex matching
+  if ( m_infoSwitch.m_truthMatching && m_mc ) {
+    delete m_closestTruthVtx_llpDecay;
+    delete m_closestTruthVtx_isReconstructible;
+    delete m_closestTruthVtx_ID;
+    delete m_closestTruthVtx_index;
+    delete m_closestTruthVtx_x;
+    delete m_closestTruthVtx_y;
+    delete m_closestTruthVtx_z;
+    delete m_closestTruthVtx_r;
+    delete m_closestTruthVtx_phi;
+    delete m_closestTruthVtx_barcode;
+    delete m_closestTruthVtx_distance;
+    delete m_closestTruthVtxPhysPos_ID;
+    delete m_closestTruthVtxPhysPos_x;
+    delete m_closestTruthVtxPhysPos_y;
+    delete m_closestTruthVtxPhysPos_z;
+    delete m_closestTruthVtxPhysPos_r;
+    delete m_closestTruthVtxPhysPos_phi;
+    delete m_closestTruthVtxPhysPos_distance;
+
+    delete m_matchedTruthVtx_n;
+    delete m_matchedTruthVtx_llpDecay;
+    delete m_matchedTruthVtx_ID;
+    delete m_matchedTruthVtx_index;
+    delete m_matchedTruthVtx_x;
+    delete m_matchedTruthVtx_y;
+    delete m_matchedTruthVtx_z;
+    delete m_matchedTruthVtx_r;
+    delete m_matchedTruthVtx_pt;
+    delete m_matchedTruthVtx_eta;
+    delete m_matchedTruthVtx_phi;
+    delete m_matchedTruthVtx_mass;
+    delete m_matchedTruthVtx_barcode;
+    delete m_matchedTruthVtx_distance;
+    delete m_matchedTruthVtx_nDesc;
+    delete m_matchedTruthVtx_descSumPt;
+    delete m_matchedTruthVtx_descSumEta;
+    delete m_matchedTruthVtx_descSumPhi;
+    delete m_matchedTruthVtx_descSumM;
+    delete m_matchedTruthVtx_nRecoDesc;
+    delete m_matchedTruthVtx_recoDescSumPt;
+    delete m_matchedTruthVtx_recoDescSumEta;
+    delete m_matchedTruthVtx_recoDescSumPhi;
+    delete m_matchedTruthVtx_recoDescSumM;
+    delete m_matchedTruthVtx_massFraction;
+    delete m_matchedTruthVtx_multFraction;
+    delete m_matchedTruthVtx_matchScore;
+    delete m_matchedTruthVtxReprPhysPos_ID;
+    delete m_matchedTruthVtxReprPhysPos_x;
+    delete m_matchedTruthVtxReprPhysPos_y;
+    delete m_matchedTruthVtxReprPhysPos_z;
+    delete m_matchedTruthVtxReprPhysPos_r;
+    delete m_matchedTruthVtxReprPhysPos_phi;
+    delete m_matchedTruthVtx_residual_x;
+    delete m_matchedTruthVtx_residual_y;
+    delete m_matchedTruthVtx_residual_z;
+    delete m_matchedTruthVtx_residual_r;
+    delete m_matchedTruthVtx_residual_phi;
+    delete m_matchedTruthVtx_residual_distance;
   }
 
   // matched to jets
@@ -262,91 +390,155 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
 
   VertexContainer::setTree ( tree );
 
-  connectBranch<int>                ( tree, "ID",            &m_ID            );
-  connectBranch<int>                ( tree, "index",         &m_index         );
-  connectBranch<float>              ( tree, "x",             &m_x             );
-  connectBranch<float>              ( tree, "y",             &m_y             );
-  connectBranch<float>              ( tree, "z",             &m_z             );
-  connectBranch<float>              ( tree, "r",             &m_r             );
-  connectBranch<float>              ( tree, "pt",            &m_pt            );
-  connectBranch<float>              ( tree, "eta",           &m_eta           );
-  connectBranch<float>              ( tree, "phi",           &m_phi           );
-  connectBranch<float>              ( tree, "mass",          &m_mass          );
-  connectBranch<float>              ( tree, "mass_nonAssoc", &m_mass_nonAssoc );
-  connectBranch<std::vector<float>> ( tree, "covariance",    &m_covariance    );
-  connectBranch<float>              ( tree, "chi2",          &m_chi2          );
-  connectBranch<float>              ( tree, "direction",     &m_direction     );
-  connectBranch<int>                ( tree, "charge",        &m_charge        );
-  connectBranch<float>              ( tree, "H",             &m_H             );
-  connectBranch<float>              ( tree, "Ht",            &m_Ht            );
-  connectBranch<float>              ( tree, "minOpAng",      &m_minOpAng      );
-  connectBranch<float>              ( tree, "maxOpAng",      &m_maxOpAng      );
-  connectBranch<float>              ( tree, "mind0",         &m_mind0         );
-  connectBranch<float>              ( tree, "maxd0",         &m_maxd0         );
-  connectBranch<float>              ( tree, "distToPV",      &m_distToPV      );
+  connectBranch<int>                ( tree, "ID",                     &m_ID                     );
+  connectBranch<int>                ( tree, "index",                  &m_index                  );
+  connectBranch<float>              ( tree, "x",                      &m_x                      );
+  connectBranch<float>              ( tree, "y",                      &m_y                      );
+  connectBranch<float>              ( tree, "z",                      &m_z                      );
+  connectBranch<float>              ( tree, "r",                      &m_r                      );
+  connectBranch<float>              ( tree, "pt",                     &m_pt                     );
+  connectBranch<float>              ( tree, "eta",                    &m_eta                    );
+  connectBranch<float>              ( tree, "phi",                    &m_phi                    );
+  connectBranch<float>              ( tree, "mass",                   &m_mass                   );
+  connectBranch<float>              ( tree, "mass_nonAssoc",          &m_mass_nonAssoc          );
+  connectBranch<std::vector<float>> ( tree, "covariance",             &m_covariance             );
+  connectBranch<float>              ( tree, "chi2",                   &m_chi2                   );
+  connectBranch<float>              ( tree, "direction",              &m_direction              );
+  connectBranch<int>                ( tree, "charge",                 &m_charge                 );
+  connectBranch<float>              ( tree, "H",                      &m_H                      );
+  connectBranch<float>              ( tree, "Ht",                     &m_Ht                     );
+  connectBranch<float>              ( tree, "minOpAng",               &m_minOpAng               );
+  connectBranch<float>              ( tree, "maxOpAng",               &m_maxOpAng               );
+  connectBranch<float>              ( tree, "mind0",                  &m_mind0                  );
+  connectBranch<float>              ( tree, "maxd0",                  &m_maxd0                  );
+  connectBranch<float>              ( tree, "distToPV",               &m_distToPV               );
   
   connectBranch<float>              ( tree, "minOneTrackRemovedMass", &m_minOneTrackRemovedMass );
   connectBranch<std::vector<float>> ( tree, "twoTracksMass",          &m_twoTracksMass          );
   connectBranch<std::vector<float>> ( tree, "twoTracksMassRest",      &m_twoTracksMassRest      );
   connectBranch<std::vector<int>>   ( tree, "twoTracksCharge",        &m_twoTracksCharge        );
   
-  connectBranch<uint32_t> ( tree, "ntrk",       &m_ntrk       );
-  connectBranch<uint32_t> ( tree, "ntrk_sel",   &m_ntrk_sel   );
-  connectBranch<uint32_t> ( tree, "ntrk_assoc", &m_ntrk_assoc );
+  connectBranch<int>                ( tree, "ntrk",                   &m_ntrk                   );
+  connectBranch<int>                ( tree, "ntrk_sel",               &m_ntrk_sel               );
+  connectBranch<int>                ( tree, "ntrk_assoc",             &m_ntrk_assoc             );
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
-    connectBranch<std::vector<int>>   ( tree, "trk_ID",     &m_trk_ID     );
-    connectBranch<std::vector<int>>   ( tree, "trk_index",  &m_trk_index  );
-    connectBranch<std::vector<float>> ( tree, "trk_qOverP", &m_trk_qOverP );
-    connectBranch<std::vector<float>> ( tree, "trk_theta",  &m_trk_theta  );
-    connectBranch<std::vector<float>> ( tree, "trk_vz",     &m_trk_vz     );
-    connectBranch<std::vector<float>> ( tree, "trk_E",      &m_trk_E      );
-    connectBranch<std::vector<float>> ( tree, "trk_M",      &m_trk_M      );
-    connectBranch<std::vector<float>> ( tree, "trk_pt",     &m_trk_pt     );
-    connectBranch<std::vector<float>> ( tree, "trk_eta",    &m_trk_eta    );
-    connectBranch<std::vector<float>> ( tree, "trk_phi",    &m_trk_phi    );
-    connectBranch<std::vector<float>> ( tree, "trk_d0",     &m_trk_d0     );
-    connectBranch<std::vector<float>> ( tree, "trk_z0",     &m_trk_z0     );
-    connectBranch<std::vector<float>> ( tree, "trk_errd0",  &m_trk_errd0  );
-    connectBranch<std::vector<float>> ( tree, "trk_errz0",  &m_trk_errz0  );
-    connectBranch<std::vector<float>> ( tree, "trk_chi2",   &m_trk_chi2   );
+    connectBranch<std::vector<int>>       ( tree, "trk_ID",                 &m_trk_ID                 );
+    connectBranch<std::vector<int>>       ( tree, "trk_index",              &m_trk_index              );
+    connectBranch<std::vector<float>>     ( tree, "trk_qOverP",             &m_trk_qOverP             );
+    connectBranch<std::vector<float>>     ( tree, "trk_theta",              &m_trk_theta              );
+    connectBranch<std::vector<float>>     ( tree, "trk_vz",                 &m_trk_vz                 );
+    connectBranch<std::vector<float>>     ( tree, "trk_E",                  &m_trk_E                  );
+    connectBranch<std::vector<float>>     ( tree, "trk_M",                  &m_trk_M                  );
+    connectBranch<std::vector<float>>     ( tree, "trk_pt",                 &m_trk_pt                 );
+    connectBranch<std::vector<float>>     ( tree, "trk_eta",                &m_trk_eta                );
+    connectBranch<std::vector<float>>     ( tree, "trk_phi",                &m_trk_phi                );
+    connectBranch<std::vector<float>>     ( tree, "trk_d0",                 &m_trk_d0                 );
+    connectBranch<std::vector<float>>     ( tree, "trk_z0",                 &m_trk_z0                 );
+    connectBranch<std::vector<float>>     ( tree, "trk_errd0",              &m_trk_errd0              );
+    connectBranch<std::vector<float>>     ( tree, "trk_errz0",              &m_trk_errz0              );
+    connectBranch<std::vector<float>>     ( tree, "trk_chi2",               &m_trk_chi2               );
 
-    connectBranch<std::vector<float>> ( tree, "trk_pt_wrtSV",    &m_trk_pt_wrtSV    );
-    connectBranch<std::vector<float>> ( tree, "trk_eta_wrtSV",   &m_trk_eta_wrtSV   );
-    connectBranch<std::vector<float>> ( tree, "trk_phi_wrtSV",   &m_trk_phi_wrtSV   );
-    connectBranch<std::vector<float>> ( tree, "trk_d0_wrtSV",    &m_trk_d0_wrtSV    );
-    connectBranch<std::vector<float>> ( tree, "trk_z0_wrtSV",    &m_trk_z0_wrtSV    );
-    connectBranch<std::vector<float>> ( tree, "trk_errd0_wrtSV", &m_trk_errd0_wrtSV );
-    connectBranch<std::vector<float>> ( tree, "trk_errz0_wrtSV", &m_trk_errz0_wrtSV );
-    connectBranch<std::vector<float>> ( tree, "trk_errP_wrtSV",  &m_trk_errP_wrtSV  );
-    connectBranch<std::vector<float>> ( tree, "trk_chi2_toSV",   &m_trk_chi2_toSV   );
+    connectBranch<std::vector<float>>     ( tree, "trk_pt_wrtSV",           &m_trk_pt_wrtSV           );
+    connectBranch<std::vector<float>>     ( tree, "trk_eta_wrtSV",          &m_trk_eta_wrtSV          );
+    connectBranch<std::vector<float>>     ( tree, "trk_phi_wrtSV",          &m_trk_phi_wrtSV          );
+    connectBranch<std::vector<float>>     ( tree, "trk_d0_wrtSV",           &m_trk_d0_wrtSV           );
+    connectBranch<std::vector<float>>     ( tree, "trk_z0_wrtSV",           &m_trk_z0_wrtSV           );
+    connectBranch<std::vector<float>>     ( tree, "trk_errd0_wrtSV",        &m_trk_errd0_wrtSV        );
+    connectBranch<std::vector<float>>     ( tree, "trk_errz0_wrtSV",        &m_trk_errz0_wrtSV        );
+    connectBranch<std::vector<float>>     ( tree, "trk_errP_wrtSV",         &m_trk_errP_wrtSV         );
+    connectBranch<std::vector<float>>     ( tree, "trk_chi2_toSV",          &m_trk_chi2_toSV          );
 
-    connectBranch<std::vector<int>>      ( tree, "trk_charge",             &m_trk_charge             );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_isFinal",            &m_trk_isFinal            );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_isSelected",         &m_trk_isSelected         );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_isAssociated",       &m_trk_isAssociated       );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_nPixelHits",         &m_trk_nPixelHits         );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_nSCTHits",           &m_trk_nSCTHits           );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_nTRTHits",           &m_trk_nTRTHits           );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_nPixelBarrelLayers", &m_trk_nPixelBarrelLayers );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_nPixelEndCapLayers", &m_trk_nPixelEndCapLayers );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_nSCTBarrelLayers",   &m_trk_nSCTBarrelLayers   );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_nSCTEndCapLayers",   &m_trk_nSCTEndCapLayers   );
-    connectBranch<std::vector<uint32_t>> ( tree, "trk_hitPattern",         &m_trk_hitPattern         );
-    connectBranch<std::vector<float>>    ( tree, "trk_dEdx",               &m_trk_dEdx               );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_nUsedHitsdEdx",      &m_trk_nUsedHitsdEdx      );
-    connectBranch<std::vector<uint8_t>>  ( tree, "trk_nIBLOverflowsdEdx",  &m_trk_nIBLOverflowsdEdx  );
-    connectBranch<std::vector<float>>    ( tree, "trk_radiusOfFirstHit",   &m_trk_radiusOfFirstHit   );
+    connectBranch<std::vector<int>>       ( tree, "trk_charge",             &m_trk_charge             );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_isFinal",            &m_trk_isFinal            );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_isSelected",         &m_trk_isSelected         );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_isAssociated",       &m_trk_isAssociated       );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_isFiltered",         &m_trk_isFiltered         );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_nPixelHits",         &m_trk_nPixelHits         );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_nSCTHits",           &m_trk_nSCTHits           );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_nTRTHits",           &m_trk_nTRTHits           );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_nPixelBarrelLayers", &m_trk_nPixelBarrelLayers );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_nPixelEndCapLayers", &m_trk_nPixelEndCapLayers );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_nSCTBarrelLayers",   &m_trk_nSCTBarrelLayers   );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_nSCTEndCapLayers",   &m_trk_nSCTEndCapLayers   );
+    connectBranch<std::vector<uint32_t>>  ( tree, "trk_hitPattern",         &m_trk_hitPattern         );
+    connectBranch<std::vector<float>>     ( tree, "trk_dEdx",               &m_trk_dEdx               );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_nUsedHitsdEdx",      &m_trk_nUsedHitsdEdx      );
+    connectBranch<std::vector<uint8_t>>   ( tree, "trk_nIBLOverflowsdEdx",  &m_trk_nIBLOverflowsdEdx  );
+    connectBranch<std::vector<float>>     ( tree, "trk_radiusOfFirstHit",   &m_trk_radiusOfFirstHit   );
 
     // truth matched to tracks
     if ( m_mc ) {
-      connectBranch<std::vector<float>> ( tree, "trk_truthProb",    &m_trk_truthProb    );
-      connectBranch<std::vector<int>>   ( tree, "trk_truthID",      &m_trk_truthID      );
-      connectBranch<std::vector<int>>   ( tree, "trk_truthIndex",   &m_trk_truthIndex   );
-      connectBranch<std::vector<int>>   ( tree, "trk_truthBarcode", &m_trk_truthBarcode );
-      connectBranch<std::vector<int>>   ( tree, "trk_truthPdgId",   &m_trk_truthPdgId   );
+      connectBranch<std::vector<float>>   ( tree, "trk_truthProb",          &m_trk_truthProb          );
+      connectBranch<std::vector<int>>     ( tree, "trk_truthID",            &m_trk_truthID            );
+      connectBranch<std::vector<int>>     ( tree, "trk_truthIndex",         &m_trk_truthIndex         );
+      connectBranch<std::vector<int>>     ( tree, "trk_truthBarcode",       &m_trk_truthBarcode       );
+      connectBranch<std::vector<int>>     ( tree, "trk_truthPdgId",         &m_trk_truthPdgId         );
+      connectBranch<std::vector<uint8_t>> ( tree, "trk_truthIsDesc",        &m_trk_truthIsDesc        );
     }
+  }
+
+  // truth vertex matching
+  if ( m_infoSwitch.m_truthMatching && m_mc ) {
+    connectBranch<std::string>              ( tree, "closestTruthVtx_llpDecay",          &m_closestTruthVtx_llpDecay          );
+    connectBranch<uint8_t>                  ( tree, "closestTruthVtx_isReconstructible", &m_closestTruthVtx_isReconstructible );
+    connectBranch<int>                      ( tree, "closestTruthVtx_ID",                &m_closestTruthVtx_ID                );
+    connectBranch<int>                      ( tree, "closestTruthVtx_index",             &m_closestTruthVtx_index             );
+    connectBranch<float>                    ( tree, "closestTruthVtx_x",                 &m_closestTruthVtx_x                 );
+    connectBranch<float>                    ( tree, "closestTruthVtx_y",                 &m_closestTruthVtx_y                 );
+    connectBranch<float>                    ( tree, "closestTruthVtx_z",                 &m_closestTruthVtx_z                 );
+    connectBranch<float>                    ( tree, "closestTruthVtx_r",                 &m_closestTruthVtx_r                 );
+    connectBranch<float>                    ( tree, "closestTruthVtx_phi",               &m_closestTruthVtx_phi               );
+    connectBranch<int>                      ( tree, "closestTruthVtx_barcode",           &m_closestTruthVtx_barcode           );
+    connectBranch<float>                    ( tree, "closestTruthVtx_distance",          &m_closestTruthVtx_distance          );
+    connectBranch<int>                      ( tree, "closestTruthVtxPhysPos_ID",         &m_closestTruthVtxPhysPos_ID         );
+    connectBranch<float>                    ( tree, "closestTruthVtxPhysPos_x",          &m_closestTruthVtxPhysPos_x          );
+    connectBranch<float>                    ( tree, "closestTruthVtxPhysPos_y",          &m_closestTruthVtxPhysPos_y          );
+    connectBranch<float>                    ( tree, "closestTruthVtxPhysPos_z",          &m_closestTruthVtxPhysPos_z          );
+    connectBranch<float>                    ( tree, "closestTruthVtxPhysPos_r",          &m_closestTruthVtxPhysPos_r          );
+    connectBranch<float>                    ( tree, "closestTruthVtxPhysPos_phi",        &m_closestTruthVtxPhysPos_phi        );
+    connectBranch<float>                    ( tree, "closestTruthVtxPhysPos_distance",   &m_closestTruthVtxPhysPos_distance   );
+
+    connectBranch<int>                      ( tree, "matchedTruthVtx_n",                 &m_matchedTruthVtx_n                 );
+    connectBranch<std::vector<std::string>> ( tree, "matchedTruthVtx_llpDecay",          &m_matchedTruthVtx_llpDecay          );
+    connectBranch<std::vector<int>>         ( tree, "matchedTruthVtx_ID",                &m_matchedTruthVtx_ID                );
+    connectBranch<std::vector<int>>         ( tree, "matchedTruthVtx_index",             &m_matchedTruthVtx_index             );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_x",                 &m_matchedTruthVtx_x                 );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_y",                 &m_matchedTruthVtx_y                 );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_z",                 &m_matchedTruthVtx_z                 );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_r",                 &m_matchedTruthVtx_r                 );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_pt",                &m_matchedTruthVtx_pt                );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_eta",               &m_matchedTruthVtx_eta               );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_phi",               &m_matchedTruthVtx_phi               );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_mass",              &m_matchedTruthVtx_mass              );
+    connectBranch<std::vector<int>>         ( tree, "matchedTruthVtx_barcode",           &m_matchedTruthVtx_barcode           );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_distance",          &m_matchedTruthVtx_distance          );
+    connectBranch<std::vector<int>>         ( tree, "matchedTruthVtx_nDesc",             &m_matchedTruthVtx_nDesc             );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_descSumPt",         &m_matchedTruthVtx_descSumPt         );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_descSumEta",        &m_matchedTruthVtx_descSumEta        );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_descSumPhi",        &m_matchedTruthVtx_descSumPhi        );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_descSumM",          &m_matchedTruthVtx_descSumM          );
+    connectBranch<std::vector<int>>         ( tree, "matchedTruthVtx_nRecoDesc",         &m_matchedTruthVtx_nRecoDesc         );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_recoDescSumPt",     &m_matchedTruthVtx_recoDescSumPt     );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_recoDescSumEta",    &m_matchedTruthVtx_recoDescSumEta    );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_recoDescSumPhi",    &m_matchedTruthVtx_recoDescSumPhi    );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_recoDescSumM",      &m_matchedTruthVtx_recoDescSumM      );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_massFraction",      &m_matchedTruthVtx_massFraction      );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_multFraction",      &m_matchedTruthVtx_multFraction      );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_matchScore",        &m_matchedTruthVtx_matchScore        );
+    connectBranch<std::vector<int>>         ( tree, "matchedTruthVtxReprPhysPos_ID",     &m_matchedTruthVtxReprPhysPos_ID     );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_x",      &m_matchedTruthVtxReprPhysPos_x      );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_y",      &m_matchedTruthVtxReprPhysPos_y      );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_z",      &m_matchedTruthVtxReprPhysPos_z      );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_r",      &m_matchedTruthVtxReprPhysPos_r      );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_phi",    &m_matchedTruthVtxReprPhysPos_phi    );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_x",        &m_matchedTruthVtx_residual_x        );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_y",        &m_matchedTruthVtx_residual_y        );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_z",        &m_matchedTruthVtx_residual_z        );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_r",        &m_matchedTruthVtx_residual_r        );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_phi",      &m_matchedTruthVtx_residual_phi      );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_distance", &m_matchedTruthVtx_residual_distance );
   }
 
   // matched to jets
@@ -385,87 +577,151 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
 
   VertexContainer::setBranches ( tree );
 
-  setBranch<int>                ( tree, "ID",            m_ID            );
-  setBranch<int>                ( tree, "index",         m_index         );
-  setBranch<float>              ( tree, "x",             m_x             );
-  setBranch<float>              ( tree, "y",             m_y             );
-  setBranch<float>              ( tree, "z",             m_z             );
-  setBranch<float>              ( tree, "r",             m_r             );
-  setBranch<float>              ( tree, "pt",            m_pt            );
-  setBranch<float>              ( tree, "eta",           m_eta           );
-  setBranch<float>              ( tree, "phi",           m_phi           );
-  setBranch<float>              ( tree, "mass",          m_mass          );
-  setBranch<float>              ( tree, "mass_nonAssoc", m_mass_nonAssoc );
-  setBranch<std::vector<float>> ( tree, "covariance",    m_covariance    );
-  setBranch<float>              ( tree, "chi2",          m_chi2          );
-  setBranch<float>              ( tree, "direction",     m_direction     );
-  setBranch<int>                ( tree, "charge",        m_charge        );
-  setBranch<float>              ( tree, "H",             m_H             );
-  setBranch<float>              ( tree, "Ht",            m_Ht            );
-  setBranch<float>              ( tree, "minOpAng",      m_minOpAng      );
-  setBranch<float>              ( tree, "maxOpAng",      m_maxOpAng      );
-  setBranch<float>              ( tree, "mind0",         m_mind0         );
-  setBranch<float>              ( tree, "maxd0",         m_maxd0         );
-  setBranch<float>              ( tree, "distToPV",      m_distToPV      );
+  setBranch<int>                ( tree, "ID",                     m_ID                     );
+  setBranch<int>                ( tree, "index",                  m_index                  );
+  setBranch<float>              ( tree, "x",                      m_x                      );
+  setBranch<float>              ( tree, "y",                      m_y                      );
+  setBranch<float>              ( tree, "z",                      m_z                      );
+  setBranch<float>              ( tree, "r",                      m_r                      );
+  setBranch<float>              ( tree, "pt",                     m_pt                     );
+  setBranch<float>              ( tree, "eta",                    m_eta                    );
+  setBranch<float>              ( tree, "phi",                    m_phi                    );
+  setBranch<float>              ( tree, "mass",                   m_mass                   );
+  setBranch<float>              ( tree, "mass_nonAssoc",          m_mass_nonAssoc          );
+  setBranch<std::vector<float>> ( tree, "covariance",             m_covariance             );
+  setBranch<float>              ( tree, "chi2",                   m_chi2                   );
+  setBranch<float>              ( tree, "direction",              m_direction              );
+  setBranch<int>                ( tree, "charge",                 m_charge                 );
+  setBranch<float>              ( tree, "H",                      m_H                      );
+  setBranch<float>              ( tree, "Ht",                     m_Ht                     );
+  setBranch<float>              ( tree, "minOpAng",               m_minOpAng               );
+  setBranch<float>              ( tree, "maxOpAng",               m_maxOpAng               );
+  setBranch<float>              ( tree, "mind0",                  m_mind0                  );
+  setBranch<float>              ( tree, "maxd0",                  m_maxd0                  );
+  setBranch<float>              ( tree, "distToPV",               m_distToPV               );
 
   setBranch<float>              ( tree, "minOneTrackRemovedMass", m_minOneTrackRemovedMass );
   setBranch<std::vector<float>> ( tree, "twoTracksMass",          m_twoTracksMass          );
   setBranch<std::vector<float>> ( tree, "twoTracksMassRest",      m_twoTracksMassRest      );
   setBranch<std::vector<int>>   ( tree, "twoTracksCharge",        m_twoTracksCharge        );
 
-  setBranch<uint32_t> ( tree, "ntrk",       m_ntrk       );
-  setBranch<uint32_t> ( tree, "ntrk_sel",   m_ntrk_sel   );
-  setBranch<uint32_t> ( tree, "ntrk_assoc", m_ntrk_assoc );
+  setBranch<int>                ( tree, "ntrk",                   m_ntrk                   );
+  setBranch<int>                ( tree, "ntrk_sel",               m_ntrk_sel               );
+  setBranch<int>                ( tree, "ntrk_assoc",             m_ntrk_assoc             );
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
-    setBranch<std::vector<int>>   ( tree, "trk_ID",     m_trk_ID     );
-    setBranch<std::vector<int>>   ( tree, "trk_index",  m_trk_index  );
-    setBranch<std::vector<float>> ( tree, "trk_qOverP", m_trk_qOverP );
-    setBranch<std::vector<float>> ( tree, "trk_theta",  m_trk_theta  );
-    setBranch<std::vector<float>> ( tree, "trk_vz",     m_trk_vz     );
-    setBranch<std::vector<float>> ( tree, "trk_E",      m_trk_E      );
-    setBranch<std::vector<float>> ( tree, "trk_M",      m_trk_M      );
-    setBranch<std::vector<float>> ( tree, "trk_pt",     m_trk_pt     );
-    setBranch<std::vector<float>> ( tree, "trk_eta",    m_trk_eta    );
-    setBranch<std::vector<float>> ( tree, "trk_phi",    m_trk_phi    );
-    setBranch<std::vector<float>> ( tree, "trk_d0",     m_trk_d0     );
-    setBranch<std::vector<float>> ( tree, "trk_z0",     m_trk_z0     );
-    setBranch<std::vector<float>> ( tree, "trk_errd0",  m_trk_errd0  );
-    setBranch<std::vector<float>> ( tree, "trk_errz0",  m_trk_errz0  );
-    setBranch<std::vector<float>> ( tree, "trk_chi2",   m_trk_chi2   );
+    setBranch<std::vector<int>>       ( tree, "trk_ID",                  m_trk_ID                );
+    setBranch<std::vector<int>>       ( tree, "trk_index",               m_trk_index             );
+    setBranch<std::vector<float>>     ( tree, "trk_qOverP",              m_trk_qOverP            );
+    setBranch<std::vector<float>>     ( tree, "trk_theta",               m_trk_theta             );
+    setBranch<std::vector<float>>     ( tree, "trk_vz",                  m_trk_vz                );
+    setBranch<std::vector<float>>     ( tree, "trk_E",                   m_trk_E                 );
+    setBranch<std::vector<float>>     ( tree, "trk_M",                   m_trk_M                 );
+    setBranch<std::vector<float>>     ( tree, "trk_pt",                  m_trk_pt                );
+    setBranch<std::vector<float>>     ( tree, "trk_eta",                 m_trk_eta               );
+    setBranch<std::vector<float>>     ( tree, "trk_phi",                 m_trk_phi               );
+    setBranch<std::vector<float>>     ( tree, "trk_d0",                  m_trk_d0                );
+    setBranch<std::vector<float>>     ( tree, "trk_z0",                  m_trk_z0                );
+    setBranch<std::vector<float>>     ( tree, "trk_errd0",               m_trk_errd0             );
+    setBranch<std::vector<float>>     ( tree, "trk_errz0",               m_trk_errz0             );
+    setBranch<std::vector<float>>     ( tree, "trk_chi2",                m_trk_chi2              );  
 
-    setBranch<std::vector<float>> ( tree, "trk_pt_wrtSV",    m_trk_pt_wrtSV    );
-    setBranch<std::vector<float>> ( tree, "trk_eta_wrtSV",   m_trk_eta_wrtSV   );
-    setBranch<std::vector<float>> ( tree, "trk_phi_wrtSV",   m_trk_phi_wrtSV   );
-    setBranch<std::vector<float>> ( tree, "trk_d0_wrtSV",    m_trk_d0_wrtSV    );
-    setBranch<std::vector<float>> ( tree, "trk_z0_wrtSV",    m_trk_z0_wrtSV    );
-    setBranch<std::vector<float>> ( tree, "trk_errd0_wrtSV", m_trk_errd0_wrtSV );
-    setBranch<std::vector<float>> ( tree, "trk_errz0_wrtSV", m_trk_errz0_wrtSV );
-    setBranch<std::vector<float>> ( tree, "trk_errP_wrtSV",  m_trk_errP_wrtSV  );
-    setBranch<std::vector<float>> ( tree, "trk_chi2_toSV",   m_trk_chi2_toSV   );
+    setBranch<std::vector<float>>     ( tree, "trk_pt_wrtSV",            m_trk_pt_wrtSV          );
+    setBranch<std::vector<float>>     ( tree, "trk_eta_wrtSV",           m_trk_eta_wrtSV         );
+    setBranch<std::vector<float>>     ( tree, "trk_phi_wrtSV",           m_trk_phi_wrtSV         );
+    setBranch<std::vector<float>>     ( tree, "trk_d0_wrtSV",            m_trk_d0_wrtSV          );
+    setBranch<std::vector<float>>     ( tree, "trk_z0_wrtSV",            m_trk_z0_wrtSV          );
+    setBranch<std::vector<float>>     ( tree, "trk_errd0_wrtSV",         m_trk_errd0_wrtSV       );
+    setBranch<std::vector<float>>     ( tree, "trk_errz0_wrtSV",         m_trk_errz0_wrtSV       );
+    setBranch<std::vector<float>>     ( tree, "trk_errP_wrtSV",          m_trk_errP_wrtSV        );
+    setBranch<std::vector<float>>     ( tree, "trk_chi2_toSV",           m_trk_chi2_toSV         ); 
 
-    setBranch<std::vector<int>>      ( tree, "trk_charge",             m_trk_charge             );
-    setBranch<std::vector<uint8_t>>  ( tree, "trk_isFinal",            m_trk_isFinal            );
-    setBranch<std::vector<uint8_t>>  ( tree, "trk_isSelected",         m_trk_isSelected         );
-    setBranch<std::vector<uint8_t>>  ( tree, "trk_isAssociated",       m_trk_isAssociated       );
-    setBranch<std::vector<uint8_t>>  ( tree, "trk_nPixelBarrelLayers", m_trk_nPixelBarrelLayers );
-    setBranch<std::vector<uint8_t>>  ( tree, "trk_nPixelEndCapLayers", m_trk_nPixelEndCapLayers );
-    setBranch<std::vector<uint8_t>>  ( tree, "trk_nSCTBarrelLayers",   m_trk_nSCTBarrelLayers   );
-    setBranch<std::vector<uint8_t>>  ( tree, "trk_nSCTEndCapLayers",   m_trk_nSCTEndCapLayers   );
-    setBranch<std::vector<uint32_t>> ( tree, "trk_hitPattern",         m_trk_hitPattern         );
-    setBranch<std::vector<float>>    ( tree, "trk_dEdx",               m_trk_dEdx               );
-    setBranch<std::vector<uint8_t>>  ( tree, "trk_nUsedHitsdEdx",      m_trk_nUsedHitsdEdx      );
-    setBranch<std::vector<uint8_t>>  ( tree, "trk_nIBLOverflowsdEdx",  m_trk_nIBLOverflowsdEdx  );
-    setBranch<std::vector<float>>    ( tree, "trk_radiusOfFirstHit",   m_trk_radiusOfFirstHit   );
+    setBranch<std::vector<int>>       ( tree, "trk_charge",             m_trk_charge             );
+    setBranch<std::vector<uint8_t>>   ( tree, "trk_isFinal",            m_trk_isFinal            );
+    setBranch<std::vector<uint8_t>>   ( tree, "trk_isSelected",         m_trk_isSelected         );
+    setBranch<std::vector<uint8_t>>   ( tree, "trk_isAssociated",       m_trk_isAssociated       );
+    setBranch<std::vector<uint8_t>>   ( tree, "trk_isFiltered",         m_trk_isFiltered         );
+    setBranch<std::vector<uint8_t>>   ( tree, "trk_nPixelBarrelLayers", m_trk_nPixelBarrelLayers );
+    setBranch<std::vector<uint8_t>>   ( tree, "trk_nPixelEndCapLayers", m_trk_nPixelEndCapLayers );
+    setBranch<std::vector<uint8_t>>   ( tree, "trk_nSCTBarrelLayers",   m_trk_nSCTBarrelLayers   );
+    setBranch<std::vector<uint8_t>>   ( tree, "trk_nSCTEndCapLayers",   m_trk_nSCTEndCapLayers   );
+    setBranch<std::vector<uint32_t>>  ( tree, "trk_hitPattern",         m_trk_hitPattern         );
+    setBranch<std::vector<float>>     ( tree, "trk_dEdx",               m_trk_dEdx               );
+    setBranch<std::vector<uint8_t>>   ( tree, "trk_nUsedHitsdEdx",      m_trk_nUsedHitsdEdx      );
+    setBranch<std::vector<uint8_t>>   ( tree, "trk_nIBLOverflowsdEdx",  m_trk_nIBLOverflowsdEdx  );
+    setBranch<std::vector<float>>     ( tree, "trk_radiusOfFirstHit",   m_trk_radiusOfFirstHit   );
 
     if ( m_mc ) {
-      setBranch<std::vector<float>> ( tree, "trk_truthProb",    m_trk_truthProb    );
-      setBranch<std::vector<int>>   ( tree, "trk_truthID",      m_trk_truthID      );
-      setBranch<std::vector<int>>   ( tree, "trk_truthIndex",   m_trk_truthIndex   );
-      setBranch<std::vector<int>>   ( tree, "trk_truthBarcode", m_trk_truthBarcode );
-      setBranch<std::vector<int>>   ( tree, "trk_truthPdgId",   m_trk_truthPdgId   );
+      setBranch<std::vector<float>>   ( tree, "trk_truthProb",          m_trk_truthProb          );
+      setBranch<std::vector<int>>     ( tree, "trk_truthID",            m_trk_truthID            );
+      setBranch<std::vector<int>>     ( tree, "trk_truthIndex",         m_trk_truthIndex         );
+      setBranch<std::vector<int>>     ( tree, "trk_truthBarcode",       m_trk_truthBarcode       );
+      setBranch<std::vector<int>>     ( tree, "trk_truthPdgId",         m_trk_truthPdgId         );
+      setBranch<std::vector<uint8_t>> ( tree, "trk_truthIsDesc",        m_trk_truthIsDesc        );
     }
+  }
+
+  // truth vertex matching
+  if ( m_infoSwitch.m_truthMatching && m_mc ) {
+    setBranch<std::string>              ( tree, "closestTruthVtx_llpDecay",          m_closestTruthVtx_llpDecay          );
+    setBranch<uint8_t>                  ( tree, "closestTruthVtx_isReconstructible", m_closestTruthVtx_isReconstructible );
+    setBranch<int>                      ( tree, "closestTruthVtx_ID",                m_closestTruthVtx_ID                );
+    setBranch<int>                      ( tree, "closestTruthVtx_index",             m_closestTruthVtx_index             );
+    setBranch<float>                    ( tree, "closestTruthVtx_x",                 m_closestTruthVtx_x                 );
+    setBranch<float>                    ( tree, "closestTruthVtx_y",                 m_closestTruthVtx_y                 );
+    setBranch<float>                    ( tree, "closestTruthVtx_z",                 m_closestTruthVtx_z                 );
+    setBranch<float>                    ( tree, "closestTruthVtx_r",                 m_closestTruthVtx_r                 );
+    setBranch<float>                    ( tree, "closestTruthVtx_phi",               m_closestTruthVtx_phi               );
+    setBranch<int>                      ( tree, "closestTruthVtx_barcode",           m_closestTruthVtx_barcode           );
+    setBranch<float>                    ( tree, "closestTruthVtx_distance",          m_closestTruthVtx_distance          );
+    setBranch<int>                      ( tree, "closestTruthVtxPhysPos_ID",         m_closestTruthVtxPhysPos_ID         );
+    setBranch<float>                    ( tree, "closestTruthVtxPhysPos_x",          m_closestTruthVtxPhysPos_x          );
+    setBranch<float>                    ( tree, "closestTruthVtxPhysPos_y",          m_closestTruthVtxPhysPos_y          );
+    setBranch<float>                    ( tree, "closestTruthVtxPhysPos_z",          m_closestTruthVtxPhysPos_z          );
+    setBranch<float>                    ( tree, "closestTruthVtxPhysPos_r",          m_closestTruthVtxPhysPos_r          );
+    setBranch<float>                    ( tree, "closestTruthVtxPhysPos_phi",        m_closestTruthVtxPhysPos_phi        );
+    setBranch<float>                    ( tree, "closestTruthVtxPhysPos_distance",   m_closestTruthVtxPhysPos_distance   );
+
+    setBranch<int>                      ( tree, "matchedTruthVtx_n",                 m_matchedTruthVtx_n                 );
+    setBranch<std::vector<std::string>> ( tree, "matchedTruthVtx_llpDecay",          m_matchedTruthVtx_llpDecay          );
+    setBranch<std::vector<int>>         ( tree, "matchedTruthVtx_ID",                m_matchedTruthVtx_ID                );
+    setBranch<std::vector<int>>         ( tree, "matchedTruthVtx_index",             m_matchedTruthVtx_index             );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_x",                 m_matchedTruthVtx_x                 );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_y",                 m_matchedTruthVtx_y                 );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_z",                 m_matchedTruthVtx_z                 );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_r",                 m_matchedTruthVtx_r                 );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_pt",                m_matchedTruthVtx_pt                );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_eta",               m_matchedTruthVtx_eta               );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_phi",               m_matchedTruthVtx_phi               );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_mass",              m_matchedTruthVtx_mass              );
+    setBranch<std::vector<int>>         ( tree, "matchedTruthVtx_barcode",           m_matchedTruthVtx_barcode           );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_distance",          m_matchedTruthVtx_distance          );
+    setBranch<std::vector<int>>         ( tree, "matchedTruthVtx_nDesc",             m_matchedTruthVtx_nDesc             );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_descSumPt",         m_matchedTruthVtx_descSumPt         );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_descSumEta",        m_matchedTruthVtx_descSumEta        );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_descSumPhi",        m_matchedTruthVtx_descSumPhi        );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_descSumM",          m_matchedTruthVtx_descSumM          );
+    setBranch<std::vector<int>>         ( tree, "matchedTruthVtx_nRecoDesc",         m_matchedTruthVtx_nRecoDesc         );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_recoDescSumPt",     m_matchedTruthVtx_recoDescSumPt     );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_recoDescSumEta",    m_matchedTruthVtx_recoDescSumEta    );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_recoDescSumPhi",    m_matchedTruthVtx_recoDescSumPhi    );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_recoDescSumM",      m_matchedTruthVtx_recoDescSumM      );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_massFraction",      m_matchedTruthVtx_massFraction      );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_multFraction",      m_matchedTruthVtx_multFraction      );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_matchScore",        m_matchedTruthVtx_matchScore        );
+    setBranch<std::vector<int>>         ( tree, "matchedTruthVtxReprPhysPos_ID",     m_matchedTruthVtxReprPhysPos_ID     );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_x",      m_matchedTruthVtxReprPhysPos_x      );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_y",      m_matchedTruthVtxReprPhysPos_y      );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_z",      m_matchedTruthVtxReprPhysPos_z      );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_r",      m_matchedTruthVtxReprPhysPos_r      );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_phi",    m_matchedTruthVtxReprPhysPos_phi    );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_x",        m_matchedTruthVtx_residual_x        );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_y",        m_matchedTruthVtx_residual_y        );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_z",        m_matchedTruthVtx_residual_z        );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_r",        m_matchedTruthVtx_residual_r        );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_phi",      m_matchedTruthVtx_residual_phi      );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_residual_distance", m_matchedTruthVtx_residual_distance );
   }
 
   // matched to jets
@@ -504,70 +760,71 @@ void SecondaryVertexContainer :: clear ()
 
   VertexContainer::clear ();
 
-  m_ID            ->clear();
-  m_index         ->clear();
-  m_x             ->clear();
-  m_y             ->clear();
-  m_z             ->clear();
-  m_r             ->clear();
-  m_pt            ->clear();
-  m_eta           ->clear();
-  m_phi           ->clear();
-  m_mass          ->clear();
-  m_mass_nonAssoc ->clear();
-  m_covariance    ->clear();
-  m_chi2          ->clear();
-  m_direction     ->clear();
-  m_charge        ->clear();
-  m_H             ->clear();
-  m_Ht            ->clear();
-  m_minOpAng      ->clear();
-  m_maxOpAng      ->clear();
-  m_mind0         ->clear();
-  m_maxd0         ->clear();
-  m_distToPV      ->clear();
+  m_ID                     ->clear();
+  m_index                  ->clear();
+  m_x                      ->clear();
+  m_y                      ->clear();
+  m_z                      ->clear();
+  m_r                      ->clear();
+  m_pt                     ->clear();
+  m_eta                    ->clear();
+  m_phi                    ->clear();
+  m_mass                   ->clear();
+  m_mass_nonAssoc          ->clear();
+  m_covariance             ->clear();
+  m_chi2                   ->clear();
+  m_direction              ->clear();
+  m_charge                 ->clear();
+  m_H                      ->clear();
+  m_Ht                     ->clear();
+  m_minOpAng               ->clear();
+  m_maxOpAng               ->clear();
+  m_mind0                  ->clear();
+  m_maxd0                  ->clear();
+  m_distToPV               ->clear();
   
   m_minOneTrackRemovedMass ->clear();
   m_twoTracksMass          ->clear();
   m_twoTracksMassRest      ->clear();
   m_twoTracksCharge        ->clear();
 
-  m_ntrk       ->clear();
-  m_ntrk_sel   ->clear();
-  m_ntrk_assoc ->clear();
+  m_ntrk                   ->clear();
+  m_ntrk_sel               ->clear();
+  m_ntrk_assoc             ->clear();
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
-    m_trk_ID     ->clear();
-    m_trk_index  ->clear();
-    m_trk_qOverP ->clear();
-    m_trk_theta  ->clear();
-    m_trk_vz     ->clear();
-    m_trk_E      ->clear();
-    m_trk_M      ->clear();
-    m_trk_pt     ->clear();
-    m_trk_eta    ->clear();
-    m_trk_phi    ->clear();
-    m_trk_d0     ->clear();
-    m_trk_z0     ->clear();
-    m_trk_errd0  ->clear();
-    m_trk_errz0  ->clear();
-    m_trk_chi2   ->clear();
+    m_trk_ID                 ->clear();
+    m_trk_index              ->clear();
+    m_trk_qOverP             ->clear();
+    m_trk_theta              ->clear();
+    m_trk_vz                 ->clear();
+    m_trk_E                  ->clear();
+    m_trk_M                  ->clear();
+    m_trk_pt                 ->clear();
+    m_trk_eta                ->clear();
+    m_trk_phi                ->clear();
+    m_trk_d0                 ->clear();
+    m_trk_z0                 ->clear();
+    m_trk_errd0              ->clear();
+    m_trk_errz0              ->clear();
+    m_trk_chi2               ->clear();
 
-    m_trk_pt_wrtSV    ->clear();
-    m_trk_eta_wrtSV   ->clear();
-    m_trk_phi_wrtSV   ->clear();
-    m_trk_d0_wrtSV    ->clear();
-    m_trk_z0_wrtSV    ->clear();
-    m_trk_errd0_wrtSV ->clear();
-    m_trk_errz0_wrtSV ->clear();
-    m_trk_errP_wrtSV  ->clear();
-    m_trk_chi2_toSV   ->clear();
+    m_trk_pt_wrtSV           ->clear();
+    m_trk_eta_wrtSV          ->clear();
+    m_trk_phi_wrtSV          ->clear();
+    m_trk_d0_wrtSV           ->clear();
+    m_trk_z0_wrtSV           ->clear();
+    m_trk_errd0_wrtSV        ->clear();
+    m_trk_errz0_wrtSV        ->clear();
+    m_trk_errP_wrtSV         ->clear();
+    m_trk_chi2_toSV          ->clear();
 
     m_trk_charge             ->clear();
     m_trk_isFinal            ->clear();
     m_trk_isSelected         ->clear();
     m_trk_isAssociated       ->clear();
+    m_trk_isFiltered         ->clear();
     m_trk_nPixelHits         ->clear();
     m_trk_nSCTHits           ->clear();
     m_trk_nTRTHits           ->clear();
@@ -582,12 +839,75 @@ void SecondaryVertexContainer :: clear ()
     m_trk_radiusOfFirstHit   ->clear();
 
     if ( m_mc ) {
-      m_trk_truthProb    ->clear();
-      m_trk_truthID      ->clear();
-      m_trk_truthIndex   ->clear();
-      m_trk_truthBarcode ->clear();
-      m_trk_truthPdgId   ->clear();
+      m_trk_truthProb        ->clear();
+      m_trk_truthID          ->clear();
+      m_trk_truthIndex       ->clear();
+      m_trk_truthBarcode     ->clear();
+      m_trk_truthPdgId       ->clear();
+      m_trk_truthIsDesc      ->clear();
     }
+  }
+
+  // truth vertex matching
+  if ( m_infoSwitch.m_truthMatching && m_mc ) {
+    m_closestTruthVtx_llpDecay          ->clear();
+    m_closestTruthVtx_isReconstructible ->clear();
+    m_closestTruthVtx_ID                ->clear();
+    m_closestTruthVtx_index             ->clear();
+    m_closestTruthVtx_x                 ->clear();
+    m_closestTruthVtx_y                 ->clear();
+    m_closestTruthVtx_z                 ->clear();
+    m_closestTruthVtx_r                 ->clear();
+    m_closestTruthVtx_phi               ->clear();
+    m_closestTruthVtx_barcode           ->clear();
+    m_closestTruthVtx_distance          ->clear();
+    m_closestTruthVtxPhysPos_ID         ->clear();
+    m_closestTruthVtxPhysPos_x          ->clear();
+    m_closestTruthVtxPhysPos_y          ->clear();
+    m_closestTruthVtxPhysPos_z          ->clear();
+    m_closestTruthVtxPhysPos_r          ->clear();
+    m_closestTruthVtxPhysPos_phi        ->clear();
+    m_closestTruthVtxPhysPos_distance   ->clear();
+
+    m_matchedTruthVtx_n                 ->clear();
+    m_matchedTruthVtx_llpDecay          ->clear();
+    m_matchedTruthVtx_ID                ->clear();
+    m_matchedTruthVtx_index             ->clear();
+    m_matchedTruthVtx_x                 ->clear();
+    m_matchedTruthVtx_y                 ->clear();
+    m_matchedTruthVtx_z                 ->clear();
+    m_matchedTruthVtx_r                 ->clear();
+    m_matchedTruthVtx_pt                ->clear();
+    m_matchedTruthVtx_eta               ->clear();
+    m_matchedTruthVtx_phi               ->clear();
+    m_matchedTruthVtx_mass              ->clear();
+    m_matchedTruthVtx_barcode           ->clear();
+    m_matchedTruthVtx_distance          ->clear();
+    m_matchedTruthVtx_nDesc             ->clear();
+    m_matchedTruthVtx_descSumPt         ->clear();
+    m_matchedTruthVtx_descSumEta        ->clear();
+    m_matchedTruthVtx_descSumPhi        ->clear();
+    m_matchedTruthVtx_descSumM          ->clear();
+    m_matchedTruthVtx_nRecoDesc         ->clear();
+    m_matchedTruthVtx_recoDescSumPt     ->clear();
+    m_matchedTruthVtx_recoDescSumEta    ->clear();
+    m_matchedTruthVtx_recoDescSumPhi    ->clear();
+    m_matchedTruthVtx_recoDescSumM      ->clear();
+    m_matchedTruthVtx_massFraction      ->clear();
+    m_matchedTruthVtx_multFraction      ->clear();
+    m_matchedTruthVtx_matchScore        ->clear();
+    m_matchedTruthVtxReprPhysPos_ID     ->clear();
+    m_matchedTruthVtxReprPhysPos_x      ->clear();
+    m_matchedTruthVtxReprPhysPos_y      ->clear();
+    m_matchedTruthVtxReprPhysPos_z      ->clear();
+    m_matchedTruthVtxReprPhysPos_r      ->clear();
+    m_matchedTruthVtxReprPhysPos_phi    ->clear();
+    m_matchedTruthVtx_residual_x        ->clear();
+    m_matchedTruthVtx_residual_y        ->clear();
+    m_matchedTruthVtx_residual_z        ->clear();
+    m_matchedTruthVtx_residual_r        ->clear();
+    m_matchedTruthVtx_residual_phi      ->clear();
+    m_matchedTruthVtx_residual_distance ->clear();
   }
 
   // matched to jets
@@ -706,7 +1026,7 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
   m_twoTracksMassRest      ->push_back( twoTracksMassRest                );
   m_twoTracksCharge        ->push_back( twoTracksCharge                  );
 
-  size_t ntrk_sel = 0;
+  size_t ntrk_sel   = 0;
   size_t ntrk_assoc = 0;
   for ( const auto& trk : filteredTracks ) {
     if ( trk->isAvailable<char>( "is_selected" ) )
@@ -718,6 +1038,263 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
   m_ntrk       ->push_back( filteredTracks.size() );
   m_ntrk_sel   ->push_back( ntrk_sel              );
   m_ntrk_assoc ->push_back( ntrk_assoc            );
+
+
+  // tracks associated to DVs
+  if ( m_infoSwitch.m_tracks ) {
+    recordTracks( filteredTracks );
+  }
+
+
+  // truth matching w/ TruthVertexPosition --> truthVtx/physPos matches
+  if ( m_infoSwitch.m_truthMatching && m_mc ) {
+
+    std::string closeTV_llpDecay = "";
+    uint8_t     closeTV_isReco   = false;
+    int         closeTV_ID       = AlgConsts::invalidInt;
+    int         closeTV_index    = AlgConsts::invalidInt;
+    float       closeTV_x        = AlgConsts::invalidFloat;
+    float       closeTV_y        = AlgConsts::invalidFloat;
+    float       closeTV_z        = AlgConsts::invalidFloat;
+    float       closeTV_r        = AlgConsts::invalidFloat;
+    float       closeTV_phi      = AlgConsts::invalidFloat;
+    int         closeTV_barcode  = AlgConsts::invalidInt;
+    float       closeTV_dist     = AlgConsts::invalidFloat;
+    
+    // get closest truth vertex / physical truth position
+    static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLink_t> closestTruthAccess("closestTruthVertexLink");
+    if ( closestTruthAccess.isAvailable( *secVtx ) ) {
+      try {
+	const EJsHelper::TruthVertexLink_t& closestTruthLink = closestTruthAccess( *secVtx );
+	
+	TVector3 closeTV_pos ( (*closestTruthLink)->x(), (*closestTruthLink)->y(), (*closestTruthLink)->z() );
+	
+	for ( size_t i = 0; i != truthVtxLLPs.size(); ++i )
+	  if ( EJsHelper::pdgIdFuncs[truthVtxLLPs.at(i)]( (*closestTruthLink) ) )
+	    closeTV_llpDecay = truthVtxLLPs.at(i);
+	closeTV_isReco  = AUXDYN( (*closestTruthLink), char, "isReconstructible" );
+	closeTV_ID      = AUXDYN( (*closestTruthLink), int,  "ID"                );
+	closeTV_index   = AUXDYN( (*closestTruthLink), int,  "index"             );
+	closeTV_x       = (*closestTruthLink)->x();
+	closeTV_y       = (*closestTruthLink)->y();
+	closeTV_z       = (*closestTruthLink)->z();
+	closeTV_r       = (*closestTruthLink)->perp();
+	closeTV_phi     = (*closestTruthLink)->phi();
+	closeTV_barcode = (*closestTruthLink)->barcode();
+	closeTV_dist    = ( pos - closeTV_pos ).Mag();
+      } catch(...) {}
+    }
+    
+    int      closestTruthPosID    = AUXDYN( secVtx, int,      "closestTruthVertexPhysPosID"       );
+    TVector3 closestTruthPosition = AUXDYN( secVtx, TVector3, "closestTruthVertexPhysPosition"    );
+    float    closestTruthPosDist  = AUXDYN( secVtx, float,    "closestTruthVertexPhysPosDistance" );
+
+    m_closestTruthVtx_llpDecay          ->push_back( closeTV_llpDecay            );
+    m_closestTruthVtx_isReconstructible ->push_back( closeTV_isReco              );
+    m_closestTruthVtx_ID                ->push_back( closeTV_ID                  );
+    m_closestTruthVtx_index             ->push_back( closeTV_index               );
+    m_closestTruthVtx_x                 ->push_back( closeTV_x                   );
+    m_closestTruthVtx_y                 ->push_back( closeTV_y                   );
+    m_closestTruthVtx_z                 ->push_back( closeTV_z                   );
+    m_closestTruthVtx_r                 ->push_back( closeTV_r                   );
+    m_closestTruthVtx_phi               ->push_back( closeTV_phi                 );
+    m_closestTruthVtx_barcode           ->push_back( closeTV_barcode             );
+    m_closestTruthVtx_distance          ->push_back( closeTV_dist                );
+    m_closestTruthVtxPhysPos_ID         ->push_back( closestTruthPosID           );
+    m_closestTruthVtxPhysPos_x          ->push_back( closestTruthPosition.x()    );
+    m_closestTruthVtxPhysPos_y          ->push_back( closestTruthPosition.y()    );
+    m_closestTruthVtxPhysPos_z          ->push_back( closestTruthPosition.z()    );
+    m_closestTruthVtxPhysPos_r          ->push_back( closestTruthPosition.Perp() );
+    m_closestTruthVtxPhysPos_phi        ->push_back( closestTruthPosition.Phi()  );
+    m_closestTruthVtxPhysPos_distance   ->push_back( closestTruthPosDist         );
+
+
+    // get truth vertices / truth positions to which reco vertex is matched
+    // --> truth-linked track-pt weighted matching representative physical truth position
+    std::vector<const xAOD::TruthVertex*> matchedTruthVerts;
+    // access matched truth vertex links
+    static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLinkVector_t> matchedTruthAccess("truthVertexMatchLinks");
+    if ( matchedTruthAccess.isAvailable( *secVtx ) ) {
+      const EJsHelper::TruthVertexLinkVector_t& matchedTruthLinks = matchedTruthAccess( *secVtx );
+      // loop over matched truth vertex links + fill vector
+      for ( const auto& matchlink : matchedTruthLinks ) {
+	if ( !matchlink.isValid() ) continue;
+	matchedTruthVerts.push_back( *matchlink );
+      }
+    }
+    std::vector<float>    matchedTruthVerts_score;
+    std::vector<int>      matchedTruthVerts_reprTruthPosID;
+    std::vector<TVector3> matchedTruthVerts_reprTruthPosition;
+    std::vector<TVector3> matchedTruthVerts_residual;
+    if ( secVtx->isAvailable<std::vector<float>>("truthVertexMatchScores") )
+      matchedTruthVerts_score = secVtx->auxdataConst<std::vector<float>>("truthVertexMatchScores");
+    if ( secVtx->isAvailable<std::vector<int>>("truthVertexMatchReprTruthPosIDs") )
+      matchedTruthVerts_reprTruthPosID = secVtx->auxdataConst<std::vector<int>>("truthVertexMatchReprTruthPosIDs");
+    if ( secVtx->isAvailable<std::vector<TVector3>>("truthVertexMatchReprTruthPositions") )
+      matchedTruthVerts_reprTruthPosition = secVtx->auxdataConst<std::vector<TVector3>>("truthVertexMatchReprTruthPositions");
+    if ( secVtx->isAvailable<std::vector<TVector3>>("truthVertexMatchResiduals") )
+      matchedTruthVerts_residual = secVtx->auxdataConst<std::vector<TVector3>>("truthVertexMatchResiduals");
+
+
+    std::vector<std::string> matchTV_llpDecay;
+    std::vector<int>         matchTV_ID;
+    std::vector<int>         matchTV_index;
+    std::vector<float>       matchTV_x;
+    std::vector<float>       matchTV_y;
+    std::vector<float>       matchTV_z;
+    std::vector<float>       matchTV_r;
+    std::vector<float>       matchTV_pt;
+    std::vector<float>       matchTV_eta;
+    std::vector<float>       matchTV_phi;
+    std::vector<float>       matchTV_mass;
+    std::vector<int>         matchTV_barcode;
+    std::vector<float>       matchTV_dist;
+    std::vector<int>         matchTV_nDesc;
+    std::vector<float>       matchTV_descSumPt;
+    std::vector<float>       matchTV_descSumEta;
+    std::vector<float>       matchTV_descSumPhi;
+    std::vector<float>       matchTV_descSumM;
+    std::vector<int>         matchTV_nRecoDesc;
+    std::vector<float>       matchTV_recoDescSumPt;
+    std::vector<float>       matchTV_recoDescSumEta;
+    std::vector<float>       matchTV_recoDescSumPhi;
+    std::vector<float>       matchTV_recoDescSumM;
+    std::vector<float>       matchTV_massFrac;
+    std::vector<float>       matchTV_multFrac;
+    std::vector<float>       matchTV_matchScore;
+    std::vector<int>         matchTV_reprPosID;
+    std::vector<float>       matchTV_reprPosX;
+    std::vector<float>       matchTV_reprPosY;
+    std::vector<float>       matchTV_reprPosZ;
+    std::vector<float>       matchTV_reprPosR;
+    std::vector<float>       matchTV_reprPosPhi;
+    std::vector<float>       matchTV_residualX;
+    std::vector<float>       matchTV_residualY;
+    std::vector<float>       matchTV_residualZ;
+    std::vector<float>       matchTV_residualR;
+    std::vector<float>       matchTV_residualPhi;
+    std::vector<float>       matchTV_residualDist;
+    
+    // loop over matched truth vertices + fill branches
+    int match_index = 0;
+    for ( const auto& match : matchedTruthVerts ) {
+
+      TVector3 matchTV_pos ( match->x(), match->y(), match->z() );
+      
+      std::string llpDecayType = "";
+      for ( size_t i = 0; i != truthVtxLLPs.size(); ++i )
+	if ( EJsHelper::pdgIdFuncs[truthVtxLLPs.at(i)]( match ) ) llpDecayType = truthVtxLLPs.at(i);
+      matchTV_llpDecay .push_back( llpDecayType                      );
+      matchTV_ID       .push_back( match->auxdataConst<int>("ID")    );
+      matchTV_index    .push_back( match->auxdataConst<int>("index") );
+      matchTV_x        .push_back( match->x()                        );
+      matchTV_y        .push_back( match->y()                        );
+      matchTV_z        .push_back( match->z()                        );
+      matchTV_r        .push_back( match->perp()                     );
+      matchTV_eta      .push_back( match->eta()                      );
+      matchTV_phi      .push_back( match->phi()                      );
+      matchTV_barcode  .push_back( match->barcode()                  );
+      matchTV_dist     .push_back( ( pos - matchTV_pos ).Mag()       );
+
+      // get pt, mass from sum-p4 of outgoing particles
+      std::vector<const xAOD::TruthParticle*> matchOutParts;
+      for ( size_t j = 0; j != match->nOutgoingParticles(); ++j ) {
+	const auto* matchOutP = match->outgoingParticle(j);
+	if ( !matchOutP ) continue;
+	matchOutParts .push_back( matchOutP );
+      }
+      const TLorentzVector& matchSumP4 = EJsHelper::truthSumP4 ( matchOutParts );
+      matchTV_pt   .push_back( matchSumP4.Pt() / m_units );
+      matchTV_mass .push_back( matchSumP4.M()  / m_units );
+
+      // access reconstructible descendant links + fill set(s)
+      std::set<const xAOD::TruthParticle*> matchReconstructibleDescendants;
+      std::set<const xAOD::TruthParticle*> matchReconstructedDescendants;
+      static SG::AuxElement::ConstAccessor<EJsHelper::TruthParticleLinkVector_t>
+	matchDescAccess("reconstructibleDescendantLinks");
+      if ( matchDescAccess.isAvailable( *match ) ) {
+	const EJsHelper::TruthParticleLinkVector_t& matchDescLinks = matchDescAccess( *match );
+	for ( const auto& desclink : matchDescLinks ) {
+	  if ( !desclink.isValid() ) continue;
+	  bool descIsReco = AUXDYN( (*desclink), char, "isTrackMatch" );
+	  matchReconstructibleDescendants.emplace( *desclink );
+	  if ( descIsReco ) matchReconstructedDescendants.emplace( *desclink );
+	}
+      }
+      const TLorentzVector& matchDesc_sumP4     = EJsHelper::truthSumP4 ( matchReconstructibleDescendants );
+      const TLorentzVector& matchRecoDesc_sumP4 = EJsHelper::truthSumP4 ( matchReconstructedDescendants   );
+      matchTV_nDesc          .push_back( matchReconstructibleDescendants.size() );
+      matchTV_descSumPt      .push_back( matchDesc_sumP4.Pt() / m_units         );
+      matchTV_descSumEta     .push_back( matchDesc_sumP4.Eta()                  );
+      matchTV_descSumPhi     .push_back( matchDesc_sumP4.Phi()                  );
+      matchTV_descSumM       .push_back( matchDesc_sumP4.M()  / m_units         ); 
+      matchTV_nRecoDesc      .push_back( matchReconstructedDescendants.size()   );
+      matchTV_recoDescSumPt  .push_back( matchRecoDesc_sumP4.Pt() / m_units     );
+      matchTV_recoDescSumEta .push_back( matchRecoDesc_sumP4.Eta()              );
+      matchTV_recoDescSumPhi .push_back( matchRecoDesc_sumP4.Phi()              );
+      matchTV_recoDescSumM   .push_back( matchRecoDesc_sumP4.M()  / m_units     );
+
+      matchTV_massFrac .push_back( matchRecoDesc_sumP4.M()              / sumP4.M()                    );
+      matchTV_multFrac .push_back( matchReconstructedDescendants.size() / float(filteredTracks.size()) );
+
+      matchTV_matchScore   .push_back( matchedTruthVerts_score             .at(match_index)        );
+      matchTV_reprPosID    .push_back( matchedTruthVerts_reprTruthPosID    .at(match_index)        );
+      matchTV_reprPosX     .push_back( matchedTruthVerts_reprTruthPosition .at(match_index).x()    );
+      matchTV_reprPosY     .push_back( matchedTruthVerts_reprTruthPosition .at(match_index).y()    );
+      matchTV_reprPosZ     .push_back( matchedTruthVerts_reprTruthPosition .at(match_index).z()    );
+      matchTV_reprPosR     .push_back( matchedTruthVerts_reprTruthPosition .at(match_index).Perp() );
+      matchTV_reprPosPhi   .push_back( matchedTruthVerts_reprTruthPosition .at(match_index).Phi()  );
+      matchTV_residualX    .push_back( matchedTruthVerts_residual          .at(match_index).x()    );
+      matchTV_residualY    .push_back( matchedTruthVerts_residual          .at(match_index).y()    );
+      matchTV_residualZ    .push_back( matchedTruthVerts_residual          .at(match_index).z()    );
+      matchTV_residualR    .push_back( matchedTruthVerts_residual          .at(match_index).Perp() );
+      matchTV_residualPhi  .push_back( matchedTruthVerts_residual          .at(match_index).Phi()  );
+      matchTV_residualDist .push_back( matchedTruthVerts_residual          .at(match_index).Mag()  );
+
+      ++match_index;
+    }
+
+    m_matchedTruthVtx_n                 ->push_back( match_index            );
+    m_matchedTruthVtx_llpDecay          ->push_back( matchTV_llpDecay       );
+    m_matchedTruthVtx_ID                ->push_back( matchTV_ID             );
+    m_matchedTruthVtx_index             ->push_back( matchTV_index          );
+    m_matchedTruthVtx_x                 ->push_back( matchTV_x              );
+    m_matchedTruthVtx_y                 ->push_back( matchTV_y              );
+    m_matchedTruthVtx_z                 ->push_back( matchTV_z              );
+    m_matchedTruthVtx_r                 ->push_back( matchTV_r              );
+    m_matchedTruthVtx_pt                ->push_back( matchTV_pt             );
+    m_matchedTruthVtx_eta               ->push_back( matchTV_eta            );
+    m_matchedTruthVtx_phi               ->push_back( matchTV_phi            );
+    m_matchedTruthVtx_mass              ->push_back( matchTV_mass           );
+    m_matchedTruthVtx_barcode           ->push_back( matchTV_barcode        );
+    m_matchedTruthVtx_distance          ->push_back( matchTV_dist           );
+    m_matchedTruthVtx_nDesc             ->push_back( matchTV_nDesc          );
+    m_matchedTruthVtx_descSumPt         ->push_back( matchTV_descSumPt      );
+    m_matchedTruthVtx_descSumEta        ->push_back( matchTV_descSumEta     );
+    m_matchedTruthVtx_descSumPhi        ->push_back( matchTV_descSumPhi     );
+    m_matchedTruthVtx_descSumM          ->push_back( matchTV_descSumM       );
+    m_matchedTruthVtx_nRecoDesc         ->push_back( matchTV_nRecoDesc      );
+    m_matchedTruthVtx_recoDescSumPt     ->push_back( matchTV_recoDescSumPt  );
+    m_matchedTruthVtx_recoDescSumEta    ->push_back( matchTV_recoDescSumEta );
+    m_matchedTruthVtx_recoDescSumPhi    ->push_back( matchTV_recoDescSumPhi );
+    m_matchedTruthVtx_recoDescSumM      ->push_back( matchTV_recoDescSumM   );
+    m_matchedTruthVtx_massFraction      ->push_back( matchTV_massFrac       );
+    m_matchedTruthVtx_multFraction      ->push_back( matchTV_multFrac       );
+    m_matchedTruthVtx_matchScore        ->push_back( matchTV_matchScore     );
+    m_matchedTruthVtxReprPhysPos_ID     ->push_back( matchTV_reprPosID      );
+    m_matchedTruthVtxReprPhysPos_x      ->push_back( matchTV_reprPosX       );
+    m_matchedTruthVtxReprPhysPos_y      ->push_back( matchTV_reprPosY       );
+    m_matchedTruthVtxReprPhysPos_z      ->push_back( matchTV_reprPosZ       );
+    m_matchedTruthVtxReprPhysPos_r      ->push_back( matchTV_reprPosR       );
+    m_matchedTruthVtxReprPhysPos_phi    ->push_back( matchTV_reprPosPhi     );
+    m_matchedTruthVtx_residual_x        ->push_back( matchTV_residualX      );
+    m_matchedTruthVtx_residual_y        ->push_back( matchTV_residualY      );
+    m_matchedTruthVtx_residual_z        ->push_back( matchTV_residualZ      );
+    m_matchedTruthVtx_residual_r        ->push_back( matchTV_residualR      );
+    m_matchedTruthVtx_residual_phi      ->push_back( matchTV_residualPhi    );
+    m_matchedTruthVtx_residual_distance ->push_back( matchTV_residualDist   );
+    
+  } // end truth matching switch
 
 
   // jet matching (jets to which DVs are dR-matched)
@@ -774,12 +1351,7 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
   }
 
 
-  //////////////////////////////
-  // tracks associated to DVs //
-  //////////////////////////////
-  if ( m_infoSwitch.m_tracks ) {
-    recordTracks( filteredTracks );
-  }
+  
 
 }
 
@@ -788,36 +1360,37 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
 {
   if ( m_debug ) Info( "EJs::SecondaryVertexContainer::recordTracks()", "filling vertex track branches" );
 
-  std::vector<int>   trk_ID;
-  std::vector<int>   trk_index;
-  std::vector<float> trk_qOverP;
-  std::vector<float> trk_theta;
-  std::vector<float> trk_vz;
-  std::vector<float> trk_E;
-  std::vector<float> trk_M;
-  std::vector<float> trk_pt;
-  std::vector<float> trk_eta;
-  std::vector<float> trk_phi;
-  std::vector<float> trk_d0;
-  std::vector<float> trk_z0;
-  std::vector<float> trk_errd0;
-  std::vector<float> trk_errz0;
-  std::vector<float> trk_chi2;
+  std::vector<int>      trk_ID;
+  std::vector<int>      trk_index;
+  std::vector<float>    trk_qOverP;
+  std::vector<float>    trk_theta;
+  std::vector<float>    trk_vz;
+  std::vector<float>    trk_E;
+  std::vector<float>    trk_M;
+  std::vector<float>    trk_pt;
+  std::vector<float>    trk_eta;
+  std::vector<float>    trk_phi;
+  std::vector<float>    trk_d0;
+  std::vector<float>    trk_z0;
+  std::vector<float>    trk_errd0;
+  std::vector<float>    trk_errz0;
+  std::vector<float>    trk_chi2;
 
-  std::vector<float> trk_pt_wrtSV;
-  std::vector<float> trk_eta_wrtSV;
-  std::vector<float> trk_phi_wrtSV;
-  std::vector<float> trk_d0_wrtSV;
-  std::vector<float> trk_z0_wrtSV;
-  std::vector<float> trk_errd0_wrtSV;
-  std::vector<float> trk_errz0_wrtSV;
-  std::vector<float> trk_errP_wrtSV;
-  std::vector<float> trk_chi2_toSV;
+  std::vector<float>    trk_pt_wrtSV;
+  std::vector<float>    trk_eta_wrtSV;
+  std::vector<float>    trk_phi_wrtSV;
+  std::vector<float>    trk_d0_wrtSV;
+  std::vector<float>    trk_z0_wrtSV;
+  std::vector<float>    trk_errd0_wrtSV;
+  std::vector<float>    trk_errz0_wrtSV;
+  std::vector<float>    trk_errP_wrtSV;
+  std::vector<float>    trk_chi2_toSV;
 
   std::vector<int>      trk_charge;
   std::vector<uint8_t>  trk_isFinal;
   std::vector<uint8_t>  trk_isSelected;
   std::vector<uint8_t>  trk_isAssociated;
+  std::vector<uint8_t>  trk_isFiltered;
   std::vector<uint8_t>  trk_nPixelHits;
   std::vector<uint8_t>  trk_nSCTHits;
   std::vector<uint8_t>  trk_nTRTHits;
@@ -831,11 +1404,12 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
   std::vector<uint8_t>  trk_nIBLOverflowsdEdx;
   std::vector<float>    trk_radiusOfFirstHit;
 
-  std::vector<float> trk_truthProb;
-  std::vector<int>   trk_truthID;
-  std::vector<int>   trk_truthIndex;
-  std::vector<int>   trk_truthBarcode;
-  std::vector<int>   trk_truthPdgId;
+  std::vector<float>    trk_truthProb;
+  std::vector<int>      trk_truthID;
+  std::vector<int>      trk_truthIndex;
+  std::vector<int>      trk_truthBarcode;
+  std::vector<int>      trk_truthPdgId;
+  std::vector<uint8_t>  trk_truthIsDesc;
 
   for ( const auto& trk : filteredTracks ) {
     if ( !trk ) continue;
@@ -870,6 +1444,7 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
     trk_isFinal      .push_back( AUXDYN( trk, char, "is_svtrk_final" ) );
     trk_isSelected   .push_back( AUXDYN( trk, char, "is_selected"    ) );
     trk_isAssociated .push_back( AUXDYN( trk, char, "is_associated"  ) );
+    trk_isFiltered   .push_back( AUXDYN( trk, char, "isFiltered"     ) );
 
     uint8_t nPixelHits = 0;
     uint8_t nSCTHits   = 0;
@@ -907,18 +1482,20 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
       } catch(...) {}
     }
     if ( truthPart ) {
-      trk_truthProb    .push_back( trk->auxdataConst<float>("truthMatchProbability") );
-      trk_truthID      .push_back( AUXDYN( truthPart, int, "ID"                    ) );
-      trk_truthIndex   .push_back( AUXDYN( truthPart, int, "index"                 ) );
-      trk_truthBarcode .push_back( truthPart->barcode()                              );
-      trk_truthPdgId   .push_back( truthPart->pdgId()                                );
+      trk_truthProb    .push_back( trk->auxdataConst<float>("truthMatchProbability")        );
+      trk_truthID      .push_back( AUXDYN( truthPart, int, "ID"                           ) );
+      trk_truthIndex   .push_back( AUXDYN( truthPart, int, "index"                        ) );
+      trk_truthBarcode .push_back( truthPart->barcode()                                     );
+      trk_truthPdgId   .push_back( truthPart->pdgId()                                       );
+      trk_truthIsDesc  .push_back( AUXDYN( truthPart, char, "isReconstructibleDescendant" ) );
     }
     else {
-      trk_truthProb    .push_back( AlgConsts::invalidFloat );
-      trk_truthID      .push_back( AlgConsts::invalidInt   );
-      trk_truthIndex   .push_back( AlgConsts::invalidInt   );
-      trk_truthBarcode .push_back( AlgConsts::invalidInt   );
-      trk_truthPdgId   .push_back( AlgConsts::invalidInt   );
+      trk_truthProb    .push_back( AlgConsts::invalidFloat    );
+      trk_truthID      .push_back( AlgConsts::invalidInt      );
+      trk_truthIndex   .push_back( AlgConsts::invalidInt      );
+      trk_truthBarcode .push_back( AlgConsts::invalidInt      );
+      trk_truthPdgId   .push_back( AlgConsts::invalidInt      );
+      trk_truthIsDesc  .push_back( AlgConsts::invalidUnsigned );
     }
     
   }
@@ -953,6 +1530,7 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
   m_trk_isFinal            ->push_back( trk_isFinal            );
   m_trk_isSelected         ->push_back( trk_isSelected         );
   m_trk_isAssociated       ->push_back( trk_isAssociated       );
+  m_trk_isFiltered         ->push_back( trk_isFiltered         );
   m_trk_nPixelHits         ->push_back( trk_nPixelHits         );
   m_trk_nSCTHits           ->push_back( trk_nSCTHits           );
   m_trk_nTRTHits           ->push_back( trk_nTRTHits           );
@@ -972,6 +1550,7 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
     m_trk_truthIndex   ->push_back( trk_truthIndex   );
     m_trk_truthBarcode ->push_back( trk_truthBarcode );
     m_trk_truthPdgId   ->push_back( trk_truthPdgId   );
+    m_trk_truthIsDesc  ->push_back( trk_truthIsDesc  );
   }
 
 } // end recordTracks

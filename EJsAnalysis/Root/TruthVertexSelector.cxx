@@ -250,6 +250,8 @@ EL::StatusCode TruthVertexSelector :: finalize ()
     m_truthVtx_cutflowHist ->Write();
   }
 
+  delete m_truthVtx_cutflowHist;
+
   return EL::StatusCode::SUCCESS;
 }
 

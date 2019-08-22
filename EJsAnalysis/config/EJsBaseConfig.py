@@ -71,7 +71,7 @@ Dict_BasicEventSelection = {
     "m_GRLxml"                    : "",
     "m_GRLExcludeList"            : "",
     "m_doPUreweighting"           : True,
-    #"m_doPUreweightingSys"        : bool(systVal), # --> uncomment once PRW config files available...
+    "m_doPUreweightingSys"        : bool(systVal), # --> uncomment once PRW config files available...
     "m_lumiCalcFileNames"         : "",
     "m_PRWFileNames"              : "",
     "m_applyPrimaryVertexCut"     : True,
@@ -82,14 +82,14 @@ Dict_BasicEventSelection = {
     "m_applyTriggerCut"           : True,
     "m_triggerSelection"          : triggers,
     "m_storeTrigDecisions"        : True,
-    #"m_storePassL1"               : True,
+    "m_storePassL1"               : True,
     "m_storePassHLT"              : True,
     "m_storeTrigKeys"             : True,
     "m_truthLevelOnly"            : False, # --> change to True for truth-level analyses
     "m_derivationName"            : "EXOT23KernelAug",
     "m_useMetaData"               : True,
     "m_checkDuplicatesData"       : True,
-    "m_checkDuplicatesMC"         : False, # --> off for private samples; TURN ON for official
+    "m_checkDuplicatesMC"         : True,
 }
 
 
@@ -103,7 +103,6 @@ Dict_JetCalibrator_EMTopo = {
     "m_outputAlgo"            : "AntiKt4EMTopoJets_Calib_Algo",
     "m_calibConfigData"       : "JES_MC16Recommendation_Consolidated_EMTopo_Apr2019_Rel21.config",
     "m_calibConfigFullSim"    : "JES_MC16Recommendation_Consolidated_EMTopo_Apr2019_Rel21.config",
-    #"m_calibConfigFullSim"    : "JES_data2017_2016_2015_Recommendation_Feb2018_rel21.config",
     "m_uncertConfig"          : "rel21/Fall2018/R4_SR_Scenario1_SimpleJER.config", # --> TEST / TMP PLACEHOLDER --> need to test SR scenarios, investigate config files --> may change...
     "m_doCleaning"            : True,
     "m_jetCleanCutLevel"      : "LooseBad", ## --> consider using '(Very)LooseBadLLP' --> investigate cut levels -- may need to do some jet cleaning studies...
@@ -139,7 +138,7 @@ Dict_JetCalibrator_PFlow = {
 Dict_JetSelector_EMTopo = {
     "m_name"                    : "JetSelect_AntiKt4EMTopo",
     "m_msgLevel"                : "info",
-    "m_useCutFlow"              : True,
+    "m_useCutFlow"              : False,    # --> can only use one jet-selector cutflow -- using PFlow for now...
     "m_inContainerName"         : "AntiKt4EMTopoJets_Calib",
     "m_outContainerName"        : "AntiKt4EMTopoJets_Calib_Select",
     "m_inputAlgo"               : "AntiKt4EMTopoJets_Calib_Algo",
@@ -167,7 +166,7 @@ Dict_JetSelector_EMTopo = {
 Dict_JetSelector_PFlow = {
     "m_name"                    : "JetSelect_AntiKt4EMPlow",
     "m_msgLevel"                : "info",
-    "m_useCutFlow"              : False,   # --> can only use one jet-selector cutflow -- may want to switch w/ EMTopo ??
+    "m_useCutFlow"              : True,
     "m_inContainerName"         : "AntiKt4EMPFlowJets_Calib",
     "m_outContainerName"        : "AntiKt4EMPFlowJets_Calib_Select",
     "m_inputAlgo"               : "AntiKt4EMPFlowJets_Calib_Algo",
@@ -205,7 +204,7 @@ Dict_SecondaryVertexSelector = {
     "m_outContainerName"        : "VrtSecInclusive_SecondaryVertices_Select",
     "m_decorateSelectedObjects" : True,
     "m_createSelectedContainer" : True,
-    "m_doTrackTrimming"         : False,  ## --> eventually want to turn on; need to optimize trimmer cuts...
+    "m_doTrackTrimming"         : False,  ## --> TEST --> eventually want to turn on; need to optimize trimmer cuts...
     "m_doMatMapVeto"            : True,   ## --> compare vertices w/ material on and off ???
     "m_matMapInnerFileName"     : matMapPath + "MaterialMap_v3.2_Inner.root",
     "m_matMapInnerHistName"     : "FinalMap_inner",
@@ -222,19 +221,13 @@ Dict_TruthVertexSelector = {
     "m_decorateSelectedObjects" : True,
     "m_createSelectedContainer" : True,
     "m_truthLLP"                : "DarkPion Kshort",
+    #"m_r_max"                   : 563,
+    #"m_z_max"                   : 2720, # --> do we want fiducial volume selection ??
+    #"m_nVisOutP_min"            : 2,
 }
 
 
 # object matching
-Dict_VertexMatcher = {
-    "m_name"                           : "VtxMatch",
-    "m_msgLevel"                       : "info",
-    "m_inTruthVertexContainerName"     : "TruthVertices_Select",
-    "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
-    "m_truthLLP"                       : "DarkPion Kshort",
-    "m_vtx_matchDistance"              : 10.0,
-}
-
 Dict_ObjectMatcher = {
     "m_name"                           : "ObjectMatch",
     "m_msgLevel"                       : "info",
@@ -247,9 +240,22 @@ Dict_ObjectMatcher = {
     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
     "m_inputAlgo"                      : "AntiKt4EMPFlowJets_Calib_Select_Algo",    # --> PFlow = rec R21 jet container
     "m_jetSystsContainerIndex"         : 1,
-    "m_jet_matchRadius"                : 0.1,
+    "m_jet_matchRadius"                : 0.1, # --> loosen (0.5) ??
     "m_jet_vtx_matchRadius"            : 1.0,
     "m_jet_trk_matchRadius"            : 1.0,
+}
+
+Dict_VertexMatcher = {
+    "m_name"                           : "VtxMatch",
+    "m_msgLevel"                       : "info",
+    "m_inTruthPartContainerName"       : "TruthParticles",
+    "m_inTrackPartContainerName"       : "InDetTrackParticles_Select",
+    "m_inTruthVertexContainerName"     : "TruthVertices_Select",
+    "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
+    "m_truthLLP"                       : "DarkPion Kshort",
+    "m_distanceCutoff"                 : 100,        # TEST --> tighten ?
+    "m_doTruthTrackMatching"           : False,      # already done above...
+    "m_vtx_matchScore"                 : 0,          # off for now --> can apply score requirement later (i.e. in histo alg)...
 }
 
 
@@ -262,6 +268,7 @@ Dict_EJsxAODAnalysis = {
     "m_inputAlgo"              : "AntiKt4EMPFlowJets_Calib_Select_Algo",            # --> PFlow = rec R21 jet container
     "m_outputAlgo"             : "AntiKt4EMPFlowJets_Calib_Select_EJsxAODAna_Algo", # --> PFlow = rec R21 jet container
     "m_jetSystsContainerIndex" : 1,
+    "m_cutflowJets"            : "PFlow", # --> only fill cutflows for one jet container
     "m_signalTrigList"         : fourJetTriggers,
     "m_validTrigList"          : singleJetTriggers,
 }
@@ -287,10 +294,10 @@ Dict_EJsMiniNtuple = {
     "m_truthPartDetailStr"           : "kinematic parents children",
     "m_truthPartContainerName"       : "TruthParticles",
     "m_truthPartBranchName"          : "truthPart",
-    "m_secondaryVertexDetailStr"     : "jetMatched", ## --> tracks, truth vertices
+    "m_secondaryVertexDetailStr"     : "tracks truthMatching jetMatched",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
     "m_secondaryVertexBranchName"    : "secVtx",
-    "m_truthVertexDetailStr"         : "jetMatched", ## --> DVs
+    "m_truthVertexDetailStr"         : "recoMatching jetMatched",
     "m_truthVertexContainerName"     : "TruthVertices_Select",
     "m_truthVertexBranchName"        : "truthVtx",
     "m_truthLLP"                     : "DarkPion Kshort",

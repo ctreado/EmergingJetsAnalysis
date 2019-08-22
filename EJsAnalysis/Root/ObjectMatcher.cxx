@@ -1,3 +1,5 @@
+#include <map>
+
 #include <TVector3.h>
 #include <TLorentzVector.h>
 
@@ -229,7 +231,8 @@ EL::StatusCode ObjectMatcher :: execute ()
   if ( isMC() ) {
     if ( !m_truthLevelOnly ) {
       // match tracks to truth particles
-      matchTracksToTruthParts( inTruthParts, inTrackParts );
+      if ( m_doTruthTrackMatching )
+	matchTracksToTruthParts( inTruthParts, inTrackParts );
       // match truth vertices to truth (dark) jets
       if ( inTruthJets     ) matchTruthVertsToJets( inTruthJets,     inTruthVerts, TRUTH, "" );
       if ( inTruthDarkJets ) matchTruthVertsToJets( inTruthDarkJets, inTruthVerts, DARK,  "" );

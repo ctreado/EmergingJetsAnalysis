@@ -76,6 +76,7 @@ namespace EJsHelper {
 
     return true;
   }
+
   
   const xAOD::TruthParticle* getTruthPart ( const xAOD::TrackParticle* trk )
   {
@@ -111,6 +112,13 @@ namespace EJsHelper {
   }
 
 
+  TLorentzVector truthSumP4 ( const std::set< const xAOD::TruthParticle* >& truthParts )
+  {
+    TLorentzVector v;
+    for ( const auto& tp : truthParts ) v += tp->p4();
+    return v;
+  }
+
   TLorentzVector truthSumP4 ( const std::vector< const xAOD::TruthParticle* >& truthParts )
   {
     TLorentzVector v;
@@ -125,13 +133,15 @@ namespace EJsHelper {
     return v;
   }
 
+  
   // from Reconstruction/Jet/JetSimTools/Root/JetTruthParticleSelectorTool.cxx
   bool isStable ( const xAOD::TruthParticle* tp )
   {
     if ( tp->barcode() >= 200000 ) return false; // G4 particle
     if ( tp->absPdgId() == 21 && tp->p4().E() == 0 ) return false; // zero-energy gluon
     return ( ( tp->status() % 1000 == 1 ) || // fully stable
-	     ( tp->status() % 1000 == 2 && tp->hasDecayVtx() && tp->decayVtx() != NULL && tp->decayVtx()->barcode() < -200000 ) ); // gen-stable
+	     ( tp->status() % 1000 == 2 && tp->hasDecayVtx() &&
+	       tp->decayVtx() != NULL   && tp->decayVtx()->barcode() < -200000 ) ); // gen-stable
   }
 
   // from Reconstruction/Jet/JetSimTools/Root/JetTruthParticleSelectorTool.cxx
@@ -141,18 +151,14 @@ namespace EJsHelper {
     const int pid = tp->absPdgId();
     if ( pid == 12 || pid == 14 || pid == 16 ) return false; // neutrinos
     if ( ( tp->status() % 1000 == 1 ) &&
-	 ( pid == 1000022 || pid == 1000024 || pid == 5100022 || pid == 39 || pid == 1000039 || pid == 5000039 ) ) return false; // susy
+	 ( pid == 1000022 || pid == 1000024 || pid == 5100022 ||
+	   pid == 39      || pid == 1000039 || pid == 5000039 ) ) return false; // susy
     return true;
   }
 
   bool isDark ( const xAOD::TruthParticle* tp )
   {
     return ( tp->absPdgId() > 4.9e6 && tp->absPdgId() < 5.0e6 );
-  }
-
-  bool isReconstructible ( const xAOD::TruthParticle* tp )
-  {
-    return true;
   }
 
   // ------------------------------------------------------------------------------------------ //

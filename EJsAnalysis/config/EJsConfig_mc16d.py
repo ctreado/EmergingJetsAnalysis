@@ -22,6 +22,7 @@ LumiCalc_files  = [
     ]
 PRW_files       = [
     data_path   + "prw.EJs.mc16d.root",
+    data_path   + "prw.bkgd.mc16d.root", ## --> not working --> turn off prw for bkgd for now and keep testing...
     data17_path + "physics_25ns_Triggerno17e33prim.actualMu.OflLumi-13TeV-010.root",
     ]
 
@@ -57,11 +58,11 @@ c.algorithm ( "SecondaryVertexSelector", Dict_SecondaryVertexSelector )
 # Truth Vertex Selection
 c.algorithm ( "TruthVertexSelector",     Dict_TruthVertexSelector     )
 
-# Vertex Matching
-#c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
-
 # Object Matching
 c.algorithm ( "ObjectMatcher",           Dict_ObjectMatcher           )
+
+# Vertex Matching
+c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
 # EJs Analysis Selection
 c.algorithm ( "EJsxAODAnalysis",         Dict_EJsxAODAnalysis         )

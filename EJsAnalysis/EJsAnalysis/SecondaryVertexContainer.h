@@ -37,8 +37,6 @@ namespace EJs {
   private:   
     void recordTracks        ( const std::vector<const xAOD::TrackParticle*>& );
     //void processDVJets       ( const std::vector<const xAOD::TrackParticle*>& );
-    void processCloseTruth   ( const xAOD::Vertex*, const std::vector<const xAOD::TrackParticle*>& );
-    void processLinkedTruth  ( const xAOD::Vertex*, const std::vector<const xAOD::TrackParticle*>& );
 
     bool m_doEMTopo;
     bool m_doPFlow;
@@ -73,42 +71,43 @@ namespace EJs {
     std::vector<std::vector<float>>* m_twoTracksMassRest;
     std::vector<std::vector<int>>*   m_twoTracksCharge;
     
-    std::vector<uint32_t>*           m_ntrk;
-    std::vector<uint32_t>*           m_ntrk_sel;
-    std::vector<uint32_t>*           m_ntrk_assoc;
+    std::vector<int>*                m_ntrk;
+    std::vector<int>*                m_ntrk_sel;
+    std::vector<int>*                m_ntrk_assoc;
 
     
     // tracks
-    std::vector<std::vector<int>>*   m_trk_ID;
-    std::vector<std::vector<int>>*   m_trk_index;
-    std::vector<std::vector<float>>* m_trk_qOverP;
-    std::vector<std::vector<float>>* m_trk_theta;
-    std::vector<std::vector<float>>* m_trk_vz;
-    std::vector<std::vector<float>>* m_trk_E;
-    std::vector<std::vector<float>>* m_trk_M;
-    std::vector<std::vector<float>>* m_trk_pt;
-    std::vector<std::vector<float>>* m_trk_eta;
-    std::vector<std::vector<float>>* m_trk_phi;
-    std::vector<std::vector<float>>* m_trk_d0;
-    std::vector<std::vector<float>>* m_trk_z0;
-    std::vector<std::vector<float>>* m_trk_errd0;
-    std::vector<std::vector<float>>* m_trk_errz0;
-    std::vector<std::vector<float>>* m_trk_chi2;
+    std::vector<std::vector<int>>*      m_trk_ID;
+    std::vector<std::vector<int>>*      m_trk_index;
+    std::vector<std::vector<float>>*    m_trk_qOverP;
+    std::vector<std::vector<float>>*    m_trk_theta;
+    std::vector<std::vector<float>>*    m_trk_vz;
+    std::vector<std::vector<float>>*    m_trk_E;
+    std::vector<std::vector<float>>*    m_trk_M;
+    std::vector<std::vector<float>>*    m_trk_pt;
+    std::vector<std::vector<float>>*    m_trk_eta;
+    std::vector<std::vector<float>>*    m_trk_phi;
+    std::vector<std::vector<float>>*    m_trk_d0;
+    std::vector<std::vector<float>>*    m_trk_z0;
+    std::vector<std::vector<float>>*    m_trk_errd0;
+    std::vector<std::vector<float>>*    m_trk_errz0;
+    std::vector<std::vector<float>>*    m_trk_chi2;
 
-    std::vector<std::vector<float>>* m_trk_pt_wrtSV;
-    std::vector<std::vector<float>>* m_trk_eta_wrtSV;
-    std::vector<std::vector<float>>* m_trk_phi_wrtSV;
-    std::vector<std::vector<float>>* m_trk_d0_wrtSV;
-    std::vector<std::vector<float>>* m_trk_z0_wrtSV;
-    std::vector<std::vector<float>>* m_trk_errd0_wrtSV;
-    std::vector<std::vector<float>>* m_trk_errz0_wrtSV;
-    std::vector<std::vector<float>>* m_trk_errP_wrtSV;
-    std::vector<std::vector<float>>* m_trk_chi2_toSV;
+    std::vector<std::vector<float>>*    m_trk_pt_wrtSV;
+    std::vector<std::vector<float>>*    m_trk_eta_wrtSV;
+    std::vector<std::vector<float>>*    m_trk_phi_wrtSV;
+    std::vector<std::vector<float>>*    m_trk_d0_wrtSV;
+    std::vector<std::vector<float>>*    m_trk_z0_wrtSV;
+    std::vector<std::vector<float>>*    m_trk_errd0_wrtSV;
+    std::vector<std::vector<float>>*    m_trk_errz0_wrtSV;
+    std::vector<std::vector<float>>*    m_trk_errP_wrtSV;
+    std::vector<std::vector<float>>*    m_trk_chi2_toSV;
 
     std::vector<std::vector<int>>*      m_trk_charge;
     std::vector<std::vector<uint8_t>>*  m_trk_isFinal;
     std::vector<std::vector<uint8_t>>*  m_trk_isSelected;
     std::vector<std::vector<uint8_t>>*  m_trk_isAssociated;
+    std::vector<std::vector<uint8_t>>*  m_trk_isFiltered;
     std::vector<std::vector<uint8_t>>*  m_trk_nPixelHits;
     std::vector<std::vector<uint8_t>>*  m_trk_nSCTHits;
     std::vector<std::vector<uint8_t>>*  m_trk_nTRTHits;
@@ -127,10 +126,74 @@ namespace EJs {
     std::vector<std::vector<int>>*      m_trk_truthIndex;
     std::vector<std::vector<int>>*      m_trk_truthBarcode;
     std::vector<std::vector<int>>*      m_trk_truthPdgId;
+    std::vector<std::vector<uint8_t>>*  m_trk_truthIsDesc;
 
     
     // jets
     // jets ... some alg that makes jets out of filtered tracks ?? probably don't need this...
+
+
+    // truth vertex matching
+    std::vector<std::string>*              m_closestTruthVtx_llpDecay;
+    std::vector<uint8_t>*                  m_closestTruthVtx_isReconstructible;
+    std::vector<int>*                      m_closestTruthVtx_ID;
+    std::vector<int>*                      m_closestTruthVtx_index;
+    std::vector<float>*                    m_closestTruthVtx_x;
+    std::vector<float>*                    m_closestTruthVtx_y;
+    std::vector<float>*                    m_closestTruthVtx_z;
+    std::vector<float>*                    m_closestTruthVtx_r;
+    std::vector<float>*                    m_closestTruthVtx_phi;
+    std::vector<int>*                      m_closestTruthVtx_barcode;
+    std::vector<float>*                    m_closestTruthVtx_distance;
+    std::vector<int>*                      m_closestTruthVtxPhysPos_ID;
+    std::vector<float>*                    m_closestTruthVtxPhysPos_x;
+    std::vector<float>*                    m_closestTruthVtxPhysPos_y;
+    std::vector<float>*                    m_closestTruthVtxPhysPos_z;
+    std::vector<float>*                    m_closestTruthVtxPhysPos_r;
+    std::vector<float>*                    m_closestTruthVtxPhysPos_phi;
+    std::vector<float>*                    m_closestTruthVtxPhysPos_distance;
+
+    std::vector<int>*                      m_matchedTruthVtx_n;
+    std::vector<std::vector<std::string>>* m_matchedTruthVtx_llpDecay;
+    std::vector<std::vector<int>>*         m_matchedTruthVtx_ID;
+    std::vector<std::vector<int>>*         m_matchedTruthVtx_index;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_x;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_y;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_z;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_r;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_pt;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_eta;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_phi;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_mass;
+    std::vector<std::vector<int>>*         m_matchedTruthVtx_barcode;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_distance;
+    std::vector<std::vector<int>>*         m_matchedTruthVtx_nDesc;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_descSumPt;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_descSumEta;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_descSumPhi;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_descSumM;
+    std::vector<std::vector<int>>*         m_matchedTruthVtx_nRecoDesc;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_recoDescSumPt;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_recoDescSumEta;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_recoDescSumPhi;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_recoDescSumM;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_massFraction;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_multFraction;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_matchScore;
+    std::vector<std::vector<int>>*         m_matchedTruthVtxReprPhysPos_ID;
+    std::vector<std::vector<float>>*       m_matchedTruthVtxReprPhysPos_x;
+    std::vector<std::vector<float>>*       m_matchedTruthVtxReprPhysPos_y;
+    std::vector<std::vector<float>>*       m_matchedTruthVtxReprPhysPos_z;
+    std::vector<std::vector<float>>*       m_matchedTruthVtxReprPhysPos_r;
+    std::vector<std::vector<float>>*       m_matchedTruthVtxReprPhysPos_phi;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_residual_x;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_residual_y;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_residual_z;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_residual_r;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_residual_phi;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_residual_distance;
+
+
 
 
     // matching jets (jets to which DVs are dR-matched)

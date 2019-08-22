@@ -100,8 +100,8 @@ class SecondaryVertexSelector : public xAH::Algorithm
 
   VsiBonsai::Configurator m_bonsaiCfg = {}; //!
 
-  TFile*            m_matMapInnerFile    = 0; //!
-  TFile*            m_matMapOuterFile    = 0; //!
+  //TFile*            m_matMapInnerFile    = 0; //!
+  //TFile*            m_matMapOuterFile    = 0; //!
   TH3S*             m_materialMap_Inner  = 0; //!
   TH3S*             m_materialMap_Outer  = 0; //!
   TMatrixT<double>* m_materialMap_Matrix = 0; //!

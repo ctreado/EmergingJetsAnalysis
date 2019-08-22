@@ -79,11 +79,11 @@ namespace EJs {
     std::vector<std::vector<int>>*         m_GhostTruth_status;
     std::vector<std::vector<int>>*         m_GhostTruth_barcode;
     std::vector<std::vector<uint8_t>>*     m_GhostTruth_isReco;
+    std::vector<std::vector<uint8_t>>*     m_GhostTruth_isSelected;
+    std::vector<std::vector<uint8_t>>*     m_GhostTruth_isAssociated;
     std::vector<std::vector<float>>*       m_GhostTruth_recoProb;
     std::vector<std::vector<int>>*         m_GhostTruth_recoID;
     std::vector<std::vector<int>>*         m_GhostTruth_recoIndex;
-    std::vector<std::vector<uint8_t>>*     m_GhostTruth_isSelected;
-    std::vector<std::vector<uint8_t>>*     m_GhostTruth_isAssociated;
     std::vector<std::vector<uint8_t>>*     m_GhostTruth_isStable;
     std::vector<std::vector<uint8_t>>*     m_GhostTruth_isInteracting;
     std::vector<std::vector<uint8_t>>*     m_GhostTruth_isDark;
@@ -165,7 +165,7 @@ namespace EJs {
     std::vector<std::vector<int>>*         m_secVtx_ntrk_sel;
     std::vector<std::vector<int>>*         m_secVtx_ntrk_assoc;
     std::vector<std::vector<float>>*       m_secVtx_dR;
-    // --> corresponding matching reco-truth vertex info
+    std::vector<std::vector<uint8_t>>*     m_secVtx_isTruthMatched;
     // matched truth vertices
     std::vector<int>*                      m_truthVtxCount;
     std::vector<float>*                    m_truthVtxPt;
@@ -183,7 +183,8 @@ namespace EJs {
     std::vector<std::vector<int>>*         m_truthVtx_nOutP;
     std::vector<std::vector<int>>*         m_truthVtx_barcode;
     std::vector<std::vector<float>>*       m_truthVtx_dR;
-    // --> corresponding matching reco-truth vertex info
+    std::vector<std::vector<uint8_t>>*     m_truthVtx_isReconstructible;
+    std::vector<std::vector<uint8_t>>*     m_truthVtx_isRecoMatched;
 
     // matched tracks
     std::vector<int>*                      m_trkCount;
@@ -230,11 +231,11 @@ namespace EJs {
     std::vector<std::vector<int>>*         m_tp_barcode;
     std::vector<std::vector<float>>*       m_tp_dR;
     std::vector<std::vector<uint8_t>>*     m_tp_isReco;
+    std::vector<std::vector<uint8_t>>*     m_tp_isSelected;
+    std::vector<std::vector<uint8_t>>*     m_tp_isAssociated;
     std::vector<std::vector<float>>*       m_tp_recoProb;
     std::vector<std::vector<int>>*         m_tp_recoID;
     std::vector<std::vector<int>>*         m_tp_recoIndex;
-    std::vector<std::vector<uint8_t>>*     m_tp_isSelected;
-    std::vector<std::vector<uint8_t>>*     m_tp_isAssociated;
     std::vector<std::vector<uint8_t>>*     m_tp_isStable;
     std::vector<std::vector<uint8_t>>*     m_tp_isInteracting;
     std::vector<std::vector<uint8_t>>*     m_tp_isDark;

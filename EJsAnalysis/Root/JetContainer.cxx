@@ -65,11 +65,11 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
       m_GhostTruth_status         = new std::vector<std::vector<int>>;
       m_GhostTruth_barcode        = new std::vector<std::vector<int>>;
       m_GhostTruth_isReco         = new std::vector<std::vector<uint8_t>>;
+      m_GhostTruth_isSelected     = new std::vector<std::vector<uint8_t>>;
+      m_GhostTruth_isAssociated   = new std::vector<std::vector<uint8_t>>;
       m_GhostTruth_recoProb       = new std::vector<std::vector<float>>;
       m_GhostTruth_recoID         = new std::vector<std::vector<int>>;
       m_GhostTruth_recoIndex      = new std::vector<std::vector<int>>;
-      m_GhostTruth_isSelected     = new std::vector<std::vector<uint8_t>>;
-      m_GhostTruth_isAssociated   = new std::vector<std::vector<uint8_t>>;
       m_GhostTruth_isStable       = new std::vector<std::vector<uint8_t>>;
       m_GhostTruth_isInteracting  = new std::vector<std::vector<uint8_t>>;
       m_GhostTruth_isDark         = new std::vector<std::vector<uint8_t>>;
@@ -151,42 +151,45 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts || m_infoSwitch.m_truthVerts ) {
     if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts ) {
-      m_secVtxCount       = new std::vector<int>;
-      m_secVtxPt          = new std::vector<float>;
-      m_secVtx_ID         = new std::vector<std::vector<int>>;
-      m_secVtx_index      = new std::vector<std::vector<int>>;
-      m_secVtx_x          = new std::vector<std::vector<float>>;
-      m_secVtx_y          = new std::vector<std::vector<float>>;
-      m_secVtx_z          = new std::vector<std::vector<float>>;
-      m_secVtx_r          = new std::vector<std::vector<float>>;
-      m_secVtx_pt         = new std::vector<std::vector<float>>;
-      m_secVtx_eta        = new std::vector<std::vector<float>>;
-      m_secVtx_phi        = new std::vector<std::vector<float>>;
-      m_secVtx_mass       = new std::vector<std::vector<float>>;
-      m_secVtx_chi2       = new std::vector<std::vector<float>>;
-      m_secVtx_distToPV   = new std::vector<std::vector<float>>;
-      m_secVtx_ntrk       = new std::vector<std::vector<int>>;
-      m_secVtx_ntrk_sel   = new std::vector<std::vector<int>>;
-      m_secVtx_ntrk_assoc = new std::vector<std::vector<int>>;
-      m_secVtx_dR         = new std::vector<std::vector<float>>;
+      m_secVtxCount                = new std::vector<int>;
+      m_secVtxPt                   = new std::vector<float>;
+      m_secVtx_ID                  = new std::vector<std::vector<int>>;
+      m_secVtx_index               = new std::vector<std::vector<int>>;
+      m_secVtx_x                   = new std::vector<std::vector<float>>;
+      m_secVtx_y                   = new std::vector<std::vector<float>>;
+      m_secVtx_z                   = new std::vector<std::vector<float>>;
+      m_secVtx_r                   = new std::vector<std::vector<float>>;
+      m_secVtx_pt                  = new std::vector<std::vector<float>>;
+      m_secVtx_eta                 = new std::vector<std::vector<float>>;
+      m_secVtx_phi                 = new std::vector<std::vector<float>>;
+      m_secVtx_mass                = new std::vector<std::vector<float>>;
+      m_secVtx_chi2                = new std::vector<std::vector<float>>;
+      m_secVtx_distToPV            = new std::vector<std::vector<float>>;
+      m_secVtx_ntrk                = new std::vector<std::vector<int>>;
+      m_secVtx_ntrk_sel            = new std::vector<std::vector<int>>;
+      m_secVtx_ntrk_assoc          = new std::vector<std::vector<int>>;
+      m_secVtx_dR                  = new std::vector<std::vector<float>>;
+      m_secVtx_isTruthMatched      = new std::vector<std::vector<uint8_t>>;
     }
-    if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) {
-      m_truthVtxCount     = new std::vector<int>;
-      m_truthVtxPt        = new std::vector<float>;
-      m_truthVtx_llpDecay = new std::vector<std::vector<std::string>>;
-      m_truthVtx_ID       = new std::vector<std::vector<int>>;
-      m_truthVtx_index    = new std::vector<std::vector<int>>;
-      m_truthVtx_x        = new std::vector<std::vector<float>>;
-      m_truthVtx_y        = new std::vector<std::vector<float>>;
-      m_truthVtx_z        = new std::vector<std::vector<float>>;
-      m_truthVtx_r        = new std::vector<std::vector<float>>;
-      m_truthVtx_pt       = new std::vector<std::vector<float>>;
-      m_truthVtx_eta      = new std::vector<std::vector<float>>;
-      m_truthVtx_phi      = new std::vector<std::vector<float>>;
-      m_truthVtx_mass     = new std::vector<std::vector<float>>;
-      m_truthVtx_nOutP    = new std::vector<std::vector<int>>;
-      m_truthVtx_barcode  = new std::vector<std::vector<int>>;
-      m_truthVtx_dR       = new std::vector<std::vector<float>>;
+    if ( ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) && m_mc ) {
+      m_truthVtxCount              = new std::vector<int>;
+      m_truthVtxPt                 = new std::vector<float>;
+      m_truthVtx_llpDecay          = new std::vector<std::vector<std::string>>;
+      m_truthVtx_ID                = new std::vector<std::vector<int>>;
+      m_truthVtx_index             = new std::vector<std::vector<int>>;
+      m_truthVtx_x                 = new std::vector<std::vector<float>>;
+      m_truthVtx_y                 = new std::vector<std::vector<float>>;
+      m_truthVtx_z                 = new std::vector<std::vector<float>>;
+      m_truthVtx_r                 = new std::vector<std::vector<float>>;
+      m_truthVtx_pt                = new std::vector<std::vector<float>>;
+      m_truthVtx_eta               = new std::vector<std::vector<float>>;
+      m_truthVtx_phi               = new std::vector<std::vector<float>>;
+      m_truthVtx_mass              = new std::vector<std::vector<float>>;
+      m_truthVtx_nOutP             = new std::vector<std::vector<int>>;
+      m_truthVtx_barcode           = new std::vector<std::vector<int>>;
+      m_truthVtx_dR                = new std::vector<std::vector<float>>;
+      m_truthVtx_isReconstructible = new std::vector<std::vector<uint8_t>>;
+      m_truthVtx_isRecoMatched     = new std::vector<std::vector<uint8_t>>;
     }
   }
 
@@ -222,7 +225,7 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
       m_trk_truthPdgId   = new std::vector<std::vector<int>>;
     }
   }
-  if ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) {
+  if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) && m_mc ) {
     m_tpCount            = new std::vector<int>;
     m_tpPt               = new std::vector<float>;
     m_tp_ID              = new std::vector<std::vector<int>>;
@@ -238,11 +241,11 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
     m_tp_barcode         = new std::vector<std::vector<int>>;
     m_tp_dR              = new std::vector<std::vector<float>>;
     m_tp_isReco          = new std::vector<std::vector<uint8_t>>;
+    m_tp_isSelected      = new std::vector<std::vector<uint8_t>>;
+    m_tp_isAssociated    = new std::vector<std::vector<uint8_t>>;
     m_tp_recoProb        = new std::vector<std::vector<float>>;
     m_tp_recoID          = new std::vector<std::vector<int>>;
     m_tp_recoIndex       = new std::vector<std::vector<int>>;
-    m_tp_isSelected      = new std::vector<std::vector<uint8_t>>;
-    m_tp_isAssociated    = new std::vector<std::vector<uint8_t>>;
     m_tp_isStable        = new std::vector<std::vector<uint8_t>>;
     m_tp_isInteracting   = new std::vector<std::vector<uint8_t>>;
     m_tp_isDark          = new std::vector<std::vector<uint8_t>>;
@@ -303,11 +306,11 @@ JetContainer :: ~JetContainer ()
       delete m_GhostTruth_status;
       delete m_GhostTruth_barcode;
       delete m_GhostTruth_isReco;
+      delete m_GhostTruth_isSelected;
+      delete m_GhostTruth_isAssociated;
       delete m_GhostTruth_recoProb;
       delete m_GhostTruth_recoID;
       delete m_GhostTruth_recoIndex;
-      delete m_GhostTruth_isSelected;
-      delete m_GhostTruth_isAssociated;
       delete m_GhostTruth_isStable;
       delete m_GhostTruth_isInteracting;
       delete m_GhostTruth_isDark;
@@ -407,8 +410,9 @@ JetContainer :: ~JetContainer ()
       delete m_secVtx_ntrk_sel;
       delete m_secVtx_ntrk_assoc;
       delete m_secVtx_dR;
+      delete m_secVtx_isTruthMatched;
     }
-    if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) {
+    if ( ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) && m_mc ) {
       delete m_truthVtxCount;
       delete m_truthVtxPt;
       delete m_truthVtx_llpDecay;
@@ -425,6 +429,8 @@ JetContainer :: ~JetContainer ()
       delete m_truthVtx_nOutP;
       delete m_truthVtx_barcode;
       delete m_truthVtx_dR;
+      delete m_truthVtx_isReconstructible;
+      delete m_truthVtx_isRecoMatched;
     }
   }
 
@@ -460,7 +466,7 @@ JetContainer :: ~JetContainer ()
       delete m_trk_truthPdgId;
     }
   }
-  if ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) {
+  if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) && m_mc ) {
     delete m_tpCount;
     delete m_tpPt;
     delete m_tp_ID;
@@ -476,11 +482,11 @@ JetContainer :: ~JetContainer ()
     delete m_tp_barcode;
     delete m_tp_dR;
     delete m_tp_isReco;
+    delete m_tp_isSelected;
+    delete m_tp_isAssociated;
     delete m_tp_recoProb;
     delete m_tp_recoID;
     delete m_tp_recoIndex;
-    delete m_tp_isSelected;
-    delete m_tp_isAssociated;
     delete m_tp_isStable;
     delete m_tp_isInteracting;
     delete m_tp_isDark;
@@ -541,11 +547,11 @@ void JetContainer :: setTree ( TTree* tree )
       connectBranch<std::vector<int>>         ( tree, "GhostTruth_status",        &m_GhostTruth_status        );
       connectBranch<std::vector<int>>         ( tree, "GhostTruth_barcode",       &m_GhostTruth_barcode       );
       connectBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isReco",        &m_GhostTruth_isReco        );
+      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isSelected",    &m_GhostTruth_isSelected    );
+      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isAssociated",  &m_GhostTruth_isAssociated  );
       connectBranch<std::vector<float>>       ( tree, "GhostTruth_recoProb",      &m_GhostTruth_recoProb      );
       connectBranch<std::vector<int>>         ( tree, "GhostTruth_recoID",        &m_GhostTruth_recoID        );
       connectBranch<std::vector<int>>         ( tree, "GhostTruth_recoIndex",     &m_GhostTruth_recoIndex     );
-      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isSelected",    &m_GhostTruth_isSelected    );
-      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isAssociated",  &m_GhostTruth_isAssociated  );
       connectBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isStable",      &m_GhostTruth_isStable      );
       connectBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isInteracting", &m_GhostTruth_isInteracting );
       connectBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isDark",        &m_GhostTruth_isDark        );
@@ -627,42 +633,45 @@ void JetContainer :: setTree ( TTree* tree )
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts || m_infoSwitch.m_truthVerts ) {
     if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts ) {
-      connectBranch<int>                      ( tree, "secVtxCount",       &m_secVtxCount       );
-      connectBranch<float>                    ( tree, "secVtxPt",          &m_secVtxPt          );
-      connectBranch<std::vector<int>>         ( tree, "secVtx_ID",         &m_secVtx_ID         );
-      connectBranch<std::vector<int>>         ( tree, "secVtx_index",      &m_secVtx_index      );
-      connectBranch<std::vector<float>>       ( tree, "secVtx_x",          &m_secVtx_x          );
-      connectBranch<std::vector<float>>       ( tree, "secVtx_y",          &m_secVtx_y          );
-      connectBranch<std::vector<float>>       ( tree, "secVtx_z",          &m_secVtx_z          );
-      connectBranch<std::vector<float>>       ( tree, "secVtx_r",          &m_secVtx_r          );
-      connectBranch<std::vector<float>>       ( tree, "secVtx_pt",         &m_secVtx_pt         );
-      connectBranch<std::vector<float>>       ( tree, "secVtx_eta",        &m_secVtx_eta        );
-      connectBranch<std::vector<float>>       ( tree, "secVtx_phi",        &m_secVtx_phi        );
-      connectBranch<std::vector<float>>       ( tree, "secVtx_mass",       &m_secVtx_mass       );
-      connectBranch<std::vector<float>>       ( tree, "secVtx_chi2",       &m_secVtx_chi2       );
-      connectBranch<std::vector<float>>       ( tree, "secVtx_distToPV",   &m_secVtx_distToPV   );
-      connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk",       &m_secVtx_ntrk       );
-      connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_sel",   &m_secVtx_ntrk_sel   );
-      connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_assoc", &m_secVtx_ntrk_assoc );
-      connectBranch<std::vector<float>>       ( tree, "secVtx_dR",         &m_secVtx_dR         );
+      connectBranch<int>                      ( tree, "secVtxCount",                &m_secVtxCount                );
+      connectBranch<float>                    ( tree, "secVtxPt",                   &m_secVtxPt                   );
+      connectBranch<std::vector<int>>         ( tree, "secVtx_ID",                  &m_secVtx_ID                  );
+      connectBranch<std::vector<int>>         ( tree, "secVtx_index",               &m_secVtx_index               );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_x",                   &m_secVtx_x                   );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_y",                   &m_secVtx_y                   );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_z",                   &m_secVtx_z                   );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_r",                   &m_secVtx_r                   );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_pt",                  &m_secVtx_pt                  );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_eta",                 &m_secVtx_eta                 );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_phi",                 &m_secVtx_phi                 );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_mass",                &m_secVtx_mass                );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_chi2",                &m_secVtx_chi2                );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_distToPV",            &m_secVtx_distToPV            );
+      connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk",                &m_secVtx_ntrk                );
+      connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_sel",            &m_secVtx_ntrk_sel            );
+      connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_assoc",          &m_secVtx_ntrk_assoc          );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_dR",                  &m_secVtx_dR                  );
+      connectBranch<std::vector<uint8_t>>     ( tree, "secVtx_isTruthMatched",      &m_secVtx_isTruthMatched      );
     }
-    if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) {
-      connectBranch<int>                      ( tree, "truthVtxCount",     &m_truthVtxCount     );
-      connectBranch<float>                    ( tree, "truthVtxPt",        &m_truthVtxPt        );
-      connectBranch<std::vector<std::string>> ( tree, "truthVtx_llpDecay", &m_truthVtx_llpDecay );
-      connectBranch<std::vector<int>>         ( tree, "truthVtx_ID",       &m_truthVtx_ID       );
-      connectBranch<std::vector<int>>         ( tree, "truthVtx_index",    &m_truthVtx_index    );
-      connectBranch<std::vector<float>>       ( tree, "truthVtx_x",        &m_truthVtx_x        );
-      connectBranch<std::vector<float>>       ( tree, "truthVtx_y",        &m_truthVtx_y        );
-      connectBranch<std::vector<float>>       ( tree, "truthVtx_z",        &m_truthVtx_z        );
-      connectBranch<std::vector<float>>       ( tree, "truthVtx_r",        &m_truthVtx_r        );
-      connectBranch<std::vector<float>>       ( tree, "truthVtx_pt",       &m_truthVtx_pt       );
-      connectBranch<std::vector<float>>       ( tree, "truthVtx_eta",      &m_truthVtx_eta      );
-      connectBranch<std::vector<float>>       ( tree, "truthVtx_phi",      &m_truthVtx_phi      );
-      connectBranch<std::vector<float>>       ( tree, "truthVtx_mass",     &m_truthVtx_mass     );
-      connectBranch<std::vector<int>>         ( tree, "truthVtx_nOutP",    &m_truthVtx_nOutP    );
-      connectBranch<std::vector<int>>         ( tree, "truthVtx_barcode",  &m_truthVtx_barcode  );
-      connectBranch<std::vector<float>>       ( tree, "truthVtx_dR",       &m_truthVtx_dR       );
+    if ( ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) && m_mc ) {
+      connectBranch<int>                      ( tree, "truthVtxCount",              &m_truthVtxCount              );
+      connectBranch<float>                    ( tree, "truthVtxPt",                 &m_truthVtxPt                 );
+      connectBranch<std::vector<std::string>> ( tree, "truthVtx_llpDecay",          &m_truthVtx_llpDecay          );
+      connectBranch<std::vector<int>>         ( tree, "truthVtx_ID",                &m_truthVtx_ID                );
+      connectBranch<std::vector<int>>         ( tree, "truthVtx_index",             &m_truthVtx_index             );
+      connectBranch<std::vector<float>>       ( tree, "truthVtx_x",                 &m_truthVtx_x                 );
+      connectBranch<std::vector<float>>       ( tree, "truthVtx_y",                 &m_truthVtx_y                 );
+      connectBranch<std::vector<float>>       ( tree, "truthVtx_z",                 &m_truthVtx_z                 );
+      connectBranch<std::vector<float>>       ( tree, "truthVtx_r",                 &m_truthVtx_r                 );
+      connectBranch<std::vector<float>>       ( tree, "truthVtx_pt",                &m_truthVtx_pt                );
+      connectBranch<std::vector<float>>       ( tree, "truthVtx_eta",               &m_truthVtx_eta               );
+      connectBranch<std::vector<float>>       ( tree, "truthVtx_phi",               &m_truthVtx_phi               );
+      connectBranch<std::vector<float>>       ( tree, "truthVtx_mass",              &m_truthVtx_mass              );
+      connectBranch<std::vector<int>>         ( tree, "truthVtx_nOutP",             &m_truthVtx_nOutP             );
+      connectBranch<std::vector<int>>         ( tree, "truthVtx_barcode",           &m_truthVtx_barcode           );
+      connectBranch<std::vector<float>>       ( tree, "truthVtx_dR",                &m_truthVtx_dR                );
+      connectBranch<std::vector<uint8_t>>     ( tree, "truthVtx_isReconstructible", &m_truthVtx_isReconstructible );
+      connectBranch<std::vector<uint8_t>>     ( tree, "truthVtx_isRecoMatched",     &m_truthVtx_isRecoMatched     );
     }
   }
 
@@ -698,7 +707,7 @@ void JetContainer :: setTree ( TTree* tree )
       connectBranch<std::vector<int>>       ( tree, "trk_truthPdgId",   &m_trk_truthPdgId   );
     }
   }
-  if ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) {
+  if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) && m_mc ) {
     connectBranch<int>                      ( tree, "tpCount",          &m_tpCount          );
     connectBranch<float>                    ( tree, "tpPt",             &m_tpPt             );
     connectBranch<std::vector<int>>         ( tree, "tp_ID",            &m_tp_ID            );
@@ -714,11 +723,11 @@ void JetContainer :: setTree ( TTree* tree )
     connectBranch<std::vector<int>>         ( tree, "tp_barcode",       &m_tp_barcode       );
     connectBranch<std::vector<float>>       ( tree, "tp_dR",            &m_tp_dR            );
     connectBranch<std::vector<uint8_t>>     ( tree, "tp_isReco",        &m_tp_isReco        );
+    connectBranch<std::vector<uint8_t>>     ( tree, "tp_isSelected",    &m_tp_isSelected    );
+    connectBranch<std::vector<uint8_t>>     ( tree, "tp_isAssociated",  &m_tp_isAssociated  );
     connectBranch<std::vector<float>>       ( tree, "tp_recoProb",      &m_tp_recoProb      );
     connectBranch<std::vector<int>>         ( tree, "tp_recoID",        &m_tp_recoID        );
     connectBranch<std::vector<int>>         ( tree, "tp_recoIndex",     &m_tp_recoIndex     );
-    connectBranch<std::vector<uint8_t>>     ( tree, "tp_isSelected",    &m_tp_isSelected    );
-    connectBranch<std::vector<uint8_t>>     ( tree, "tp_isAssociated",  &m_tp_isAssociated  );
     connectBranch<std::vector<uint8_t>>     ( tree, "tp_isStable",      &m_tp_isStable      );
     connectBranch<std::vector<uint8_t>>     ( tree, "tp_isInteracting", &m_tp_isInteracting );
     connectBranch<std::vector<uint8_t>>     ( tree, "tp_isDark",        &m_tp_isDark        );
@@ -780,11 +789,11 @@ void JetContainer :: setBranches ( TTree* tree )
       setBranch<std::vector<int>>         ( tree, "GhostTruth_status",        m_GhostTruth_status        );
       setBranch<std::vector<int>>         ( tree, "GhostTruth_barcode",       m_GhostTruth_barcode       );
       setBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isReco",        m_GhostTruth_isReco        );
+      setBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isSelected",    m_GhostTruth_isSelected    );
+      setBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isAssociated",  m_GhostTruth_isAssociated  );
       setBranch<std::vector<float>>       ( tree, "GhostTruth_recoProb",      m_GhostTruth_recoProb      );
       setBranch<std::vector<int>>         ( tree, "GhostTruth_recoID",        m_GhostTruth_recoID        );
       setBranch<std::vector<int>>         ( tree, "GhostTruth_recoIndex",     m_GhostTruth_recoIndex     );
-      setBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isSelected",    m_GhostTruth_isSelected    );
-      setBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isAssociated",  m_GhostTruth_isAssociated  );
       setBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isStable",      m_GhostTruth_isStable      );
       setBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isInteracting", m_GhostTruth_isInteracting );
       setBranch<std::vector<uint8_t>>     ( tree, "GhostTruth_isDark",        m_GhostTruth_isDark        );
@@ -866,42 +875,45 @@ void JetContainer :: setBranches ( TTree* tree )
 
    if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts || m_infoSwitch.m_truthVerts ) {
      if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts) {
-       setBranch<int>                      ( tree, "secVtxCount",       m_secVtxCount       );
-       setBranch<float>                    ( tree, "secVtxPt",          m_secVtxPt          );
-       setBranch<std::vector<int>>         ( tree, "secVtx_ID",         m_secVtx_ID         );
-       setBranch<std::vector<int>>         ( tree, "secVtx_index",      m_secVtx_index      );
-       setBranch<std::vector<float>>       ( tree, "secVtx_x",          m_secVtx_x          );
-       setBranch<std::vector<float>>       ( tree, "secVtx_y",          m_secVtx_y          );
-       setBranch<std::vector<float>>       ( tree, "secVtx_z",          m_secVtx_z          );
-       setBranch<std::vector<float>>       ( tree, "secVtx_r",          m_secVtx_r          );
-       setBranch<std::vector<float>>       ( tree, "secVtx_pt",         m_secVtx_pt         );
-       setBranch<std::vector<float>>       ( tree, "secVtx_eta",        m_secVtx_eta        );
-       setBranch<std::vector<float>>       ( tree, "secVtx_phi",        m_secVtx_phi        );
-       setBranch<std::vector<float>>       ( tree, "secVtx_mass",       m_secVtx_mass       );
-       setBranch<std::vector<float>>       ( tree, "secVtx_chi2",       m_secVtx_chi2       );
-       setBranch<std::vector<float>>       ( tree, "secVtx_distToPV",   m_secVtx_distToPV   );
-       setBranch<std::vector<int>>         ( tree, "secVtx_ntrk",       m_secVtx_ntrk       );
-       setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_sel",   m_secVtx_ntrk_sel   );
-       setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_assoc", m_secVtx_ntrk_assoc );
-       setBranch<std::vector<float>>       ( tree, "secVtx_dR",         m_secVtx_dR         );
+       setBranch<int>                      ( tree, "secVtxCount",                m_secVtxCount                );
+       setBranch<float>                    ( tree, "secVtxPt",                   m_secVtxPt                   );
+       setBranch<std::vector<int>>         ( tree, "secVtx_ID",                  m_secVtx_ID                  );
+       setBranch<std::vector<int>>         ( tree, "secVtx_index",               m_secVtx_index               );
+       setBranch<std::vector<float>>       ( tree, "secVtx_x",                   m_secVtx_x                   );
+       setBranch<std::vector<float>>       ( tree, "secVtx_y",                   m_secVtx_y                   );
+       setBranch<std::vector<float>>       ( tree, "secVtx_z",                   m_secVtx_z                   );
+       setBranch<std::vector<float>>       ( tree, "secVtx_r",                   m_secVtx_r                   );
+       setBranch<std::vector<float>>       ( tree, "secVtx_pt",                  m_secVtx_pt                  );
+       setBranch<std::vector<float>>       ( tree, "secVtx_eta",                 m_secVtx_eta                 );
+       setBranch<std::vector<float>>       ( tree, "secVtx_phi",                 m_secVtx_phi                 );
+       setBranch<std::vector<float>>       ( tree, "secVtx_mass",                m_secVtx_mass                );
+       setBranch<std::vector<float>>       ( tree, "secVtx_chi2",                m_secVtx_chi2                );
+       setBranch<std::vector<float>>       ( tree, "secVtx_distToPV",            m_secVtx_distToPV            );
+       setBranch<std::vector<int>>         ( tree, "secVtx_ntrk",                m_secVtx_ntrk                );
+       setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_sel",            m_secVtx_ntrk_sel            );
+       setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_assoc",          m_secVtx_ntrk_assoc          );
+       setBranch<std::vector<float>>       ( tree, "secVtx_dR",                  m_secVtx_dR                  );
+       setBranch<std::vector<uint8_t>>     ( tree, "secVtx_isTruthMatched",      m_secVtx_isTruthMatched      );
      }
-     if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) {
-       setBranch<int>                      ( tree, "truthVtxCount",     m_truthVtxCount     );
-       setBranch<float>                    ( tree, "truthVtxPt",        m_truthVtxPt        );
-       setBranch<std::vector<std::string>> ( tree, "truthVtx_llpDecay", m_truthVtx_llpDecay );
-       setBranch<std::vector<int>>         ( tree, "truthVtx_ID",       m_truthVtx_ID       );
-       setBranch<std::vector<int>>         ( tree, "truthVtx_index",    m_truthVtx_index    );
-       setBranch<std::vector<float>>       ( tree, "truthVtx_x",        m_truthVtx_x        );
-       setBranch<std::vector<float>>       ( tree, "truthVtx_y",        m_truthVtx_y        );
-       setBranch<std::vector<float>>       ( tree, "truthVtx_z",        m_truthVtx_z        );
-       setBranch<std::vector<float>>       ( tree, "truthVtx_r",        m_truthVtx_r        );
-       setBranch<std::vector<float>>       ( tree, "truthVtx_pt",       m_truthVtx_pt       );
-       setBranch<std::vector<float>>       ( tree, "truthVtx_eta",      m_truthVtx_eta      );
-       setBranch<std::vector<float>>       ( tree, "truthVtx_phi",      m_truthVtx_phi      );
-       setBranch<std::vector<float>>       ( tree, "truthVtx_mass",     m_truthVtx_mass     );
-       setBranch<std::vector<int>>         ( tree, "truthVtx_nOutP",    m_truthVtx_nOutP    );
-       setBranch<std::vector<int>>         ( tree, "truthVtx_barcode",  m_truthVtx_barcode  );
-       setBranch<std::vector<float>>       ( tree, "truthVtx_dR",       m_truthVtx_dR       );
+     if ( ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) && m_mc ) {
+       setBranch<int>                      ( tree, "truthVtxCount",              m_truthVtxCount              );
+       setBranch<float>                    ( tree, "truthVtxPt",                 m_truthVtxPt                 );
+       setBranch<std::vector<std::string>> ( tree, "truthVtx_llpDecay",          m_truthVtx_llpDecay          );
+       setBranch<std::vector<int>>         ( tree, "truthVtx_ID",                m_truthVtx_ID                );
+       setBranch<std::vector<int>>         ( tree, "truthVtx_index",             m_truthVtx_index             );
+       setBranch<std::vector<float>>       ( tree, "truthVtx_x",                 m_truthVtx_x                 );
+       setBranch<std::vector<float>>       ( tree, "truthVtx_y",                 m_truthVtx_y                 );
+       setBranch<std::vector<float>>       ( tree, "truthVtx_z",                 m_truthVtx_z                 );
+       setBranch<std::vector<float>>       ( tree, "truthVtx_r",                 m_truthVtx_r                 );
+       setBranch<std::vector<float>>       ( tree, "truthVtx_pt",                m_truthVtx_pt                );
+       setBranch<std::vector<float>>       ( tree, "truthVtx_eta",               m_truthVtx_eta               );
+       setBranch<std::vector<float>>       ( tree, "truthVtx_phi",               m_truthVtx_phi               );
+       setBranch<std::vector<float>>       ( tree, "truthVtx_mass",              m_truthVtx_mass              );
+       setBranch<std::vector<int>>         ( tree, "truthVtx_nOutP",             m_truthVtx_nOutP             );
+       setBranch<std::vector<int>>         ( tree, "truthVtx_barcode",           m_truthVtx_barcode           );
+       setBranch<std::vector<float>>       ( tree, "truthVtx_dR",                m_truthVtx_dR                );
+       setBranch<std::vector<uint8_t>>     ( tree, "truthVtx_isReconstructible", m_truthVtx_isReconstructible );
+       setBranch<std::vector<uint8_t>>     ( tree, "truthVtx_isRecoMatched",     m_truthVtx_isRecoMatched     );
      }
    }
 
@@ -937,7 +949,7 @@ void JetContainer :: setBranches ( TTree* tree )
        setBranch<std::vector<int>>      ( tree, "trk_truthPdgId",   m_trk_truthPdgId   );
      }
    }
-   if ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) {
+   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) && m_mc ) {
     setBranch<int>                      ( tree, "tpCount",          m_tpCount          );
     setBranch<float>                    ( tree, "tpPt",             m_tpPt             );
     setBranch<std::vector<int>>         ( tree, "tp_ID",            m_tp_ID            );
@@ -953,11 +965,11 @@ void JetContainer :: setBranches ( TTree* tree )
     setBranch<std::vector<int>>         ( tree, "tp_barcode",       m_tp_barcode       );
     setBranch<std::vector<float>>       ( tree, "tp_dR",            m_tp_dR            );
     setBranch<std::vector<uint8_t>>     ( tree, "tp_isReco",        m_tp_isReco        );
+    setBranch<std::vector<uint8_t>>     ( tree, "tp_isSelected",    m_tp_isSelected    );
+    setBranch<std::vector<uint8_t>>     ( tree, "tp_isAssociated",  m_tp_isAssociated  );
     setBranch<std::vector<float>>       ( tree, "tp_recoProb",      m_tp_recoProb      );
     setBranch<std::vector<int>>         ( tree, "tp_recoID",        m_tp_recoID        );
     setBranch<std::vector<int>>         ( tree, "tp_recoIndex",     m_tp_recoIndex     );
-    setBranch<std::vector<uint8_t>>     ( tree, "tp_isSelected",    m_tp_isSelected    );
-    setBranch<std::vector<uint8_t>>     ( tree, "tp_isAssociated",  m_tp_isAssociated  );
     setBranch<std::vector<uint8_t>>     ( tree, "tp_isStable",      m_tp_isStable      );
     setBranch<std::vector<uint8_t>>     ( tree, "tp_isInteracting", m_tp_isInteracting );
     setBranch<std::vector<uint8_t>>     ( tree, "tp_isDark",        m_tp_isDark        );
@@ -1018,11 +1030,11 @@ void JetContainer :: clear ()
       m_GhostTruth_status         ->clear();
       m_GhostTruth_barcode        ->clear();
       m_GhostTruth_isReco         ->clear();
+      m_GhostTruth_isSelected     ->clear();
+      m_GhostTruth_isAssociated   ->clear();
       m_GhostTruth_recoProb       ->clear();
       m_GhostTruth_recoID         ->clear();
       m_GhostTruth_recoIndex      ->clear();
-      m_GhostTruth_isSelected     ->clear();
-      m_GhostTruth_isAssociated   ->clear();
       m_GhostTruth_isStable       ->clear();
       m_GhostTruth_isInteracting  ->clear();
       m_GhostTruth_isDark         ->clear();
@@ -1104,42 +1116,45 @@ void JetContainer :: clear ()
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts || m_infoSwitch.m_truthVerts ) {
     if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts ) {
-      m_secVtxCount       ->clear();
-      m_secVtxPt          ->clear();
-      m_secVtx_ID         ->clear();
-      m_secVtx_index      ->clear();
-      m_secVtx_x          ->clear();
-      m_secVtx_y          ->clear();
-      m_secVtx_z          ->clear();
-      m_secVtx_r          ->clear();
-      m_secVtx_pt         ->clear();
-      m_secVtx_eta        ->clear();
-      m_secVtx_phi        ->clear();
-      m_secVtx_mass       ->clear();
-      m_secVtx_chi2       ->clear();
-      m_secVtx_distToPV   ->clear();
-      m_secVtx_ntrk       ->clear();
-      m_secVtx_ntrk_sel   ->clear();
-      m_secVtx_ntrk_assoc ->clear();
-      m_secVtx_dR         ->clear();  
+      m_secVtxCount                ->clear();
+      m_secVtxPt                   ->clear();
+      m_secVtx_ID                  ->clear();
+      m_secVtx_index               ->clear();
+      m_secVtx_x                   ->clear();
+      m_secVtx_y                   ->clear();
+      m_secVtx_z                   ->clear();
+      m_secVtx_r                   ->clear();
+      m_secVtx_pt                  ->clear();
+      m_secVtx_eta                 ->clear();
+      m_secVtx_phi                 ->clear();
+      m_secVtx_mass                ->clear();
+      m_secVtx_chi2                ->clear();
+      m_secVtx_distToPV            ->clear();
+      m_secVtx_ntrk                ->clear();
+      m_secVtx_ntrk_sel            ->clear();
+      m_secVtx_ntrk_assoc          ->clear();
+      m_secVtx_dR                  ->clear();
+      m_secVtx_isTruthMatched      ->clear();
     }
-    if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) {
-      m_truthVtxCount     ->clear();
-      m_truthVtxPt        ->clear();
-      m_truthVtx_llpDecay ->clear();
-      m_truthVtx_ID       ->clear();
-      m_truthVtx_index    ->clear();
-      m_truthVtx_x        ->clear();
-      m_truthVtx_y        ->clear();
-      m_truthVtx_z        ->clear();
-      m_truthVtx_r        ->clear();
-      m_truthVtx_pt       ->clear();
-      m_truthVtx_eta      ->clear();
-      m_truthVtx_phi      ->clear();
-      m_truthVtx_mass     ->clear();
-      m_truthVtx_nOutP    ->clear();
-      m_truthVtx_barcode  ->clear();
-      m_truthVtx_dR       ->clear();
+    if ( ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) && m_mc ) {
+      m_truthVtxCount              ->clear();
+      m_truthVtxPt                 ->clear();
+      m_truthVtx_llpDecay          ->clear();
+      m_truthVtx_ID                ->clear();
+      m_truthVtx_index             ->clear();
+      m_truthVtx_x                 ->clear();
+      m_truthVtx_y                 ->clear();
+      m_truthVtx_z                 ->clear();
+      m_truthVtx_r                 ->clear();
+      m_truthVtx_pt                ->clear();
+      m_truthVtx_eta               ->clear();
+      m_truthVtx_phi               ->clear();
+      m_truthVtx_mass              ->clear();
+      m_truthVtx_nOutP             ->clear();
+      m_truthVtx_barcode           ->clear();
+      m_truthVtx_dR                ->clear();
+      m_truthVtx_isReconstructible ->clear();
+      m_truthVtx_isRecoMatched     ->clear();
     }
   }
 
@@ -1175,7 +1190,7 @@ void JetContainer :: clear ()
       m_trk_truthPdgId   ->clear();
     }
   }
-  if ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) {
+  if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) && m_mc ) {
     m_tpCount            ->clear();
     m_tpPt               ->clear();
     m_tp_ID              ->clear();
@@ -1191,11 +1206,11 @@ void JetContainer :: clear ()
     m_tp_barcode         ->clear();
     m_tp_dR              ->clear();
     m_tp_isReco          ->clear();
+    m_tp_isSelected      ->clear();
+    m_tp_isAssociated    ->clear();
     m_tp_recoProb        ->clear();
     m_tp_recoID          ->clear();
     m_tp_recoIndex       ->clear();
-    m_tp_isSelected      ->clear();
-    m_tp_isAssociated    ->clear();
     m_tp_isStable        ->clear();
     m_tp_isInteracting   ->clear();
     m_tp_isDark          ->clear();
@@ -1341,11 +1356,11 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
       std::vector<int>         ghostTruth_status;
       std::vector<int>         ghostTruth_barcode;
       std::vector<uint8_t>     ghostTruth_isReco;
+      std::vector<uint8_t>     ghostTruth_isSelected;
+      std::vector<uint8_t>     ghostTruth_isAssociated;
       std::vector<float>       ghostTruth_recoProb;
       std::vector<int>         ghostTruth_recoID;
       std::vector<int>         ghostTruth_recoIndex;
-      std::vector<uint8_t>     ghostTruth_isSelected;
-      std::vector<uint8_t>     ghostTruth_isAssociated;
       std::vector<uint8_t>     ghostTruth_isStable;
       std::vector<uint8_t>     ghostTruth_isInteracting;
       std::vector<uint8_t>     ghostTruth_isDark;
@@ -1451,11 +1466,11 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
       m_GhostTruth_status        ->push_back( ghostTruth_status                                 );
       m_GhostTruth_barcode       ->push_back( ghostTruth_barcode                                );
       m_GhostTruth_isReco        ->push_back( ghostTruth_isReco                                 );
+      m_GhostTruth_isSelected    ->push_back( ghostTruth_isSelected                             );
+      m_GhostTruth_isAssociated  ->push_back( ghostTruth_isAssociated                           );
       m_GhostTruth_recoProb      ->push_back( ghostTruth_recoProb                               );
       m_GhostTruth_recoID        ->push_back( ghostTruth_recoID                                 );
       m_GhostTruth_recoIndex     ->push_back( ghostTruth_recoIndex                              );
-      m_GhostTruth_isSelected    ->push_back( ghostTruth_isSelected                             );
-      m_GhostTruth_isAssociated  ->push_back( ghostTruth_isAssociated                           );
       m_GhostTruth_isStable      ->push_back( ghostTruth_isStable                               );
       m_GhostTruth_isInteracting ->push_back( ghostTruth_isInteracting                          );
       m_GhostTruth_isDark        ->push_back( ghostTruth_isDark                                 );
@@ -1567,7 +1582,7 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
     if ( truthJetAccess.isAvailable( *jet ) ) {
       try {
 	const EJsHelper::JetLink_t& truthJetLink = truthJetAccess( *jet );
-	truthJet = *truthJetLink;
+	if ( truthJetLink.isValid() ) truthJet = *truthJetLink;
       } catch(...) {}
     }
     if ( truthJet ) {
@@ -1584,7 +1599,7 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
     if ( darkJetAccess.isAvailable( *jet ) ) {
       try {
 	const EJsHelper::JetLink_t& darkJetLink = darkJetAccess( *jet );
-	darkJet = *darkJetLink;
+	if ( darkJetLink.isValid() ) darkJet = *darkJetLink;
       } catch(...) {}
     }
     if ( darkJet ) {
@@ -1658,24 +1673,25 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts || m_infoSwitch.m_truthVerts ) {
     if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts ) {
-      int                matchDVCount = 0;
-      double             matchDVPt    = 0;
-      std::vector<int>   matchDV_ID;
-      std::vector<int>   matchDV_index;
-      std::vector<float> matchDV_x;
-      std::vector<float> matchDV_y;
-      std::vector<float> matchDV_z;
-      std::vector<float> matchDV_r;
-      std::vector<float> matchDV_pt;
-      std::vector<float> matchDV_eta;
-      std::vector<float> matchDV_phi;
-      std::vector<float> matchDV_mass;
-      std::vector<float> matchDV_chi2;
-      std::vector<float> matchDV_distToPV;
-      std::vector<int>   matchDV_ntrk;
-      std::vector<int>   matchDV_ntrk_sel;
-      std::vector<int>   matchDV_ntrk_assoc;
-      std::vector<float> matchDV_dR;
+      int                  matchDVCount = 0;
+      double               matchDVPt    = 0;
+      std::vector<int>     matchDV_ID;
+      std::vector<int>     matchDV_index;
+      std::vector<float>   matchDV_x;
+      std::vector<float>   matchDV_y;
+      std::vector<float>   matchDV_z;
+      std::vector<float>   matchDV_r;
+      std::vector<float>   matchDV_pt;
+      std::vector<float>   matchDV_eta;
+      std::vector<float>   matchDV_phi;
+      std::vector<float>   matchDV_mass;
+      std::vector<float>   matchDV_chi2;
+      std::vector<float>   matchDV_distToPV;
+      std::vector<int>     matchDV_ntrk;
+      std::vector<int>     matchDV_ntrk_sel;
+      std::vector<int>     matchDV_ntrk_assoc;
+      std::vector<float>   matchDV_dR;
+      std::vector<uint8_t> matchDV_isTruth;
       
       // acccess matched secondary vertex links
       static SG::AuxElement::ConstAccessor<EJsHelper::VertexLinkVector_t> matchDVAccess("matchedSecondaryVertexLinks");
@@ -1720,31 +1736,38 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
 	  matchDV_ntrk       .push_back( filteredTracks.size()                            ); 
 	  matchDV_ntrk_sel   .push_back( ntrk_sel                                         );
 	  matchDV_ntrk_assoc .push_back( ntrk_assoc                                       );
+
+	  bool isTruthMatched = false;
+	  if ( (*dvlink)->isAvailable<std::vector<float>>("truthVertexMatchScores") )
+	    if ( !(*dvlink)->auxdataConst<std::vector<float>>("truthVertexMatchScores").empty() )
+	      isTruthMatched = true;
+	  matchDV_isTruth .push_back( isTruthMatched );
 	  
 	} // end loop over matched DV links
       } // end matched secondary vertex link access
       
-      m_secVtxCount       ->push_back( matchDVCount                                          );
-      m_secVtxPt          ->push_back( matchDVPt / m_units                                   );
-      m_secVtx_ID         ->push_back( matchDV_ID                                            );
-      m_secVtx_index      ->push_back( matchDV_index                                         );
-      m_secVtx_x          ->push_back( matchDV_x                                             );
-      m_secVtx_y          ->push_back( matchDV_y                                             );
-      m_secVtx_z          ->push_back( matchDV_z                                             );
-      m_secVtx_r          ->push_back( matchDV_r                                             );
-      m_secVtx_pt         ->push_back( matchDV_pt                                            );
-      m_secVtx_eta        ->push_back( matchDV_eta                                           );
-      m_secVtx_phi        ->push_back( matchDV_phi                                           );
-      m_secVtx_mass       ->push_back( matchDV_mass                                          );
-      m_secVtx_chi2       ->push_back( matchDV_chi2                                          );
-      m_secVtx_distToPV   ->push_back( matchDV_distToPV                                      );
-      m_secVtx_ntrk       ->push_back( matchDV_ntrk                                          );
-      m_secVtx_ntrk_sel   ->push_back( matchDV_ntrk_sel                                      );
-      m_secVtx_ntrk_assoc ->push_back( matchDV_ntrk_assoc                                    );
-      m_secVtx_dR         ->push_back( AUXDYNVEC ( jet, float, "matchedSecondaryVertex_dR" ) );
+      m_secVtxCount           ->push_back( matchDVCount                                          );
+      m_secVtxPt              ->push_back( matchDVPt / m_units                                   );
+      m_secVtx_ID             ->push_back( matchDV_ID                                            );
+      m_secVtx_index          ->push_back( matchDV_index                                         );
+      m_secVtx_x              ->push_back( matchDV_x                                             );
+      m_secVtx_y              ->push_back( matchDV_y                                             );
+      m_secVtx_z              ->push_back( matchDV_z                                             );
+      m_secVtx_r              ->push_back( matchDV_r                                             );
+      m_secVtx_pt             ->push_back( matchDV_pt                                            );
+      m_secVtx_eta            ->push_back( matchDV_eta                                           );
+      m_secVtx_phi            ->push_back( matchDV_phi                                           );
+      m_secVtx_mass           ->push_back( matchDV_mass                                          );
+      m_secVtx_chi2           ->push_back( matchDV_chi2                                          );
+      m_secVtx_distToPV       ->push_back( matchDV_distToPV                                      );
+      m_secVtx_ntrk           ->push_back( matchDV_ntrk                                          );
+      m_secVtx_ntrk_sel       ->push_back( matchDV_ntrk_sel                                      );
+      m_secVtx_ntrk_assoc     ->push_back( matchDV_ntrk_assoc                                    );
+      m_secVtx_dR             ->push_back( AUXDYNVEC ( jet, float, "matchedSecondaryVertex_dR" ) );
+      m_secVtx_isTruthMatched ->push_back( matchDV_isTruth                                       );
     } // end reco-vertex switch
 
-    if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) {
+    if ( ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) && m_mc ) {
       int                      matchTVCount = 0;
       double                   matchTVPt    = 0;
       std::vector<std::string> matchTV_llpDecay;
@@ -1761,6 +1784,8 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
       std::vector<int>         matchTV_nOutP;
       std::vector<int>         matchTV_barcode;
       std::vector<float>       matchTV_dR;
+      std::vector<uint8_t>     matchTV_isReconstructible;
+      std::vector<uint8_t>     matchTV_isReco;
 
       // access matched truth vertex links
       static SG::AuxElement::ConstAccessor<EJsHelper::TruthVertexLinkVector_t> matchTVAccess("matchedTruthVertexLinks");
@@ -1799,26 +1824,34 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
 	  matchTV_nOutP    .push_back( (*tvlink)->nOutgoingParticles()     );
 	  matchTV_barcode  .push_back( (*tvlink)->barcode()                );
 
+	  bool isRecoMatched = false;
+	  if ( (*tvlink)->isAvailable<std::vector<float>>("matchedRecoVertexMatchScores") )
+	    if ( !(*tvlink)->auxdataConst<std::vector<float>>("matchedRecoVertexMatchScores").empty() )
+	      isRecoMatched = true;
+	  matchTV_isReco            .push_back( isRecoMatched                                  );
+	  matchTV_isReconstructible .push_back( AUXDYN( (*tvlink), char, "isReconstructible" ) );
 	  
 	} // end loop over matched truth vertex links
       } // end matched truth vertex link access
 
-      m_truthVtxCount     ->push_back( matchTVCount                                     );
-      m_truthVtxPt        ->push_back( matchTVPt / m_units                              );
-      m_truthVtx_llpDecay ->push_back( matchTV_llpDecay                                 );
-      m_truthVtx_ID       ->push_back( matchTV_ID                                       );
-      m_truthVtx_index    ->push_back( matchTV_index                                    );
-      m_truthVtx_x        ->push_back( matchTV_x                                        );
-      m_truthVtx_y        ->push_back( matchTV_y                                        );
-      m_truthVtx_z        ->push_back( matchTV_z                                        );
-      m_truthVtx_r        ->push_back( matchTV_r                                        );
-      m_truthVtx_pt       ->push_back( matchTV_pt                                       );
-      m_truthVtx_eta      ->push_back( matchTV_eta                                      );
-      m_truthVtx_phi      ->push_back( matchTV_phi                                      );
-      m_truthVtx_mass     ->push_back( matchTV_mass                                     );
-      m_truthVtx_nOutP    ->push_back( matchTV_nOutP                                    );
-      m_truthVtx_barcode  ->push_back( matchTV_barcode                                  );
-      m_truthVtx_dR       ->push_back( AUXDYNVEC( jet, float, "matchedTruthVertex_dR" ) );
+      m_truthVtxCount              ->push_back( matchTVCount                                     );
+      m_truthVtxPt                 ->push_back( matchTVPt / m_units                              );
+      m_truthVtx_llpDecay          ->push_back( matchTV_llpDecay                                 );
+      m_truthVtx_ID                ->push_back( matchTV_ID                                       );
+      m_truthVtx_index             ->push_back( matchTV_index                                    );
+      m_truthVtx_x                 ->push_back( matchTV_x                                        );
+      m_truthVtx_y                 ->push_back( matchTV_y                                        );
+      m_truthVtx_z                 ->push_back( matchTV_z                                        );
+      m_truthVtx_r                 ->push_back( matchTV_r                                        );
+      m_truthVtx_pt                ->push_back( matchTV_pt                                       );
+      m_truthVtx_eta               ->push_back( matchTV_eta                                      );
+      m_truthVtx_phi               ->push_back( matchTV_phi                                      );
+      m_truthVtx_mass              ->push_back( matchTV_mass                                     );
+      m_truthVtx_nOutP             ->push_back( matchTV_nOutP                                    );
+      m_truthVtx_barcode           ->push_back( matchTV_barcode                                  );
+      m_truthVtx_dR                ->push_back( AUXDYNVEC( jet, float, "matchedTruthVertex_dR" ) );
+      m_truthVtx_isReconstructible ->push_back( matchTV_isReconstructible                        );
+      m_truthVtx_isRecoMatched     ->push_back( matchTV_isReco                                   );
     } // end truth-vertex switch
   } // end vertex-match switch
 
@@ -1959,7 +1992,7 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
     }
   } // end track-match switch
 
-  if ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) {
+  if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) && m_mc ) {
     int                      matchTruthCount = 0;
     double                   matchTruthPt    = 0;
     std::vector<int>         matchTruth_ID;
@@ -1975,11 +2008,11 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
     std::vector<int>         matchTruth_barcode;
     std::vector<float>       matchTruth_dR;
     std::vector<uint8_t>     matchTruth_isReco;
+    std::vector<uint8_t>     matchTruth_isSelected;
+    std::vector<uint8_t>     matchTruth_isAssociated;
     std::vector<float>       matchTruth_recoProb;
     std::vector<int>         matchTruth_recoID;
     std::vector<int>         matchTruth_recoIndex;
-    std::vector<uint8_t>     matchTruth_isSelected;
-    std::vector<uint8_t>     matchTruth_isAssociated;
     std::vector<uint8_t>     matchTruth_isStable;
     std::vector<uint8_t>     matchTruth_isInteracting;
     std::vector<uint8_t>     matchTruth_isDark;
@@ -2091,11 +2124,11 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
     m_tp_barcode       ->push_back( matchTruth_barcode                                 );
     m_tp_dR            ->push_back( AUXDYNVEC( jet, float, "matchedTruthParticle_dR" ) );
     m_tp_isReco        ->push_back( matchTruth_isReco                                  );
+    m_tp_isSelected    ->push_back( matchTruth_isSelected                              );
+    m_tp_isAssociated  ->push_back( matchTruth_isAssociated                            );
     m_tp_recoProb      ->push_back( matchTruth_recoProb                                );
     m_tp_recoID        ->push_back( matchTruth_recoID                                  );
     m_tp_recoIndex     ->push_back( matchTruth_recoIndex                               );
-    m_tp_isSelected    ->push_back( matchTruth_isSelected                              );
-    m_tp_isAssociated  ->push_back( matchTruth_isAssociated                            );
     m_tp_isStable      ->push_back( matchTruth_isStable                                );
     m_tp_isInteracting ->push_back( matchTruth_isInteracting                           );
     m_tp_isDark        ->push_back( matchTruth_isDark                                  );

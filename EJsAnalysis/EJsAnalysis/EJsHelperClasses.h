@@ -14,10 +14,7 @@ namespace EJsHelperClasses {
   {
   public:
     bool m_tracks;
-    //bool m_jets;
-    //bool m_truth;
-    //bool m_close;
-    //bool m_linked;
+    bool m_truthMatching;
     bool m_jetMatched;
     bool m_recoJetMatched;
     bool m_truthJetMatched;
@@ -33,6 +30,7 @@ namespace EJsHelperClasses {
   class TruthVertexInfoSwitch : public HelperClasses::InfoSwitch
   {
   public:
+    bool m_recoMatching;
     bool m_jetMatched;
     bool m_recoJetMatched;
     bool m_truthJetMatched;

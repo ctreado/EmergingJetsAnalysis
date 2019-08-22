@@ -6,6 +6,8 @@
 
 #include <cmath>
 #include <vector>
+#include <map>
+#include <set>
 
 #include <TTree.h>
 
@@ -91,6 +93,7 @@ namespace EJsHelper {
   const xAOD::TruthVertex* getParentProdVtx ( const xAOD::TrackParticle* );
 
   // returns truth vertex sum four-vector momentum of outgoing particles
+  TLorentzVector truthSumP4 ( const std::set<    const xAOD::TruthParticle* >& );
   TLorentzVector truthSumP4 ( const std::vector< const xAOD::TruthParticle* >& );
   TLorentzVector truthSumP4 ( const std::vector< TLorentzVector >&             );
 
@@ -98,7 +101,6 @@ namespace EJsHelper {
   bool isStable          ( const xAOD::TruthParticle* );
   bool isInteracting     ( const xAOD::TruthParticle* );
   bool isDark            ( const xAOD::TruthParticle* );
-  bool isReconstructible ( const xAOD::TruthParticle* ); // REMOVE
   
 }
 

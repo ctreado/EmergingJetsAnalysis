@@ -45,6 +45,9 @@ class EJsxAODAnalysis : public xAH::Algorithm
   // index of jet container to run systematics over
   unsigned m_jetSystsContainerIndex = 0;
 
+  // jet container type to include in cutflow
+  std::string m_cutflowJets = "EMTopo";
+
   // input trigger lists
   std::string m_signalTrigList;
   std::string m_validTrigList;
@@ -66,6 +69,10 @@ class EJsxAODAnalysis : public xAH::Algorithm
   
   // units conversion from MeV; default is GeV
   float m_units = 1e3;
+
+  // cutflow / decorator labels
+  std::string m_signalTrigLabel = "signalTrigger";
+  std::string m_validTrigLabel  = "validTrigger";
   
 
   // variables not filled at submission time
@@ -98,17 +105,27 @@ class EJsxAODAnalysis : public xAH::Algorithm
   std::vector<int> m_numSignalValidWeightEvents; //!
 
   // FIX CUTFLOW IMPLEMENTATION --> ADD DO CONFIG; MOVE BIN INTEGERS HER; ETC.
-  int m_cutflow_bin; //!
   
-  TH1D* m_cutflowHist        = 0; //!
-  TH1D* m_cutflowHistW       = 0; //!
-  TH1D* m_cutflowSignalHist  = 0; //!
-  TH1D* m_cutflowSignalHistW = 0; //!
-  TH1D* m_cutflowValidHist   = 0; //!
-  TH1D* m_cutflowValidHistW  = 0; //!
-  TH1D* m_cutflowCtrlHist    = 0; //!
-  TH1D* m_cutflowCtrlHistW   = 0; //!
-  // --> plot all jet containers on same histograms, but only count nominal case (no syst)
+  TH1D* m_cutflowHist  = 0; //!
+  TH1D* m_cutflowHistW = 0; //!
+  int   m_cutflow_bin;      //!
+
+  // signal- / validation- level cutflow
+  TH1D* m_signal_cutflowHist = 0; //!
+  int   m_signal_cutflow_all;     //!
+  int   m_signal_cutflow_trig;    //!
+  int   m_signal_cutflow_njet;    //!
+  int   m_signal_cutflow_jetpt;   //!
+  int   m_signal_cutflow_jeteta;  //!
+  int   m_signal_cutflow_njetHt;  //!
+  int   m_signal_cutflow_nej;     //!
+  TH1D* m_valid_cutflowHist  = 0; //!
+  int   m_valid_cutflow_all;      //!
+  int   m_valid_cutflow_trig;     //!
+  int   m_valid_cutflow_njetmin;  //!
+  int   m_valid_cutflow_njetmax;  //!
+  int   m_valid_cutflow_jetpt;    //!
+  int   m_valid_cutflow_jeteta;   //!
 
   double m_mcEventWeight; //!
 
@@ -136,9 +153,9 @@ class EJsxAODAnalysis : public xAH::Algorithm
   // added functions not from Algorithm
   virtual EL::StatusCode executeSelection ( const xAOD::EventInfo*, const std::string&, bool& );
 
-  virtual int PassSignalCuts     ( const xAOD::EventInfo*, const xAOD::JetContainer*, const std::string&, const std::string& );
-  virtual int PassValidationCuts ( const xAOD::EventInfo*, const xAOD::JetContainer*, const std::string&, const std::string& );
-  virtual int PassControlCuts    ( const xAOD::EventInfo*, const xAOD::JetContainer*, const std::string&, const std::string& );
+  virtual int PassSignalCuts     ( const xAOD::EventInfo*, const xAOD::JetContainer*, const std::string& );
+  virtual int PassValidationCuts ( const xAOD::EventInfo*, const xAOD::JetContainer*, const std::string& );
+  virtual int PassControlCuts    ( const xAOD::EventInfo*, const xAOD::JetContainer*, const std::string& );
 
   bool selectEmergingJet ( const xAOD::Jet* );
   

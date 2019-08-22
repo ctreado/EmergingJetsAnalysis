@@ -6,11 +6,15 @@
 
 #include <string>
 #include <vector>
+#include <set>
+#include <unordered_map>
 
 #include <xAODTruth/TruthVertexContainer.h>
 #include <xAODTracking/VertexContainer.h>
 
 #include <xAODAnaHelpers/Algorithm.h>
+
+#include "EJsAnalysis/AlgConsts.h"
 
 
 class VertexMatcher : public xAH::Algorithm
@@ -21,17 +25,33 @@ class VertexMatcher : public xAH::Algorithm
   // float cutValue;
 
   // input container names
+  std::string m_inTruthPartContainerName       = "TruthParticles";
+  std::string m_inTrackPartContainerName       = "";
   std::string m_inTruthVertexContainerName     = "TruthVertices";
   std::string m_inSecondaryVertexContainerName = "";
 
   // truth vertex llp decay types to process
   std::string m_truthLLP = "DarkPion";
 
-  // reco-truth vertex "close-matching" distance
-  double m_vtx_matchDistance = 5.0;
-
   // do llp-decay truth vertex filtering?
-  bool m_filterTruthVertex_llp = true;
+  bool m_filterTruthVertex_llp  = true;
+  // apply cut on truth vertex outside fiducial volume?
+  bool m_applyFiducialVolumeCut = true;
+  
+  // recursively trace LLP decay chain?
+  bool  m_doRecursive    = true;
+  // max particle production-decay distance for recursive trace
+  float m_distanceCutoff = 10.0;
+  // min reconstructible particle pt
+  float m_ptThreshold    = 1e3;
+
+  // reco-truth vertex match score
+  float m_vtx_matchScore = 0.5;
+  float m_vtx_residual   = AlgConsts::maxValue; // 10.0 ??
+
+  // do truth-track matching
+  bool m_doTruthTrackMatching = true;
+  
 
 
   // variables not filled at submission time
@@ -44,6 +64,7 @@ class VertexMatcher : public xAH::Algorithm
   std::vector<std::string> m_truthLLP_decays; //!
   
   int m_eventNumber; //!
+  std::unordered_map<const xAOD::TruthParticle*, const xAOD::TrackParticle*> m_truthTrackHash; //!
 
 
  public:
@@ -62,7 +83,8 @@ class VertexMatcher : public xAH::Algorithm
   virtual EL::StatusCode histFinalize ();
 
   // added functions not from Algorithm
-  void matchClosestVerts ( const xAOD::VertexContainer*, const xAOD::TruthVertexContainer* );
+  void collectReconstructibleDescendants ( const xAOD::TruthVertex*,            std::set<const xAOD::TruthParticle*>& );
+  void matchTracksToTruthParts           ( const xAOD::TruthParticleContainer*, const xAOD::TrackParticleContainer*   );
 
   // needed to distribute algorithm to workers
   ClassDef ( VertexMatcher, 1 );

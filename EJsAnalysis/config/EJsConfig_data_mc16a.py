@@ -24,7 +24,8 @@ LumiCalc_files  = [
     data16_path + "PHYS_StandardGRL_All_Good_25ns_297730-311481_OflLumi-13TeV-009.root",
     ]
 PRW_files       = [
-    data_path   + "prw.EJs.mc16a.root"
+    data_path   + "prw.EJs.mc16a.root",
+    data_path   + "prw.bkgd.mc16a.root",
     ]
 
 GRL_config      = ",".join( GRL_files      )

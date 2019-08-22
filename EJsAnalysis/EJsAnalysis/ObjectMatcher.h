@@ -42,8 +42,9 @@ class ObjectMatcher : public xAH::Algorithm
   double m_jet_matchRadius     = 0.1; // truth-jet matching dR
   double m_jet_vtx_matchRadius = 0.4; // jet-vertex matching dR --> 0.6 ?? 1.0 ??
   double m_jet_trk_matchRadius = 0.4; // jet-track matching dR  --> 0.6 ?? 1.0 ??
-  
-  
+
+  // do truth-track matching
+  bool m_doTruthTrackMatching = true;
 
   // protection when running on truth derivation
   bool m_truthLevelOnly = false;

@@ -57,11 +57,11 @@ c.algorithm ( "SecondaryVertexSelector", Dict_SecondaryVertexSelector )
 # Truth Vertex Selection
 c.algorithm ( "TruthVertexSelector",     Dict_TruthVertexSelector     )
 
-# Vertex Matching
-c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
-
 # Object Matching
 c.algorithm ( "ObjectMatcher",           Dict_ObjectMatcher           )
+
+# Vertex Matching
+c.algorithm ( "VertexMatcher",           Dict_VertexMatcher           )
 
 # EJs Analysis Selection
 c.algorithm ( "EJsxAODAnalysis",         Dict_EJsxAODAnalysis         )

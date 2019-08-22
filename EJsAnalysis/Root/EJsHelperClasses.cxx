@@ -4,16 +4,14 @@ namespace EJsHelperClasses {
 
   void SecondaryVertexInfoSwitch::initialize() {
     m_tracks          = has_exact( "tracks"          );
-    //m_jets            = has_exact( "jets"            );
-    //m_truth           = has_exact( "truth"           );
-    //m_close           = has_exact( "close"           );
-    //m_linked          = has_exact( "linked"          );
+    m_truthMatching   = has_exact( "truthMatching"   );
     m_jetMatched      = has_exact( "jetMatched"      );
     m_recoJetMatched  = has_exact( "recoJetMatched"  );
     m_truthJetMatched = has_exact( "truthJetMatched" );
   }
 
   void TruthVertexInfoSwitch::initialize() {
+    m_recoMatching    = has_exact( "recoMatching"    );
     m_jetMatched      = has_exact( "jetMatched"      );
     m_recoJetMatched  = has_exact( "recoJetMatched"  );
     m_truthJetMatched = has_exact( "truthJetMatched" );
