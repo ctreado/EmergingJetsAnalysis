@@ -52,16 +52,14 @@ jo_test="$EJ_PATH/EJsAnalysis/config/EJsConfig.py"
 
 ## job steering
 #xAH_run.py --files ${input_18} --config ${jo_18} --submitDir ${subdir_18} --nevents 100 direct | tee ${log_18}
-#xAH_run.py --files ${input_17} --config ${jo_17} --submitDir ${subdir_17} --nevents 1000 direct | tee ${log_17}
+#xAH_run.py --files ${input_17} --config ${jo_17} --submitDir ${subdir_17} --nevents 100 direct | tee ${log_17}
 #xAH_run.py --files ${input_16} --config ${jo_16} --submitDir ${subdir_16} --nevents 100 direct | tee ${log_16}
 #xAH_run.py --files ${input_15} --config ${jo_15} --submitDir ${subdir_15} --nevents 100 direct | tee ${log_15}
 
-#xAH_run.py --files ${input_17} --config ${jo_test} --submitDir ${subdir_17} --nevents 100 direct
-
-xAH_run.py --files ${input_list_18} --config ${jo_18} --submitDir ${subdir_list_18} --nevents 100 direct | tee ${log_list_18}
-xAH_run.py --files ${input_list_17} --config ${jo_17} --submitDir ${subdir_list_17} --nevents 100 direct | tee ${log_list_17}
-xAH_run.py --files ${input_list_16} --config ${jo_16} --submitDir ${subdir_list_16} --nevents 100 direct | tee ${log_list_16}
-xAH_run.py --files ${input_list_15} --config ${jo_15} --submitDir ${subdir_list_15} --nevents 100 direct | tee ${log_list_15}
+#xAH_run.py --files ${input_list_18} --config ${jo_18} --submitDir ${subdir_list_18} --nevents -1 direct | tee ${log_list_18}
+#xAH_run.py --files ${input_list_17} --config ${jo_17} --submitDir ${subdir_list_17} --nevents -1 direct | tee ${log_list_17}
+xAH_run.py --files ${input_list_16} --config ${jo_16} --submitDir ${subdir_list_16} --nevents -1 direct | tee ${log_list_16}
+xAH_run.py --files ${input_list_15} --config ${jo_15} --submitDir ${subdir_list_15} --nevents -1 direct | tee ${log_list_15}
 
 
 ## job steering with valgrind -- memory checks --> DOES NOT SEEM TO WORK ON CERNVM -- TEST ON LXPLUS

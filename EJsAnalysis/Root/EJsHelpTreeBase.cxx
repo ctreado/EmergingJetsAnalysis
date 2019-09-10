@@ -293,7 +293,7 @@ void EJsHelpTreeBase :: AddPV ( )
   m_tree->Branch( "PV_z",        &m_pv_z,        "PV_z/F"        );
   m_tree->Branch( "PV_r",        &m_pv_r,        "PV_r/F"        );
   m_tree->Branch( "PV_phi",      &m_pv_phi,      "PV_phi/F"      );
-  m_tree->Branch( "PV_nTracks",  &m_pv_nTracks,  "PV_nTracks/i"  );
+  m_tree->Branch( "PV_nTracks",  &m_pv_nTracks,  "PV_nTracks/I"  );
   m_tree->Branch( "PV_location", &m_pv_location, "PV_location/I" );
 }
 

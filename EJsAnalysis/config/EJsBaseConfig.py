@@ -241,8 +241,8 @@ Dict_ObjectMatcher = {
     "m_inputAlgo"                      : "AntiKt4EMPFlowJets_Calib_Select_Algo",    # --> PFlow = rec R21 jet container
     "m_jetSystsContainerIndex"         : 1,
     "m_jet_matchRadius"                : 0.1, # --> loosen (0.5) ??
-    "m_jet_vtx_matchRadius"            : 1.0,
-    "m_jet_trk_matchRadius"            : 1.0,
+    "m_jet_vtx_matchRadius"            : 1.0, # --> 0.6 ??
+    "m_jet_trk_matchRadius"            : 1.0, # --> 0.6 ??
 }
 
 Dict_VertexMatcher = {
@@ -280,12 +280,12 @@ Dict_EJsMiniNtuple = {
     "m_msgLevel"                     : "info",
     "m_evtDetailStr"                 : "pileup pileupsys",
     "m_trigDetailStr"                : "basic passTriggers prescales",
-    "m_jetDetailStr"                 : "kinematic rapidity clean energy trackAll trackPV allTrack allTrackDetail constituent area truth charge ghost truthJets recoVerts trackParts", ## --> match (include truth + reco objects matched to reco jets) ??
+    "m_jetDetailStr"                 : "kinematic rapidity clean energy trackAll trackPV allTrack allTrackDetail constituent area truth charge ghost match",
     "m_jetContainerName"             : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
     "m_jetBranchName"                : "jet pflowJet",
     "m_jetSystsVec"                  : "AntiKt4EMPFlowJets_Calib_Select_EJsxAODAna_Algo", # --> PFlow = rec R21 jet container
     "m_jetSystsContainerIndex"       : 1,
-    "m_truthJetDetailStr"            : "kinematic rapidity energyLight constituent constituentAll area truthJets truthVerts truthParts", ## --> match (include reco + truth objects matched to truth jets) ??
+    "m_truthJetDetailStr"            : "kinematic rapidity energyLight constituent constituentAll area truthJets truthVerts truthParts",
     "m_truthJetContainerName"        : "AntiKt4TruthJets AntiKt4TruthDarkJets",
     "m_truthJetBranchName"           : "truthJet darkJet",
     "m_trackPartDetailStr"           : "kinematic numbers vertex",

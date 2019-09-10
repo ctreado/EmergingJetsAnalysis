@@ -85,7 +85,7 @@ log_312090="log.MC16d.312090.EJ_ModelE_600_0p5.out"
 
 
 ## pythia di-jet background(s)
-input_bkgd="$HOME/emerging_jets/datasets/montecarlo/MC16/MC16d/background/DAOD/exot23/mc16_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.deriv.e3668_s3126_r10848_r10706_p3719/"
+input_bkgd="$HOME/emerging_jets/datasets/montecarlo/MC16/MC16d/background/DAOD/exot23/mc16_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.deriv.DAOD_EXOT23.e3668_s3126_r10848_p3719/"
 subdir_bkgd="local.MC16d.bkgd.jz4w"
 log_bkgd="log.MC16d.bkgd.jz4w.out"
 
@@ -116,9 +116,9 @@ log_list="log.MC16d.out"
 
 
 ## config files
-jo_a="$EJ_PATH/EJsAnalysis/config/EJsConfig_data_mc16a.py"
-jo_d="$EJ_PATH/EJsAnalysis/config/EJsConfig_data_mc16d.py"
-jo_e="$EJ_PATH/EJsAnalysis/config/EJsConfig_data_mc16e.py"
+jo_a="$EJ_PATH/EJsAnalysis/config/EJsConfig_mc16a.py"
+jo_d="$EJ_PATH/EJsAnalysis/config/EJsConfig_mc16d.py"
+jo_e="$EJ_PATH/EJsAnalysis/config/EJsConfig_mc16e.py"
 
 jo_test="$EJ_PATH/EJsAnalysis/config/EJsConfig.py"
 
@@ -136,27 +136,27 @@ jo_test="$EJ_PATH/EJsAnalysis/config/EJsConfig.py"
 
 
 ## job steering -- official signal
-#xAH_run.py --files ${input_312004} --config ${jo_d} --submitDir ${subdir_312004} --nevents -100 --isMC direct | tee ${log_312004}
-xAH_run.py --files ${input_312008} --config ${jo_d} --submitDir ${subdir_312008} --nevents -100 --isMC direct | tee ${log_312008}
-#xAH_run.py --files ${input_312017} --config ${jo_d} --submitDir ${subdir_312017} --nevents -100 --isMC direct | tee ${log_312017}
-#xAH_run.py --files ${input_312022} --config ${jo_d} --submitDir ${subdir_312022} --nevents -100 --isMC direct | tee ${log_312022}
-xAH_run.py --files ${input_312028} --config ${jo_d} --submitDir ${subdir_312028} --nevents -100 --isMC direct | tee ${log_312028}
-#xAH_run.py --files ${input_312031} --config ${jo_d} --submitDir ${subdir_312031} --nevents -100 --isMC direct | tee ${log_312031}
-#xAH_run.py --files ${input_312039} --config ${jo_d} --submitDir ${subdir_312039} --nevents -100 --isMC direct | tee ${log_312039}
-#xAH_run.py --files ${input_312046} --config ${jo_d} --submitDir ${subdir_312046} --nevents -100 --isMC direct | tee ${log_312056}
-#xAH_run.py --files ${input_312052} --config ${jo_d} --submitDir ${subdir_312052} --nevents -100 --isMC direct | tee ${log_312052}
-#xAH_run.py --files ${input_312060} --config ${jo_d} --submitDir ${subdir_312060} --nevents -100 --isMC direct | tee ${log_312060}
-xAH_run.py --files ${input_312066} --config ${jo_d} --submitDir ${subdir_312066} --nevents -100 --isMC direct | tee ${log_312066}
-#xAH_run.py --files ${input_312067} --config ${jo_d} --submitDir ${subdir_312067} --nevents -100 --isMC direct | tee ${log_312067}
-#xAH_run.py --files ${input_312075} --config ${jo_d} --submitDir ${subdir_312075} --nevents -100 --isMC direct | tee ${log_312075}
-#xAH_run.py --files ${input_312080} --config ${jo_d} --submitDir ${subdir_312080} --nevents -100 --isMC direct | tee ${log_312080}
-#xAH_run.py --files ${input_312090} --config ${jo_d} --submitDir ${subdir_312090} --nevents -100 --isMC direct | tee ${log_312090}
+#xAH_run.py --files ${input_312004} --config ${jo_d} --submitDir ${subdir_312004} --nevents 100 --isMC direct | tee ${log_312004}
+xAH_run.py --files ${input_312008} --config ${jo_d} --submitDir ${subdir_312008} --nevents -1 --isMC direct | tee ${log_312008}
+#xAH_run.py --files ${input_312017} --config ${jo_d} --submitDir ${subdir_312017} --nevents 100 --isMC direct | tee ${log_312017}
+#xAH_run.py --files ${input_312022} --config ${jo_d} --submitDir ${subdir_312022} --nevents 100 --isMC direct | tee ${log_312022}
+#xAH_run.py --files ${input_312028} --config ${jo_d} --submitDir ${subdir_312028} --nevents 100 --isMC direct | tee ${log_312028}
+#xAH_run.py --files ${input_312031} --config ${jo_d} --submitDir ${subdir_312031} --nevents 100 --isMC direct | tee ${log_312031}
+#xAH_run.py --files ${input_312039} --config ${jo_d} --submitDir ${subdir_312039} --nevents 100 --isMC direct | tee ${log_312039}
+#xAH_run.py --files ${input_312046} --config ${jo_d} --submitDir ${subdir_312046} --nevents 100 --isMC direct | tee ${log_312056}
+#xAH_run.py --files ${input_312052} --config ${jo_d} --submitDir ${subdir_312052} --nevents 100 --isMC direct | tee ${log_312052}
+#xAH_run.py --files ${input_312060} --config ${jo_d} --submitDir ${subdir_312060} --nevents 100 --isMC direct | tee ${log_312060}
+#xAH_run.py --files ${input_312066} --config ${jo_d} --submitDir ${subdir_312066} --nevents 100 --isMC direct | tee ${log_312066}
+#xAH_run.py --files ${input_312067} --config ${jo_d} --submitDir ${subdir_312067} --nevents 100 --isMC direct | tee ${log_312067}
+#xAH_run.py --files ${input_312075} --config ${jo_d} --submitDir ${subdir_312075} --nevents 100 --isMC direct | tee ${log_312075}
+#xAH_run.py --files ${input_312080} --config ${jo_d} --submitDir ${subdir_312080} --nevents 100 --isMC direct | tee ${log_312080}
+#xAH_run.py --files ${input_312090} --config ${jo_d} --submitDir ${subdir_312090} --nevents 100 --isMC direct | tee ${log_312090}
 
-#xAH_run.py --files ${input_list} --config ${jo_d} --submitDir ${subdir_list} --nevents 100 --isMC direct | tee ${log_list}
+#xAH_run.py --files ${input_list} --config ${jo_d} --submitDir ${subdir_list} --nevents -1 --isMC direct | tee ${log_list}
 
 
 ## job steering -- background
-#xAH_run.py --files ${input_bkgd} --config ${jo_test} --submitDir ${subdir_bkgd} --nevents -1 --isMC direct | tee ${log_bkgd}
+#xAH_run.py --files ${input_bkgd} --config ${jo_d} --submitDir ${subdir_bkgd} --nevents -1 --isMC direct | tee ${log_bkgd}
 
 
 ## job steering with valgrind -- memory checks --> DOES NOT SEEM TO WORK ON CERNVM -- TEST ON LXPLUS

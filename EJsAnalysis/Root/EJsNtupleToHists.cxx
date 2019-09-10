@@ -48,6 +48,15 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   TTree* inTree = wk()->tree();
   std::string outFileName = inTree->GetName();
 
+  // get input file name
+  TFile* inFile = wk()->inputFile();
+  std::string inFileName = inFile->GetName();
+  
+  // set m_isMC
+  m_isMC = false;
+  if ( ( inFileName.find("mc16") != std::string::npos ) || ( inFileName.find("data1") == std::string::npos ) )
+    m_isMC = true;
+
   // get list of regions to run over
   std::string token;
   std::istringstream ss_region_names( m_regionName );
@@ -63,29 +72,13 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
     m_regions.push_back( region );
   }
 
-  // set emtopo / pflow booleans
-  m_doEMTopo = false; m_doPFlow = false;
-  if ( m_jetBranchName.find("EMTopo") != std::string::npos || m_jetBranchName.find("emtopo") != std::string::npos || m_jetEMTopo ) {
-    m_doEMTopo = true;
-    m_doPFlow  = false;
-  }
-  if ( m_jetBranchName.find("PFlow")  != std::string::npos || m_jetBranchName.find("pflow")  != std::string::npos || m_jetPFlow  ) {
-    m_doEMTopo = false;
-    m_doPFlow  = true;
-  }
-
-  // get input file name to set m_isMC
-  TFile* inputFile = wk()->inputFile();
-  std::string fileName = inputFile->GetName();
-  m_isMC = true;
-  if ( ( fileName.find("data1") != std::string::npos ) || ( fileName.find("Data1") != std::string::npos ) )
-    m_isMC = false;
-
-
-  // declare classes and add histograms to output
-  m_plots = new EJsHistogramManager ( m_name, m_detailStr, false, m_doEMTopo, m_doPFlow, m_truthLevelOnly );
-  ANA_CHECK( m_plots ->initialize( m_jetBranchName, outFileName, m_regionNames, m_isMC ) );
-  m_plots ->record( wk() );
+  if ( m_truthLevelOnly       ) m_jetStr       = "Truth";
+  if ( m_jetHistoName.empty() ) m_jetHistoName = m_jetBranchName;
+  
+  // declare histogram manager class + add histograms to ouput
+  m_plots = new EJsHistogramManager ( m_name, m_detailStr, m_jetStr, m_debug, m_isMC, m_truthLevelOnly );
+  ANA_CHECK( m_plots ->initialize( outFileName, m_regionNames, m_jetHistoName ) );
+  m_plots->record( wk() );
 
   return EL::StatusCode::SUCCESS;
 }
@@ -109,31 +102,31 @@ EL::StatusCode EJsNtupleToHists :: changeInput ( bool /*firstFile*/ )
   // using D3PDReader or similar service...
 
   // get input file name
-  TFile* inputFile = wk()->inputFile();
-  std::string fileName = inputFile->GetName();
+  TFile* inFile = wk()->inputFile();
+  std::string inFileName = inFile->GetName();
 
   // set m_isMC
-  m_isMC = true;
-  if ( ( fileName.find("data1") != std::string::npos ) || ( fileName.find("Data1") != std::string::npos ) )
-    m_isMC = false;
-  
+  m_isMC = false;
+  if ( ( inFileName.find("mc16") != std::string::npos ) || ( inFileName.find("data1") == std::string::npos ) )
+    m_isMC = true;
+
   // connect tree branches
   TTree* tree = wk()->tree();
-  tree->SetBranchStatus( "*", 0 ); // disables all branches
+  tree->SetBranchStatus( "*", 0 ); // disable all branches
 
-  ANA_CHECK(   m_plots ->connectEvents         ( tree, m_isMC ) );
+  ANA_CHECK   ( m_plots ->connectEvents         ( tree ) );
   if ( !m_truthLevelOnly ) {
-    ANA_CHECK( m_plots ->connectTriggers       ( tree, m_isMC ) );
-    ANA_CHECK( m_plots ->connectJets           ( tree, m_jetBranchName,             m_isMC ) );
-    ANA_CHECK( m_plots ->connectTrigJets       ( tree, m_trigJetBranchName,         m_isMC ) );
-    ANA_CHECK( m_plots ->connectTracks         ( tree, m_trackPartBranchName,       m_isMC ) );
-    ANA_CHECK( m_plots ->connectSecondaryVerts ( tree, m_secondaryVertexBranchName, m_isMC ) );
+    ANA_CHECK ( m_plots ->connectTriggers       ( tree ) );
+    ANA_CHECK ( m_plots ->connectJets           ( tree, m_jetBranchName             ) );
+    ANA_CHECK ( m_plots ->connectTrigJets       ( tree, m_trigJetBranchName         ) );
+    ANA_CHECK ( m_plots ->connectTracks         ( tree, m_trackPartBranchName       ) );
+    ANA_CHECK ( m_plots ->connectSecondaryVerts ( tree, m_secondaryVertexBranchName ) );
   }
   if ( m_isMC ) {
-    ANA_CHECK( m_plots ->connectTruthJets      ( tree, m_truthJetBranchName     ) );
-    ANA_CHECK( m_plots ->connectTruthDarkJets  ( tree, m_truthDarkJetBranchName ) );
-    ANA_CHECK( m_plots ->connectTruthParts     ( tree, m_truthPartBranchName    ) );
-    ANA_CHECK( m_plots ->connectTruthVerts     ( tree, m_truthVertexBranchName  ) );
+    ANA_CHECK ( m_plots ->connectTruthJets      ( tree, m_truthJetBranchName     ) );
+    ANA_CHECK ( m_plots ->connectTruthDarkJets  ( tree, m_truthDarkJetBranchName ) );
+    ANA_CHECK ( m_plots ->connectTruthParts     ( tree, m_truthPartBranchName    ) );
+    ANA_CHECK ( m_plots ->connectTruthVerts     ( tree, m_truthVertexBranchName  ) );
   }
 
   return EL::StatusCode::SUCCESS;
@@ -168,12 +161,8 @@ EL::StatusCode EJsNtupleToHists :: execute ()
 
   ANA_MSG_DEBUG( "Executing EJsNtupleToHists algorithm" );
 
-  // do any more necessary analysis ???
-
   TTree* tree = wk()->tree();
-  //ANA_CHECK( m_plots ->execute( tree, wk()->treeEntry(), m_regionNames, m_isMC ) );
-  ANA_CHECK( m_plots ->execute( tree, wk()->treeEntry(), m_regions, m_isMC ) );
-  
+  ANA_CHECK( m_plots ->execute( tree, wk()->treeEntry(), m_regions ) );
 
   return EL::StatusCode::SUCCESS;
 }

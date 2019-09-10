@@ -7,6 +7,7 @@
    NOTE: unlike the tree-making alg, this alg can only handle one reco jet collection at a time;
    to histogram multiple reco jet collections, re-run the job with a different input jet branch name */
 
+#include <vector>
 #include <string>
 
 #include <xAODAnaHelpers/Algorithm.h>
@@ -22,12 +23,11 @@ class EJsNtupleToHists : public xAH::Algorithm
  public:
   // float cutValue;
 
-  // in container name, detail string
 
-  // info switches
+  // histogram info switches
   std::string m_detailStr = "";
 
-  // regions to run over
+  // regions to num over
   std::string m_regionName = "";
 
   // input branch names
@@ -40,14 +40,20 @@ class EJsNtupleToHists : public xAH::Algorithm
   std::string m_truthVertexBranchName     = "";
   std::string m_secondaryVertexBranchName = "";
 
-  // jets type to use
-  bool m_jetEMTopo = true;
-  bool m_jetPFlow  = false;
+  // jet-type string (used in event-info branch labels)
+  std::string m_jetStr = "EMTopo";
+
+  // output histogram names
+  std::string m_jetHistoName             = "";
+  std::string m_trigJetHistoName         = "";
+  std::string m_truthJetHistoName        = "";
+  std::string m_truthDarkJetHistoName    = "";
+  std::string m_truthPartHistoName       = "";
+  std::string m_trackPartHistoName       = "";
+  std::string m_truthVertexHistoName     = "";
+  std::string m_secondaryVertexHistoName = "";
 
   bool m_truthLevelOnly = false;
-
-  // unit conversion from MeV; default is GeV
-  float m_units = 1e3;
 
 
   // variables not filled at submission time
@@ -61,12 +67,10 @@ class EJsNtupleToHists : public xAH::Algorithm
   std::vector<EJsHelper::Region> m_regions;     //!
   
   EJsHistogramManager* m_plots = 0; //!
-
+  
   int  m_eventNumber; //!
   bool m_isMC;        //!
-  bool m_doEMTopo;    //!
-  bool m_doPFlow;     //!
-
+  
   
  public:
   // standard constructor

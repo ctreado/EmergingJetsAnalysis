@@ -32,28 +32,72 @@ namespace EJsHelperClasses {
   }
 
   void HistogramInfoSwitch::initialize() {
-    m_kinematic      = has_exact( "kinematic"      );
-    m_kinematic_jet  = has_exact( "kinematic_jet"  );
-    m_match          = has_exact( "match"          );
-    m_match_jet      = has_exact( "match_jet"      );
-    m_match_jetTrk   = has_exact( "match_jetTrk"   );
-    m_match_jetVtx   = has_exact( "match_jetVtx"   );
-    m_match_jetTruth = has_exact( "match_jetTruth" );
-    m_vsMu           = has_exact( "vsMu"           );
-    m_vsMu_jet       = has_exact( "vsMu_jet"       );
-    m_vsMu_vtx       = has_exact( "vsMu_vtx"       );
-    m_jetEConstit    = has_exact( "jetEConstit"    );
-    m_jetTrkMom      = has_exact( "jetTrkMom"      );
-    m_jetGhost       = has_exact( "jetGhost"       );
-    m_vtxTracks      = has_exact( "vtxTracks"      );
+    m_eventInfo        = has_exact( "eventInfo"        );
+    m_pileup           = has_exact( "pileup"           );
+    m_pv               = has_exact( "pv"               );
+    m_jets             = has_exact( "jets"             );
+    m_jet_energy       = has_exact( "jet_energy"       );
+    m_jet_constit      = has_exact( "jet_constit"      );
+    m_jet_trkMoms      = has_exact( "jet_trkMoms"      );
+    m_jet_ghost        = has_exact( "jet_ghost"        );
+    m_jet_ghostTrk     = has_exact( "jet_ghostTrk"     );
+    m_jet_ghostTruth   = has_exact( "jet_ghostTruth"   );
+    m_tjets            = has_exact( "tjets"            );
+    m_tjet_energy      = has_exact( "tjet_energy"      );
+    m_tjet_constit     = has_exact( "tjet_constit"     );
+    m_djets            = has_exact( "djets"            );
+    m_djet_energy      = has_exact( "djet_energy"      );
+    m_djet_constit     = has_exact( "djet_constit"     );
+    m_trks             = has_exact( "trks"             );
+    m_tps              = has_exact( "tps"              );
+    m_tps_xd           = has_exact( "tps_xd"           );
+    m_tps_qd           = has_exact( "tps_qd"           );
+    m_tps_pid          = has_exact( "tps_pid"          );
+    m_tps_rhod         = has_exact( "tps_rhod"         );
+    m_verts            = has_exact( "verts"            );
+    m_tverts           = has_exact( "tverts"           );
+    m_kinematics       = has_exact( "kinematics"       );
+    m_kinematics_jet   = has_exact( "kinematics_jet"   );
+    m_kinematics_tjet  = has_exact( "kinematics_tjet"  );
+    m_kinematics_djet  = has_exact( "kinematics_djet"  );
+    m_kinematics_trk   = has_exact( "kinematics_trk"   );
+    m_kinematics_tp    = has_exact( "kinematics_tp"    );
+    m_match            = has_exact( "match"            );
+    m_match_jet        = has_exact( "match_jet"        );
+    m_match_jet_truth  = has_exact( "match_jet_truth"  );
+    m_match_jet_trk    = has_exact( "match_jet_trk"    );
+    m_match_jet_tp     = has_exact( "match_jet_tp"     );
+    m_match_jet_vtx    = has_exact( "match_jet_vtx"    );
+    m_match_jet_tvtx   = has_exact( "match_jet_tvtx"   );
+    m_match_tjet       = has_exact( "match_tjet"       );
+    m_match_tjet_truth = has_exact( "match_tjet_truth" );
+    m_match_tjet_trk   = has_exact( "match_tjet_trk"   );
+    m_match_tjet_tp    = has_exact( "match_tjet_tp"    );
+    m_match_tjet_vtx   = has_exact( "match_tjet_vtx"   );
+    m_match_tjet_tvtx  = has_exact( "match_tjet_tvtx"  );
+    m_match_djet       = has_exact( "match_djet"       );
+    m_match_djet_truth = has_exact( "match_djet_truth" );
+    m_match_djet_trk   = has_exact( "match_djet_trk"   );
+    m_match_djet_tp    = has_exact( "match_djet_tp"    );
+    m_match_djet_vtx   = has_exact( "match_djet_vtx"   );
+    m_match_djet_tvtx  = has_exact( "match_djet_tvtx"  );
     
-    m_numLeading = 0;
-    m_numVtxTrk  = 0;
+    m_numLeadingJets  = 0; // jets
+    m_numLeadingTJets = 0; // truth jets
+    m_numLeadingDJets = 0; // dark jets
+    m_numVtxTrks      = 0; // secondary vertices
+    m_numTVtxTrks     = 0; // truth vertices
     for ( auto configDetail : m_configDetails ) {
-      if ( configDetail.compare( 0, 8, "NLeading" ) == 0 )
-    	m_numLeading = std::atoi( configDetail.substr( 8, std::string::npos ).c_str() );
-      if ( configDetail.compare( 0, 7, "NVtxTrk"  ) == 0 )
-	m_numVtxTrk  = std::atoi( configDetail.substr( 7, std::string::npos ).c_str() );
+      if ( configDetail.compare( 0, 9,  "NLeadJets"  ) == 0 )
+	m_numLeadingJets  = std::atoi( configDetail.substr( 9,  std::string::npos ).c_str() );
+      if ( configDetail.compare( 0, 10, "NLeadTJets" ) == 0 )
+	m_numLeadingTJets = std::atoi( configDetail.substr( 10, std::string::npos ).c_str() );
+      if ( configDetail.compare( 0, 10, "NLeadDJets" ) == 0 )
+	m_numLeadingDJets = std::atoi( configDetail.substr( 10, std::string::npos ).c_str() );
+      if ( configDetail.compare( 0, 8,  "NVtxTrks"   ) == 0 )
+	m_numVtxTrks      = std::atoi( configDetail.substr( 8,  std::string::npos ).c_str() );
+      if ( configDetail.compare( 0, 9,  "NTVtxTrks"  ) == 0 )
+	m_numTVtxTrks     = std::atoi( configDetail.substr( 9,  std::string::npos ).c_str() );
     }
   }
   
