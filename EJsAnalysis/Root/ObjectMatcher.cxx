@@ -710,12 +710,19 @@ void ObjectMatcher :: matchSecVertsToJets ( const xAOD::JetContainer* jets, cons
       
       // get vertex eta, phi from four-momentum + calculate dR to jet
       std::vector<const xAOD::TrackParticle*> filteredTracks;
+      std::vector<const xAOD::TrackParticle*> allTracks;
       EJsHelper::getFilteredTracks( vtx, filteredTracks );
-      TLorentzVector vtxP4 = VsiBonsai::sumP4( filteredTracks );
+      for ( size_t i = 0; i != vtx->nTrackParticles(); ++i ) {
+	const auto* trk = vtx->trackParticle(i);
+	allTracks.push_back( trk );
+      }
+      TLorentzVector vtxP4      = VsiBonsai::sumP4 ( filteredTracks );
+      TLorentzVector vtxP4_bare = VsiBonsai::sumP4 ( allTracks      );
       
-      double dR = EJsHelper::deltaR( jet->eta(), vtxP4.Eta(), jet->phi(), vtxP4.Phi() );
-      if ( dR < m_jet_vtx_matchRadius )
-	matchedSecVerts_tmp[vtx] .push_back( std::make_pair( jet, dR ) );
+      double dR      = EJsHelper::deltaR( jet->eta(), vtxP4.Eta(),      jet->phi(), vtxP4.Phi()      );
+      double dR_bare = EJsHelper::deltaR( jet->eta(), vtxP4_bare.Eta(), jet->phi(), vtxP4_bare.Phi() );
+      if ( dR < m_jet_vtx_matchRadius || dR_bare < m_jet_vtx_matchRadius )
+	matchedSecVerts_tmp[vtx] .push_back( std::make_pair( jet, std::min(dR, dR_bare) ) );
       
     } // end loop over secondary vertices
     

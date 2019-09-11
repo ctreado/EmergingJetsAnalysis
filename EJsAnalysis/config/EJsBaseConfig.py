@@ -204,8 +204,9 @@ Dict_SecondaryVertexSelector = {
     "m_outContainerName"        : "VrtSecInclusive_SecondaryVertices_Select",
     "m_decorateSelectedObjects" : True,
     "m_createSelectedContainer" : True,
-    "m_doTrackTrimming"         : False,  ## --> TEST --> eventually want to turn on; need to optimize trimmer cuts...
-    "m_doMatMapVeto"            : True,   ## --> compare vertices w/ material on and off ???
+    "m_doTrackTrimming"         : True,  ## --> for now, apply (default) track trimming...
+    "m_doFiltTrkCut"            : False, ## --> ...but don't apply filtered-track cuts
+    "m_doMatMapVeto"            : True,  ## --> compare vertices w/ material on and off ???
     "m_matMapInnerFileName"     : matMapPath + "MaterialMap_v3.2_Inner.root",
     "m_matMapInnerHistName"     : "FinalMap_inner",
     "m_matMapInnerMatrixName"   : "FoldingInfo",

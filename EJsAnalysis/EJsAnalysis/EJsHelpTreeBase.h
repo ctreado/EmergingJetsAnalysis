@@ -231,7 +231,7 @@ class EJsHelpTreeBase : public HelpTreeBase
   std::vector<std::vector<int>>*         m_trk_truthAncestorIndex;
   // corresponding secondary vertices
   std::vector<uint8_t>*                  m_trk_isSecVtxTrk;
-  std::vector<uint8_t>*                  m_trk_isSecVtxFilteredTrk;
+  std::vector<uint8_t>*                  m_trk_isSecVtxFiltTrk;
   std::vector<int>*                      m_trk_secVtxID;
   std::vector<int>*                      m_trk_secVtxIndex;
   // matching jets (jets to which tracks are dR-matched)

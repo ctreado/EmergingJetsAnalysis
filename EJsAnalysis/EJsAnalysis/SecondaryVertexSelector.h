@@ -34,8 +34,7 @@ class SecondaryVertexSelector : public xAH::Algorithm
   std::string m_inContainerName  = "VrtSecInclusive_SecondaryVertices";
   std::string m_outContainerName = "FilteredSecondaryVertices";
 
-  std::string m_decor     = "passSel";
-  std::string m_decorTrim = "passTrimSel";
+  std::string m_decor = "passSel";
   
   bool m_decorateSelectedObjects = true;
   bool m_createSelectedContainer = false;
@@ -66,7 +65,7 @@ class SecondaryVertexSelector : public xAH::Algorithm
   bool   m_doDropAssociated   = false;
   bool   m_doDropNonSelected  = false;
   // default values based on VsiPerf note ... may want/need to change ... STUDY !!!
-  double m_trkChi2Cut        = 5.0; // max (off) ??
+  double m_trkChi2Cut        = 5.0;
   double m_d0_wrtSVCut       = 0.8;
   double m_z0_wrtSVCut       = 1.2;
   double m_errd0_wrtSVCut    = AlgConsts::invalidFloat;
@@ -75,6 +74,8 @@ class SecondaryVertexSelector : public xAH::Algorithm
   double m_z0signif_wrtSVCut = 5.0;
   double m_chi2_toSVCut      = 5.0;
   VsiTool::HitPatternCondition m_hitPatternCond = VsiTool::HitPatternCondition::NONE;
+  // filtered-track cut --> skip DVs w/ less than two filtered tracks
+  bool m_doFiltTrkCut = false;
 
   // material map veto
   bool m_doMatMapVeto = true;

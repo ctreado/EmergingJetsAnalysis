@@ -20,37 +20,59 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, 
   
   if ( m_debug ) Info( "EJs::SecondaryVertexContainer()", "setting up" );
 
-  m_ID                     = new std::vector<int>;
-  m_index                  = new std::vector<int>;
-  m_x                      = new std::vector<float>;
-  m_y                      = new std::vector<float>;
-  m_z                      = new std::vector<float>;
-  m_r                      = new std::vector<float>;
-  m_pt                     = new std::vector<float>;
-  m_eta                    = new std::vector<float>;
-  m_phi                    = new std::vector<float>;
-  m_mass                   = new std::vector<float>;
-  m_mass_nonAssoc          = new std::vector<float>;
-  m_covariance             = new std::vector<std::vector<float>>;
-  m_chi2                   = new std::vector<float>;
-  m_direction              = new std::vector<float>;
-  m_charge                 = new std::vector<int>;
-  m_H                      = new std::vector<float>;
-  m_Ht                     = new std::vector<float>;
-  m_minOpAng               = new std::vector<float>;
-  m_maxOpAng               = new std::vector<float>;
-  m_mind0                  = new std::vector<float>;
-  m_maxd0                  = new std::vector<float>;
-  m_distToPV               = new std::vector<float>;
+  m_ID                         = new std::vector<int>;
+  m_index                      = new std::vector<int>;
+  m_x                          = new std::vector<float>;
+  m_y                          = new std::vector<float>;
+  m_z                          = new std::vector<float>;
+  m_r                          = new std::vector<float>;
+  m_pt                         = new std::vector<float>;
+  m_eta                        = new std::vector<float>;
+  m_phi                        = new std::vector<float>;
+  m_mass                       = new std::vector<float>;
+  m_mass_nonAssoc              = new std::vector<float>;
+  m_covariance                 = new std::vector<std::vector<float>>;
+  m_chi2                       = new std::vector<float>;
+  m_direction                  = new std::vector<float>;
+  m_charge                     = new std::vector<int>;
+  m_H                          = new std::vector<float>;
+  m_Ht                         = new std::vector<float>;
+  m_minOpAng                   = new std::vector<float>;
+  m_maxOpAng                   = new std::vector<float>;
+  m_mind0                      = new std::vector<float>;
+  m_maxd0                      = new std::vector<float>;
+  m_distToPV                   = new std::vector<float>;
+
+  m_pt_bare                    = new std::vector<float>;
+  m_eta_bare                   = new std::vector<float>;
+  m_phi_bare                   = new std::vector<float>;
+  m_mass_bare                  = new std::vector<float>;
+  m_mass_nonAssoc_bare         = new std::vector<float>;
+  m_direction_bare             = new std::vector<float>;
+  m_charge_bare                = new std::vector<int>;
+  m_H_bare                     = new std::vector<float>;
+  m_Ht_bare                    = new std::vector<float>;
+  m_minOpAng_bare              = new std::vector<float>;
+  m_maxOpAng_bare              = new std::vector<float>;
+  m_mind0_bare                 = new std::vector<float>;
+  m_maxd0_bare                 = new std::vector<float>;
   
-  m_minOneTrackRemovedMass = new std::vector<float>;
-  m_twoTracksMass          = new std::vector<std::vector<float>>;
-  m_twoTracksMassRest      = new std::vector<std::vector<float>>;
-  m_twoTracksCharge        = new std::vector<std::vector<int>>;
+  m_minOneTrackRemovedMass     = new std::vector<float>;
+  m_twoTracksMass              = new std::vector<std::vector<float>>;
+  m_twoTracksMassRest          = new std::vector<std::vector<float>>;
+  m_twoTracksCharge            = new std::vector<std::vector<int>>;
+
+  m_minOneTrackRemovedMass_bare = new std::vector<float>;
+  m_twoTracksMass_bare          = new std::vector<std::vector<float>>;
+  m_twoTracksMassRest_bare      = new std::vector<std::vector<float>>;
+  m_twoTracksCharge_bare        = new std::vector<std::vector<int>>;
   
-  m_ntrk                   = new std::vector<int>;
-  m_ntrk_sel               = new std::vector<int>;
-  m_ntrk_assoc             = new std::vector<int>;
+  m_ntrk                       = new std::vector<int>;
+  m_ntrk_sel                   = new std::vector<int>;
+  m_ntrk_assoc                 = new std::vector<int>;
+  m_ntrk_filt                  = new std::vector<int>;
+  m_ntrk_filt_sel              = new std::vector<int>;
+  m_ntrk_filt_assoc            = new std::vector<int>;
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
@@ -155,6 +177,8 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, 
     m_matchedTruthVtx_recoDescSumM      = new std::vector<std::vector<float>>;
     m_matchedTruthVtx_massFraction      = new std::vector<std::vector<float>>;
     m_matchedTruthVtx_multFraction      = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_bareMassFraction  = new std::vector<std::vector<float>>;
+    m_matchedTruthVtx_bareMultFraction  = new std::vector<std::vector<float>>;
     m_matchedTruthVtx_matchScore        = new std::vector<std::vector<float>>;
     m_matchedTruthVtxReprPhysPos_ID     = new std::vector<std::vector<int>>;
     m_matchedTruthVtxReprPhysPos_x      = new std::vector<std::vector<float>>;
@@ -226,15 +250,37 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
   delete m_mind0;
   delete m_maxd0;
   delete m_distToPV;
+
+  delete m_pt_bare;
+  delete m_eta_bare;
+  delete m_phi_bare;
+  delete m_mass_bare;
+  delete m_mass_nonAssoc_bare;
+  delete m_direction_bare;
+  delete m_charge_bare;
+  delete m_H_bare;
+  delete m_Ht_bare;
+  delete m_minOpAng_bare;
+  delete m_maxOpAng_bare;
+  delete m_mind0_bare;
+  delete m_maxd0_bare;
   
   delete m_minOneTrackRemovedMass;
   delete m_twoTracksMass;
   delete m_twoTracksMassRest;
   delete m_twoTracksCharge;
   
+  delete m_minOneTrackRemovedMass_bare;
+  delete m_twoTracksMass_bare;
+  delete m_twoTracksMassRest_bare;
+  delete m_twoTracksCharge_bare;
+  
   delete m_ntrk;
   delete m_ntrk_sel;
   delete m_ntrk_assoc;
+  delete m_ntrk_filt;
+  delete m_ntrk_filt_sel;
+  delete m_ntrk_filt_assoc;
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
@@ -339,6 +385,8 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
     delete m_matchedTruthVtx_recoDescSumM;
     delete m_matchedTruthVtx_massFraction;
     delete m_matchedTruthVtx_multFraction;
+    delete m_matchedTruthVtx_bareMassFraction;
+    delete m_matchedTruthVtx_bareMultFraction;
     delete m_matchedTruthVtx_matchScore;
     delete m_matchedTruthVtxReprPhysPos_ID;
     delete m_matchedTruthVtxReprPhysPos_x;
@@ -390,37 +438,59 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
 
   VertexContainer::setTree ( tree );
 
-  connectBranch<int>                ( tree, "ID",                     &m_ID                     );
-  connectBranch<int>                ( tree, "index",                  &m_index                  );
-  connectBranch<float>              ( tree, "x",                      &m_x                      );
-  connectBranch<float>              ( tree, "y",                      &m_y                      );
-  connectBranch<float>              ( tree, "z",                      &m_z                      );
-  connectBranch<float>              ( tree, "r",                      &m_r                      );
-  connectBranch<float>              ( tree, "pt",                     &m_pt                     );
-  connectBranch<float>              ( tree, "eta",                    &m_eta                    );
-  connectBranch<float>              ( tree, "phi",                    &m_phi                    );
-  connectBranch<float>              ( tree, "mass",                   &m_mass                   );
-  connectBranch<float>              ( tree, "mass_nonAssoc",          &m_mass_nonAssoc          );
-  connectBranch<std::vector<float>> ( tree, "covariance",             &m_covariance             );
-  connectBranch<float>              ( tree, "chi2",                   &m_chi2                   );
-  connectBranch<float>              ( tree, "direction",              &m_direction              );
-  connectBranch<int>                ( tree, "charge",                 &m_charge                 );
-  connectBranch<float>              ( tree, "H",                      &m_H                      );
-  connectBranch<float>              ( tree, "Ht",                     &m_Ht                     );
-  connectBranch<float>              ( tree, "minOpAng",               &m_minOpAng               );
-  connectBranch<float>              ( tree, "maxOpAng",               &m_maxOpAng               );
-  connectBranch<float>              ( tree, "mind0",                  &m_mind0                  );
-  connectBranch<float>              ( tree, "maxd0",                  &m_maxd0                  );
-  connectBranch<float>              ( tree, "distToPV",               &m_distToPV               );
+  connectBranch<int>                ( tree, "ID",                          &m_ID                          );
+  connectBranch<int>                ( tree, "index",                       &m_index                       );
+  connectBranch<float>              ( tree, "x",                           &m_x                           );
+  connectBranch<float>              ( tree, "y",                           &m_y                           );
+  connectBranch<float>              ( tree, "z",                           &m_z                           );
+  connectBranch<float>              ( tree, "r",                           &m_r                           );
+  connectBranch<float>              ( tree, "pt",                          &m_pt                          );
+  connectBranch<float>              ( tree, "eta",                         &m_eta                         );
+  connectBranch<float>              ( tree, "phi",                         &m_phi                         );
+  connectBranch<float>              ( tree, "mass",                        &m_mass                        );
+  connectBranch<float>              ( tree, "mass_nonAssoc",               &m_mass_nonAssoc               );
+  connectBranch<std::vector<float>> ( tree, "covariance",                  &m_covariance                  );
+  connectBranch<float>              ( tree, "chi2",                        &m_chi2                        );
+  connectBranch<float>              ( tree, "direction",                   &m_direction                   );
+  connectBranch<int>                ( tree, "charge",                      &m_charge                      );
+  connectBranch<float>              ( tree, "H",                           &m_H                           );
+  connectBranch<float>              ( tree, "Ht",                          &m_Ht                          );
+  connectBranch<float>              ( tree, "minOpAng",                    &m_minOpAng                    );
+  connectBranch<float>              ( tree, "maxOpAng",                    &m_maxOpAng                    );
+  connectBranch<float>              ( tree, "mind0",                       &m_mind0                       );
+  connectBranch<float>              ( tree, "maxd0",                       &m_maxd0                       );
+  connectBranch<float>              ( tree, "distToPV",                    &m_distToPV                    );
+
+  connectBranch<float>              ( tree, "pt_bare",                     &m_pt_bare                     );
+  connectBranch<float>              ( tree, "eta_bare",                    &m_eta_bare                    );
+  connectBranch<float>              ( tree, "phi_bare",                    &m_phi_bare                    );
+  connectBranch<float>              ( tree, "mass_bare",                   &m_mass_bare                   );
+  connectBranch<float>              ( tree, "mass_nonAssoc_bare",          &m_mass_nonAssoc_bare          );
+  connectBranch<float>              ( tree, "direction_bare",              &m_direction_bare              );
+  connectBranch<int>                ( tree, "charge_bare",                 &m_charge_bare                 );
+  connectBranch<float>              ( tree, "H_bare",                      &m_H_bare                      );
+  connectBranch<float>              ( tree, "Ht_bare",                     &m_Ht_bare                     );
+  connectBranch<float>              ( tree, "minOpAng_bare",               &m_minOpAng_bare               );
+  connectBranch<float>              ( tree, "maxOpAng_bare",               &m_maxOpAng_bare               );
+  connectBranch<float>              ( tree, "mind0_bare",                  &m_mind0_bare                  );
+  connectBranch<float>              ( tree, "maxd0_bare",                  &m_maxd0_bare                  );
   
-  connectBranch<float>              ( tree, "minOneTrackRemovedMass", &m_minOneTrackRemovedMass );
-  connectBranch<std::vector<float>> ( tree, "twoTracksMass",          &m_twoTracksMass          );
-  connectBranch<std::vector<float>> ( tree, "twoTracksMassRest",      &m_twoTracksMassRest      );
-  connectBranch<std::vector<int>>   ( tree, "twoTracksCharge",        &m_twoTracksCharge        );
+  connectBranch<float>              ( tree, "minOneTrackRemovedMass",      &m_minOneTrackRemovedMass      );
+  connectBranch<std::vector<float>> ( tree, "twoTracksMass",               &m_twoTracksMass               );
+  connectBranch<std::vector<float>> ( tree, "twoTracksMassRest",           &m_twoTracksMassRest           );
+  connectBranch<std::vector<int>>   ( tree, "twoTracksCharge",             &m_twoTracksCharge             );
+
+  connectBranch<float>              ( tree, "minOneTrackRemovedMass_bare", &m_minOneTrackRemovedMass_bare );
+  connectBranch<std::vector<float>> ( tree, "twoTracksMass_bare",          &m_twoTracksMass_bare          );
+  connectBranch<std::vector<float>> ( tree, "twoTracksMassRest_bare",      &m_twoTracksMassRest_bare      );
+  connectBranch<std::vector<int>>   ( tree, "twoTracksCharge_bare",        &m_twoTracksCharge_bare        );
   
-  connectBranch<int>                ( tree, "ntrk",                   &m_ntrk                   );
-  connectBranch<int>                ( tree, "ntrk_sel",               &m_ntrk_sel               );
-  connectBranch<int>                ( tree, "ntrk_assoc",             &m_ntrk_assoc             );
+  connectBranch<int>                ( tree, "ntrk",                        &m_ntrk                        );
+  connectBranch<int>                ( tree, "ntrk_sel",                    &m_ntrk_sel                    );
+  connectBranch<int>                ( tree, "ntrk_assoc",                  &m_ntrk_assoc                  );
+  connectBranch<int>                ( tree, "ntrk_filt",                   &m_ntrk_filt                   );
+  connectBranch<int>                ( tree, "ntrk_filt_sel",               &m_ntrk_filt_sel               );
+  connectBranch<int>                ( tree, "ntrk_filt_assoc",             &m_ntrk_filt_assoc             );
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
@@ -526,6 +596,8 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
     connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_recoDescSumM",      &m_matchedTruthVtx_recoDescSumM      );
     connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_massFraction",      &m_matchedTruthVtx_massFraction      );
     connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_multFraction",      &m_matchedTruthVtx_multFraction      );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_bareMassFraction",  &m_matchedTruthVtx_bareMassFraction  );
+    connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_bareMultFraction",  &m_matchedTruthVtx_bareMultFraction  );
     connectBranch<std::vector<float>>       ( tree, "matchedTruthVtx_matchScore",        &m_matchedTruthVtx_matchScore        );
     connectBranch<std::vector<int>>         ( tree, "matchedTruthVtxReprPhysPos_ID",     &m_matchedTruthVtxReprPhysPos_ID     );
     connectBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_x",      &m_matchedTruthVtxReprPhysPos_x      );
@@ -577,37 +649,59 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
 
   VertexContainer::setBranches ( tree );
 
-  setBranch<int>                ( tree, "ID",                     m_ID                     );
-  setBranch<int>                ( tree, "index",                  m_index                  );
-  setBranch<float>              ( tree, "x",                      m_x                      );
-  setBranch<float>              ( tree, "y",                      m_y                      );
-  setBranch<float>              ( tree, "z",                      m_z                      );
-  setBranch<float>              ( tree, "r",                      m_r                      );
-  setBranch<float>              ( tree, "pt",                     m_pt                     );
-  setBranch<float>              ( tree, "eta",                    m_eta                    );
-  setBranch<float>              ( tree, "phi",                    m_phi                    );
-  setBranch<float>              ( tree, "mass",                   m_mass                   );
-  setBranch<float>              ( tree, "mass_nonAssoc",          m_mass_nonAssoc          );
-  setBranch<std::vector<float>> ( tree, "covariance",             m_covariance             );
-  setBranch<float>              ( tree, "chi2",                   m_chi2                   );
-  setBranch<float>              ( tree, "direction",              m_direction              );
-  setBranch<int>                ( tree, "charge",                 m_charge                 );
-  setBranch<float>              ( tree, "H",                      m_H                      );
-  setBranch<float>              ( tree, "Ht",                     m_Ht                     );
-  setBranch<float>              ( tree, "minOpAng",               m_minOpAng               );
-  setBranch<float>              ( tree, "maxOpAng",               m_maxOpAng               );
-  setBranch<float>              ( tree, "mind0",                  m_mind0                  );
-  setBranch<float>              ( tree, "maxd0",                  m_maxd0                  );
-  setBranch<float>              ( tree, "distToPV",               m_distToPV               );
+  setBranch<int>                ( tree, "ID",                          m_ID                          );
+  setBranch<int>                ( tree, "index",                       m_index                       );
+  setBranch<float>              ( tree, "x",                           m_x                           );
+  setBranch<float>              ( tree, "y",                           m_y                           );
+  setBranch<float>              ( tree, "z",                           m_z                           );
+  setBranch<float>              ( tree, "r",                           m_r                           );
+  setBranch<float>              ( tree, "pt",                          m_pt                          );
+  setBranch<float>              ( tree, "eta",                         m_eta                         );
+  setBranch<float>              ( tree, "phi",                         m_phi                         );
+  setBranch<float>              ( tree, "mass",                        m_mass                        );
+  setBranch<float>              ( tree, "mass_nonAssoc",               m_mass_nonAssoc               );
+  setBranch<std::vector<float>> ( tree, "covariance",                  m_covariance                  );
+  setBranch<float>              ( tree, "chi2",                        m_chi2                        );
+  setBranch<float>              ( tree, "direction",                   m_direction                   );
+  setBranch<int>                ( tree, "charge",                      m_charge                      );
+  setBranch<float>              ( tree, "H",                           m_H                           );
+  setBranch<float>              ( tree, "Ht",                          m_Ht                          );
+  setBranch<float>              ( tree, "minOpAng",                    m_minOpAng                    );
+  setBranch<float>              ( tree, "maxOpAng",                    m_maxOpAng                    );
+  setBranch<float>              ( tree, "mind0",                       m_mind0                       );
+  setBranch<float>              ( tree, "maxd0",                       m_maxd0                       );
+  setBranch<float>              ( tree, "distToPV",                    m_distToPV                    );
 
-  setBranch<float>              ( tree, "minOneTrackRemovedMass", m_minOneTrackRemovedMass );
-  setBranch<std::vector<float>> ( tree, "twoTracksMass",          m_twoTracksMass          );
-  setBranch<std::vector<float>> ( tree, "twoTracksMassRest",      m_twoTracksMassRest      );
-  setBranch<std::vector<int>>   ( tree, "twoTracksCharge",        m_twoTracksCharge        );
+  setBranch<float>              ( tree, "pt_bare",                     m_pt_bare                     );
+  setBranch<float>              ( tree, "eta_bare",                    m_eta_bare                    );
+  setBranch<float>              ( tree, "phi_bare",                    m_phi_bare                    );
+  setBranch<float>              ( tree, "mass_bare",                   m_mass_bare                   );
+  setBranch<float>              ( tree, "mass_nonAssoc_bare",          m_mass_nonAssoc_bare          );
+  setBranch<float>              ( tree, "direction_bare",              m_direction_bare              );
+  setBranch<int>                ( tree, "charge_bare",                 m_charge_bare                 );
+  setBranch<float>              ( tree, "H_bare",                      m_H_bare                      );
+  setBranch<float>              ( tree, "Ht_bare",                     m_Ht_bare                     );
+  setBranch<float>              ( tree, "minOpAng_bare",               m_minOpAng_bare               );
+  setBranch<float>              ( tree, "maxOpAng_bare",               m_maxOpAng_bare               );
+  setBranch<float>              ( tree, "mind0_bare",                  m_mind0_bare                  );
+  setBranch<float>              ( tree, "maxd0_bare",                  m_maxd0_bare                  );
+
+  setBranch<float>              ( tree, "minOneTrackRemovedMass",      m_minOneTrackRemovedMass      );
+  setBranch<std::vector<float>> ( tree, "twoTracksMass",               m_twoTracksMass               );
+  setBranch<std::vector<float>> ( tree, "twoTracksMassRest",           m_twoTracksMassRest           );
+  setBranch<std::vector<int>>   ( tree, "twoTracksCharge",             m_twoTracksCharge             );
+
+  setBranch<float>              ( tree, "minOneTrackRemovedMass_bare", m_minOneTrackRemovedMass_bare );
+  setBranch<std::vector<float>> ( tree, "twoTracksMass_bare",          m_twoTracksMass_bare          );
+  setBranch<std::vector<float>> ( tree, "twoTracksMassRest_bare",      m_twoTracksMassRest_bare      );
+  setBranch<std::vector<int>>   ( tree, "twoTracksCharge_bare",        m_twoTracksCharge_bare        );
 
   setBranch<int>                ( tree, "ntrk",                   m_ntrk                   );
   setBranch<int>                ( tree, "ntrk_sel",               m_ntrk_sel               );
   setBranch<int>                ( tree, "ntrk_assoc",             m_ntrk_assoc             );
+  setBranch<int>                ( tree, "ntrk_filt",              m_ntrk_filt              );
+  setBranch<int>                ( tree, "ntrk_filt_sel",          m_ntrk_filt_sel          );
+  setBranch<int>                ( tree, "ntrk_filt_assoc",        m_ntrk_filt_assoc        );
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
@@ -709,6 +803,8 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
     setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_recoDescSumM",      m_matchedTruthVtx_recoDescSumM      );
     setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_massFraction",      m_matchedTruthVtx_massFraction      );
     setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_multFraction",      m_matchedTruthVtx_multFraction      );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_bareMassFraction",  m_matchedTruthVtx_bareMassFraction  );
+    setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_bareMultFraction",  m_matchedTruthVtx_bareMultFraction  );
     setBranch<std::vector<float>>       ( tree, "matchedTruthVtx_matchScore",        m_matchedTruthVtx_matchScore        );
     setBranch<std::vector<int>>         ( tree, "matchedTruthVtxReprPhysPos_ID",     m_matchedTruthVtxReprPhysPos_ID     );
     setBranch<std::vector<float>>       ( tree, "matchedTruthVtxReprPhysPos_x",      m_matchedTruthVtxReprPhysPos_x      );
@@ -760,37 +856,59 @@ void SecondaryVertexContainer :: clear ()
 
   VertexContainer::clear ();
 
-  m_ID                     ->clear();
-  m_index                  ->clear();
-  m_x                      ->clear();
-  m_y                      ->clear();
-  m_z                      ->clear();
-  m_r                      ->clear();
-  m_pt                     ->clear();
-  m_eta                    ->clear();
-  m_phi                    ->clear();
-  m_mass                   ->clear();
-  m_mass_nonAssoc          ->clear();
-  m_covariance             ->clear();
-  m_chi2                   ->clear();
-  m_direction              ->clear();
-  m_charge                 ->clear();
-  m_H                      ->clear();
-  m_Ht                     ->clear();
-  m_minOpAng               ->clear();
-  m_maxOpAng               ->clear();
-  m_mind0                  ->clear();
-  m_maxd0                  ->clear();
-  m_distToPV               ->clear();
-  
-  m_minOneTrackRemovedMass ->clear();
-  m_twoTracksMass          ->clear();
-  m_twoTracksMassRest      ->clear();
-  m_twoTracksCharge        ->clear();
+  m_ID                          ->clear();
+  m_index                       ->clear();
+  m_x                           ->clear();
+  m_y                           ->clear();
+  m_z                           ->clear();
+  m_r                           ->clear();
+  m_pt                          ->clear();
+  m_eta                         ->clear();
+  m_phi                         ->clear();
+  m_mass                        ->clear();
+  m_mass_nonAssoc               ->clear();
+  m_covariance                  ->clear();
+  m_chi2                        ->clear();
+  m_direction                   ->clear();
+  m_charge                      ->clear();
+  m_H                           ->clear();
+  m_Ht                          ->clear();
+  m_minOpAng                    ->clear();
+  m_maxOpAng                    ->clear();
+  m_mind0                       ->clear();
+  m_maxd0                       ->clear();
+  m_distToPV                    ->clear();
 
-  m_ntrk                   ->clear();
-  m_ntrk_sel               ->clear();
-  m_ntrk_assoc             ->clear();
+  m_pt_bare                     ->clear();
+  m_eta_bare                    ->clear();
+  m_phi_bare                    ->clear();
+  m_mass_bare                   ->clear();
+  m_mass_nonAssoc_bare          ->clear();
+  m_direction_bare              ->clear();
+  m_charge_bare                 ->clear();
+  m_H_bare                      ->clear();
+  m_Ht_bare                     ->clear();
+  m_minOpAng_bare               ->clear();
+  m_maxOpAng_bare               ->clear();
+  m_mind0_bare                  ->clear();
+  m_maxd0_bare                  ->clear();
+  
+  m_minOneTrackRemovedMass      ->clear();
+  m_twoTracksMass               ->clear();
+  m_twoTracksMassRest           ->clear();
+  m_twoTracksCharge             ->clear();
+
+  m_minOneTrackRemovedMass_bare ->clear();
+  m_twoTracksMass_bare          ->clear();
+  m_twoTracksMassRest_bare      ->clear();
+  m_twoTracksCharge_bare        ->clear();
+
+  m_ntrk                        ->clear();
+  m_ntrk_sel                    ->clear();
+  m_ntrk_assoc                  ->clear();
+  m_ntrk_filt                   ->clear();
+  m_ntrk_filt_sel               ->clear();
+  m_ntrk_filt_assoc             ->clear();
 
   // tracks
   if ( m_infoSwitch.m_tracks ) {
@@ -895,6 +1013,8 @@ void SecondaryVertexContainer :: clear ()
     m_matchedTruthVtx_recoDescSumM      ->clear();
     m_matchedTruthVtx_massFraction      ->clear();
     m_matchedTruthVtx_multFraction      ->clear();
+    m_matchedTruthVtx_bareMassFraction  ->clear();
+    m_matchedTruthVtx_bareMultFraction  ->clear();
     m_matchedTruthVtx_matchScore        ->clear();
     m_matchedTruthVtxReprPhysPos_ID     ->clear();
     m_matchedTruthVtxReprPhysPos_x      ->clear();
@@ -945,104 +1065,186 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
 {
   if ( m_debug ) Info( "EJs::SecondaryVertexContainer::FillSecondaryVertex()", "filling branches" );
 
-  // skip vertex if failed track trimming selections
-  bool secVtx_passTrimSel = true;
-  if ( secVtx->isAvailable<char>("passTrimSel") )
-    secVtx_passTrimSel = secVtx->auxdataConst<char>("passTrimSel");
-  if ( !secVtx_passTrimSel ) return;
+  // fill common vertex container branches
+  VertexContainer::FillVertex ();
+
+  // build vector of all (bare) tracks
+  std::vector< const xAOD::TrackParticle* > allTracks;;
+  for ( size_t i = 0; i != secVtx->nTrackParticles(); ++i ) {
+    const auto* trk = secVtx->trackParticle(i);
+    allTracks.push_back( trk );
+  }
 
   // get vector of filtered tracks
   std::vector< const xAOD::TrackParticle* > filteredTracks;
   EJsHelper::getFilteredTracks( secVtx, filteredTracks );
-  if ( filteredTracks.size() < 2 ) return; // skip if less than two filtered tracks
 
-  // fill common vertex container branches
-  VertexContainer::FillVertex ();
-
-  const TVector3 pos( secVtx->x(), secVtx->y(), secVtx->z() );
+  // build vectors of non-associated tracks + count selected/associated
+  size_t ntrk_sel   = 0;
+  size_t ntrk_assoc = 0;
+  std::vector< const xAOD::TrackParticle* > allTracks_nonAssoc;
+  for ( const auto& trk : allTracks ) {
+    bool trkIsNonAssoc = true;
+    if ( trk->isAvailable<char>( "is_selected" ) )
+      if ( trk->auxdataConst<char>( "is_selected" ) )
+	++ntrk_sel;
+    if ( trk->isAvailable<char>( "is_associated" ) )
+      if ( trk->auxdataConst<char>( "is_associated" ) ) {
+	++ntrk_assoc;
+	trkIsNonAssoc = false;
+      }
+    if ( trkIsNonAssoc ) allTracks_nonAssoc.push_back( trk );
+  }
+  size_t ntrk_filt_sel   = 0;
+  size_t ntrk_filt_assoc = 0;
+  std::vector< const xAOD::TrackParticle* > filteredTracks_nonAssoc;
+  for ( const auto& filtTrk : filteredTracks ) {
+    bool filtTrkIsNonAssoc = true;
+    if ( filtTrk->isAvailable<char>( "is_selected" ) )
+      if ( filtTrk->auxdataConst<char>( "is_selected" ) )
+	++ntrk_filt_sel;
+    if ( filtTrk->isAvailable<char>( "is_associated" ) )
+      if ( filtTrk->auxdataConst<char>( "is_associated" ) ) {
+	++ntrk_filt_assoc;
+	filtTrkIsNonAssoc = false;
+      }
+    if ( filtTrkIsNonAssoc ) filteredTracks_nonAssoc.push_back( filtTrk );
+  }
+  m_ntrk            ->push_back( allTracks.size()          );
+  m_ntrk_sel        ->push_back( ntrk_sel                  );
+  m_ntrk_assoc      ->push_back( ntrk_assoc                );
+  m_ntrk_filt       ->push_back( filteredTracks.size()     );
+  m_ntrk_filt_sel   ->push_back( ntrk_filt_sel             );
+  m_ntrk_filt_assoc ->push_back( ntrk_filt_assoc           );
   
+
   // re-calculate vertex kinematic variables using filtered tracks
   const TLorentzVector& sumP4       = VsiBonsai::sumP4       ( filteredTracks );
   const double          scalarSumP  = VsiBonsai::scalarSumP  ( filteredTracks );
   const double          scalarSumPt = VsiBonsai::scalarSumPt ( filteredTracks );
   const int             sumCharge   = VsiBonsai::sumCharge   ( filteredTracks );
-  const double          minOpAngle  = VsiBonsai::minOpAng    ( filteredTracks );
-  const double          maxOpAngle  = VsiBonsai::maxOpAng    ( filteredTracks );
-  const double          mind0       = VsiBonsai::mind0       ( filteredTracks );
-  const double          maxd0       = VsiBonsai::maxd0       ( filteredTracks );
+  double minOpAngle = AlgConsts::invalidFloat;
+  double maxOpAngle = AlgConsts::invalidFloat;
+  double mind0      = AlgConsts::invalidFloat;
+  double maxd0      = AlgConsts::invalidFloat;
+  if ( filteredTracks.size() >= 2 ) {
+    minOpAngle = VsiBonsai::minOpAng ( filteredTracks );
+    maxOpAngle = VsiBonsai::maxOpAng ( filteredTracks );
+    mind0      = VsiBonsai::mind0    ( filteredTracks );
+    maxd0      = VsiBonsai::maxd0    ( filteredTracks );
+  }
+  // calculate bare vertex kinematic variables using all tracks
+  const TLorentzVector& sumP4_bare       = VsiBonsai::sumP4       ( allTracks );
+  const double          scalarSumP_bare  = VsiBonsai::scalarSumP  ( allTracks );
+  const double          scalarSumPt_bare = VsiBonsai::scalarSumPt ( allTracks );
+  const int             sumCharge_bare   = VsiBonsai::sumCharge   ( allTracks );
+  const double          minOpAngle_bare  = VsiBonsai::minOpAng    ( allTracks );
+  const double          maxOpAngle_bare  = VsiBonsai::maxOpAng    ( allTracks );
+  const double          mind0_bare       = VsiBonsai::mind0       ( allTracks );
+  const double          maxd0_bare       = VsiBonsai::maxd0       ( allTracks );
+
+  const TVector3 pos( secVtx->x(), secVtx->y(), secVtx->z() );
   
-  const double dir  = sumP4.Vect().Dot( pos ) / sumP4.Vect().Mag() / pos.Mag();
+  const double dir      = sumP4     .Vect().Dot( pos ) / sumP4     .Vect().Mag() / pos.Mag();
+  const double dir_bare = sumP4_bare.Vect().Dot( pos ) / sumP4_bare.Vect().Mag() / pos.Mag();
 
-  float mass_nonAssoc = AUXDYN( secVtx, float, "mass_selectedTracks" );
-
-  m_ID            ->push_back( AUXDYN( secVtx, int, "ID"                ) );
-  m_index         ->push_back( AUXDYN( secVtx, int, "index"             ) );
-  m_x             ->push_back( secVtx->x()                                );
-  m_y             ->push_back( secVtx->y()                                );
-  m_z             ->push_back( secVtx->z()                                );
-  m_r             ->push_back( secVtx->position().perp()                  );
-  m_pt            ->push_back( sumP4.Pt() / m_units                       );
-  m_eta           ->push_back( sumP4.Eta()                                );
-  m_phi           ->push_back( sumP4.Phi()                                ); 
-  m_mass          ->push_back( sumP4.M() / m_units                        );
-  m_mass_nonAssoc ->push_back( mass_nonAssoc / m_units                    );
-  m_covariance    ->push_back( secVtx->covariance()                       );
-  m_chi2          ->push_back( secVtx->chiSquared() / secVtx->numberDoF() );
-  m_direction     ->push_back( dir                                        );
-  m_charge        ->push_back( sumCharge                                  );
-  m_H             ->push_back( scalarSumP / m_units                       );
-  m_Ht            ->push_back( scalarSumPt / m_units                      );
-  m_minOpAng      ->push_back( minOpAngle                                 );
-  m_maxOpAng      ->push_back( maxOpAngle                                 );
-  m_mind0         ->push_back( mind0                                      );
-  m_maxd0         ->push_back( maxd0                                      );
+  float mass_nonAssoc      = VsiBonsai::sumP4( filteredTracks_nonAssoc ).M();
+  float mass_nonAssoc_bare = VsiBonsai::sumP4( allTracks_nonAssoc      ).M();
 
   float dv_distToPV = AlgConsts::invalidFloat;
   if ( pv ) dv_distToPV = ( pv->position() - secVtx->position() ).perp();
-  m_distToPV ->push_back( dv_distToPV );
 
-  const double minOneTrackRemovedMass = VsiBonsai::minOneTrackRemovedMass       ( filteredTracks );
-  const auto   twoTrackMassTuples     = VsiBonsai::allTwoTracksMassCombinations ( filteredTracks );
+  m_ID                 ->push_back( AUXDYN( secVtx, int, "ID"                ) );
+  m_index              ->push_back( AUXDYN( secVtx, int, "index"             ) );
+  m_x                  ->push_back( secVtx->x()                                );
+  m_y                  ->push_back( secVtx->y()                                );
+  m_z                  ->push_back( secVtx->z()                                );
+  m_r                  ->push_back( secVtx->position().perp()                  );
+  m_pt                 ->push_back( sumP4.Pt()         / m_units               );
+  m_eta                ->push_back( sumP4.Eta()                                );
+  m_phi                ->push_back( sumP4.Phi()                                ); 
+  m_mass               ->push_back( sumP4.M()          / m_units               );
+  m_mass_nonAssoc      ->push_back( mass_nonAssoc      / m_units               ); // --> need to change def
+  m_covariance         ->push_back( secVtx->covariance()                       );
+  m_chi2               ->push_back( secVtx->chiSquared() / secVtx->numberDoF() );
+  m_direction          ->push_back( dir                                        );
+  m_charge             ->push_back( sumCharge                                  );
+  m_H                  ->push_back( scalarSumP         / m_units               );
+  m_Ht                 ->push_back( scalarSumPt        / m_units               );
+  m_minOpAng           ->push_back( minOpAngle                                 );
+  m_maxOpAng           ->push_back( maxOpAngle                                 );
+  m_mind0              ->push_back( mind0                                      );
+  m_maxd0              ->push_back( maxd0                                      );
+  m_distToPV           ->push_back( dv_distToPV                                );
 
+  m_pt_bare            ->push_back( sumP4_bare.Pt()    / m_units               );
+  m_eta_bare           ->push_back( sumP4_bare.Eta()                           );
+  m_phi_bare           ->push_back( sumP4_bare.Phi()                           ); 
+  m_mass_bare          ->push_back( sumP4_bare.M()     / m_units               );
+  m_mass_nonAssoc_bare ->push_back( mass_nonAssoc_bare / m_units               );
+  m_direction_bare     ->push_back( dir_bare                                   );
+  m_charge_bare        ->push_back( sumCharge_bare                             );
+  m_H_bare             ->push_back( scalarSumP_bare    / m_units               );
+  m_Ht_bare            ->push_back( scalarSumPt_bare   / m_units               );
+  m_minOpAng_bare      ->push_back( minOpAngle_bare                            );
+  m_maxOpAng_bare      ->push_back( maxOpAngle_bare                            );
+  m_mind0_bare         ->push_back( mind0_bare                                 );
+  m_maxd0_bare         ->push_back( maxd0_bare                                 );
+
+
+  const auto twoTrackMassTuples = VsiBonsai::allTwoTracksMassCombinations ( filteredTracks );
+  double minOneTrackRemovedMass = AlgConsts::invalidFloat;
   std::vector<float> twoTracksMass;
   std::vector<float> twoTracksMassRest;
   std::vector<int>   twoTracksCharge;
-  for ( const auto& tuple : twoTrackMassTuples ) {
-    double mass     = std::get<0>( tuple );
-    double massRest = std::get<1>( tuple );
-
-    const auto* trk1 = std::get<2>( tuple ).first;
-    const auto* trk2 = std::get<2>( tuple ).second;
-    
-    int charge = trk1->charge() + trk2->charge();
-
-    twoTracksMass     .push_back( mass / m_units     );
-    twoTracksMassRest .push_back( massRest / m_units );
-    twoTracksCharge   .push_back( charge             );
+  if ( filteredTracks.size() >= 2 ) {
+    minOneTrackRemovedMass = VsiBonsai::minOneTrackRemovedMass( filteredTracks );
+    for ( const auto& tuple : twoTrackMassTuples ) {
+      double mass     = std::get<0>( tuple );
+      double massRest = std::get<1>( tuple );
+      
+      const auto* trk1 = std::get<2>( tuple ).first;
+      const auto* trk2 = std::get<2>( tuple ).second;
+      
+      int charge = trk1->charge() + trk2->charge();
+      
+      twoTracksMass     .push_back( mass     / m_units );
+      twoTracksMassRest .push_back( massRest / m_units );
+      twoTracksCharge   .push_back( charge             );
+    }
   }
-
   m_minOneTrackRemovedMass ->push_back( minOneTrackRemovedMass / m_units );
   m_twoTracksMass          ->push_back( twoTracksMass                    );
   m_twoTracksMassRest      ->push_back( twoTracksMassRest                );
   m_twoTracksCharge        ->push_back( twoTracksCharge                  );
 
-  size_t ntrk_sel   = 0;
-  size_t ntrk_assoc = 0;
-  for ( const auto& trk : filteredTracks ) {
-    if ( trk->isAvailable<char>( "is_selected" ) )
-      if ( trk->auxdataConst<char>( "is_selected" ) ) ++ntrk_sel;
-    if ( trk->isAvailable<char>( "is_associated" ) )
-      if ( trk->auxdataConst<char>( "is_associated" ) ) ++ntrk_assoc;
-  }
+  const auto   twoTrackMassTuples_bare     = VsiBonsai::allTwoTracksMassCombinations ( allTracks );
+  const double minOneTrackRemovedMass_bare = VsiBonsai::minOneTrackRemovedMass       ( allTracks );
+  std::vector<float> twoTracksMass_bare;
+  std::vector<float> twoTracksMassRest_bare;
+  std::vector<int>   twoTracksCharge_bare;
+  for ( const auto& bareTuple : twoTrackMassTuples_bare ) {
+    double bareMass     = std::get<0>( bareTuple );
+    double bareMassRest = std::get<1>( bareTuple );
 
-  m_ntrk       ->push_back( filteredTracks.size() );
-  m_ntrk_sel   ->push_back( ntrk_sel              );
-  m_ntrk_assoc ->push_back( ntrk_assoc            );
+    const auto* bareTrk1 = std::get<2>( bareTuple ).first;
+    const auto* bareTrk2 = std::get<2>( bareTuple ).second;
+
+    int bareCharge = bareTrk1->charge() + bareTrk2->charge();
+
+    twoTracksMass_bare     .push_back( bareMass     / m_units );
+    twoTracksMassRest_bare .push_back( bareMassRest / m_units );
+    twoTracksCharge_bare   .push_back( bareCharge             );
+  }
+  m_minOneTrackRemovedMass_bare ->push_back( minOneTrackRemovedMass_bare / m_units );
+  m_twoTracksMass_bare          ->push_back( twoTracksMass_bare                    );
+  m_twoTracksMassRest_bare      ->push_back( twoTracksMassRest_bare                );
+  m_twoTracksCharge_bare        ->push_back( twoTracksCharge_bare                  );
 
 
   // tracks associated to DVs
   if ( m_infoSwitch.m_tracks ) {
-    recordTracks( filteredTracks );
+    recordTracks( allTracks );
   }
 
 
@@ -1161,6 +1363,8 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
     std::vector<float>       matchTV_recoDescSumM;
     std::vector<float>       matchTV_massFrac;
     std::vector<float>       matchTV_multFrac;
+    std::vector<float>       matchTV_bareMassFrac;
+    std::vector<float>       matchTV_bareMultFrac;
     std::vector<float>       matchTV_matchScore;
     std::vector<int>         matchTV_reprPosID;
     std::vector<float>       matchTV_reprPosX;
@@ -1234,8 +1438,10 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
       matchTV_recoDescSumPhi .push_back( matchRecoDesc_sumP4.Phi()              );
       matchTV_recoDescSumM   .push_back( matchRecoDesc_sumP4.M()  / m_units     );
 
-      matchTV_massFrac .push_back( matchRecoDesc_sumP4.M()              / sumP4.M()                    );
-      matchTV_multFrac .push_back( matchReconstructedDescendants.size() / float(filteredTracks.size()) );
+      matchTV_massFrac     .push_back( matchRecoDesc_sumP4.M()              / sumP4.M()                      );
+      matchTV_multFrac     .push_back( matchReconstructedDescendants.size() / float( filteredTracks.size() ) );
+      matchTV_bareMassFrac .push_back( matchRecoDesc_sumP4.M()              / sumP4_bare.M()                 );
+      matchTV_bareMultFrac .push_back( matchReconstructedDescendants.size() / float( allTracks.size()      ) );
 
       matchTV_matchScore   .push_back( matchedTruthVerts_score             .at(match_index)        );
       matchTV_reprPosID    .push_back( matchedTruthVerts_reprTruthPosID    .at(match_index)        );
@@ -1280,6 +1486,8 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
     m_matchedTruthVtx_recoDescSumM      ->push_back( matchTV_recoDescSumM   );
     m_matchedTruthVtx_massFraction      ->push_back( matchTV_massFrac       );
     m_matchedTruthVtx_multFraction      ->push_back( matchTV_multFrac       );
+    m_matchedTruthVtx_bareMassFraction  ->push_back( matchTV_bareMassFrac   );
+    m_matchedTruthVtx_bareMultFraction  ->push_back( matchTV_bareMultFrac   );
     m_matchedTruthVtx_matchScore        ->push_back( matchTV_matchScore     );
     m_matchedTruthVtxReprPhysPos_ID     ->push_back( matchTV_reprPosID      );
     m_matchedTruthVtxReprPhysPos_x      ->push_back( matchTV_reprPosX       );
@@ -1356,7 +1564,7 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
 }
 
 
-void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::TrackParticle*>& filteredTracks )
+void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::TrackParticle*>& tracks )
 {
   if ( m_debug ) Info( "EJs::SecondaryVertexContainer::recordTracks()", "filling vertex track branches" );
 
@@ -1411,7 +1619,7 @@ void SecondaryVertexContainer :: recordTracks ( const std::vector<const xAOD::Tr
   std::vector<int>      trk_truthPdgId;
   std::vector<uint8_t>  trk_truthIsDesc;
 
-  for ( const auto& trk : filteredTracks ) {
+  for ( const auto& trk : tracks ) {
     if ( !trk ) continue;
 
     trk_ID     .push_back( AUXDYN( trk, int, "ID"                ) );

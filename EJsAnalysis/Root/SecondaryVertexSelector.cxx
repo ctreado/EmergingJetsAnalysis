@@ -236,8 +236,7 @@ EL::StatusCode SecondaryVertexSelector :: execute ()
     
     // make sure all vertices decorated in case only processing subset
     if ( m_decorateSelectedObjects ) {
-      vtx->auxdecor<char>( m_decor     ) = -1;
-      vtx->auxdecor<char>( m_decorTrim ) = -1;
+      vtx->auxdecor<char>( m_decor ) = -1;
       for ( size_t i = 0; i != vtx->nTrackParticles(); ++i ) {
 	const auto* trk = vtx->trackParticle(i);
 	trk->auxdecor<char>( "isFiltered" ) = -1;
@@ -381,12 +380,8 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
     filteredTracks.push_back( trk );
   }
 
-  // apply track trimming selection + decorate vertices --> ADD USER-CONFIG TO APPLY FILTERED-TRACK CUT
-  if ( m_decorateSelectedObjects ) vtx->auxdecor<char>( m_decorTrim ) = true;
-  if ( filteredTracks.size() < 2 ) {
-    if ( m_decorateSelectedObjects ) vtx->auxdecor<char>( m_decorTrim ) = false;
-    return 0;
-  }
+  // apply filtered track cut
+  if ( m_doFiltTrkCut && filteredTracks.size() < 2 ) return 0;
   if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_filtTrk, 1 );
 
   // material map veto

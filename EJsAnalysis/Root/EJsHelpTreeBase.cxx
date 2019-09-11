@@ -149,7 +149,7 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
   m_trk_isAssociated            = new std::vector<uint8_t>;
   m_trk_passSel                 = new std::vector<uint8_t>;
   m_trk_isSecVtxTrk             = new std::vector<uint8_t>;
-  m_trk_isSecVtxFilteredTrk     = new std::vector<uint8_t>;
+  m_trk_isSecVtxFiltTrk         = new std::vector<uint8_t>;
   m_trk_secVtxID                = new std::vector<int>;
   m_trk_secVtxIndex             = new std::vector<int>;
   if ( m_isMC ) {
@@ -918,7 +918,7 @@ void EJsHelpTreeBase :: AddTracksUser ( const std::string trackName, const std::
   setBranch<uint8_t>                    ( trackName, "isAssociated",                       m_trk_isAssociated            );
   setBranch<uint8_t>                    ( trackName, "passSel",                            m_trk_passSel                 );
   setBranch<uint8_t>                    ( trackName, "isSecVtxTrk",                        m_trk_isSecVtxTrk             );
-  setBranch<uint8_t>                    ( trackName, "isSecVtxFilteredTrk",                m_trk_isSecVtxFilteredTrk     );
+  setBranch<uint8_t>                    ( trackName, "isSecVtxFiltTrk",                    m_trk_isSecVtxFiltTrk         );
   setBranch<int>                        ( trackName, "secVtxID",                           m_trk_secVtxID                );
   setBranch<int>                        ( trackName, "secVtxIndex",                        m_trk_secVtxIndex             );
   if ( m_isMC ) {
@@ -1012,7 +1012,7 @@ void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName, const xAOD
   }
   if ( trackIsSecVtxTrk ) trackIsSecVtxFiltTrk = AUXDYN( track, char, "isFiltered" );
   m_trk_isSecVtxTrk         ->push_back( trackIsSecVtxTrk     );
-  m_trk_isSecVtxFilteredTrk ->push_back( trackIsSecVtxFiltTrk );
+  m_trk_isSecVtxFiltTrk     ->push_back( trackIsSecVtxFiltTrk );
   m_trk_secVtxID            ->push_back( secVtxID             );
   m_trk_secVtxIndex         ->push_back( secVtxIndex          );
 
@@ -1135,7 +1135,7 @@ void EJsHelpTreeBase :: ClearTracksUser ( const std::string trackName )
   m_trk_isAssociated            ->clear();
   m_trk_passSel                 ->clear();
   m_trk_isSecVtxTrk             ->clear();
-  m_trk_isSecVtxFilteredTrk     ->clear();
+  m_trk_isSecVtxFiltTrk         ->clear();
   m_trk_secVtxID                ->clear();
   m_trk_secVtxIndex             ->clear();
   if ( m_isMC ) {

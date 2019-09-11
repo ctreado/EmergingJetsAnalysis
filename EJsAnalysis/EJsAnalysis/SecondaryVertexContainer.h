@@ -65,15 +65,37 @@ namespace EJs {
     std::vector<float>*              m_mind0;
     std::vector<float>*              m_maxd0;
     std::vector<float>*              m_distToPV;
+
+    std::vector<float>*              m_pt_bare;
+    std::vector<float>*              m_eta_bare;
+    std::vector<float>*              m_phi_bare;
+    std::vector<float>*              m_mass_bare;
+    std::vector<float>*              m_mass_nonAssoc_bare;
+    std::vector<float>*              m_direction_bare;
+    std::vector<int>*                m_charge_bare;
+    std::vector<float>*              m_H_bare;
+    std::vector<float>*              m_Ht_bare;
+    std::vector<float>*              m_minOpAng_bare;
+    std::vector<float>*              m_maxOpAng_bare;
+    std::vector<float>*              m_mind0_bare;
+    std::vector<float>*              m_maxd0_bare;
     
     std::vector<float>*              m_minOneTrackRemovedMass;
     std::vector<std::vector<float>>* m_twoTracksMass;
     std::vector<std::vector<float>>* m_twoTracksMassRest;
     std::vector<std::vector<int>>*   m_twoTracksCharge;
+
+    std::vector<float>*              m_minOneTrackRemovedMass_bare;
+    std::vector<std::vector<float>>* m_twoTracksMass_bare;
+    std::vector<std::vector<float>>* m_twoTracksMassRest_bare;
+    std::vector<std::vector<int>>*   m_twoTracksCharge_bare;
     
     std::vector<int>*                m_ntrk;
     std::vector<int>*                m_ntrk_sel;
     std::vector<int>*                m_ntrk_assoc;
+    std::vector<int>*                m_ntrk_filt;
+    std::vector<int>*                m_ntrk_filt_sel;
+    std::vector<int>*                m_ntrk_filt_assoc;
 
     
     // tracks
@@ -179,6 +201,8 @@ namespace EJs {
     std::vector<std::vector<float>>*       m_matchedTruthVtx_recoDescSumM;
     std::vector<std::vector<float>>*       m_matchedTruthVtx_massFraction;
     std::vector<std::vector<float>>*       m_matchedTruthVtx_multFraction;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_bareMassFraction;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_bareMultFraction;
     std::vector<std::vector<float>>*       m_matchedTruthVtx_matchScore;
     std::vector<std::vector<int>>*         m_matchedTruthVtxReprPhysPos_ID;
     std::vector<std::vector<float>>*       m_matchedTruthVtxReprPhysPos_x;
