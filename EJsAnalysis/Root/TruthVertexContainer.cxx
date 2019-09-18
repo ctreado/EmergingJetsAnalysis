@@ -161,6 +161,10 @@ TruthVertexContainer :: TruthVertexContainer ( const std::string& name, const st
     m_matchedRecoVtx_eta               = new std::vector<std::vector<float>>;
     m_matchedRecoVtx_phi               = new std::vector<std::vector<float>>;
     m_matchedRecoVtx_mass              = new std::vector<std::vector<float>>;
+    m_matchedRecoVtx_pt_clean          = new std::vector<std::vector<float>>;
+    m_matchedRecoVtx_eta_clean         = new std::vector<std::vector<float>>;
+    m_matchedRecoVtx_phi_clean         = new std::vector<std::vector<float>>;
+    m_matchedRecoVtx_mass_clean        = new std::vector<std::vector<float>>;
     m_matchedRecoVtx_pt_bare           = new std::vector<std::vector<float>>;
     m_matchedRecoVtx_eta_bare          = new std::vector<std::vector<float>>;
     m_matchedRecoVtx_phi_bare          = new std::vector<std::vector<float>>;
@@ -169,11 +173,16 @@ TruthVertexContainer :: TruthVertexContainer ( const std::string& name, const st
     m_matchedRecoVtx_ntrk              = new std::vector<std::vector<int>>;
     m_matchedRecoVtx_ntrk_sel          = new std::vector<std::vector<int>>;
     m_matchedRecoVtx_ntrk_assoc        = new std::vector<std::vector<int>>;
+    m_matchedRecoVtx_ntrk_clean        = new std::vector<std::vector<int>>;
+    m_matchedRecoVtx_ntrk_clean_sel    = new std::vector<std::vector<int>>;
+    m_matchedRecoVtx_ntrk_clean_assoc  = new std::vector<std::vector<int>>;
     m_matchedRecoVtx_ntrk_filt         = new std::vector<std::vector<int>>;
     m_matchedRecoVtx_ntrk_filt_sel     = new std::vector<std::vector<int>>;
     m_matchedRecoVtx_ntrk_filt_assoc   = new std::vector<std::vector<int>>;
     m_matchedRecoVtx_massFraction      = new std::vector<std::vector<float>>;
     m_matchedRecoVtx_multFraction      = new std::vector<std::vector<float>>;
+    m_matchedRecoVtx_cleanMassFraction = new std::vector<std::vector<float>>;
+    m_matchedRecoVtx_cleanMultFraction = new std::vector<std::vector<float>>;
     m_matchedRecoVtx_bareMassFraction  = new std::vector<std::vector<float>>;
     m_matchedRecoVtx_bareMultFraction  = new std::vector<std::vector<float>>;
     m_matchedRecoVtx_matchScore        = new std::vector<std::vector<float>>;
@@ -368,6 +377,10 @@ TruthVertexContainer :: ~TruthVertexContainer ()
     delete m_matchedRecoVtx_eta;
     delete m_matchedRecoVtx_phi;
     delete m_matchedRecoVtx_mass;
+    delete m_matchedRecoVtx_pt_clean;
+    delete m_matchedRecoVtx_eta_clean;
+    delete m_matchedRecoVtx_phi_clean;
+    delete m_matchedRecoVtx_mass_clean;
     delete m_matchedRecoVtx_pt_bare;
     delete m_matchedRecoVtx_eta_bare;
     delete m_matchedRecoVtx_phi_bare;
@@ -376,11 +389,16 @@ TruthVertexContainer :: ~TruthVertexContainer ()
     delete m_matchedRecoVtx_ntrk;
     delete m_matchedRecoVtx_ntrk_sel;
     delete m_matchedRecoVtx_ntrk_assoc;
+    delete m_matchedRecoVtx_ntrk_clean;
+    delete m_matchedRecoVtx_ntrk_clean_sel;
+    delete m_matchedRecoVtx_ntrk_clean_assoc;
     delete m_matchedRecoVtx_ntrk_filt;
     delete m_matchedRecoVtx_ntrk_filt_sel;
     delete m_matchedRecoVtx_ntrk_filt_assoc;
     delete m_matchedRecoVtx_massFraction;
     delete m_matchedRecoVtx_multFraction;
+    delete m_matchedRecoVtx_cleanMassFraction;
+    delete m_matchedRecoVtx_cleanMultFraction;
     delete m_matchedRecoVtx_bareMassFraction;
     delete m_matchedRecoVtx_bareMultFraction;
     delete m_matchedRecoVtx_matchScore;
@@ -577,6 +595,10 @@ void TruthVertexContainer :: setTree ( TTree* tree )
     connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_eta",               &m_matchedRecoVtx_eta               );
     connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_phi",               &m_matchedRecoVtx_phi               );
     connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_mass",              &m_matchedRecoVtx_mass              );
+    connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_pt_clean",          &m_matchedRecoVtx_pt_clean          );
+    connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_eta_clean",         &m_matchedRecoVtx_eta_clean         );
+    connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_phi_clean",         &m_matchedRecoVtx_phi_clean         );
+    connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_mass_clean",        &m_matchedRecoVtx_mass_clean        );
     connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_pt_bare",           &m_matchedRecoVtx_pt_bare           );
     connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_eta_bare",          &m_matchedRecoVtx_eta_bare          );
     connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_phi_bare",          &m_matchedRecoVtx_phi_bare          );
@@ -585,11 +607,16 @@ void TruthVertexContainer :: setTree ( TTree* tree )
     connectBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk",              &m_matchedRecoVtx_ntrk              );
     connectBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_sel",          &m_matchedRecoVtx_ntrk_sel          );
     connectBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_assoc",        &m_matchedRecoVtx_ntrk_assoc        );
+    connectBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_clean",        &m_matchedRecoVtx_ntrk_clean        );
+    connectBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_clean_sel",    &m_matchedRecoVtx_ntrk_clean_sel    );
+    connectBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_clean_assoc",  &m_matchedRecoVtx_ntrk_clean_assoc  );
     connectBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_filt",         &m_matchedRecoVtx_ntrk_filt         );
     connectBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_filt_sel",     &m_matchedRecoVtx_ntrk_filt_sel     );
     connectBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_filt_assoc",   &m_matchedRecoVtx_ntrk_filt_assoc   );
     connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_massFraction",      &m_matchedRecoVtx_massFraction      );
     connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_multFraction",      &m_matchedRecoVtx_multFraction      );
+    connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_cleanMassFraction", &m_matchedRecoVtx_cleanMassFraction );
+    connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_cleanMultFraction", &m_matchedRecoVtx_cleanMultFraction );
     connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_bareMassFraction",  &m_matchedRecoVtx_bareMassFraction  );
     connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_bareMultFraction",  &m_matchedRecoVtx_bareMultFraction  );
     connectBranch<std::vector<float>>   ( tree, "matchedRecoVtx_matchScore",        &m_matchedRecoVtx_matchScore        );
@@ -786,6 +813,10 @@ void TruthVertexContainer :: setBranches ( TTree* tree )
     setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_eta",               m_matchedRecoVtx_eta               );
     setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_phi",               m_matchedRecoVtx_phi               );
     setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_mass",              m_matchedRecoVtx_mass              );
+    setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_pt_clean",          m_matchedRecoVtx_pt_clean          );
+    setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_eta_clean",         m_matchedRecoVtx_eta_clean         );
+    setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_phi_clean",         m_matchedRecoVtx_phi_clean         );
+    setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_mass_clean",        m_matchedRecoVtx_mass_clean        );
     setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_pt_bare",           m_matchedRecoVtx_pt_bare           );
     setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_eta_bare",          m_matchedRecoVtx_eta_bare          );
     setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_phi_bare",          m_matchedRecoVtx_phi_bare          );
@@ -794,11 +825,16 @@ void TruthVertexContainer :: setBranches ( TTree* tree )
     setBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk",              m_matchedRecoVtx_ntrk              );
     setBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_sel",          m_matchedRecoVtx_ntrk_sel          );
     setBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_assoc",        m_matchedRecoVtx_ntrk_assoc        );
+    setBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_clean",        m_matchedRecoVtx_ntrk_clean        );
+    setBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_clean_sel",    m_matchedRecoVtx_ntrk_clean_sel    );
+    setBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_clean_assoc",  m_matchedRecoVtx_ntrk_clean_assoc  );
     setBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_filt",         m_matchedRecoVtx_ntrk_filt         );
     setBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_filt_sel",     m_matchedRecoVtx_ntrk_filt_sel     );
     setBranch<std::vector<int>>     ( tree, "matchedRecoVtx_ntrk_filt_assoc",   m_matchedRecoVtx_ntrk_filt_assoc   );
     setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_massFraction",      m_matchedRecoVtx_massFraction      );
     setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_multFraction",      m_matchedRecoVtx_multFraction      );
+    setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_cleanMassFraction", m_matchedRecoVtx_cleanMassFraction );
+    setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_cleanMultFraction", m_matchedRecoVtx_cleanMultFraction );
     setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_bareMassFraction",  m_matchedRecoVtx_bareMassFraction  );
     setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_bareMultFraction",  m_matchedRecoVtx_bareMultFraction  );
     setBranch<std::vector<float>>   ( tree, "matchedRecoVtx_matchScore",        m_matchedRecoVtx_matchScore        );
@@ -995,6 +1031,10 @@ void TruthVertexContainer :: clear ()
     m_matchedRecoVtx_eta               ->clear();
     m_matchedRecoVtx_phi               ->clear();
     m_matchedRecoVtx_mass              ->clear();
+    m_matchedRecoVtx_pt_clean          ->clear();
+    m_matchedRecoVtx_eta_clean         ->clear();
+    m_matchedRecoVtx_phi_clean         ->clear();
+    m_matchedRecoVtx_mass_clean        ->clear();
     m_matchedRecoVtx_pt_bare           ->clear();
     m_matchedRecoVtx_eta_bare          ->clear();
     m_matchedRecoVtx_phi_bare          ->clear();
@@ -1003,11 +1043,16 @@ void TruthVertexContainer :: clear ()
     m_matchedRecoVtx_ntrk              ->clear();
     m_matchedRecoVtx_ntrk_sel          ->clear();
     m_matchedRecoVtx_ntrk_assoc        ->clear();
+    m_matchedRecoVtx_ntrk_clean        ->clear();
+    m_matchedRecoVtx_ntrk_clean_sel    ->clear();
+    m_matchedRecoVtx_ntrk_clean_assoc  ->clear();
     m_matchedRecoVtx_ntrk_filt         ->clear();
     m_matchedRecoVtx_ntrk_filt_sel     ->clear();
     m_matchedRecoVtx_ntrk_filt_assoc   ->clear();
     m_matchedRecoVtx_massFraction      ->clear();
     m_matchedRecoVtx_multFraction      ->clear();
+    m_matchedRecoVtx_cleanMassFraction ->clear();
+    m_matchedRecoVtx_cleanMultFraction ->clear();
     m_matchedRecoVtx_bareMassFraction  ->clear();
     m_matchedRecoVtx_bareMultFraction  ->clear();
     m_matchedRecoVtx_matchScore        ->clear();
@@ -1654,6 +1699,10 @@ void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx
     std::vector<float> matchDV_eta;
     std::vector<float> matchDV_phi;
     std::vector<float> matchDV_mass;
+    std::vector<float> matchDV_cleanPt;
+    std::vector<float> matchDV_cleanEta;
+    std::vector<float> matchDV_cleanPhi;
+    std::vector<float> matchDV_cleanMass;
     std::vector<float> matchDV_barePt;
     std::vector<float> matchDV_bareEta;
     std::vector<float> matchDV_barePhi;
@@ -1662,11 +1711,16 @@ void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx
     std::vector<int>   matchDV_ntrk;
     std::vector<int>   matchDV_ntrk_sel;
     std::vector<int>   matchDV_ntrk_assoc;
+    std::vector<int>   matchDV_ntrk_clean;
+    std::vector<int>   matchDV_ntrk_clean_sel;
+    std::vector<int>   matchDV_ntrk_clean_assoc;
     std::vector<int>   matchDV_ntrk_filt;
     std::vector<int>   matchDV_ntrk_filt_sel;
     std::vector<int>   matchDV_ntrk_filt_assoc;
     std::vector<float> matchDV_massFrac;
     std::vector<float> matchDV_multFrac;
+    std::vector<float> matchDV_cleanMassFrac;
+    std::vector<float> matchDV_cleanMultFrac;
     std::vector<float> matchDV_bareMassFrac;
     std::vector<float> matchDV_bareMultFrac;
     std::vector<float> matchDV_matchScore;
@@ -1687,32 +1741,36 @@ void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx
     int match_index = 0;
     for ( const auto& match : matchedRecoVerts ) {
       
-      // get vector of filtered and  bare tracks + calculate sum-p4's
+      // get vector of filtered, clean, and  bare tracks + calculate sum-p4's
       std::vector<const xAOD::TrackParticle*> filteredTracks;
+      std::vector<const xAOD::TrackParticle*> cleanTracks;
       std::vector<const xAOD::TrackParticle*> allTracks;
       EJsHelper::getFilteredTracks( match, filteredTracks );
-      for ( size_t i = 0; i != match->nTrackParticles(); ++i ) {
-	const auto* trk = match->trackParticle(i);
-	allTracks.push_back( trk );
-      }
-      const TLorentzVector& matchSumP4      = VsiBonsai::sumP4 ( filteredTracks );
-      const TLorentzVector& matchSumP4_bare = VsiBonsai::sumP4 ( allTracks      );
+      EJsHelper::getCleanTracks   ( match, cleanTracks    );
+      EJsHelper::getAllTracks     ( match, allTracks      );
+      const TLorentzVector& matchSumP4       = VsiBonsai::sumP4 ( filteredTracks );
+      const TLorentzVector& matchSumP4_clean = VsiBonsai::sumP4 ( cleanTracks    );
+      const TLorentzVector& matchSumP4_bare  = VsiBonsai::sumP4 ( allTracks      );
       
-      matchDV_ID       .push_back( match->auxdataConst<int>("ID")            );
-      matchDV_index    .push_back( match->auxdataConst<int>("index")         );
-      matchDV_x        .push_back( match->x()                                );
-      matchDV_y        .push_back( match->y()                                );
-      matchDV_z        .push_back( match->z()                                );
-      matchDV_r        .push_back( match->position().perp()                  );
-      matchDV_pt       .push_back( matchSumP4.Pt()      / m_units            );
-      matchDV_eta      .push_back( matchSumP4.Eta()                          );
-      matchDV_phi      .push_back( matchSumP4.Phi()                          ); // not the same as position-phi
-      matchDV_mass     .push_back( matchSumP4.M()       / m_units            );
-      matchDV_barePt   .push_back( matchSumP4_bare.Pt() / m_units            );
-      matchDV_bareEta  .push_back( matchSumP4_bare.Eta()                     );
-      matchDV_barePhi  .push_back( matchSumP4_bare.Phi()                     ); // not the same as position-phi
-      matchDV_bareMass .push_back( matchSumP4_bare.M()  / m_units            );
-      matchDV_chi2     .push_back( match->chiSquared()  / match->numberDoF() );
+      matchDV_ID        .push_back( match->auxdataConst<int>("ID")             );
+      matchDV_index     .push_back( match->auxdataConst<int>("index")          );
+      matchDV_x         .push_back( match->x()                                 );
+      matchDV_y         .push_back( match->y()                                 );
+      matchDV_z         .push_back( match->z()                                 );
+      matchDV_r         .push_back( match->position().perp()                   );
+      matchDV_pt        .push_back( matchSumP4.Pt()       / m_units            );
+      matchDV_eta       .push_back( matchSumP4.Eta()                           );
+      matchDV_phi       .push_back( matchSumP4.Phi()                           ); // not the same as position-phi
+      matchDV_mass      .push_back( matchSumP4.M()        / m_units            );
+      matchDV_cleanPt   .push_back( matchSumP4_clean.Pt() / m_units            );
+      matchDV_cleanEta  .push_back( matchSumP4_clean.Eta()                     );
+      matchDV_cleanPhi  .push_back( matchSumP4_clean.Phi()                     ); // not the same as position-phi
+      matchDV_cleanMass .push_back( matchSumP4_clean.M()  / m_units            );
+      matchDV_barePt    .push_back( matchSumP4_bare.Pt()  / m_units            );
+      matchDV_bareEta   .push_back( matchSumP4_bare.Eta()                      );
+      matchDV_barePhi   .push_back( matchSumP4_bare.Phi()                      ); // not the same as position-phi
+      matchDV_bareMass  .push_back( matchSumP4_bare.M()   / m_units            );
+      matchDV_chi2      .push_back( match->chiSquared()   / match->numberDoF() );
 
       size_t ntrk_sel   = 0;
       size_t ntrk_assoc = 0;
@@ -1722,6 +1780,14 @@ void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx
 	if ( trk->isAvailable<char>("is_associated") )
 	  if ( trk->auxdataConst<char>("is_associated") ) ++ntrk_assoc;
       }
+      size_t ntrk_clean_sel   = 0;
+      size_t ntrk_clean_assoc = 0;
+      for ( const auto& cleanTrk : cleanTracks ) {
+	if ( cleanTrk->isAvailable<char>("is_selected") )
+	  if ( cleanTrk->auxdataConst<char>("is_selected") )   ++ntrk_clean_sel;
+	if ( cleanTrk->isAvailable<char>("is_associated") )
+	  if ( cleanTrk->auxdataConst<char>("is_associated") ) ++ntrk_clean_assoc;
+      } 
       size_t ntrk_filt_sel   = 0;
       size_t ntrk_filt_assoc = 0;
       for ( const auto& filtTrk : filteredTracks ) {
@@ -1730,17 +1796,22 @@ void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx
 	if ( filtTrk->isAvailable<char>("is_associated") )
 	  if ( filtTrk->auxdataConst<char>("is_associated") ) ++ntrk_filt_assoc;
       } 
-      matchDV_ntrk            .push_back( allTracks.size()      );
-      matchDV_ntrk_sel        .push_back( ntrk_sel              );
-      matchDV_ntrk_assoc      .push_back( ntrk_assoc            );
-      matchDV_ntrk_filt       .push_back( filteredTracks.size() );
-      matchDV_ntrk_filt_sel   .push_back( ntrk_filt_sel         );
-      matchDV_ntrk_filt_assoc .push_back( ntrk_filt_assoc       );
+      matchDV_ntrk             .push_back( allTracks.size()      );
+      matchDV_ntrk_sel         .push_back( ntrk_sel              );
+      matchDV_ntrk_assoc       .push_back( ntrk_assoc            );
+      matchDV_ntrk_clean       .push_back( cleanTracks.size()    );
+      matchDV_ntrk_clean_sel   .push_back( ntrk_clean_sel        );
+      matchDV_ntrk_clean_assoc .push_back( ntrk_clean_assoc      );
+      matchDV_ntrk_filt        .push_back( filteredTracks.size() );
+      matchDV_ntrk_filt_sel    .push_back( ntrk_filt_sel         );
+      matchDV_ntrk_filt_assoc  .push_back( ntrk_filt_assoc       );
 
-      matchDV_massFrac     .push_back( matchSumP4.M()        / desc_reco_sumP4.M()                    );
-      matchDV_multFrac     .push_back( filteredTracks.size() / float(reconstructedDescendants.size()) );
-      matchDV_bareMassFrac .push_back( matchSumP4_bare.M()   / desc_reco_sumP4.M()                    );
-      matchDV_bareMultFrac .push_back( allTracks.size()      / float(reconstructedDescendants.size()) );
+      matchDV_massFrac      .push_back( matchSumP4.M()        / desc_reco_sumP4.M()                    );
+      matchDV_multFrac      .push_back( filteredTracks.size() / float(reconstructedDescendants.size()) );
+      matchDV_cleanMassFrac .push_back( matchSumP4_clean.M()  / desc_reco_sumP4.M()                    );
+      matchDV_cleanMultFrac .push_back( cleanTracks.size()    / float(reconstructedDescendants.size()) );
+      matchDV_bareMassFrac  .push_back( matchSumP4_bare.M()   / desc_reco_sumP4.M()                    );
+      matchDV_bareMultFrac  .push_back( allTracks.size()      / float(reconstructedDescendants.size()) );
 
       matchDV_matchScore      .push_back( matchedRecoVerts_score             .at(match_index)        );
       matchDV_reprTruthPosID  .push_back( matchedRecoVerts_reprTruthPosID    .at(match_index)        );
@@ -1759,45 +1830,54 @@ void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx
       ++match_index;
     }
 
-    m_matchedRecoVtx_n                 ->push_back( match_index             );
-    m_matchedRecoVtx_ID                ->push_back( matchDV_ID              );
-    m_matchedRecoVtx_index             ->push_back( matchDV_index           );
-    m_matchedRecoVtx_x                 ->push_back( matchDV_x               );
-    m_matchedRecoVtx_y                 ->push_back( matchDV_y               );
-    m_matchedRecoVtx_z                 ->push_back( matchDV_z               );
-    m_matchedRecoVtx_r                 ->push_back( matchDV_r               ); 
-    m_matchedRecoVtx_pt                ->push_back( matchDV_pt              );
-    m_matchedRecoVtx_eta               ->push_back( matchDV_eta             );
-    m_matchedRecoVtx_phi               ->push_back( matchDV_phi             );
-    m_matchedRecoVtx_mass              ->push_back( matchDV_mass            );
-    m_matchedRecoVtx_pt_bare           ->push_back( matchDV_barePt          );
-    m_matchedRecoVtx_eta_bare          ->push_back( matchDV_bareEta         );
-    m_matchedRecoVtx_phi_bare          ->push_back( matchDV_barePhi         );
-    m_matchedRecoVtx_mass_bare         ->push_back( matchDV_bareMass        );
-    m_matchedRecoVtx_chi2              ->push_back( matchDV_chi2            );
-    m_matchedRecoVtx_ntrk              ->push_back( matchDV_ntrk            );
-    m_matchedRecoVtx_ntrk_sel          ->push_back( matchDV_ntrk_sel        );
-    m_matchedRecoVtx_ntrk_assoc        ->push_back( matchDV_ntrk_assoc      );
-    m_matchedRecoVtx_ntrk_filt         ->push_back( matchDV_ntrk_filt       );
-    m_matchedRecoVtx_ntrk_filt_sel     ->push_back( matchDV_ntrk_filt_sel   );
-    m_matchedRecoVtx_ntrk_filt_assoc   ->push_back( matchDV_ntrk_filt_assoc );
-    m_matchedRecoVtx_massFraction      ->push_back( matchDV_massFrac        );
-    m_matchedRecoVtx_multFraction      ->push_back( matchDV_multFrac        );
-    m_matchedRecoVtx_bareMassFraction  ->push_back( matchDV_bareMassFrac    );
-    m_matchedRecoVtx_bareMultFraction  ->push_back( matchDV_bareMultFrac    );
-    m_matchedRecoVtx_matchScore        ->push_back( matchDV_matchScore      );
-    m_matchedRecoVtx_reprTruthPosID    ->push_back( matchDV_reprTruthPosID  );
-    m_matchedRecoVtx_reprTruthPosX     ->push_back( matchDV_reprTruthPosX   );
-    m_matchedRecoVtx_reprTruthPosY     ->push_back( matchDV_reprTruthPosY   );
-    m_matchedRecoVtx_reprTruthPosZ     ->push_back( matchDV_reprTruthPosZ   );
-    m_matchedRecoVtx_reprTruthPosR     ->push_back( matchDV_reprTruthPosR   );
-    m_matchedRecoVtx_reprTruthPosPhi   ->push_back( matchDV_reprTruthPosPhi );
-    m_matchedRecoVtx_residual_x        ->push_back( matchDV_residual_x      );
-    m_matchedRecoVtx_residual_y        ->push_back( matchDV_residual_y      );
-    m_matchedRecoVtx_residual_z        ->push_back( matchDV_residual_z      );
-    m_matchedRecoVtx_residual_r        ->push_back( matchDV_residual_r      );
-    m_matchedRecoVtx_residual_phi      ->push_back( matchDV_residual_phi    );
-    m_matchedRecoVtx_residual_distance ->push_back( matchDV_residual_dist   );
+    m_matchedRecoVtx_n                 ->push_back( match_index              );
+    m_matchedRecoVtx_ID                ->push_back( matchDV_ID               );
+    m_matchedRecoVtx_index             ->push_back( matchDV_index            );
+    m_matchedRecoVtx_x                 ->push_back( matchDV_x                );
+    m_matchedRecoVtx_y                 ->push_back( matchDV_y                );
+    m_matchedRecoVtx_z                 ->push_back( matchDV_z                );
+    m_matchedRecoVtx_r                 ->push_back( matchDV_r                ); 
+    m_matchedRecoVtx_pt                ->push_back( matchDV_pt               );
+    m_matchedRecoVtx_eta               ->push_back( matchDV_eta              );
+    m_matchedRecoVtx_phi               ->push_back( matchDV_phi              );
+    m_matchedRecoVtx_mass              ->push_back( matchDV_mass             );
+    m_matchedRecoVtx_pt_clean          ->push_back( matchDV_cleanPt          );
+    m_matchedRecoVtx_eta_clean         ->push_back( matchDV_cleanEta         );
+    m_matchedRecoVtx_phi_clean         ->push_back( matchDV_cleanPhi         );
+    m_matchedRecoVtx_mass_clean        ->push_back( matchDV_cleanMass        );
+    m_matchedRecoVtx_pt_bare           ->push_back( matchDV_barePt           );
+    m_matchedRecoVtx_eta_bare          ->push_back( matchDV_bareEta          );
+    m_matchedRecoVtx_phi_bare          ->push_back( matchDV_barePhi          );
+    m_matchedRecoVtx_mass_bare         ->push_back( matchDV_bareMass         );
+    m_matchedRecoVtx_chi2              ->push_back( matchDV_chi2             );
+    m_matchedRecoVtx_ntrk              ->push_back( matchDV_ntrk             );
+    m_matchedRecoVtx_ntrk_sel          ->push_back( matchDV_ntrk_sel         );
+    m_matchedRecoVtx_ntrk_assoc        ->push_back( matchDV_ntrk_assoc       );
+    m_matchedRecoVtx_ntrk_clean        ->push_back( matchDV_ntrk_clean       );
+    m_matchedRecoVtx_ntrk_clean_sel    ->push_back( matchDV_ntrk_clean_sel   );
+    m_matchedRecoVtx_ntrk_clean_assoc  ->push_back( matchDV_ntrk_clean_assoc );
+    m_matchedRecoVtx_ntrk_filt         ->push_back( matchDV_ntrk_filt        );
+    m_matchedRecoVtx_ntrk_filt_sel     ->push_back( matchDV_ntrk_filt_sel    );
+    m_matchedRecoVtx_ntrk_filt_assoc   ->push_back( matchDV_ntrk_filt_assoc  );
+    m_matchedRecoVtx_massFraction      ->push_back( matchDV_massFrac         );
+    m_matchedRecoVtx_multFraction      ->push_back( matchDV_multFrac         );
+    m_matchedRecoVtx_cleanMassFraction ->push_back( matchDV_cleanMassFrac    );
+    m_matchedRecoVtx_cleanMultFraction ->push_back( matchDV_cleanMultFrac    );
+    m_matchedRecoVtx_bareMassFraction  ->push_back( matchDV_bareMassFrac     );
+    m_matchedRecoVtx_bareMultFraction  ->push_back( matchDV_bareMultFrac     );
+    m_matchedRecoVtx_matchScore        ->push_back( matchDV_matchScore       );
+    m_matchedRecoVtx_reprTruthPosID    ->push_back( matchDV_reprTruthPosID   );
+    m_matchedRecoVtx_reprTruthPosX     ->push_back( matchDV_reprTruthPosX    );
+    m_matchedRecoVtx_reprTruthPosY     ->push_back( matchDV_reprTruthPosY    );
+    m_matchedRecoVtx_reprTruthPosZ     ->push_back( matchDV_reprTruthPosZ    );
+    m_matchedRecoVtx_reprTruthPosR     ->push_back( matchDV_reprTruthPosR    );
+    m_matchedRecoVtx_reprTruthPosPhi   ->push_back( matchDV_reprTruthPosPhi  );
+    m_matchedRecoVtx_residual_x        ->push_back( matchDV_residual_x       );
+    m_matchedRecoVtx_residual_y        ->push_back( matchDV_residual_y       );
+    m_matchedRecoVtx_residual_z        ->push_back( matchDV_residual_z       );
+    m_matchedRecoVtx_residual_r        ->push_back( matchDV_residual_r       );
+    m_matchedRecoVtx_residual_phi      ->push_back( matchDV_residual_phi     );
+    m_matchedRecoVtx_residual_distance ->push_back( matchDV_residual_dist    );
     
   } // end reco matching switch
 

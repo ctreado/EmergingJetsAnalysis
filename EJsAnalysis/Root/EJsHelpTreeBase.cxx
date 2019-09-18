@@ -149,6 +149,7 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
   m_trk_isAssociated            = new std::vector<uint8_t>;
   m_trk_passSel                 = new std::vector<uint8_t>;
   m_trk_isSecVtxTrk             = new std::vector<uint8_t>;
+  m_trk_isSecVtxCleanTrk        = new std::vector<uint8_t>;
   m_trk_isSecVtxFiltTrk         = new std::vector<uint8_t>;
   m_trk_secVtxID                = new std::vector<int>;
   m_trk_secVtxIndex             = new std::vector<int>;
@@ -918,6 +919,7 @@ void EJsHelpTreeBase :: AddTracksUser ( const std::string trackName, const std::
   setBranch<uint8_t>                    ( trackName, "isAssociated",                       m_trk_isAssociated            );
   setBranch<uint8_t>                    ( trackName, "passSel",                            m_trk_passSel                 );
   setBranch<uint8_t>                    ( trackName, "isSecVtxTrk",                        m_trk_isSecVtxTrk             );
+  setBranch<uint8_t>                    ( trackName, "isSecVtxCleanTrk",                   m_trk_isSecVtxCleanTrk        );
   setBranch<uint8_t>                    ( trackName, "isSecVtxFiltTrk",                    m_trk_isSecVtxFiltTrk         );
   setBranch<int>                        ( trackName, "secVtxID",                           m_trk_secVtxID                );
   setBranch<int>                        ( trackName, "secVtxIndex",                        m_trk_secVtxIndex             );
@@ -997,10 +999,11 @@ void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName, const xAOD
   m_trk_passSel                 ->push_back( passSel                                                               );
 
   // get linked secondary vertex
-  bool trackIsSecVtxTrk     = false;
-  bool trackIsSecVtxFiltTrk = false;
-  int  secVtxID             = AlgConsts::invalidInt;
-  int  secVtxIndex          = AlgConsts::invalidInt;
+  bool trackIsSecVtxTrk      = false;
+  bool trackIsSecVtxCleanTrk = false;
+  bool trackIsSecVtxFiltTrk  = false;
+  int  secVtxID              = AlgConsts::invalidInt;
+  int  secVtxIndex           = AlgConsts::invalidInt;
   static SG::AuxElement::ConstAccessor<EJsHelper::VertexLink_t> secVtxAccess("secondaryVertexLink");
   if ( secVtxAccess.isAvailable( *track ) ) {
     try {
@@ -1010,11 +1013,15 @@ void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName, const xAOD
       secVtxIndex = AUXDYN( (*secvtxlink), int, "index" );
     } catch(...) {}
   }
-  if ( trackIsSecVtxTrk ) trackIsSecVtxFiltTrk = AUXDYN( track, char, "isFiltered" );
-  m_trk_isSecVtxTrk         ->push_back( trackIsSecVtxTrk     );
-  m_trk_isSecVtxFiltTrk     ->push_back( trackIsSecVtxFiltTrk );
-  m_trk_secVtxID            ->push_back( secVtxID             );
-  m_trk_secVtxIndex         ->push_back( secVtxIndex          );
+  if ( trackIsSecVtxTrk ) {
+    trackIsSecVtxCleanTrk = AUXDYN( track, char, "isClean"    );
+    trackIsSecVtxFiltTrk  = AUXDYN( track, char, "isFiltered" );
+  }
+  m_trk_isSecVtxTrk         ->push_back( trackIsSecVtxTrk      );
+  m_trk_isSecVtxCleanTrk    ->push_back( trackIsSecVtxCleanTrk );
+  m_trk_isSecVtxFiltTrk     ->push_back( trackIsSecVtxFiltTrk  );
+  m_trk_secVtxID            ->push_back( secVtxID              );
+  m_trk_secVtxIndex         ->push_back( secVtxIndex           );
 
   // get linked truth particle
   if ( m_isMC ) {
@@ -1135,6 +1142,7 @@ void EJsHelpTreeBase :: ClearTracksUser ( const std::string trackName )
   m_trk_isAssociated            ->clear();
   m_trk_passSel                 ->clear();
   m_trk_isSecVtxTrk             ->clear();
+  m_trk_isSecVtxCleanTrk        ->clear();
   m_trk_isSecVtxFiltTrk         ->clear();
   m_trk_secVtxID                ->clear();
   m_trk_secVtxIndex             ->clear();

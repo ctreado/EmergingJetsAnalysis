@@ -58,24 +58,26 @@ class SecondaryVertexSelector : public xAH::Algorithm
   int   m_ntrk_max = -1;
 
   // track trimming configurations
-  bool   m_doTrackTrimming    = true;
-  bool   m_doChi2Filter       = true;
-  bool   m_doHitPatternFilter = true;
-  bool   m_doIpWrtSVFilter    = true;
-  bool   m_doDropAssociated   = false;
-  bool   m_doDropNonSelected  = false;
+  bool   m_doTrackTrimming     = true;
+  bool   m_doChi2Filter        = true;
+  bool   m_doHitPatternFilter  = true;
+  bool   m_doIpWrtSVFilter     = true;
+  bool   m_doDropAssociated    = false;
+  bool   m_doDropNonSelected   = false;
+  bool   m_doCleanAssociatedD0 = true;
   // default values based on VsiPerf note ... may want/need to change ... STUDY !!!
-  double m_trkChi2Cut        = 5.0;
-  double m_d0_wrtSVCut       = 0.8;
-  double m_z0_wrtSVCut       = 1.2;
-  double m_errd0_wrtSVCut    = AlgConsts::invalidFloat;
-  double m_errz0_wrtSVCut    = AlgConsts::invalidFloat;
-  double m_d0signif_wrtSVCut = 5.0;
-  double m_z0signif_wrtSVCut = 5.0;
-  double m_chi2_toSVCut      = 5.0;
+  double m_trkChi2Cut          = 5.0;
+  double m_d0_wrtSVCut         = 0.8;
+  double m_z0_wrtSVCut         = 1.2;
+  double m_errd0_wrtSVCut      = AlgConsts::invalidFloat;
+  double m_errz0_wrtSVCut      = AlgConsts::invalidFloat;
+  double m_d0signif_wrtSVCut   = 5.0;
+  double m_z0signif_wrtSVCut   = 5.0;
+  double m_chi2_toSVCut        = 5.0;
   VsiTool::HitPatternCondition m_hitPatternCond = VsiTool::HitPatternCondition::NONE;
-  // filtered-track cut --> skip DVs w/ less than two filtered tracks
-  bool m_doFiltTrkCut = false;
+  // clean- / filtered-track cut --> skip DVs w/ less than two clean / filtered tracks
+  bool m_doCleanTrkCut         = false;
+  bool m_doFiltTrkCut          = false;
 
   // material map veto
   bool m_doMatMapVeto = true;
@@ -97,12 +99,10 @@ class SecondaryVertexSelector : public xAH::Algorithm
   int m_numPassEvents;       //!
   int m_numPassWeightEvents; //!
 
-  double m_mcEventWeight; //!
+  double m_mcEventWeight;    //!
 
   VsiBonsai::Configurator m_bonsaiCfg = {}; //!
 
-  //TFile*            m_matMapInnerFile    = 0; //!
-  //TFile*            m_matMapOuterFile    = 0; //!
   TH3S*             m_materialMap_Inner  = 0; //!
   TH3S*             m_materialMap_Outer  = 0; //!
   TMatrixT<double>* m_materialMap_Matrix = 0; //!
@@ -113,22 +113,23 @@ class SecondaryVertexSelector : public xAH::Algorithm
   int   m_cutflow_bin;      //!
 
   // object-level cutflow
-  TH1D* m_secVtx_cutflowHist = 0; //!
-  int   m_secVtx_cutflow_all;     //!
-  int   m_secVtx_cutflow_filtTrk; //!
-  int   m_secVtx_cutflow_matVeto; //!
-  int   m_secVtx_cutflow_rmin;    //!
-  int   m_secVtx_cutflow_rmax;    //!
-  int   m_secVtx_cutflow_zmin;    //!
-  int   m_secVtx_cutflow_zmax;    //!
-  int   m_secVtx_cutflow_ntrkmin; //!
-  int   m_secVtx_cutflow_ntrkmax; //!
-  int   m_secVtx_cutflow_chi2min; //!
-  int   m_secVtx_cutflow_chi2max; //!
-  int   m_secVtx_cutflow_massmin; //!
-  int   m_secVtx_cutflow_massmax; //!
-  int   m_secVtx_cutflow_distmin; //!
-  int   m_secVtx_cutflow_distmax; //!
+  TH1D* m_secVtx_cutflowHist = 0;  //!
+  int   m_secVtx_cutflow_all;      //!
+  int   m_secVtx_cutflow_cleanTrk; //!
+  int   m_secVtx_cutflow_filtTrk;  //!
+  int   m_secVtx_cutflow_matVeto;  //!
+  int   m_secVtx_cutflow_rmin;     //!
+  int   m_secVtx_cutflow_rmax;     //!
+  int   m_secVtx_cutflow_zmin;     //!
+  int   m_secVtx_cutflow_zmax;     //!
+  int   m_secVtx_cutflow_ntrkmin;  //!
+  int   m_secVtx_cutflow_ntrkmax;  //!
+  int   m_secVtx_cutflow_chi2min;  //!
+  int   m_secVtx_cutflow_chi2max;  //!
+  int   m_secVtx_cutflow_massmin;  //!
+  int   m_secVtx_cutflow_massmax;  //!
+  int   m_secVtx_cutflow_distmin;  //!
+  int   m_secVtx_cutflow_distmax;  //!
 
   
  public:

@@ -1,4 +1,5 @@
 .asetup*
 EJsAnalysis/scripts/plotting/*_cxx*
+EJsAnalysis/scripts/plotting/AutoDict*__.cxx
 EJsAnalysis/config/*.pyc
 tmp/

@@ -188,6 +188,10 @@ namespace EJs {
     std::vector<std::vector<float>>*   m_matchedRecoVtx_eta;
     std::vector<std::vector<float>>*   m_matchedRecoVtx_phi;
     std::vector<std::vector<float>>*   m_matchedRecoVtx_mass;
+    std::vector<std::vector<float>>*   m_matchedRecoVtx_pt_clean;
+    std::vector<std::vector<float>>*   m_matchedRecoVtx_eta_clean;
+    std::vector<std::vector<float>>*   m_matchedRecoVtx_phi_clean;
+    std::vector<std::vector<float>>*   m_matchedRecoVtx_mass_clean;
     std::vector<std::vector<float>>*   m_matchedRecoVtx_pt_bare;
     std::vector<std::vector<float>>*   m_matchedRecoVtx_eta_bare;
     std::vector<std::vector<float>>*   m_matchedRecoVtx_phi_bare;
@@ -196,11 +200,16 @@ namespace EJs {
     std::vector<std::vector<int>>*     m_matchedRecoVtx_ntrk;
     std::vector<std::vector<int>>*     m_matchedRecoVtx_ntrk_sel;
     std::vector<std::vector<int>>*     m_matchedRecoVtx_ntrk_assoc;
+    std::vector<std::vector<int>>*     m_matchedRecoVtx_ntrk_clean;
+    std::vector<std::vector<int>>*     m_matchedRecoVtx_ntrk_clean_sel;
+    std::vector<std::vector<int>>*     m_matchedRecoVtx_ntrk_clean_assoc;
     std::vector<std::vector<int>>*     m_matchedRecoVtx_ntrk_filt;
     std::vector<std::vector<int>>*     m_matchedRecoVtx_ntrk_filt_sel;
     std::vector<std::vector<int>>*     m_matchedRecoVtx_ntrk_filt_assoc;
     std::vector<std::vector<float>>*   m_matchedRecoVtx_massFraction;
     std::vector<std::vector<float>>*   m_matchedRecoVtx_multFraction;
+    std::vector<std::vector<float>>*   m_matchedRecoVtx_cleanMassFraction;
+    std::vector<std::vector<float>>*   m_matchedRecoVtx_cleanMultFraction;
     std::vector<std::vector<float>>*   m_matchedRecoVtx_bareMassFraction;
     std::vector<std::vector<float>>*   m_matchedRecoVtx_bareMultFraction;
     std::vector<std::vector<float>>*   m_matchedRecoVtx_matchScore;

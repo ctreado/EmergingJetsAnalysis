@@ -66,6 +66,20 @@ namespace EJs {
     std::vector<float>*              m_maxd0;
     std::vector<float>*              m_distToPV;
 
+    std::vector<float>*              m_pt_clean;
+    std::vector<float>*              m_eta_clean;
+    std::vector<float>*              m_phi_clean;
+    std::vector<float>*              m_mass_clean;
+    std::vector<float>*              m_mass_nonAssoc_clean;
+    std::vector<float>*              m_direction_clean;
+    std::vector<int>*                m_charge_clean;
+    std::vector<float>*              m_H_clean;
+    std::vector<float>*              m_Ht_clean;
+    std::vector<float>*              m_minOpAng_clean;
+    std::vector<float>*              m_maxOpAng_clean;
+    std::vector<float>*              m_mind0_clean;
+    std::vector<float>*              m_maxd0_clean;
+    
     std::vector<float>*              m_pt_bare;
     std::vector<float>*              m_eta_bare;
     std::vector<float>*              m_phi_bare;
@@ -85,6 +99,11 @@ namespace EJs {
     std::vector<std::vector<float>>* m_twoTracksMassRest;
     std::vector<std::vector<int>>*   m_twoTracksCharge;
 
+    std::vector<float>*              m_minOneTrackRemovedMass_clean;
+    std::vector<std::vector<float>>* m_twoTracksMass_clean;
+    std::vector<std::vector<float>>* m_twoTracksMassRest_clean;
+    std::vector<std::vector<int>>*   m_twoTracksCharge_clean;
+
     std::vector<float>*              m_minOneTrackRemovedMass_bare;
     std::vector<std::vector<float>>* m_twoTracksMass_bare;
     std::vector<std::vector<float>>* m_twoTracksMassRest_bare;
@@ -93,6 +112,9 @@ namespace EJs {
     std::vector<int>*                m_ntrk;
     std::vector<int>*                m_ntrk_sel;
     std::vector<int>*                m_ntrk_assoc;
+    std::vector<int>*                m_ntrk_clean;
+    std::vector<int>*                m_ntrk_clean_sel;
+    std::vector<int>*                m_ntrk_clean_assoc;
     std::vector<int>*                m_ntrk_filt;
     std::vector<int>*                m_ntrk_filt_sel;
     std::vector<int>*                m_ntrk_filt_assoc;
@@ -129,6 +151,7 @@ namespace EJs {
     std::vector<std::vector<uint8_t>>*  m_trk_isFinal;
     std::vector<std::vector<uint8_t>>*  m_trk_isSelected;
     std::vector<std::vector<uint8_t>>*  m_trk_isAssociated;
+    std::vector<std::vector<uint8_t>>*  m_trk_isClean;
     std::vector<std::vector<uint8_t>>*  m_trk_isFiltered;
     std::vector<std::vector<uint8_t>>*  m_trk_nPixelHits;
     std::vector<std::vector<uint8_t>>*  m_trk_nSCTHits;
@@ -201,6 +224,8 @@ namespace EJs {
     std::vector<std::vector<float>>*       m_matchedTruthVtx_recoDescSumM;
     std::vector<std::vector<float>>*       m_matchedTruthVtx_massFraction;
     std::vector<std::vector<float>>*       m_matchedTruthVtx_multFraction;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_cleanMassFraction;
+    std::vector<std::vector<float>>*       m_matchedTruthVtx_cleanMultFraction;
     std::vector<std::vector<float>>*       m_matchedTruthVtx_bareMassFraction;
     std::vector<std::vector<float>>*       m_matchedTruthVtx_bareMultFraction;
     std::vector<std::vector<float>>*       m_matchedTruthVtx_matchScore;

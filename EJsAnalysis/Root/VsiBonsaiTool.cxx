@@ -216,6 +216,36 @@ namespace VsiBonsai {
   }
 
 
+  //_____________________________________________________________________________________________
+  bool cleanAssociatedD0( const xAOD::Vertex*, const xAOD::TrackParticle* trk,
+			  const xAOD::Vertex*, const Configurator& config )
+  {
+    if ( config.find( Config::cleanAssociatedD0 ) == config.end() ) {
+      ERRMSG_UNCONFIG( Config::dropNonSelected );
+      throw( Error::Unconfigured );
+    }
+
+    if ( config.at( Config::cleanAssociatedD0 ).type() != typeid( bool ) ) {
+      ERRMSG_TYPE( Config::cleanAssociatedD0, bool );
+      throw( Error::TypeError );
+    }
+
+    if ( !config.at( Config::cleanAssociatedD0 ).getVar<bool>() ) return true;
+    if ( !trk->isAvailable<char> ( "is_associated" ) )            return true;
+    if ( !trk->auxdataConst<char>( "is_associated" ) )            return true;
+    // --> only look at associated tracks? or all vertex tracks?
+    
+    float d0 = fabs( trk->d0() );
+    if (               d0 < 2.   ) return false;
+    if ( 26.   < d0 && d0 < 39.  ) return false;
+    if ( 46.   < d0 && d0 < 56.5 ) return false;
+    if ( 83.5  < d0 && d0 < 93.5 ) return false;
+    if ( 117.5 < d0 && d0 < 128. ) return false;
+    
+    return true;
+  }
+
+
   #undef ERRMSG_UNCONFIG
   #undef ERRMSG_TYPE
 

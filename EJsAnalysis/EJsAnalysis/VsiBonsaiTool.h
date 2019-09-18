@@ -38,7 +38,8 @@ namespace VsiBonsai {
     z0signif_wrtSVCut,
     chi2_toSVCut,
     dropAssociated,
-    dropNonSelected
+    dropNonSelected,
+    cleanAssociatedD0
   };
 
   enum class Error {
@@ -54,16 +55,18 @@ namespace VsiBonsai {
   using Trimmer = bool (*)( const xAOD::Vertex*, const xAOD::TrackParticle*,
 			    const xAOD::Vertex*, const Configurator& );
 
-  bool chi2Filter       ( const xAOD::Vertex* /* dv */, const xAOD::TrackParticle* /* dvTrack */,
-			  const xAOD::Vertex* /* pv */, const Configurator& /* config */ );
-  bool hitPatternFilter ( const xAOD::Vertex* /* dv */, const xAOD::TrackParticle* /* dvTrack */,
-			  const xAOD::Vertex* /* pv */, const Configurator& /* config */ );
-  bool ipWrtSVFilter    ( const xAOD::Vertex* /* dv */, const xAOD::TrackParticle* /* dvTrack */,
-			  const xAOD::Vertex* /* pv */, const Configurator& /* config */ );
-  bool dropAssociated   ( const xAOD::Vertex* /* dv */, const xAOD::TrackParticle* /* dvTrack */,
-			  const xAOD::Vertex* /* pv */, const Configurator& /* config */ );
-  bool dropNonSelected  ( const xAOD::Vertex* /* dv */, const xAOD::TrackParticle* /* dvTrack */,
-			  const xAOD::Vertex* /* pv */, const Configurator& /* config */ );
+  bool chi2Filter        ( const xAOD::Vertex* /* dv */, const xAOD::TrackParticle* /* dvTrack */,
+			   const xAOD::Vertex* /* pv */, const Configurator& /* config */ );
+  bool hitPatternFilter  ( const xAOD::Vertex* /* dv */, const xAOD::TrackParticle* /* dvTrack */,
+			   const xAOD::Vertex* /* pv */, const Configurator& /* config */ );
+  bool ipWrtSVFilter     ( const xAOD::Vertex* /* dv */, const xAOD::TrackParticle* /* dvTrack */,
+			   const xAOD::Vertex* /* pv */, const Configurator& /* config */ );
+  bool dropAssociated    ( const xAOD::Vertex* /* dv */, const xAOD::TrackParticle* /* dvTrack */,
+			   const xAOD::Vertex* /* pv */, const Configurator& /* config */ );
+  bool dropNonSelected   ( const xAOD::Vertex* /* dv */, const xAOD::TrackParticle* /* dvTrack */,
+			   const xAOD::Vertex* /* pv */, const Configurator& /* config */ );
+  bool cleanAssociatedD0 ( const xAOD::Vertex* /* dv */, const xAOD::TrackParticle* /* dvTrack */,
+			   const xAOD::Vertex* /* pv */, const Configurator& /* config */ );
 
   template < enum Config TYPE >
     bool varWrtSVCut ( const xAOD::TrackParticle*, const Configurator&, std::string name );

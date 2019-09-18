@@ -206,7 +206,7 @@ Dict_SecondaryVertexSelector = {
     "m_createSelectedContainer" : True,
     "m_doTrackTrimming"         : True,  ## --> for now, apply (default) track trimming...
     "m_doFiltTrkCut"            : False, ## --> ...but don't apply filtered-track cuts
-    "m_doMatMapVeto"            : True,  ## --> compare vertices w/ material on and off ???
+    "m_doMatMapVeto"            : True,
     "m_matMapInnerFileName"     : matMapPath + "MaterialMap_v3.2_Inner.root",
     "m_matMapInnerHistName"     : "FinalMap_inner",
     "m_matMapInnerMatrixName"   : "FoldingInfo",
@@ -222,9 +222,9 @@ Dict_TruthVertexSelector = {
     "m_decorateSelectedObjects" : True,
     "m_createSelectedContainer" : True,
     "m_truthLLP"                : "DarkPion Kshort",
-    #"m_r_max"                   : 563,
-    #"m_z_max"                   : 2720, # --> do we want fiducial volume selection ??
-    #"m_nVisOutP_min"            : 2,
+    "m_r_max"                   : 563,
+    "m_z_max"                   : 2720,
+    "m_nVisOutP_min"            : 2,
 }
 
 
@@ -239,11 +239,11 @@ Dict_ObjectMatcher = {
     "m_inTrackPartContainerName"       : "InDetTrackParticles_Select",
     "m_inTruthVertexContainerName"     : "TruthVertices_Select",
     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
-    "m_inputAlgo"                      : "AntiKt4EMPFlowJets_Calib_Select_Algo",    # --> PFlow = rec R21 jet container
+    "m_inputAlgo"                      : "AntiKt4EMPFlowJets_Calib_Select_Algo", # --> PFlow = rec R21 jet container
     "m_jetSystsContainerIndex"         : 1,
-    "m_jet_matchRadius"                : 0.1, # --> loosen (0.5) ??
-    "m_jet_vtx_matchRadius"            : 1.0, # --> 0.6 ??
-    "m_jet_trk_matchRadius"            : 1.0, # --> 0.6 ??
+    "m_jet_matchRadius"                : 0.3,
+    "m_jet_vtx_matchRadius"            : 0.6,
+    "m_jet_trk_matchRadius"            : 0.6,
 }
 
 Dict_VertexMatcher = {
@@ -254,9 +254,9 @@ Dict_VertexMatcher = {
     "m_inTruthVertexContainerName"     : "TruthVertices_Select",
     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
     "m_truthLLP"                       : "DarkPion Kshort",
-    "m_distanceCutoff"                 : 100,        # TEST --> tighten ?
-    "m_doTruthTrackMatching"           : False,      # already done above...
-    "m_vtx_matchScore"                 : 0,          # off for now --> can apply score requirement later (i.e. in histo alg)...
+    "m_distanceCutoff"                 : 10, 
+    "m_doTruthTrackMatching"           : False, # already done above...
+    "m_vtx_matchScore"                 : 0,     # off for now --> can apply score requirement later (i.e. in histo alg)...
 }
 
 

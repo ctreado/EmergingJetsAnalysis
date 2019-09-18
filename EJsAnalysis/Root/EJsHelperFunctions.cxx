@@ -18,15 +18,33 @@ namespace EJsHelper {
     return dR;
   }
 
-   void getFilteredTracks ( const xAOD::Vertex* vtx, std::vector<const xAOD::TrackParticle*>& filtTrks )
-   {
-     for ( size_t itrk = 0; itrk != vtx->nTrackParticles(); ++itrk ) {
-       const auto* trk = vtx->trackParticle(itrk);
-       bool trk_isFilt = true;
-       if ( trk->isAvailable<char>("isFiltered") ) trk_isFilt = trk->auxdataConst<char>("isFiltered");
-       if ( trk_isFilt )                           filtTrks.push_back( trk );
-     }
-   }
+  void getAllTracks ( const xAOD::Vertex* vtx, std::vector<const xAOD::TrackParticle*>& allTrks )
+  {
+    for ( size_t itrk = 0; itrk != vtx->nTrackParticles(); ++itrk ) {
+      const auto* trk = vtx->trackParticle(itrk);
+      allTrks.push_back( trk );
+    }
+  }
+  
+  void getCleanTracks ( const xAOD::Vertex* vtx, std::vector<const xAOD::TrackParticle*>& cleanTrks )
+  {
+    for ( size_t itrk = 0; itrk != vtx->nTrackParticles(); ++itrk ) {
+      const auto* trk = vtx->trackParticle(itrk);
+      bool trk_isClean = true;
+      if ( trk->isAvailable<char>("isClean") ) trk_isClean = trk->auxdataConst<char>("isClean");
+      if ( trk_isClean )                       cleanTrks.push_back( trk );
+    }
+  }
+  
+  void getFilteredTracks ( const xAOD::Vertex* vtx, std::vector<const xAOD::TrackParticle*>& filtTrks )
+  {
+    for ( size_t itrk = 0; itrk != vtx->nTrackParticles(); ++itrk ) {
+      const auto* trk = vtx->trackParticle(itrk);
+      bool trk_isFilt = true;
+      if ( trk->isAvailable<char>("isFiltered") ) trk_isFilt = trk->auxdataConst<char>("isFiltered");
+      if ( trk_isFilt )                           filtTrks.push_back( trk );
+    }
+  }
 
   // ------------------------------------------------------------------------------------------ //
 

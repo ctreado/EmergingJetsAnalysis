@@ -29,57 +29,58 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
 
   if ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTracks || m_infoSwitch.m_ghostTruth ) {
     if ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTracks ) {
-      m_GhostTrack_ID              = new std::vector<std::vector<int>>;
-      m_GhostTrack_index           = new std::vector<std::vector<int>>;
-      m_GhostTrack_m               = new std::vector<std::vector<float>>;
-      m_GhostTrack_errd0           = new std::vector<std::vector<float>>;
-      m_GhostTrack_errz0           = new std::vector<std::vector<float>>;
-      m_GhostTrack_chi2            = new std::vector<std::vector<float>>;
-      m_GhostTrack_charge          = new std::vector<std::vector<float>>;
-      m_GhostTrack_isSelected      = new std::vector<std::vector<uint8_t>>;
-      m_GhostTrack_isAssociated    = new std::vector<std::vector<uint8_t>>;
-      m_GhostTrack_isSecVtxTrk     = new std::vector<std::vector<uint8_t>>;
-      m_GhostTrack_isSecVtxFiltTrk = new std::vector<std::vector<uint8_t>>;
-      m_GhostTrack_secVtxID        = new std::vector<std::vector<int>>;
-      m_GhostTrack_secVtxIndex     = new std::vector<std::vector<int>>;
+      m_GhostTrack_ID               = new std::vector<std::vector<int>>;
+      m_GhostTrack_index            = new std::vector<std::vector<int>>;
+      m_GhostTrack_m                = new std::vector<std::vector<float>>;
+      m_GhostTrack_errd0            = new std::vector<std::vector<float>>;
+      m_GhostTrack_errz0            = new std::vector<std::vector<float>>;
+      m_GhostTrack_chi2             = new std::vector<std::vector<float>>;
+      m_GhostTrack_charge           = new std::vector<std::vector<float>>;
+      m_GhostTrack_isSelected       = new std::vector<std::vector<uint8_t>>;
+      m_GhostTrack_isAssociated     = new std::vector<std::vector<uint8_t>>;
+      m_GhostTrack_isSecVtxTrk      = new std::vector<std::vector<uint8_t>>;
+      m_GhostTrack_isSecVtxCleanTrk = new std::vector<std::vector<uint8_t>>;
+      m_GhostTrack_isSecVtxFiltTrk  = new std::vector<std::vector<uint8_t>>;
+      m_GhostTrack_secVtxID         = new std::vector<std::vector<int>>;
+      m_GhostTrack_secVtxIndex      = new std::vector<std::vector<int>>;
       if ( m_mc ) {
-	m_GhostTrack_isTruth       = new std::vector<std::vector<uint8_t>>;
-	m_GhostTrack_truthProb     = new std::vector<std::vector<float>>;
-	m_GhostTrack_truthID       = new std::vector<std::vector<int>>;
-	m_GhostTrack_truthIndex    = new std::vector<std::vector<int>>;
-	m_GhostTrack_truthBarcode  = new std::vector<std::vector<int>>;
-	m_GhostTrack_truthPdgId    = new std::vector<std::vector<int>>;
+	m_GhostTrack_isTruth        = new std::vector<std::vector<uint8_t>>;
+	m_GhostTrack_truthProb      = new std::vector<std::vector<float>>;
+	m_GhostTrack_truthID        = new std::vector<std::vector<int>>;
+	m_GhostTrack_truthIndex     = new std::vector<std::vector<int>>;
+	m_GhostTrack_truthBarcode   = new std::vector<std::vector<int>>;
+	m_GhostTrack_truthPdgId     = new std::vector<std::vector<int>>;
       }
     }
     if ( ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTruth ) && m_mc ) {
-      m_GhostTruthCount           = new std::vector<int>;
-      m_GhostTruthPt              = new std::vector<float>;
-      m_GhostTruth_ID             = new std::vector<std::vector<int>>;
-      m_GhostTruth_index          = new std::vector<std::vector<int>>;
-      m_GhostTruth_pt             = new std::vector<std::vector<float>>;
-      m_GhostTruth_eta            = new std::vector<std::vector<float>>;
-      m_GhostTruth_phi            = new std::vector<std::vector<float>>;
-      m_GhostTruth_e              = new std::vector<std::vector<float>>;
-      m_GhostTruth_m              = new std::vector<std::vector<float>>;
-      m_GhostTruth_charge         = new std::vector<std::vector<float>>;
-      m_GhostTruth_pdgId          = new std::vector<std::vector<int>>;
-      m_GhostTruth_status         = new std::vector<std::vector<int>>;
-      m_GhostTruth_barcode        = new std::vector<std::vector<int>>;
-      m_GhostTruth_isReco         = new std::vector<std::vector<uint8_t>>;
-      m_GhostTruth_isSelected     = new std::vector<std::vector<uint8_t>>;
-      m_GhostTruth_isAssociated   = new std::vector<std::vector<uint8_t>>;
-      m_GhostTruth_recoProb       = new std::vector<std::vector<float>>;
-      m_GhostTruth_recoID         = new std::vector<std::vector<int>>;
-      m_GhostTruth_recoIndex      = new std::vector<std::vector<int>>;
-      m_GhostTruth_isStable       = new std::vector<std::vector<uint8_t>>;
-      m_GhostTruth_isInteracting  = new std::vector<std::vector<uint8_t>>;
-      m_GhostTruth_isDark         = new std::vector<std::vector<uint8_t>>;
-      m_GhostTruth_pVtx_llpDecay  = new std::vector<std::vector<std::string>>;
-      m_GhostTruth_pVtx_ID        = new std::vector<std::vector<int>>;
-      m_GhostTruth_pVtx_index     = new std::vector<std::vector<int>>;
-      m_GhostTruth_dVtx_llpDecay  = new std::vector<std::vector<std::string>>;
-      m_GhostTruth_dVtx_ID        = new std::vector<std::vector<int>>;
-      m_GhostTruth_dVtx_index     = new std::vector<std::vector<int>>;
+      m_GhostTruthCount             = new std::vector<int>;
+      m_GhostTruthPt                = new std::vector<float>;
+      m_GhostTruth_ID               = new std::vector<std::vector<int>>;
+      m_GhostTruth_index            = new std::vector<std::vector<int>>;
+      m_GhostTruth_pt               = new std::vector<std::vector<float>>;
+      m_GhostTruth_eta              = new std::vector<std::vector<float>>;
+      m_GhostTruth_phi              = new std::vector<std::vector<float>>;
+      m_GhostTruth_e                = new std::vector<std::vector<float>>;
+      m_GhostTruth_m                = new std::vector<std::vector<float>>;
+      m_GhostTruth_charge           = new std::vector<std::vector<float>>;
+      m_GhostTruth_pdgId            = new std::vector<std::vector<int>>;
+      m_GhostTruth_status           = new std::vector<std::vector<int>>;
+      m_GhostTruth_barcode          = new std::vector<std::vector<int>>;
+      m_GhostTruth_isReco           = new std::vector<std::vector<uint8_t>>;
+      m_GhostTruth_isSelected       = new std::vector<std::vector<uint8_t>>;
+      m_GhostTruth_isAssociated     = new std::vector<std::vector<uint8_t>>;
+      m_GhostTruth_recoProb         = new std::vector<std::vector<float>>;
+      m_GhostTruth_recoID           = new std::vector<std::vector<int>>;
+      m_GhostTruth_recoIndex        = new std::vector<std::vector<int>>;
+      m_GhostTruth_isStable         = new std::vector<std::vector<uint8_t>>;
+      m_GhostTruth_isInteracting    = new std::vector<std::vector<uint8_t>>;
+      m_GhostTruth_isDark           = new std::vector<std::vector<uint8_t>>;
+      m_GhostTruth_pVtx_llpDecay    = new std::vector<std::vector<std::string>>;
+      m_GhostTruth_pVtx_ID          = new std::vector<std::vector<int>>;
+      m_GhostTruth_pVtx_index       = new std::vector<std::vector<int>>;
+      m_GhostTruth_dVtx_llpDecay    = new std::vector<std::vector<std::string>>;
+      m_GhostTruth_dVtx_ID          = new std::vector<std::vector<int>>;
+      m_GhostTruth_dVtx_index       = new std::vector<std::vector<int>>;
     }
   }
 
@@ -154,6 +155,7 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
     if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts ) {
       m_secVtxCount                = new std::vector<int>;
       m_secVtxPt                   = new std::vector<float>;
+      m_secVtxCleanPt              = new std::vector<float>;
       m_secVtxBarePt               = new std::vector<float>;
       m_secVtx_ID                  = new std::vector<std::vector<int>>;
       m_secVtx_index               = new std::vector<std::vector<int>>;
@@ -165,6 +167,10 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
       m_secVtx_eta                 = new std::vector<std::vector<float>>;
       m_secVtx_phi                 = new std::vector<std::vector<float>>;
       m_secVtx_mass                = new std::vector<std::vector<float>>;
+      m_secVtx_pt_clean            = new std::vector<std::vector<float>>;
+      m_secVtx_eta_clean           = new std::vector<std::vector<float>>;
+      m_secVtx_phi_clean           = new std::vector<std::vector<float>>;
+      m_secVtx_mass_clean          = new std::vector<std::vector<float>>;
       m_secVtx_pt_bare             = new std::vector<std::vector<float>>;
       m_secVtx_eta_bare            = new std::vector<std::vector<float>>;
       m_secVtx_phi_bare            = new std::vector<std::vector<float>>;
@@ -174,6 +180,9 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
       m_secVtx_ntrk                = new std::vector<std::vector<int>>;
       m_secVtx_ntrk_sel            = new std::vector<std::vector<int>>;
       m_secVtx_ntrk_assoc          = new std::vector<std::vector<int>>;
+      m_secVtx_ntrk_clean          = new std::vector<std::vector<int>>;
+      m_secVtx_ntrk_clean_sel      = new std::vector<std::vector<int>>;
+      m_secVtx_ntrk_clean_assoc    = new std::vector<std::vector<int>>;
       m_secVtx_ntrk_filt           = new std::vector<std::vector<int>>;
       m_secVtx_ntrk_filt_sel       = new std::vector<std::vector<int>>;
       m_secVtx_ntrk_filt_assoc     = new std::vector<std::vector<int>>;
@@ -203,36 +212,37 @@ JetContainer :: JetContainer ( const std::string& name, const std::string& detai
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_trackParts ) {
-    m_trkCount            = new std::vector<int>;
-    m_trkPt               = new std::vector<float>;
-    m_trk_ID              = new std::vector<std::vector<int>>;
-    m_trk_index           = new std::vector<std::vector<int>>;
-    m_trk_qOverP          = new std::vector<std::vector<float>>;
-    m_trk_E               = new std::vector<std::vector<float>>;
-    m_trk_M               = new std::vector<std::vector<float>>;
-    m_trk_pt              = new std::vector<std::vector<float>>;
-    m_trk_eta             = new std::vector<std::vector<float>>;
-    m_trk_phi             = new std::vector<std::vector<float>>;
-    m_trk_d0              = new std::vector<std::vector<float>>;
-    m_trk_z0              = new std::vector<std::vector<float>>;
-    m_trk_errd0           = new std::vector<std::vector<float>>;
-    m_trk_errz0           = new std::vector<std::vector<float>>;
-    m_trk_chi2            = new std::vector<std::vector<float>>;
-    m_trk_charge          = new std::vector<std::vector<float>>;
-    m_trk_isSelected      = new std::vector<std::vector<uint8_t>>;
-    m_trk_isAssociated    = new std::vector<std::vector<uint8_t>>;
-    m_trk_dR              = new std::vector<std::vector<float>>;
-    m_trk_isSecVtxTrk     = new std::vector<std::vector<uint8_t>>;
-    m_trk_isSecVtxFiltTrk = new std::vector<std::vector<uint8_t>>;
-    m_trk_secVtxID        = new std::vector<std::vector<int>>;
-    m_trk_secVtxIndex     = new std::vector<std::vector<int>>;
+    m_trkCount             = new std::vector<int>;
+    m_trkPt                = new std::vector<float>;
+    m_trk_ID               = new std::vector<std::vector<int>>;
+    m_trk_index            = new std::vector<std::vector<int>>;
+    m_trk_qOverP           = new std::vector<std::vector<float>>;
+    m_trk_E                = new std::vector<std::vector<float>>;
+    m_trk_M                = new std::vector<std::vector<float>>;
+    m_trk_pt               = new std::vector<std::vector<float>>;
+    m_trk_eta              = new std::vector<std::vector<float>>;
+    m_trk_phi              = new std::vector<std::vector<float>>;
+    m_trk_d0               = new std::vector<std::vector<float>>;
+    m_trk_z0               = new std::vector<std::vector<float>>;
+    m_trk_errd0            = new std::vector<std::vector<float>>;
+    m_trk_errz0            = new std::vector<std::vector<float>>;
+    m_trk_chi2             = new std::vector<std::vector<float>>;
+    m_trk_charge           = new std::vector<std::vector<float>>;
+    m_trk_isSelected       = new std::vector<std::vector<uint8_t>>;
+    m_trk_isAssociated     = new std::vector<std::vector<uint8_t>>;
+    m_trk_dR               = new std::vector<std::vector<float>>;
+    m_trk_isSecVtxTrk      = new std::vector<std::vector<uint8_t>>;
+    m_trk_isSecVtxCleanTrk = new std::vector<std::vector<uint8_t>>;
+    m_trk_isSecVtxFiltTrk  = new std::vector<std::vector<uint8_t>>;
+    m_trk_secVtxID         = new std::vector<std::vector<int>>;
+    m_trk_secVtxIndex      = new std::vector<std::vector<int>>;
     if ( m_mc ) {
-      m_trk_isTruth       = new std::vector<std::vector<uint8_t>>;
-      m_trk_truthProb     = new std::vector<std::vector<float>>;
-      m_trk_truthID       = new std::vector<std::vector<int>>;
-      m_trk_truthIndex    = new std::vector<std::vector<int>>;
-      m_trk_truthBarcode  = new std::vector<std::vector<int>>;
-      m_trk_truthPdgId    = new std::vector<std::vector<int>>;
+      m_trk_isTruth        = new std::vector<std::vector<uint8_t>>;
+      m_trk_truthProb      = new std::vector<std::vector<float>>;
+      m_trk_truthID        = new std::vector<std::vector<int>>;
+      m_trk_truthIndex     = new std::vector<std::vector<int>>;
+      m_trk_truthBarcode   = new std::vector<std::vector<int>>;
+      m_trk_truthPdgId     = new std::vector<std::vector<int>>;
     }
   }
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) && m_mc ) {
@@ -290,6 +300,7 @@ JetContainer :: ~JetContainer ()
       delete m_GhostTrack_isSelected;
       delete m_GhostTrack_isAssociated;
       delete m_GhostTrack_isSecVtxTrk;
+      delete m_GhostTrack_isSecVtxCleanTrk;
       delete m_GhostTrack_isSecVtxFiltTrk;
       delete m_GhostTrack_secVtxID;
       delete m_GhostTrack_secVtxIndex;
@@ -405,6 +416,7 @@ JetContainer :: ~JetContainer ()
     if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts ) {
       delete m_secVtxCount;
       delete m_secVtxPt;
+      delete m_secVtxCleanPt;
       delete m_secVtxBarePt;
       delete m_secVtx_ID;
       delete m_secVtx_index;
@@ -416,6 +428,10 @@ JetContainer :: ~JetContainer ()
       delete m_secVtx_eta;
       delete m_secVtx_phi;
       delete m_secVtx_mass;
+      delete m_secVtx_pt_clean;
+      delete m_secVtx_eta_clean;
+      delete m_secVtx_phi_clean;
+      delete m_secVtx_mass_clean;
       delete m_secVtx_pt_bare;
       delete m_secVtx_eta_bare;
       delete m_secVtx_phi_bare;
@@ -425,6 +441,9 @@ JetContainer :: ~JetContainer ()
       delete m_secVtx_ntrk;
       delete m_secVtx_ntrk_sel;
       delete m_secVtx_ntrk_assoc;
+      delete m_secVtx_ntrk_clean;
+      delete m_secVtx_ntrk_clean_sel;
+      delete m_secVtx_ntrk_clean_assoc;
       delete m_secVtx_ntrk_filt;
       delete m_secVtx_ntrk_filt_sel;
       delete m_secVtx_ntrk_filt_assoc;
@@ -474,6 +493,7 @@ JetContainer :: ~JetContainer ()
     delete m_trk_isAssociated;
     delete m_trk_dR;
     delete m_trk_isSecVtxTrk;
+    delete m_trk_isSecVtxCleanTrk;
     delete m_trk_isSecVtxFiltTrk;
     delete m_trk_secVtxID;
     delete m_trk_secVtxIndex;
@@ -531,26 +551,27 @@ void JetContainer :: setTree ( TTree* tree )
 
   if ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTracks || m_infoSwitch.m_ghostTruth ) {
     if ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTracks ) {
-      connectBranch<std::vector<int>>         ( tree, "GhostTrack_ID",              &m_GhostTrack_ID              );
-      connectBranch<std::vector<int>>         ( tree, "GhostTrack_index",           &m_GhostTrack_index           );
-      connectBranch<std::vector<float>>       ( tree, "GhostTrack_m",               &m_GhostTrack_m               );
-      connectBranch<std::vector<float>>       ( tree, "GhostTrack_errd0",           &m_GhostTrack_errd0           );
-      connectBranch<std::vector<float>>       ( tree, "GhostTrack_errz0",           &m_GhostTrack_errz0           );
-      connectBranch<std::vector<float>>       ( tree, "GhostTrack_chi2",            &m_GhostTrack_chi2            );
-      connectBranch<std::vector<float>>       ( tree, "GhostTrack_charge",          &m_GhostTrack_charge          );
-      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSelected",      &m_GhostTrack_isSelected      );
-      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isAssociated",    &m_GhostTrack_isAssociated    );
-      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSecVtxTrk",     &m_GhostTrack_isSecVtxTrk     );
-      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSecVtxFiltTrk", &m_GhostTrack_isSecVtxFiltTrk );
-      connectBranch<std::vector<int>>         ( tree, "GhostTrack_secVtxID",        &m_GhostTrack_secVtxID        );
-      connectBranch<std::vector<int>>         ( tree, "GhostTrack_secVtxIndex",     &m_GhostTrack_secVtxIndex     );
+      connectBranch<std::vector<int>>         ( tree, "GhostTrack_ID",               &m_GhostTrack_ID               );
+      connectBranch<std::vector<int>>         ( tree, "GhostTrack_index",            &m_GhostTrack_index            );
+      connectBranch<std::vector<float>>       ( tree, "GhostTrack_m",                &m_GhostTrack_m                );
+      connectBranch<std::vector<float>>       ( tree, "GhostTrack_errd0",            &m_GhostTrack_errd0            );
+      connectBranch<std::vector<float>>       ( tree, "GhostTrack_errz0",            &m_GhostTrack_errz0            );
+      connectBranch<std::vector<float>>       ( tree, "GhostTrack_chi2",             &m_GhostTrack_chi2             );
+      connectBranch<std::vector<float>>       ( tree, "GhostTrack_charge",           &m_GhostTrack_charge           );
+      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSelected",       &m_GhostTrack_isSelected       );
+      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isAssociated",     &m_GhostTrack_isAssociated     );
+      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSecVtxTrk",      &m_GhostTrack_isSecVtxTrk      );
+      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSecVtxCleanTrk", &m_GhostTrack_isSecVtxCleanTrk );
+      connectBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSecVtxFiltTrk",  &m_GhostTrack_isSecVtxFiltTrk  );
+      connectBranch<std::vector<int>>         ( tree, "GhostTrack_secVtxID",         &m_GhostTrack_secVtxID         );
+      connectBranch<std::vector<int>>         ( tree, "GhostTrack_secVtxIndex",      &m_GhostTrack_secVtxIndex      );
       if ( m_mc ) {
-	connectBranch<std::vector<uint8_t>>   ( tree, "GhostTrack_isTruth",         &m_GhostTrack_isTruth         );
-	connectBranch<std::vector<float>>     ( tree, "GhostTrack_truthProb",       &m_GhostTrack_truthProb       );
-	connectBranch<std::vector<int>>       ( tree, "GhostTrack_truthID",         &m_GhostTrack_truthID         );
-	connectBranch<std::vector<int>>       ( tree, "GhostTrack_truthIndex",      &m_GhostTrack_truthIndex      );
-	connectBranch<std::vector<int>>       ( tree, "GhostTrack_truthBarcode",    &m_GhostTrack_truthBarcode    );
-	connectBranch<std::vector<int>>       ( tree, "GhostTrack_truthPdgId",      &m_GhostTrack_truthPdgId      );
+	connectBranch<std::vector<uint8_t>>   ( tree, "GhostTrack_isTruth",          &m_GhostTrack_isTruth          );
+	connectBranch<std::vector<float>>     ( tree, "GhostTrack_truthProb",        &m_GhostTrack_truthProb        );
+	connectBranch<std::vector<int>>       ( tree, "GhostTrack_truthID",          &m_GhostTrack_truthID          );
+	connectBranch<std::vector<int>>       ( tree, "GhostTrack_truthIndex",       &m_GhostTrack_truthIndex       );
+	connectBranch<std::vector<int>>       ( tree, "GhostTrack_truthBarcode",     &m_GhostTrack_truthBarcode     );
+	connectBranch<std::vector<int>>       ( tree, "GhostTrack_truthPdgId",       &m_GhostTrack_truthPdgId       );
       }
     }
     if ( ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTruth ) && m_mc ) {
@@ -656,6 +677,7 @@ void JetContainer :: setTree ( TTree* tree )
     if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts ) {
       connectBranch<int>                      ( tree, "secVtxCount",                &m_secVtxCount                );
       connectBranch<float>                    ( tree, "secVtxPt",                   &m_secVtxPt                   );
+      connectBranch<float>                    ( tree, "secVtxCleanPt",              &m_secVtxCleanPt              );
       connectBranch<float>                    ( tree, "secVtxBarePt",               &m_secVtxBarePt               );
       connectBranch<std::vector<int>>         ( tree, "secVtx_ID",                  &m_secVtx_ID                  );
       connectBranch<std::vector<int>>         ( tree, "secVtx_index",               &m_secVtx_index               );
@@ -667,6 +689,10 @@ void JetContainer :: setTree ( TTree* tree )
       connectBranch<std::vector<float>>       ( tree, "secVtx_eta",                 &m_secVtx_eta                 );
       connectBranch<std::vector<float>>       ( tree, "secVtx_phi",                 &m_secVtx_phi                 );
       connectBranch<std::vector<float>>       ( tree, "secVtx_mass",                &m_secVtx_mass                );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_pt_clean",            &m_secVtx_pt_clean            );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_eta_clean",           &m_secVtx_eta_clean           );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_phi_clean",           &m_secVtx_phi_clean           );
+      connectBranch<std::vector<float>>       ( tree, "secVtx_mass_clean",          &m_secVtx_mass_clean          );
       connectBranch<std::vector<float>>       ( tree, "secVtx_pt_bare",             &m_secVtx_pt_bare             );
       connectBranch<std::vector<float>>       ( tree, "secVtx_eta_bare",            &m_secVtx_eta_bare            );
       connectBranch<std::vector<float>>       ( tree, "secVtx_phi_bare",            &m_secVtx_phi_bare            );
@@ -676,6 +702,9 @@ void JetContainer :: setTree ( TTree* tree )
       connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk",                &m_secVtx_ntrk                );
       connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_sel",            &m_secVtx_ntrk_sel            );
       connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_assoc",          &m_secVtx_ntrk_assoc          );
+      connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_clean",          &m_secVtx_ntrk_clean          );
+      connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_clean_sel",      &m_secVtx_ntrk_clean_sel      );
+      connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_clean_assoc",    &m_secVtx_ntrk_clean_assoc    );
       connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_filt",           &m_secVtx_ntrk_filt           );
       connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_filt_sel",       &m_secVtx_ntrk_filt_sel       );
       connectBranch<std::vector<int>>         ( tree, "secVtx_ntrk_filt_assoc",     &m_secVtx_ntrk_filt_assoc     );
@@ -705,36 +734,37 @@ void JetContainer :: setTree ( TTree* tree )
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_trackParts ) {
-    connectBranch<int>                      ( tree, "trkCount",            &m_trkCount            );
-    connectBranch<float>                    ( tree, "trkPt",               &m_trkPt               );
-    connectBranch<std::vector<int>>         ( tree, "trk_ID",              &m_trk_ID              );
-    connectBranch<std::vector<int>>         ( tree, "trk_index",           &m_trk_index           );
-    connectBranch<std::vector<float>>       ( tree, "trk_qOverP",          &m_trk_qOverP          );
-    connectBranch<std::vector<float>>       ( tree, "trk_E",               &m_trk_E               );
-    connectBranch<std::vector<float>>       ( tree, "trk_M",               &m_trk_M               );
-    connectBranch<std::vector<float>>       ( tree, "trk_pt",              &m_trk_pt              );
-    connectBranch<std::vector<float>>       ( tree, "trk_eta",             &m_trk_eta             );
-    connectBranch<std::vector<float>>       ( tree, "trk_phi",             &m_trk_phi             );
-    connectBranch<std::vector<float>>       ( tree, "trk_d0",              &m_trk_d0              );
-    connectBranch<std::vector<float>>       ( tree, "trk_z0",              &m_trk_z0              );
-    connectBranch<std::vector<float>>       ( tree, "trk_errd0",           &m_trk_errd0           );
-    connectBranch<std::vector<float>>       ( tree, "trk_errz0",           &m_trk_errz0           );
-    connectBranch<std::vector<float>>       ( tree, "trk_chi2",            &m_trk_chi2            );
-    connectBranch<std::vector<float>>       ( tree, "trk_charge",          &m_trk_charge          );
-    connectBranch<std::vector<uint8_t>>     ( tree, "trk_isSelected",      &m_trk_isSelected      );
-    connectBranch<std::vector<uint8_t>>     ( tree, "trk_isAssociated",    &m_trk_isAssociated    );
-    connectBranch<std::vector<float>>       ( tree, "trk_dR",              &m_trk_dR              );
-    connectBranch<std::vector<uint8_t>>     ( tree, "trk_isSecVtxTrk",     &m_trk_isSecVtxTrk     );
-    connectBranch<std::vector<uint8_t>>     ( tree, "trk_isSecVtxFiltTrk", &m_trk_isSecVtxFiltTrk );
-    connectBranch<std::vector<int>>         ( tree, "trk_secVtxID",        &m_trk_secVtxID        );
-    connectBranch<std::vector<int>>         ( tree, "trk_secVtxIndex",     &m_trk_secVtxIndex     );
+    connectBranch<int>                      ( tree, "trkCount",             &m_trkCount             );
+    connectBranch<float>                    ( tree, "trkPt",                &m_trkPt                );
+    connectBranch<std::vector<int>>         ( tree, "trk_ID",               &m_trk_ID               );
+    connectBranch<std::vector<int>>         ( tree, "trk_index",            &m_trk_index            );
+    connectBranch<std::vector<float>>       ( tree, "trk_qOverP",           &m_trk_qOverP           );
+    connectBranch<std::vector<float>>       ( tree, "trk_E",                &m_trk_E                );
+    connectBranch<std::vector<float>>       ( tree, "trk_M",                &m_trk_M                );
+    connectBranch<std::vector<float>>       ( tree, "trk_pt",               &m_trk_pt               );
+    connectBranch<std::vector<float>>       ( tree, "trk_eta",              &m_trk_eta              );
+    connectBranch<std::vector<float>>       ( tree, "trk_phi",              &m_trk_phi              );
+    connectBranch<std::vector<float>>       ( tree, "trk_d0",               &m_trk_d0               );
+    connectBranch<std::vector<float>>       ( tree, "trk_z0",               &m_trk_z0               );
+    connectBranch<std::vector<float>>       ( tree, "trk_errd0",            &m_trk_errd0            );
+    connectBranch<std::vector<float>>       ( tree, "trk_errz0",            &m_trk_errz0            );
+    connectBranch<std::vector<float>>       ( tree, "trk_chi2",             &m_trk_chi2             );
+    connectBranch<std::vector<float>>       ( tree, "trk_charge",           &m_trk_charge           );
+    connectBranch<std::vector<uint8_t>>     ( tree, "trk_isSelected",       &m_trk_isSelected       );
+    connectBranch<std::vector<uint8_t>>     ( tree, "trk_isAssociated",     &m_trk_isAssociated     );
+    connectBranch<std::vector<float>>       ( tree, "trk_dR",               &m_trk_dR               );
+    connectBranch<std::vector<uint8_t>>     ( tree, "trk_isSecVtxTrk",      &m_trk_isSecVtxTrk      );
+    connectBranch<std::vector<uint8_t>>     ( tree, "trk_isSecVtxCleanTrk", &m_trk_isSecVtxCleanTrk );
+    connectBranch<std::vector<uint8_t>>     ( tree, "trk_isSecVtxFiltTrk",  &m_trk_isSecVtxFiltTrk  );
+    connectBranch<std::vector<int>>         ( tree, "trk_secVtxID",         &m_trk_secVtxID         );
+    connectBranch<std::vector<int>>         ( tree, "trk_secVtxIndex",      &m_trk_secVtxIndex      );
     if ( m_mc ) {
-      connectBranch<std::vector<uint8_t>>   ( tree, "trk_isTruth",         &m_trk_isTruth         );
-      connectBranch<std::vector<float>>     ( tree, "trk_truthProb",       &m_trk_truthProb       );
-      connectBranch<std::vector<int>>       ( tree, "trk_truthID",         &m_trk_truthID         );
-      connectBranch<std::vector<int>>       ( tree, "trk_truthIndex",      &m_trk_truthIndex      );
-      connectBranch<std::vector<int>>       ( tree, "trk_truthBarcode",    &m_trk_truthBarcode    );
-      connectBranch<std::vector<int>>       ( tree, "trk_truthPdgId",      &m_trk_truthPdgId      );
+      connectBranch<std::vector<uint8_t>>   ( tree, "trk_isTruth",          &m_trk_isTruth          );
+      connectBranch<std::vector<float>>     ( tree, "trk_truthProb",        &m_trk_truthProb        );
+      connectBranch<std::vector<int>>       ( tree, "trk_truthID",          &m_trk_truthID          );
+      connectBranch<std::vector<int>>       ( tree, "trk_truthIndex",       &m_trk_truthIndex       );
+      connectBranch<std::vector<int>>       ( tree, "trk_truthBarcode",     &m_trk_truthBarcode     );
+      connectBranch<std::vector<int>>       ( tree, "trk_truthPdgId",       &m_trk_truthPdgId       );
     }
   }
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) && m_mc ) {
@@ -782,26 +812,27 @@ void JetContainer :: setBranches ( TTree* tree )
 
   if ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTracks || m_infoSwitch.m_ghostTruth ) {
     if ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTracks ) {
-      setBranch<std::vector<int>>         ( tree, "GhostTrack_ID",              m_GhostTrack_ID              );
-      setBranch<std::vector<int>>         ( tree, "GhostTrack_index",           m_GhostTrack_index           );
-      setBranch<std::vector<float>>       ( tree, "GhostTrack_m",               m_GhostTrack_m               );
-      setBranch<std::vector<float>>       ( tree, "GhostTrack_errd0",           m_GhostTrack_errd0           );
-      setBranch<std::vector<float>>       ( tree, "GhostTrack_errz0",           m_GhostTrack_errz0           );
-      setBranch<std::vector<float>>       ( tree, "GhostTrack_chi2",            m_GhostTrack_chi2            );
-      setBranch<std::vector<float>>       ( tree, "GhostTrack_charge",          m_GhostTrack_charge          );
-      setBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSelected",      m_GhostTrack_isSelected      );
-      setBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isAssociated",    m_GhostTrack_isAssociated    );
-      setBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSecVtxTrk",     m_GhostTrack_isSecVtxTrk     );
-      setBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSecVtxFiltTrk", m_GhostTrack_isSecVtxFiltTrk );
-      setBranch<std::vector<int>>         ( tree, "GhostTrack_secVtxID",        m_GhostTrack_secVtxID        );
-      setBranch<std::vector<int>>         ( tree, "GhostTrack_secVtxIndex",     m_GhostTrack_secVtxIndex     );
+      setBranch<std::vector<int>>         ( tree, "GhostTrack_ID",               m_GhostTrack_ID               );
+      setBranch<std::vector<int>>         ( tree, "GhostTrack_index",            m_GhostTrack_index            );
+      setBranch<std::vector<float>>       ( tree, "GhostTrack_m",                m_GhostTrack_m                );
+      setBranch<std::vector<float>>       ( tree, "GhostTrack_errd0",            m_GhostTrack_errd0            );
+      setBranch<std::vector<float>>       ( tree, "GhostTrack_errz0",            m_GhostTrack_errz0            );
+      setBranch<std::vector<float>>       ( tree, "GhostTrack_chi2",             m_GhostTrack_chi2             );
+      setBranch<std::vector<float>>       ( tree, "GhostTrack_charge",           m_GhostTrack_charge           );
+      setBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSelected",       m_GhostTrack_isSelected       );
+      setBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isAssociated",     m_GhostTrack_isAssociated     );
+      setBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSecVtxTrk",      m_GhostTrack_isSecVtxTrk      );
+      setBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSecVtxCleanTrk", m_GhostTrack_isSecVtxCleanTrk );
+      setBranch<std::vector<uint8_t>>     ( tree, "GhostTrack_isSecVtxFiltTrk",  m_GhostTrack_isSecVtxFiltTrk  );
+      setBranch<std::vector<int>>         ( tree, "GhostTrack_secVtxID",         m_GhostTrack_secVtxID         );
+      setBranch<std::vector<int>>         ( tree, "GhostTrack_secVtxIndex",      m_GhostTrack_secVtxIndex      );
       if ( m_mc ) {
-	setBranch<std::vector<uint8_t>>   ( tree, "GhostTrack_isTruth",         m_GhostTrack_isTruth         );
-	setBranch<std::vector<float>>     ( tree, "GhostTrack_truthProb",       m_GhostTrack_truthProb       );
-	setBranch<std::vector<int>>       ( tree, "GhostTrack_truthID",         m_GhostTrack_truthID         );
-	setBranch<std::vector<int>>       ( tree, "GhostTrack_truthIndex",      m_GhostTrack_truthIndex      );
-	setBranch<std::vector<int>>       ( tree, "GhostTrack_truthBarcode",    m_GhostTrack_truthBarcode    );
-	setBranch<std::vector<int>>       ( tree, "GhostTrack_truthPdgId",      m_GhostTrack_truthPdgId      );
+	setBranch<std::vector<uint8_t>>   ( tree, "GhostTrack_isTruth",          m_GhostTrack_isTruth          );
+	setBranch<std::vector<float>>     ( tree, "GhostTrack_truthProb",        m_GhostTrack_truthProb        );
+	setBranch<std::vector<int>>       ( tree, "GhostTrack_truthID",          m_GhostTrack_truthID          );
+	setBranch<std::vector<int>>       ( tree, "GhostTrack_truthIndex",       m_GhostTrack_truthIndex       );
+	setBranch<std::vector<int>>       ( tree, "GhostTrack_truthBarcode",     m_GhostTrack_truthBarcode     );
+	setBranch<std::vector<int>>       ( tree, "GhostTrack_truthPdgId",       m_GhostTrack_truthPdgId       );
       }
     }
     if ( ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTruth ) && m_mc ) {
@@ -908,6 +939,7 @@ void JetContainer :: setBranches ( TTree* tree )
      if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts) {
        setBranch<int>                      ( tree, "secVtxCount",                m_secVtxCount                );
        setBranch<float>                    ( tree, "secVtxPt",                   m_secVtxPt                   );
+       setBranch<float>                    ( tree, "secVtxCleanPt",              m_secVtxCleanPt              );
        setBranch<float>                    ( tree, "secVtxBarePt",               m_secVtxBarePt               );
        setBranch<std::vector<int>>         ( tree, "secVtx_ID",                  m_secVtx_ID                  );
        setBranch<std::vector<int>>         ( tree, "secVtx_index",               m_secVtx_index               );
@@ -919,6 +951,10 @@ void JetContainer :: setBranches ( TTree* tree )
        setBranch<std::vector<float>>       ( tree, "secVtx_eta",                 m_secVtx_eta                 );
        setBranch<std::vector<float>>       ( tree, "secVtx_phi",                 m_secVtx_phi                 );
        setBranch<std::vector<float>>       ( tree, "secVtx_mass",                m_secVtx_mass                );
+       setBranch<std::vector<float>>       ( tree, "secVtx_pt_clean",            m_secVtx_pt_clean            );
+       setBranch<std::vector<float>>       ( tree, "secVtx_eta_clean",           m_secVtx_eta_clean           );
+       setBranch<std::vector<float>>       ( tree, "secVtx_phi_clean",           m_secVtx_phi_clean           );
+       setBranch<std::vector<float>>       ( tree, "secVtx_mass_clean",          m_secVtx_mass_clean          );
        setBranch<std::vector<float>>       ( tree, "secVtx_pt_bare",             m_secVtx_pt_bare             );
        setBranch<std::vector<float>>       ( tree, "secVtx_eta_bare",            m_secVtx_eta_bare            );
        setBranch<std::vector<float>>       ( tree, "secVtx_phi_bare",            m_secVtx_phi_bare            );
@@ -928,6 +964,9 @@ void JetContainer :: setBranches ( TTree* tree )
        setBranch<std::vector<int>>         ( tree, "secVtx_ntrk",                m_secVtx_ntrk                );
        setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_sel",            m_secVtx_ntrk_sel            );
        setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_assoc",          m_secVtx_ntrk_assoc          );
+       setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_clean",          m_secVtx_ntrk_clean          );
+       setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_clean_sel",      m_secVtx_ntrk_clean_sel      );
+       setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_clean_assoc",    m_secVtx_ntrk_clean_assoc    );
        setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_filt",           m_secVtx_ntrk_filt           );
        setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_filt_sel",       m_secVtx_ntrk_filt_sel       );
        setBranch<std::vector<int>>         ( tree, "secVtx_ntrk_filt_assoc",     m_secVtx_ntrk_filt_assoc     );
@@ -957,36 +996,37 @@ void JetContainer :: setBranches ( TTree* tree )
    }
 
    if ( m_infoSwitch.m_match || m_infoSwitch.m_trackParts ) {
-     setBranch<int>                     ( tree, "trkCount",            m_trkCount            );
-     setBranch<float>                   ( tree, "trkPt",               m_trkPt               );
-     setBranch<std::vector<int>>        ( tree, "trk_ID",              m_trk_ID              );
-     setBranch<std::vector<int>>        ( tree, "trk_index",           m_trk_index           );
-     setBranch<std::vector<float>>      ( tree, "trk_qOverP",          m_trk_qOverP          );
-     setBranch<std::vector<float>>      ( tree, "trk_E",               m_trk_E               );
-     setBranch<std::vector<float>>      ( tree, "trk_M",               m_trk_M               );
-     setBranch<std::vector<float>>      ( tree, "trk_pt",              m_trk_pt              );
-     setBranch<std::vector<float>>      ( tree, "trk_eta",             m_trk_eta             );
-     setBranch<std::vector<float>>      ( tree, "trk_phi",             m_trk_phi             );
-     setBranch<std::vector<float>>      ( tree, "trk_d0",              m_trk_d0              );
-     setBranch<std::vector<float>>      ( tree, "trk_z0",              m_trk_z0              );
-     setBranch<std::vector<float>>      ( tree, "trk_errd0",           m_trk_errd0           );
-     setBranch<std::vector<float>>      ( tree, "trk_errz0",           m_trk_errz0           );
-     setBranch<std::vector<float>>      ( tree, "trk_chi2",            m_trk_chi2            );
-     setBranch<std::vector<float>>      ( tree, "trk_charge",          m_trk_charge          );
-     setBranch<std::vector<uint8_t>>    ( tree, "trk_isSelected",      m_trk_isSelected      );
-     setBranch<std::vector<uint8_t>>    ( tree, "trk_isAssociated",    m_trk_isAssociated    );
-     setBranch<std::vector<float>>      ( tree, "trk_dR",              m_trk_dR              );
-     setBranch<std::vector<uint8_t>>    ( tree, "trk_isSecVtxTrk",     m_trk_isSecVtxTrk     );
-     setBranch<std::vector<uint8_t>>    ( tree, "trk_isSecVtxFiltTrk", m_trk_isSecVtxFiltTrk );
-     setBranch<std::vector<int>>        ( tree, "trk_secVtxID",        m_trk_secVtxID        );
-     setBranch<std::vector<int>>        ( tree, "trk_secVtxIndex",     m_trk_secVtxIndex     );
+     setBranch<int>                     ( tree, "trkCount",             m_trkCount             );
+     setBranch<float>                   ( tree, "trkPt",                m_trkPt                );
+     setBranch<std::vector<int>>        ( tree, "trk_ID",               m_trk_ID               );
+     setBranch<std::vector<int>>        ( tree, "trk_index",            m_trk_index            );
+     setBranch<std::vector<float>>      ( tree, "trk_qOverP",           m_trk_qOverP           );
+     setBranch<std::vector<float>>      ( tree, "trk_E",                m_trk_E                );
+     setBranch<std::vector<float>>      ( tree, "trk_M",                m_trk_M                );
+     setBranch<std::vector<float>>      ( tree, "trk_pt",               m_trk_pt               );
+     setBranch<std::vector<float>>      ( tree, "trk_eta",              m_trk_eta              );
+     setBranch<std::vector<float>>      ( tree, "trk_phi",              m_trk_phi              );
+     setBranch<std::vector<float>>      ( tree, "trk_d0",               m_trk_d0               );
+     setBranch<std::vector<float>>      ( tree, "trk_z0",               m_trk_z0               );
+     setBranch<std::vector<float>>      ( tree, "trk_errd0",            m_trk_errd0            );
+     setBranch<std::vector<float>>      ( tree, "trk_errz0",            m_trk_errz0            );
+     setBranch<std::vector<float>>      ( tree, "trk_chi2",             m_trk_chi2             );
+     setBranch<std::vector<float>>      ( tree, "trk_charge",           m_trk_charge           );
+     setBranch<std::vector<uint8_t>>    ( tree, "trk_isSelected",       m_trk_isSelected       );
+     setBranch<std::vector<uint8_t>>    ( tree, "trk_isAssociated",     m_trk_isAssociated     );
+     setBranch<std::vector<float>>      ( tree, "trk_dR",               m_trk_dR               );
+     setBranch<std::vector<uint8_t>>    ( tree, "trk_isSecVtxTrk",      m_trk_isSecVtxTrk      );
+     setBranch<std::vector<uint8_t>>    ( tree, "trk_isSecVtxCleanTrk", m_trk_isSecVtxCleanTrk );
+     setBranch<std::vector<uint8_t>>    ( tree, "trk_isSecVtxFiltTrk",  m_trk_isSecVtxFiltTrk  );
+     setBranch<std::vector<int>>        ( tree, "trk_secVtxID",         m_trk_secVtxID         );
+     setBranch<std::vector<int>>        ( tree, "trk_secVtxIndex",      m_trk_secVtxIndex      );
      if ( m_mc ) {
-       setBranch<std::vector<uint8_t>>  ( tree, "trk_isTruth",         m_trk_isTruth         );
-       setBranch<std::vector<float>>    ( tree, "trk_truthProb",       m_trk_truthProb       );
-       setBranch<std::vector<int>>      ( tree, "trk_truthID",         m_trk_truthID         );
-       setBranch<std::vector<int>>      ( tree, "trk_truthIndex",      m_trk_truthIndex      );
-       setBranch<std::vector<int>>      ( tree, "trk_truthBarcode",    m_trk_truthBarcode    );
-       setBranch<std::vector<int>>      ( tree, "trk_truthPdgId",      m_trk_truthPdgId      );
+       setBranch<std::vector<uint8_t>>  ( tree, "trk_isTruth",          m_trk_isTruth          );
+       setBranch<std::vector<float>>    ( tree, "trk_truthProb",        m_trk_truthProb        );
+       setBranch<std::vector<int>>      ( tree, "trk_truthID",          m_trk_truthID          );
+       setBranch<std::vector<int>>      ( tree, "trk_truthIndex",       m_trk_truthIndex       );
+       setBranch<std::vector<int>>      ( tree, "trk_truthBarcode",     m_trk_truthBarcode     );
+       setBranch<std::vector<int>>      ( tree, "trk_truthPdgId",       m_trk_truthPdgId       );
      }
    }
    if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) && m_mc ) {
@@ -1034,26 +1074,27 @@ void JetContainer :: clear ()
 
   if ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTracks || m_infoSwitch.m_ghostTruth ) {
     if ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTracks ) {
-      m_GhostTrack_ID              ->clear();
-      m_GhostTrack_index           ->clear();
-      m_GhostTrack_m               ->clear();
-      m_GhostTrack_errd0           ->clear();
-      m_GhostTrack_errz0           ->clear();
-      m_GhostTrack_chi2            ->clear();
-      m_GhostTrack_charge          ->clear();
-      m_GhostTrack_isSelected      ->clear();
-      m_GhostTrack_isAssociated    ->clear();
-      m_GhostTrack_isSecVtxTrk     ->clear();
-      m_GhostTrack_isSecVtxFiltTrk ->clear();
-      m_GhostTrack_secVtxID        ->clear();
-      m_GhostTrack_secVtxIndex     ->clear();
+      m_GhostTrack_ID               ->clear();
+      m_GhostTrack_index            ->clear();
+      m_GhostTrack_m                ->clear();
+      m_GhostTrack_errd0            ->clear();
+      m_GhostTrack_errz0            ->clear();
+      m_GhostTrack_chi2             ->clear();
+      m_GhostTrack_charge           ->clear();
+      m_GhostTrack_isSelected       ->clear();
+      m_GhostTrack_isAssociated     ->clear();
+      m_GhostTrack_isSecVtxTrk      ->clear();
+      m_GhostTrack_isSecVtxCleanTrk ->clear();
+      m_GhostTrack_isSecVtxFiltTrk  ->clear();
+      m_GhostTrack_secVtxID         ->clear();
+      m_GhostTrack_secVtxIndex      ->clear();
       if ( m_mc ) {
-	m_GhostTrack_isTruth       ->clear();
-	m_GhostTrack_truthProb     ->clear();
-	m_GhostTrack_truthID       ->clear();
-	m_GhostTrack_truthIndex    ->clear();
-	m_GhostTrack_truthBarcode  ->clear();
-	m_GhostTrack_truthPdgId    ->clear();
+	m_GhostTrack_isTruth        ->clear();
+	m_GhostTrack_truthProb      ->clear();
+	m_GhostTrack_truthID        ->clear();
+	m_GhostTrack_truthIndex     ->clear();
+	m_GhostTrack_truthBarcode   ->clear();
+	m_GhostTrack_truthPdgId     ->clear();
       }
     }
     if ( ( m_infoSwitch.m_ghost || m_infoSwitch.m_ghostTruth ) && m_mc ) {
@@ -1159,6 +1200,7 @@ void JetContainer :: clear ()
     if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts ) {
       m_secVtxCount                ->clear();
       m_secVtxPt                   ->clear();
+      m_secVtxCleanPt              ->clear();
       m_secVtxBarePt               ->clear();
       m_secVtx_ID                  ->clear();
       m_secVtx_index               ->clear();
@@ -1170,6 +1212,10 @@ void JetContainer :: clear ()
       m_secVtx_eta                 ->clear();
       m_secVtx_phi                 ->clear();
       m_secVtx_mass                ->clear();
+      m_secVtx_pt_clean            ->clear();
+      m_secVtx_eta_clean           ->clear();
+      m_secVtx_phi_clean           ->clear();
+      m_secVtx_mass_clean          ->clear();
       m_secVtx_pt_bare             ->clear();
       m_secVtx_eta_bare            ->clear();
       m_secVtx_phi_bare            ->clear();
@@ -1179,6 +1225,9 @@ void JetContainer :: clear ()
       m_secVtx_ntrk                ->clear();
       m_secVtx_ntrk_sel            ->clear();
       m_secVtx_ntrk_assoc          ->clear();
+      m_secVtx_ntrk_clean          ->clear();
+      m_secVtx_ntrk_clean_sel      ->clear();
+      m_secVtx_ntrk_clean_assoc    ->clear();
       m_secVtx_ntrk_filt           ->clear();
       m_secVtx_ntrk_filt_sel       ->clear();
       m_secVtx_ntrk_filt_assoc     ->clear();
@@ -1208,36 +1257,37 @@ void JetContainer :: clear ()
   }
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_trackParts ) {
-    m_trkCount            ->clear();
-    m_trkPt               ->clear();
-    m_trk_ID              ->clear();
-    m_trk_index           ->clear();
-    m_trk_qOverP          ->clear();
-    m_trk_E               ->clear();
-    m_trk_M               ->clear();
-    m_trk_pt              ->clear();
-    m_trk_eta             ->clear();
-    m_trk_phi             ->clear();
-    m_trk_d0              ->clear();
-    m_trk_z0              ->clear();
-    m_trk_errd0           ->clear();
-    m_trk_errz0           ->clear();
-    m_trk_chi2            ->clear();
-    m_trk_charge          ->clear();
-    m_trk_isSelected      ->clear();
-    m_trk_isAssociated    ->clear();
-    m_trk_dR              ->clear();
-    m_trk_isSecVtxTrk     ->clear();
-    m_trk_isSecVtxFiltTrk ->clear();
-    m_trk_secVtxID        ->clear();
-    m_trk_secVtxIndex     ->clear();
+    m_trkCount             ->clear();
+    m_trkPt                ->clear();
+    m_trk_ID               ->clear();
+    m_trk_index            ->clear();
+    m_trk_qOverP           ->clear();
+    m_trk_E                ->clear();
+    m_trk_M                ->clear();
+    m_trk_pt               ->clear();
+    m_trk_eta              ->clear();
+    m_trk_phi              ->clear();
+    m_trk_d0               ->clear();
+    m_trk_z0               ->clear();
+    m_trk_errd0            ->clear();
+    m_trk_errz0            ->clear();
+    m_trk_chi2             ->clear();
+    m_trk_charge           ->clear();
+    m_trk_isSelected       ->clear();
+    m_trk_isAssociated     ->clear();
+    m_trk_dR               ->clear();
+    m_trk_isSecVtxTrk      ->clear();
+    m_trk_isSecVtxCleanTrk ->clear();
+    m_trk_isSecVtxFiltTrk  ->clear();
+    m_trk_secVtxID         ->clear();
+    m_trk_secVtxIndex      ->clear();
     if ( m_mc ) {
-      m_trk_isTruth       ->clear();
-      m_trk_truthProb     ->clear();
-      m_trk_truthID       ->clear();
-      m_trk_truthIndex    ->clear();
-      m_trk_truthBarcode  ->clear();
-      m_trk_truthPdgId    ->clear();
+      m_trk_isTruth        ->clear();
+      m_trk_truthProb      ->clear();
+      m_trk_truthID        ->clear();
+      m_trk_truthIndex     ->clear();
+      m_trk_truthBarcode   ->clear();
+      m_trk_truthPdgId     ->clear();
     }
   }
   if ( ( m_infoSwitch.m_match || m_infoSwitch.m_truthParts ) && m_mc ) {
@@ -1299,6 +1349,7 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
       std::vector<uint8_t> ghostTrack_isSelected;
       std::vector<uint8_t> ghostTrack_isAssociated;
       std::vector<uint8_t> ghostTrack_isSecVtxTrk;
+      std::vector<uint8_t> ghostTrack_isSecVtxCleanTrk;
       std::vector<uint8_t> ghostTrack_isSecVtxFiltTrk;
       std::vector<int>     ghostTrack_secVtxID;
       std::vector<int>     ghostTrack_secVtxIndex;
@@ -1327,25 +1378,29 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
 	  ghostTrack_isAssociated .push_back( AUXDYN( ghosttrack, char, "is_associated"                                   ) );
 
 	  // get linked secondary vertex
-	  bool ghosttrackIsSecVtxTrk     = false;
-	  bool ghosttrackIsSecVtxFiltTrk = false;
-	  int  secVtxID                  = AlgConsts::invalidInt;
-	  int  secVtxIndex               = AlgConsts::invalidInt;
+	  bool ghosttrackIsSecVtxTrk      = false;
+	  bool ghosttrackIsSecVtxCleanTrk = false;
+	  bool ghosttrackIsSecVtxFiltTrk  = false;
+	  int  secVtxID                   = AlgConsts::invalidInt;
+	  int  secVtxIndex                = AlgConsts::invalidInt;
 	  static SG::AuxElement::ConstAccessor<EJsHelper::VertexLink_t> ghostSecVtxAccess("secondaryVertexLink");
 	  if ( ghostSecVtxAccess.isAvailable( *ghosttrack ) ) {
 	    try {
 	      const EJsHelper::VertexLink_t& ghostSecVtxLink = ghostSecVtxAccess( *ghosttrack );
 	      if ( *ghostSecVtxLink ) ghosttrackIsSecVtxTrk = true;
+	      if ( ghosttrack->isAvailable<char>("isClean") )
+		ghosttrackIsSecVtxCleanTrk = ghosttrack->auxdataConst<char>("isClean");
 	      if ( ghosttrack->isAvailable<char>("isFiltered") )
-		ghosttrackIsSecVtxFiltTrk = ghosttrack->auxdataConst<char>("isFiltered");
+		ghosttrackIsSecVtxFiltTrk  = ghosttrack->auxdataConst<char>("isFiltered");
 	      secVtxID    = AUXDYN( (*ghostSecVtxLink), int, "ID"    );
 	      secVtxIndex = AUXDYN( (*ghostSecVtxLink), int, "index" );
 	    } catch(...) {}
 	  }
-	  ghostTrack_isSecVtxTrk     .push_back( ghosttrackIsSecVtxTrk     );
-	  ghostTrack_isSecVtxFiltTrk .push_back( ghosttrackIsSecVtxFiltTrk );
-	  ghostTrack_secVtxID        .push_back( secVtxID                  );
-	  ghostTrack_secVtxIndex     .push_back( secVtxIndex               );
+	  ghostTrack_isSecVtxTrk      .push_back( ghosttrackIsSecVtxTrk      );
+	  ghostTrack_isSecVtxCleanTrk .push_back( ghosttrackIsSecVtxCleanTrk );
+	  ghostTrack_isSecVtxFiltTrk  .push_back( ghosttrackIsSecVtxFiltTrk  );
+	  ghostTrack_secVtxID         .push_back( secVtxID                   );
+	  ghostTrack_secVtxIndex      .push_back( secVtxIndex                );
 	  
 	  // get linked truth particle
 	  if ( m_mc ) {
@@ -1376,26 +1431,27 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
 	} // end loop over ghost track links
       } // end ghost track access
       
-      m_GhostTrack_ID              ->push_back( ghostTrack_ID              );
-      m_GhostTrack_index           ->push_back( ghostTrack_index           );
-      m_GhostTrack_m               ->push_back( ghostTrack_m               );
-      m_GhostTrack_errd0           ->push_back( ghostTrack_errd0           );
-      m_GhostTrack_errz0           ->push_back( ghostTrack_errz0           );
-      m_GhostTrack_chi2            ->push_back( ghostTrack_chi2            );
-      m_GhostTrack_charge          ->push_back( ghostTrack_charge          );
-      m_GhostTrack_isSelected      ->push_back( ghostTrack_isSelected      );
-      m_GhostTrack_isAssociated    ->push_back( ghostTrack_isAssociated    );
-      m_GhostTrack_isSecVtxTrk     ->push_back( ghostTrack_isSecVtxTrk     );
-      m_GhostTrack_isSecVtxFiltTrk ->push_back( ghostTrack_isSecVtxFiltTrk );
-      m_GhostTrack_secVtxID        ->push_back( ghostTrack_secVtxID        );
-      m_GhostTrack_secVtxIndex     ->push_back( ghostTrack_secVtxIndex     );
+      m_GhostTrack_ID               ->push_back( ghostTrack_ID               );
+      m_GhostTrack_index            ->push_back( ghostTrack_index            );
+      m_GhostTrack_m                ->push_back( ghostTrack_m                );
+      m_GhostTrack_errd0            ->push_back( ghostTrack_errd0            );
+      m_GhostTrack_errz0            ->push_back( ghostTrack_errz0            );
+      m_GhostTrack_chi2             ->push_back( ghostTrack_chi2             );
+      m_GhostTrack_charge           ->push_back( ghostTrack_charge           );
+      m_GhostTrack_isSelected       ->push_back( ghostTrack_isSelected       );
+      m_GhostTrack_isAssociated     ->push_back( ghostTrack_isAssociated     );
+      m_GhostTrack_isSecVtxTrk      ->push_back( ghostTrack_isSecVtxTrk      );
+      m_GhostTrack_isSecVtxCleanTrk ->push_back( ghostTrack_isSecVtxCleanTrk );
+      m_GhostTrack_isSecVtxFiltTrk  ->push_back( ghostTrack_isSecVtxFiltTrk  );
+      m_GhostTrack_secVtxID         ->push_back( ghostTrack_secVtxID         );
+      m_GhostTrack_secVtxIndex      ->push_back( ghostTrack_secVtxIndex      );
       if ( m_mc ) {
-	m_GhostTrack_isTruth      ->push_back( ghostTrack_isTruth      );
-	m_GhostTrack_truthProb    ->push_back( ghostTrack_truthProb    );
-	m_GhostTrack_truthID      ->push_back( ghostTrack_truthID      );
-	m_GhostTrack_truthIndex   ->push_back( ghostTrack_truthIndex   );
-	m_GhostTrack_truthBarcode ->push_back( ghostTrack_truthBarcode );
-	m_GhostTrack_truthPdgId   ->push_back( ghostTrack_truthPdgId   );
+	m_GhostTrack_isTruth        ->push_back( ghostTrack_isTruth          );
+	m_GhostTrack_truthProb      ->push_back( ghostTrack_truthProb        );
+	m_GhostTrack_truthID        ->push_back( ghostTrack_truthID          );
+	m_GhostTrack_truthIndex     ->push_back( ghostTrack_truthIndex       );
+	m_GhostTrack_truthBarcode   ->push_back( ghostTrack_truthBarcode     );
+	m_GhostTrack_truthPdgId     ->push_back( ghostTrack_truthPdgId       );
       }
     } // end ghost track switch
 
@@ -1729,9 +1785,10 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
 
   if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts || m_infoSwitch.m_truthVerts ) {
     if ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_recoVerts ) {
-      int                  matchDVCount  = 0;
-      double               matchDVPt     = 0;
-      double               matchDVBarePt = 0;
+      int                  matchDVCount   = 0;
+      double               matchDVPt      = 0;
+      double               matchDVCleanPt = 0;
+      double               matchDVBarePt  = 0;
       std::vector<int>     matchDV_ID;
       std::vector<int>     matchDV_index;
       std::vector<float>   matchDV_x;
@@ -1742,6 +1799,10 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
       std::vector<float>   matchDV_eta;
       std::vector<float>   matchDV_phi;
       std::vector<float>   matchDV_mass;
+      std::vector<float>   matchDV_cleanPt;
+      std::vector<float>   matchDV_cleanEta;
+      std::vector<float>   matchDV_cleanPhi;
+      std::vector<float>   matchDV_cleanMass;
       std::vector<float>   matchDV_barePt;
       std::vector<float>   matchDV_bareEta;
       std::vector<float>   matchDV_barePhi;
@@ -1751,6 +1812,9 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
       std::vector<int>     matchDV_ntrk;
       std::vector<int>     matchDV_ntrk_sel;
       std::vector<int>     matchDV_ntrk_assoc;
+      std::vector<int>     matchDV_ntrk_clean;
+      std::vector<int>     matchDV_ntrk_clean_sel;
+      std::vector<int>     matchDV_ntrk_clean_assoc;
       std::vector<int>     matchDV_ntrk_filt;
       std::vector<int>     matchDV_ntrk_filt_sel;
       std::vector<int>     matchDV_ntrk_filt_assoc;
@@ -1768,14 +1832,14 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
       
 	  // get vector four-momentum
 	  std::vector<const xAOD::TrackParticle*> filteredTracks;
+	  std::vector<const xAOD::TrackParticle*> cleanTracks;
 	  std::vector<const xAOD::TrackParticle*> allTracks;
 	  EJsHelper::getFilteredTracks( (*dvlink), filteredTracks );
-	  for ( size_t i = 0; i != (*dvlink)->nTrackParticles(); ++i ) {
-	    const auto* trk = (*dvlink)->trackParticle(i);
-	    allTracks.push_back( trk );
-	  }
-	  TLorentzVector dvP4      = VsiBonsai::sumP4 ( filteredTracks );
-	  TLorentzVector dvP4_bare = VsiBonsai::sumP4 ( allTracks      );
+	  EJsHelper::getCleanTracks   ( (*dvlink), cleanTracks    );
+	  EJsHelper::getAllTracks     ( (*dvlink), allTracks      );
+	  TLorentzVector dvP4       = VsiBonsai::sumP4 ( filteredTracks );
+	  TLorentzVector dvP4_clean = VsiBonsai::sumP4 ( cleanTracks    );
+	  TLorentzVector dvP4_bare  = VsiBonsai::sumP4 ( allTracks      );
 
 	  // count selected / associated tracks
 	  size_t ntrk_sel = 0;
@@ -1785,6 +1849,14 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
 	      if ( trk->auxdataConst<char>( "is_selected" ) ) ++ntrk_sel;
 	    if ( trk->isAvailable<char>( "is_associated" ) )
 	      if ( trk->auxdataConst<char>( "is_associated" ) ) ++ntrk_assoc;
+	  }
+	  size_t ntrk_clean_sel = 0;
+	  size_t ntrk_clean_assoc = 0;
+	  for ( const auto& cleanTrk : cleanTracks ) {
+	    if ( cleanTrk->isAvailable<char>( "is_selected" ) )
+	      if ( cleanTrk->auxdataConst<char>( "is_selected" ) ) ++ntrk_clean_sel;
+	    if ( cleanTrk->isAvailable<char>( "is_associated" ) )
+	      if ( cleanTrk->auxdataConst<char>( "is_associated" ) ) ++ntrk_clean_assoc;
 	  }
 	  size_t ntrk_filt_sel = 0;
 	  size_t ntrk_filt_assoc = 0;
@@ -1796,31 +1868,39 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
 	  }
 
 	  ++matchDVCount;
-	  matchDVPt     += dvP4      .Pt();
-	  matchDVBarePt += dvP4_bare .Pt();
+	  matchDVPt      += dvP4       .Pt();
+	  matchDVCleanPt += dvP4_clean .Pt();
+	  matchDVBarePt  += dvP4_bare  .Pt();
 	  
-	  matchDV_ID              .push_back( AUXDYN( (*dvlink), int, "ID"                   ) );
-	  matchDV_index           .push_back( AUXDYN( (*dvlink), int, "index"                ) );
-	  matchDV_x               .push_back( (*dvlink)->x()                                   );
-	  matchDV_y               .push_back( (*dvlink)->y()                                   );
-	  matchDV_z               .push_back( (*dvlink)->z()                                   );
-	  matchDV_r               .push_back( (*dvlink)->position().perp()                     );
-	  matchDV_pt              .push_back( dvP4.Pt()      / m_units                         );
-	  matchDV_eta             .push_back( dvP4.Eta()                                       );
-	  matchDV_phi             .push_back( dvP4.Phi()                                       );
-	  matchDV_mass            .push_back( dvP4.M()       / m_units                         );
-	  matchDV_barePt          .push_back( dvP4_bare.Pt() / m_units                         );
-	  matchDV_bareEta         .push_back( dvP4_bare.Eta()                                  );
-	  matchDV_barePhi         .push_back( dvP4_bare.Phi()                                  );
-	  matchDV_bareMass        .push_back( dvP4_bare.M()  / m_units                         );
-	  matchDV_chi2            .push_back( (*dvlink)->chiSquared() / (*dvlink)->numberDoF() );
-	  matchDV_distToPV        .push_back( AUXDYN( (*dvlink), float, "distToPV"           ) );
-	  matchDV_ntrk            .push_back( allTracks.size()                                 ); 
-	  matchDV_ntrk_sel        .push_back( ntrk_sel                                         );
-	  matchDV_ntrk_assoc      .push_back( ntrk_assoc                                       );
-	  matchDV_ntrk_filt       .push_back( filteredTracks.size()                            ); 
-	  matchDV_ntrk_filt_sel   .push_back( ntrk_filt_sel                                    );
-	  matchDV_ntrk_filt_assoc .push_back( ntrk_filt_assoc                                  );
+	  matchDV_ID               .push_back( AUXDYN( (*dvlink), int, "ID"                   ) );
+	  matchDV_index            .push_back( AUXDYN( (*dvlink), int, "index"                ) );
+	  matchDV_x                .push_back( (*dvlink)->x()                                   );
+	  matchDV_y                .push_back( (*dvlink)->y()                                   );
+	  matchDV_z                .push_back( (*dvlink)->z()                                   );
+	  matchDV_r                .push_back( (*dvlink)->position().perp()                     );
+	  matchDV_pt               .push_back( dvP4.Pt()       / m_units                        );
+	  matchDV_eta              .push_back( dvP4.Eta()                                       );
+	  matchDV_phi              .push_back( dvP4.Phi()                                       );
+	  matchDV_mass             .push_back( dvP4.M()        / m_units                        );
+	  matchDV_cleanPt          .push_back( dvP4_clean.Pt() / m_units                        );
+	  matchDV_cleanEta         .push_back( dvP4_clean.Eta()                                 );
+	  matchDV_cleanPhi         .push_back( dvP4_clean.Phi()                                 );
+	  matchDV_cleanMass        .push_back( dvP4_clean.M()  / m_units                        );
+	  matchDV_barePt           .push_back( dvP4_bare.Pt()  / m_units                        );
+	  matchDV_bareEta          .push_back( dvP4_bare.Eta()                                  );
+	  matchDV_barePhi          .push_back( dvP4_bare.Phi()                                  );
+	  matchDV_bareMass         .push_back( dvP4_bare.M()   / m_units                        );
+	  matchDV_chi2             .push_back( (*dvlink)->chiSquared() / (*dvlink)->numberDoF() );
+	  matchDV_distToPV         .push_back( AUXDYN( (*dvlink), float, "distToPV"           ) );
+	  matchDV_ntrk             .push_back( allTracks.size()                                 ); 
+	  matchDV_ntrk_sel         .push_back( ntrk_sel                                         );
+	  matchDV_ntrk_assoc       .push_back( ntrk_assoc                                       );
+	  matchDV_ntrk_clean       .push_back( cleanTracks.size()                               ); 
+	  matchDV_ntrk_clean_sel   .push_back( ntrk_clean_sel                                   );
+	  matchDV_ntrk_clean_assoc .push_back( ntrk_clean_assoc                                 );
+	  matchDV_ntrk_filt        .push_back( filteredTracks.size()                            ); 
+	  matchDV_ntrk_filt_sel    .push_back( ntrk_filt_sel                                    );
+	  matchDV_ntrk_filt_assoc  .push_back( ntrk_filt_assoc                                  );
 
 	  bool isTruthMatched = false;
 	  if ( (*dvlink)->isAvailable<std::vector<float>>("truthVertexMatchScores") )
@@ -1831,33 +1911,41 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
 	} // end loop over matched DV links
       } // end matched secondary vertex link access
       
-      m_secVtxCount            ->push_back( matchDVCount                                          );
-      m_secVtxPt               ->push_back( matchDVPt     / m_units                               );
-      m_secVtxBarePt           ->push_back( matchDVBarePt / m_units                               );
-      m_secVtx_ID              ->push_back( matchDV_ID                                            );
-      m_secVtx_index           ->push_back( matchDV_index                                         );
-      m_secVtx_x               ->push_back( matchDV_x                                             );
-      m_secVtx_y               ->push_back( matchDV_y                                             );
-      m_secVtx_z               ->push_back( matchDV_z                                             );
-      m_secVtx_r               ->push_back( matchDV_r                                             );
-      m_secVtx_pt              ->push_back( matchDV_pt                                            );
-      m_secVtx_eta             ->push_back( matchDV_eta                                           );
-      m_secVtx_phi             ->push_back( matchDV_phi                                           );
-      m_secVtx_mass            ->push_back( matchDV_mass                                          );
-      m_secVtx_pt_bare         ->push_back( matchDV_barePt                                        );
-      m_secVtx_eta_bare        ->push_back( matchDV_bareEta                                       );
-      m_secVtx_phi_bare        ->push_back( matchDV_barePhi                                       );
-      m_secVtx_mass_bare       ->push_back( matchDV_bareMass                                      );
-      m_secVtx_chi2            ->push_back( matchDV_chi2                                          );
-      m_secVtx_distToPV        ->push_back( matchDV_distToPV                                      );
-      m_secVtx_ntrk            ->push_back( matchDV_ntrk                                          );
-      m_secVtx_ntrk_sel        ->push_back( matchDV_ntrk_sel                                      );
-      m_secVtx_ntrk_assoc      ->push_back( matchDV_ntrk_assoc                                    );
-      m_secVtx_ntrk_filt       ->push_back( matchDV_ntrk_filt                                     );
-      m_secVtx_ntrk_filt_sel   ->push_back( matchDV_ntrk_filt_sel                                 );
-      m_secVtx_ntrk_filt_assoc ->push_back( matchDV_ntrk_filt_assoc                               );
-      m_secVtx_dR              ->push_back( AUXDYNVEC ( jet, float, "matchedSecondaryVertex_dR" ) );
-      m_secVtx_isTruthMatched  ->push_back( matchDV_isTruth                                       );
+      m_secVtxCount             ->push_back( matchDVCount                                          );
+      m_secVtxPt                ->push_back( matchDVPt      / m_units                              );
+      m_secVtxCleanPt           ->push_back( matchDVCleanPt / m_units                              );
+      m_secVtxBarePt            ->push_back( matchDVBarePt  / m_units                              );
+      m_secVtx_ID               ->push_back( matchDV_ID                                            );
+      m_secVtx_index            ->push_back( matchDV_index                                         );
+      m_secVtx_x                ->push_back( matchDV_x                                             );
+      m_secVtx_y                ->push_back( matchDV_y                                             );
+      m_secVtx_z                ->push_back( matchDV_z                                             );
+      m_secVtx_r                ->push_back( matchDV_r                                             );
+      m_secVtx_pt               ->push_back( matchDV_pt                                            );
+      m_secVtx_eta              ->push_back( matchDV_eta                                           );
+      m_secVtx_phi              ->push_back( matchDV_phi                                           );
+      m_secVtx_mass             ->push_back( matchDV_mass                                          );
+      m_secVtx_pt_clean         ->push_back( matchDV_cleanPt                                       );
+      m_secVtx_eta_clean        ->push_back( matchDV_cleanEta                                      );
+      m_secVtx_phi_clean        ->push_back( matchDV_cleanPhi                                      );
+      m_secVtx_mass_clean       ->push_back( matchDV_cleanMass                                     );
+      m_secVtx_pt_bare          ->push_back( matchDV_barePt                                        );
+      m_secVtx_eta_bare         ->push_back( matchDV_bareEta                                       );
+      m_secVtx_phi_bare         ->push_back( matchDV_barePhi                                       );
+      m_secVtx_mass_bare        ->push_back( matchDV_bareMass                                      );
+      m_secVtx_chi2             ->push_back( matchDV_chi2                                          );
+      m_secVtx_distToPV         ->push_back( matchDV_distToPV                                      );
+      m_secVtx_ntrk             ->push_back( matchDV_ntrk                                          );
+      m_secVtx_ntrk_sel         ->push_back( matchDV_ntrk_sel                                      );
+      m_secVtx_ntrk_assoc       ->push_back( matchDV_ntrk_assoc                                    );
+      m_secVtx_ntrk_clean       ->push_back( matchDV_ntrk_clean                                    );
+      m_secVtx_ntrk_clean_sel   ->push_back( matchDV_ntrk_clean_sel                                );
+      m_secVtx_ntrk_clean_assoc ->push_back( matchDV_ntrk_clean_assoc                              );
+      m_secVtx_ntrk_filt        ->push_back( matchDV_ntrk_filt                                     );
+      m_secVtx_ntrk_filt_sel    ->push_back( matchDV_ntrk_filt_sel                                 );
+      m_secVtx_ntrk_filt_assoc  ->push_back( matchDV_ntrk_filt_assoc                               );
+      m_secVtx_dR               ->push_back( AUXDYNVEC ( jet, float, "matchedSecondaryVertex_dR" ) );
+      m_secVtx_isTruthMatched   ->push_back( matchDV_isTruth                                       );
     } // end reco-vertex switch
 
     if ( ( m_infoSwitch.m_match || m_infoSwitch.m_vertices || m_infoSwitch.m_truthVerts ) && m_mc ) {
@@ -1969,6 +2057,7 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
     std::vector<uint8_t> matchTrk_isSelected;
     std::vector<uint8_t> matchTrk_isAssociated;
     std::vector<uint8_t> matchTrk_isSecVtxTrk;
+    std::vector<uint8_t> matchTrk_isSecVtxCleanTrk;
     std::vector<uint8_t> matchTrk_isSecVtxFiltTrk;
     std::vector<int>     matchTrk_secVtxID;
     std::vector<int>     matchTrk_secVtxIndex;
@@ -2009,25 +2098,29 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
 	matchTrk_isAssociated .push_back( AUXDYN( (*trklink), char, "is_associated"                                   ) );
 
 	// get linked secondary vertex
-	bool matchTrackIsSecVtxTrk     = false;
-	bool matchTrackIsSecVtxFiltTrk = false;
-	int  secVtxID                  = AlgConsts::invalidInt;
-	int  secVtxIndex               = AlgConsts::invalidInt;
+	bool matchTrackIsSecVtxTrk      = false;
+	bool matchTrackIsSecVtxCleanTrk = false;
+	bool matchTrackIsSecVtxFiltTrk  = false;
+	int  secVtxID                   = AlgConsts::invalidInt;
+	int  secVtxIndex                = AlgConsts::invalidInt;
 	static SG::AuxElement::ConstAccessor<EJsHelper::VertexLink_t> secVtxAccess("secondaryVertexLink");
 	if ( secVtxAccess.isAvailable( **trklink ) ) {
 	  try {
 	    const EJsHelper::VertexLink_t& secVtxLink = secVtxAccess( **trklink );
 	    if ( *secVtxLink ) matchTrackIsSecVtxTrk = true;
+	    if ( (*trklink)->isAvailable<char>("isClean") )
+	      matchTrackIsSecVtxCleanTrk = (*trklink)->auxdataConst<char>("isClean");
 	    if ( (*trklink)->isAvailable<char>("isFiltered") )
-	      matchTrackIsSecVtxFiltTrk = (*trklink)->auxdataConst<char>("isFiltered");
+	      matchTrackIsSecVtxFiltTrk  = (*trklink)->auxdataConst<char>("isFiltered");
 	    secVtxID    = AUXDYN( (*secVtxLink), int, "ID" );
 	    secVtxIndex = AUXDYN( (*secVtxLink), int, "index" );
 	  } catch(...) {}
 	}
-	matchTrk_isSecVtxTrk     .push_back( matchTrackIsSecVtxTrk     );
-	matchTrk_isSecVtxFiltTrk .push_back( matchTrackIsSecVtxFiltTrk );
-	matchTrk_secVtxID        .push_back( secVtxID                  );
-	matchTrk_secVtxIndex     .push_back( secVtxIndex               );
+	matchTrk_isSecVtxTrk      .push_back( matchTrackIsSecVtxTrk      );
+	matchTrk_isSecVtxCleanTrk .push_back( matchTrackIsSecVtxCleanTrk );
+	matchTrk_isSecVtxFiltTrk  .push_back( matchTrackIsSecVtxFiltTrk  );
+	matchTrk_secVtxID         .push_back( secVtxID                   );
+	matchTrk_secVtxIndex      .push_back( secVtxIndex                );
 	
 	// get linked truth particle
 	if ( m_mc ) {
@@ -2058,36 +2151,37 @@ void JetContainer :: FillJet ( const xAOD::Jet* jet, const std::vector<std::stri
       } // end loop over matched track links
     } // end matched track link access
 
-    m_trkCount            ->push_back( matchTrkCount                              );
-    m_trkPt               ->push_back( matchTrkPt / m_units                       );
-    m_trk_ID              ->push_back( matchTrk_ID                                );
-    m_trk_index           ->push_back( matchTrk_index                             );
-    m_trk_qOverP          ->push_back( matchTrk_qOverP                            );
-    m_trk_E               ->push_back( matchTrk_E                                 );
-    m_trk_M               ->push_back( matchTrk_M                                 );
-    m_trk_pt              ->push_back( matchTrk_pt                                );
-    m_trk_eta             ->push_back( matchTrk_eta                               );
-    m_trk_phi             ->push_back( matchTrk_phi                               );
-    m_trk_d0              ->push_back( matchTrk_d0                                );
-    m_trk_z0              ->push_back( matchTrk_z0                                );
-    m_trk_errd0           ->push_back( matchTrk_errd0                             );
-    m_trk_errz0           ->push_back( matchTrk_errz0                             );
-    m_trk_chi2            ->push_back( matchTrk_chi2                              );
-    m_trk_charge          ->push_back( matchTrk_charge                            );
-    m_trk_isSelected      ->push_back( matchTrk_isSelected                        );
-    m_trk_isAssociated    ->push_back( matchTrk_isAssociated                      );
-    m_trk_dR              ->push_back( AUXDYNVEC( jet, float, "matchedTrack_dR" ) );
-    m_trk_isSecVtxTrk     ->push_back( matchTrk_isSecVtxTrk                       );
-    m_trk_isSecVtxFiltTrk ->push_back( matchTrk_isSecVtxFiltTrk                   );
-    m_trk_secVtxID        ->push_back( matchTrk_secVtxID                          );
-    m_trk_secVtxIndex     ->push_back( matchTrk_secVtxIndex                       );
+    m_trkCount             ->push_back( matchTrkCount                              );
+    m_trkPt                ->push_back( matchTrkPt / m_units                       );
+    m_trk_ID               ->push_back( matchTrk_ID                                );
+    m_trk_index            ->push_back( matchTrk_index                             );
+    m_trk_qOverP           ->push_back( matchTrk_qOverP                            );
+    m_trk_E                ->push_back( matchTrk_E                                 );
+    m_trk_M                ->push_back( matchTrk_M                                 );
+    m_trk_pt               ->push_back( matchTrk_pt                                );
+    m_trk_eta              ->push_back( matchTrk_eta                               );
+    m_trk_phi              ->push_back( matchTrk_phi                               );
+    m_trk_d0               ->push_back( matchTrk_d0                                );
+    m_trk_z0               ->push_back( matchTrk_z0                                );
+    m_trk_errd0            ->push_back( matchTrk_errd0                             );
+    m_trk_errz0            ->push_back( matchTrk_errz0                             );
+    m_trk_chi2             ->push_back( matchTrk_chi2                              );
+    m_trk_charge           ->push_back( matchTrk_charge                            );
+    m_trk_isSelected       ->push_back( matchTrk_isSelected                        );
+    m_trk_isAssociated     ->push_back( matchTrk_isAssociated                      );
+    m_trk_dR               ->push_back( AUXDYNVEC( jet, float, "matchedTrack_dR" ) );
+    m_trk_isSecVtxTrk      ->push_back( matchTrk_isSecVtxTrk                       );
+    m_trk_isSecVtxCleanTrk ->push_back( matchTrk_isSecVtxCleanTrk                  );
+    m_trk_isSecVtxFiltTrk  ->push_back( matchTrk_isSecVtxFiltTrk                   );
+    m_trk_secVtxID         ->push_back( matchTrk_secVtxID                          );
+    m_trk_secVtxIndex      ->push_back( matchTrk_secVtxIndex                       );
     if ( m_mc ) {
-      m_trk_isTruth      ->push_back( matchTrk_isTruth                           );
-      m_trk_truthProb    ->push_back( matchTrk_truthProb                         );
-      m_trk_truthID      ->push_back( matchTrk_truthID                           );
-      m_trk_truthIndex   ->push_back( matchTrk_truthIndex                        );
-      m_trk_truthBarcode ->push_back( matchTrk_truthBarcode                      );
-      m_trk_truthPdgId   ->push_back( matchTrk_truthPdgId                        );
+      m_trk_isTruth        ->push_back( matchTrk_isTruth                           );
+      m_trk_truthProb      ->push_back( matchTrk_truthProb                         );
+      m_trk_truthID        ->push_back( matchTrk_truthID                           );
+      m_trk_truthIndex     ->push_back( matchTrk_truthIndex                        );
+      m_trk_truthBarcode   ->push_back( matchTrk_truthBarcode                      );
+      m_trk_truthPdgId     ->push_back( matchTrk_truthPdgId                        );
     }
   } // end track-match switch
 

@@ -117,21 +117,22 @@ EL::StatusCode SecondaryVertexSelector :: initialize ()
     m_secVtx_cutflowHist = new TH1D( "cutflow_secVerts", "cutflow_secVerts", 1, 1, 2 );
     m_secVtx_cutflowHist ->SetCanExtend( TH1::kAllAxes);
     
-    m_secVtx_cutflow_all     = m_secVtx_cutflowHist->GetXaxis()->FindBin( "all"              );
-    m_secVtx_cutflow_filtTrk = m_secVtx_cutflowHist->GetXaxis()->FindBin( "filtTrk_cut"      );
-    m_secVtx_cutflow_matVeto = m_secVtx_cutflowHist->GetXaxis()->FindBin( "matMapVeto_cut"   );
-    m_secVtx_cutflow_rmin    = m_secVtx_cutflowHist->GetXaxis()->FindBin( "r_min_cut"        );
-    m_secVtx_cutflow_rmax    = m_secVtx_cutflowHist->GetXaxis()->FindBin( "r_max_cut"        );
-    m_secVtx_cutflow_zmin    = m_secVtx_cutflowHist->GetXaxis()->FindBin( "z_min_cut"        );
-    m_secVtx_cutflow_zmax    = m_secVtx_cutflowHist->GetXaxis()->FindBin( "z_max_cut"        );
-    m_secVtx_cutflow_ntrkmin = m_secVtx_cutflowHist->GetXaxis()->FindBin( "nTrk_min_cut"     );
-    m_secVtx_cutflow_ntrkmax = m_secVtx_cutflowHist->GetXaxis()->FindBin( "nTrk_max_cut"     );
-    m_secVtx_cutflow_chi2min = m_secVtx_cutflowHist->GetXaxis()->FindBin( "chi2_min_cut"     );
-    m_secVtx_cutflow_chi2max = m_secVtx_cutflowHist->GetXaxis()->FindBin( "chi2_max_cut"     );
-    m_secVtx_cutflow_massmin = m_secVtx_cutflowHist->GetXaxis()->FindBin( "mass_min_cut"     );
-    m_secVtx_cutflow_massmax = m_secVtx_cutflowHist->GetXaxis()->FindBin( "mass_max_cut"     );
-    m_secVtx_cutflow_distmin = m_secVtx_cutflowHist->GetXaxis()->FindBin( "distToPV_min_cut" );
-    m_secVtx_cutflow_distmax = m_secVtx_cutflowHist->GetXaxis()->FindBin( "distToPV_max_cut" );
+    m_secVtx_cutflow_all      = m_secVtx_cutflowHist->GetXaxis()->FindBin( "all"              );
+    m_secVtx_cutflow_cleanTrk = m_secVtx_cutflowHist->GetXaxis()->FindBin( "cleanTrk_cut"     );
+    m_secVtx_cutflow_filtTrk  = m_secVtx_cutflowHist->GetXaxis()->FindBin( "filtTrk_cut"      );
+    m_secVtx_cutflow_matVeto  = m_secVtx_cutflowHist->GetXaxis()->FindBin( "matMapVeto_cut"   );
+    m_secVtx_cutflow_rmin     = m_secVtx_cutflowHist->GetXaxis()->FindBin( "r_min_cut"        );
+    m_secVtx_cutflow_rmax     = m_secVtx_cutflowHist->GetXaxis()->FindBin( "r_max_cut"        );
+    m_secVtx_cutflow_zmin     = m_secVtx_cutflowHist->GetXaxis()->FindBin( "z_min_cut"        );
+    m_secVtx_cutflow_zmax     = m_secVtx_cutflowHist->GetXaxis()->FindBin( "z_max_cut"        );
+    m_secVtx_cutflow_ntrkmin  = m_secVtx_cutflowHist->GetXaxis()->FindBin( "nTrk_min_cut"     );
+    m_secVtx_cutflow_ntrkmax  = m_secVtx_cutflowHist->GetXaxis()->FindBin( "nTrk_max_cut"     );
+    m_secVtx_cutflow_chi2min  = m_secVtx_cutflowHist->GetXaxis()->FindBin( "chi2_min_cut"     );
+    m_secVtx_cutflow_chi2max  = m_secVtx_cutflowHist->GetXaxis()->FindBin( "chi2_max_cut"     );
+    m_secVtx_cutflow_massmin  = m_secVtx_cutflowHist->GetXaxis()->FindBin( "mass_min_cut"     );
+    m_secVtx_cutflow_massmax  = m_secVtx_cutflowHist->GetXaxis()->FindBin( "mass_max_cut"     );
+    m_secVtx_cutflow_distmin  = m_secVtx_cutflowHist->GetXaxis()->FindBin( "distToPV_min_cut" );
+    m_secVtx_cutflow_distmax  = m_secVtx_cutflowHist->GetXaxis()->FindBin( "distToPV_max_cut" );
   }
 
   // initialize counters
@@ -165,6 +166,7 @@ EL::StatusCode SecondaryVertexSelector :: initialize ()
   m_bonsaiCfg[ VsiBonsai::Config::chi2_toSVCut        ] = m_chi2_toSVCut;
   m_bonsaiCfg[ VsiBonsai::Config::dropAssociated      ] = m_doDropAssociated;
   m_bonsaiCfg[ VsiBonsai::Config::dropNonSelected     ] = m_doDropNonSelected;
+  m_bonsaiCfg[ VsiBonsai::Config::cleanAssociatedD0   ] = m_doCleanAssociatedD0;
 
   // initialize material map(s)
   TFile* m_matMapInnerFile = new TFile( m_matMapInnerFileName.c_str(), "READ" );
@@ -357,6 +359,7 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
     VsiBonsai::ipWrtSVFilter,
     VsiBonsai::dropAssociated,
     VsiBonsai::dropNonSelected,
+    VsiBonsai::cleanAssociatedD0,
   };
   
   // filter vertex tracks using VsiBonsai config
@@ -380,9 +383,27 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
     filteredTracks.push_back( trk );
   }
 
-  // apply filtered track cut
-  if ( m_doFiltTrkCut && filteredTracks.size() < 2 ) return 0;
-  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_filtTrk, 1 );
+  // clean vertex tracks (remove bad-d0 associated tracks only, but apply no other trimming)
+  std::vector<const xAOD::TrackParticle*> cleanTracks;
+  for ( size_t j = 0; j != vtx->nTrackParticles(); ++j ) {
+    bool failedCleaning = false;
+    const auto* trk = vtx->trackParticle(j);
+    // do track cleaning (independent of other trimmers)
+    if ( m_doCleanAssociatedD0 )
+      if ( !VsiBonsai::cleanAssociatedD0( vtx, trk, pv, m_bonsaiCfg ) )
+	failedCleaning = true;
+    // decorate tracks w/ cleaning results
+    trk->auxdecor<char>( "isClean" ) = !failedCleaning;
+    // save clean tracks
+    if ( failedCleaning ) continue;
+    cleanTracks.push_back( trk );
+  }
+
+  // apply clean / filtered track cuts
+  if ( m_doCleanTrkCut && cleanTracks.size()    < 2 ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_cleanTrk, 1 );
+  if ( m_doFiltTrkCut  && filteredTracks.size() < 2 ) return 0;
+  if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_filtTrk,  1 );
 
   // material map veto
   if ( m_doMatMapVeto ) {
@@ -461,7 +482,6 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
   if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_massmax, 1 );
 
   // distance (to pv) cuts
-  
   if ( m_dist_min != AlgConsts::maxValue )
     if ( dv_pv_dist < m_dist_min ) return 0;
   if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_distmin, 1 );

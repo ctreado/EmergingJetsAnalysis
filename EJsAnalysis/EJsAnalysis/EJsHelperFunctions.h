@@ -43,6 +43,10 @@ namespace EJsHelper {
   // returns dR b/w two objects
   double deltaR ( const double&, const double&, const double&, const double& );
 
+  // returns vector of all tracks
+  void getAllTracks      ( const xAOD::Vertex*, std::vector<const xAOD::TrackParticle*>& );
+  // returns vector of decorated clean tracks
+  void getCleanTracks    ( const xAOD::Vertex*, std::vector<const xAOD::TrackParticle*>& );
   // returns vector of decorated filtered tracks
   void getFilteredTracks ( const xAOD::Vertex*, std::vector<const xAOD::TrackParticle*>& );
 

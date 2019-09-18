@@ -62,6 +62,7 @@ namespace EJs {
     std::vector<std::vector<int>>*         m_GhostTrack_truthBarcode;
     std::vector<std::vector<int>>*         m_GhostTrack_truthPdgId;
     std::vector<std::vector<uint8_t>>*     m_GhostTrack_isSecVtxTrk;
+    std::vector<std::vector<uint8_t>>*     m_GhostTrack_isSecVtxCleanTrk;
     std::vector<std::vector<uint8_t>>*     m_GhostTrack_isSecVtxFiltTrk;
     std::vector<std::vector<int>>*         m_GhostTrack_secVtxID;
     std::vector<std::vector<int>>*         m_GhostTrack_secVtxIndex;
@@ -150,6 +151,7 @@ namespace EJs {
     // matched secondary vertices
     std::vector<int>*                      m_secVtxCount;
     std::vector<float>*                    m_secVtxPt;
+    std::vector<float>*                    m_secVtxCleanPt;
     std::vector<float>*                    m_secVtxBarePt;
     std::vector<std::vector<int>>*         m_secVtx_ID;
     std::vector<std::vector<int>>*         m_secVtx_index;
@@ -161,6 +163,10 @@ namespace EJs {
     std::vector<std::vector<float>>*       m_secVtx_eta;
     std::vector<std::vector<float>>*       m_secVtx_phi;
     std::vector<std::vector<float>>*       m_secVtx_mass;
+    std::vector<std::vector<float>>*       m_secVtx_pt_clean;
+    std::vector<std::vector<float>>*       m_secVtx_eta_clean;
+    std::vector<std::vector<float>>*       m_secVtx_phi_clean;
+    std::vector<std::vector<float>>*       m_secVtx_mass_clean;
     std::vector<std::vector<float>>*       m_secVtx_pt_bare;
     std::vector<std::vector<float>>*       m_secVtx_eta_bare;
     std::vector<std::vector<float>>*       m_secVtx_phi_bare;
@@ -170,6 +176,9 @@ namespace EJs {
     std::vector<std::vector<int>>*         m_secVtx_ntrk;
     std::vector<std::vector<int>>*         m_secVtx_ntrk_sel;
     std::vector<std::vector<int>>*         m_secVtx_ntrk_assoc;
+    std::vector<std::vector<int>>*         m_secVtx_ntrk_clean;
+    std::vector<std::vector<int>>*         m_secVtx_ntrk_clean_sel;
+    std::vector<std::vector<int>>*         m_secVtx_ntrk_clean_assoc;
     std::vector<std::vector<int>>*         m_secVtx_ntrk_filt;
     std::vector<std::vector<int>>*         m_secVtx_ntrk_filt_sel;
     std::vector<std::vector<int>>*         m_secVtx_ntrk_filt_assoc;
@@ -216,6 +225,7 @@ namespace EJs {
     std::vector<std::vector<uint8_t>>*     m_trk_isAssociated;
     std::vector<std::vector<float>>*       m_trk_dR;
     std::vector<std::vector<uint8_t>>*     m_trk_isSecVtxTrk;
+    std::vector<std::vector<uint8_t>>*     m_trk_isSecVtxCleanTrk;
     std::vector<std::vector<uint8_t>>*     m_trk_isSecVtxFiltTrk;
     std::vector<std::vector<int>>*         m_trk_secVtxID;
     std::vector<std::vector<int>>*         m_trk_secVtxIndex;
