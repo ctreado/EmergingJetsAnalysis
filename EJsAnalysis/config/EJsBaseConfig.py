@@ -147,8 +147,8 @@ Dict_JetSelector_EMTopo = {
     "m_createSelectedContainer" : True,
     "m_cleanJets"               : True,     # --> remove all unclean jets, but only kill events with unclean jets of interest (i.e. passing basic pt, eta cuts -- already taken care of above w/ "applyJetCleaningEventFlag" / EventCleaningTool)
     "m_pass_min"                : 2,
-    "m_pT_min"                  : 50e3,     ## --> check --> filter requires 100-GeV -- update validation region ??
-    "m_eta_max"                 : 2.7,      ## --> check --> filter requires 2.5-eta -- update validation region ??
+    "m_pT_min"                  : 50e3,
+    "m_eta_max"                 : 2.7,
     "m_doJVT"                   : True,
     "m_noJVTVeto"               : True,     # --> keep JVT-rejected jets + decorate w/ passing status
     "m_WorkingPointJVT"         : "Medium", # --> R21 EMTopo rec
@@ -175,8 +175,8 @@ Dict_JetSelector_PFlow = {
     "m_createSelectedContainer" : True,
     "m_cleanJets"               : False,   # --> skip cleaning for pflow jets -- use EMTopo jet cleaning event cut (R21 rec)
     "m_pass_min"                : 2,
-    "m_pT_min"                  : 50e3,    ## --> check --> filter requires 100-GeV -- update validation region ??
-    "m_eta_max"                 : 2.7,     ## --> check --> filter requires 2.5-eta -- update validation region ??
+    "m_pT_min"                  : 50e3,
+    "m_eta_max"                 : 2.7,
     "m_doJVT"                   : True,
     "m_noJVTVeto"               : True,    # --> keep JVT-rejected jets + decorate w/ passing status
     "m_WorkingPointJVT"         : "Tight", # --> R21 PFlow rec
