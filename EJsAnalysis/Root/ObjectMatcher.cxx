@@ -170,19 +170,20 @@ EL::StatusCode ObjectMatcher :: execute ()
 
 
   // initialize decorators
-  // --> "ID" = index of original, unselected xAOD container; "index" = index of new, selected container -->
-  // --> "ID" = "index" if not using selected container as input
+  // --> "ID" = index of original, unselected xAOD container + 1000; "index" = index of new, selected container -->
+  // --> "ID" = "index" + 1000 if using original xAOD container as input
+  // --> "ID = 0" means ID is not set for that object --> further down the line, generally means that object not saved in output ntuple
   if ( isMC() ) {
     int truthJet_index = 0;
     for ( const auto& truthJet : *inTruthJets ) {
-      truthJet->auxdecor<int>("ID")    = truthJet->index();
+      truthJet->auxdecor<int>("ID")    = truthJet->index() + 1000;
       truthJet->auxdecor<int>("index") = truthJet_index;
       ++truthJet_index;
     }
 
     int truthDarkJet_index = 0;
     for ( const auto& truthDarkJet : *inTruthDarkJets ) {
-      truthDarkJet->auxdecor<int>  ("ID")              = truthDarkJet->index();
+      truthDarkJet->auxdecor<int>  ("ID")              = truthDarkJet->index() + 1000;
       truthDarkJet->auxdecor<int>  ("index")           = truthDarkJet_index;
       truthDarkJet->auxdecor<char> ("isTruthMatched")  = false;
       truthDarkJet->auxdecor<int>  ("truthMatchID")    = AlgConsts::invalidInt;
@@ -193,7 +194,7 @@ EL::StatusCode ObjectMatcher :: execute ()
     
     int truthPart_index = 0;
     for ( const auto& truthPart : *inTruthParts ) {
-      truthPart->auxdecor<int>  ("ID")                         = truthPart->index();
+      truthPart->auxdecor<int>  ("ID")                         = truthPart->index() + 1000;
       truthPart->auxdecor<int>  ("index")                      = truthPart_index;
       truthPart->auxdecor<EJsHelper::TrackLink_t>("trackLink") = EJsHelper::TrackLink_t();
       truthPart->auxdecor<char> ("isTrackMatch")               = false;
@@ -203,7 +204,7 @@ EL::StatusCode ObjectMatcher :: execute ()
 
     int truthVtx_index = 0;
     for ( const auto& truthVtx : *inTruthVerts ) {
-      truthVtx->auxdecor<int>("ID")    = truthVtx->index();
+      truthVtx->auxdecor<int>("ID")    = truthVtx->index() + 1000;
       truthVtx->auxdecor<int>("index") = truthVtx_index;
       ++truthVtx_index;
     }
@@ -212,7 +213,7 @@ EL::StatusCode ObjectMatcher :: execute ()
   if ( !m_truthLevelOnly ) {
     int track_index = 0;
     for ( const auto& track : *inTrackParts ) {
-      track->auxdecor<int>("ID")                                      = track->index();
+      track->auxdecor<int>("ID")                                      = track->index() + 1000;
       track->auxdecor<int>("index")                                   = track_index;
       track->auxdecor<EJsHelper::VertexLink_t>("secondaryVertexLink") = EJsHelper::VertexLink_t();
       track->auxdecor<char>("isSecondaryVertexTrack")                 = false;
@@ -221,7 +222,7 @@ EL::StatusCode ObjectMatcher :: execute ()
 
     int secVtx_index = 0;
     for ( const auto& secVtx : *inSecVerts ) {
-      secVtx->auxdecor<int>("ID")    = secVtx->index();
+      secVtx->auxdecor<int>("ID")    = secVtx->index() + 1000;
       secVtx->auxdecor<int>("index") = secVtx_index;
       ++secVtx_index;
     }
@@ -274,7 +275,7 @@ EL::StatusCode ObjectMatcher :: execute ()
 	// initialize decorators
 	int jet_index = 0;
 	for ( const auto& jet : *inJets ) {
-	  jet->auxdecor<int>("ID")    = jet->index();
+	  jet->auxdecor<int>("ID")    = jet->index() + 1000;
 	  jet->auxdecor<int>("index") = jet_index;
 	  ++jet_index;
 	}
@@ -332,7 +333,7 @@ EL::StatusCode ObjectMatcher :: execute ()
 	    // initialize decorators
 	    int jet_index = 0;
 	    for ( const auto& jet : *inJets ) {
-	      jet->auxdecor<int>("ID")    = jet->index();
+	      jet->auxdecor<int>("ID")    = jet->index() + 1000;
 	      jet->auxdecor<int>("index") = jet_index;
 	      ++jet_index;
 	    }

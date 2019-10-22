@@ -131,8 +131,10 @@ EL::StatusCode VertexMatcher :: execute ()
   // initialize truth particle decorators
   int truthPart_index = 0;
   for ( const auto& truthPart : *inTruthParts ) {
-    truthPart->auxdecor<int>("ID")                           = truthPart->index();
-    truthPart->auxdecor<int>("index")                        = truthPart_index;
+    if ( m_setObjectIdentifiers ) {
+      truthPart->auxdecor<int>("ID")                         = truthPart->index() + 1000;
+      truthPart->auxdecor<int>("index")                      = truthPart_index;
+    }
     truthPart->auxdecor<char>("isReconstructibleDescendant") = false;
     truthPart->auxdecor<EJsHelper::TruthVertexLinkVector_t>("truthVertexAncestorLinks") =
       EJsHelper::TruthVertexLinkVector_t();
@@ -161,8 +163,10 @@ EL::StatusCode VertexMatcher :: execute ()
   // initialize reco vertex decorators
   int secVtx_index = 0;
   for ( const auto& secVtx : *inSecVerts ) {
-    secVtx->auxdecor<int>("ID")    = secVtx->index();
-    secVtx->auxdecor<int>("index") = secVtx_index;
+    if ( m_setObjectIdentifiers ) {
+      secVtx->auxdecor<int>("ID")    = secVtx->index() + 1000;
+      secVtx->auxdecor<int>("index") = secVtx_index;
+    }
     secVtx->auxdecor<EJsHelper::TruthVertexLink_t>("closestTruthVertexLink")      = EJsHelper::TruthVertexLink_t();
     secVtx->auxdecor<int>("closestTruthVertexPhysPosID")                          = AlgConsts::invalidInt;
     secVtx->auxdecor<TVector3>("closestTruthVertexPhysPosition")                  = TVector3();
@@ -188,8 +192,10 @@ EL::StatusCode VertexMatcher :: execute ()
   for ( const auto& truthVtx : *inTruthVerts ) {
 
     // initialize truth vertex decorators
-    truthVtx->auxdecor<int>("ID")                 = truthVtx->index();
-    truthVtx->auxdecor<int>("index")              = truthVtx_index;
+    if ( m_setObjectIdentifiers ) {
+      truthVtx->auxdecor<int>("ID")               = truthVtx->index() + 1000;
+      truthVtx->auxdecor<int>("index")            = truthVtx_index;
+    }
     truthVtx->auxdecor<char>("isReconstructible") = false;
     truthVtx->auxdecor<EJsHelper::TruthParticleLinkVector_t>("reconstructibleDescendantLinks") =
       EJsHelper::TruthParticleLinkVector_t();

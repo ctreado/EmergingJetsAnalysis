@@ -77,113 +77,124 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
     m_njetHt_truth        = 0;
   }
 
-  m_tp_ID                     = new std::vector<int>;
-  m_tp_index                  = new std::vector<int>;
-  m_tp_M                      = new std::vector<float>;
-  m_tp_charge                 = new std::vector<float>;
-  m_tp_isReco                 = new std::vector<uint8_t>;
-  m_tp_isSelected             = new std::vector<uint8_t>;
-  m_tp_isAssociated           = new std::vector<uint8_t>;
-  m_tp_recoProb               = new std::vector<float>;
-  m_tp_recoID                 = new std::vector<int>;
-  m_tp_recoIndex              = new std::vector<int>;
-  m_tp_isStable               = new std::vector<uint8_t>;
-  m_tp_isInteracting          = new std::vector<uint8_t>;
-  m_tp_isDark                 = new std::vector<uint8_t>;
-  m_tp_isDescendant           = new std::vector<uint8_t>;
-  m_tp_ancestor_llpDecay      = new std::vector<std::vector<std::string>>;
-  m_tp_ancestor_ID            = new std::vector<std::vector<int>>;
-  m_tp_ancestor_index         = new std::vector<std::vector<int>>;
-  m_tp_parent_ID              = new std::vector<std::vector<int>>;
-  m_tp_parent_index           = new std::vector<std::vector<int>>;
-  m_tp_child_ID               = new std::vector<std::vector<int>>;
-  m_tp_child_index            = new std::vector<std::vector<int>>;
-  m_tp_pVtx                   = new std::vector<uint8_t>;
-  m_tp_pVtx_llpDecay          = new std::vector<std::string>;
-  m_tp_pVtx_ID                = new std::vector<int>;
-  m_tp_pVtx_index             = new std::vector<int>;
-  m_tp_pVtx_barcode           = new std::vector<int>;
-  m_tp_pVtx_r                 = new std::vector<float>;
-  m_tp_dVtx                   = new std::vector<uint8_t>;
-  m_tp_dVtx_llpDecay          = new std::vector<std::string>;
-  m_tp_dVtx_ID                = new std::vector<int>;
-  m_tp_dVtx_index             = new std::vector<int>;
-  m_tp_dVtx_barcode           = new std::vector<int>;
-  m_tp_dVtx_r                 = new std::vector<float>;
-  m_tp_truthJetMatch          = new std::vector<uint8_t>;
-  m_tp_truthJetMatch_ID       = new std::vector<int>;
-  m_tp_truthJetMatch_index    = new std::vector<int>;
-  m_tp_truthJetMatch_dR       = new std::vector<float>;
-  m_tp_darkJetMatch           = new std::vector<uint8_t>;
-  m_tp_darkJetMatch_ID        = new std::vector<int>;
-  m_tp_darkJetMatch_index     = new std::vector<int>;
-  m_tp_darkJetMatch_dR        = new std::vector<float>;
+  m_tp_ID                            = new std::vector<int>;
+  m_tp_index                         = new std::vector<int>;
+  m_tp_M                             = new std::vector<float>;
+  m_tp_charge                        = new std::vector<float>;
+  m_tp_isReco                        = new std::vector<uint8_t>;
+  m_tp_isSelected                    = new std::vector<uint8_t>;
+  m_tp_isAssociated                  = new std::vector<uint8_t>;
+  m_tp_recoProb                      = new std::vector<float>;
+  m_tp_recoID                        = new std::vector<int>;
+  m_tp_recoIndex                     = new std::vector<int>;
+  m_tp_isStable                      = new std::vector<uint8_t>;
+  m_tp_isInteracting                 = new std::vector<uint8_t>;
+  m_tp_isDark                        = new std::vector<uint8_t>;
+  m_tp_isDescendant                  = new std::vector<uint8_t>;
+  m_tp_ancestor_llpDecay             = new std::vector<std::vector<std::string>>;
+  m_tp_ancestor_ID                   = new std::vector<std::vector<int>>;
+  m_tp_ancestor_index                = new std::vector<std::vector<int>>;
+  m_tp_parent_ID                     = new std::vector<std::vector<int>>;
+  m_tp_parent_index                  = new std::vector<std::vector<int>>;
+  m_tp_child_ID                      = new std::vector<std::vector<int>>;
+  m_tp_child_index                   = new std::vector<std::vector<int>>;
+  m_tp_pVtx                          = new std::vector<uint8_t>;
+  m_tp_pVtx_llpDecay                 = new std::vector<std::string>;
+  m_tp_pVtx_ID                       = new std::vector<int>;
+  m_tp_pVtx_index                    = new std::vector<int>;
+  m_tp_pVtx_barcode                  = new std::vector<int>;
+  m_tp_pVtx_r                        = new std::vector<float>;
+  m_tp_dVtx                          = new std::vector<uint8_t>;
+  m_tp_dVtx_llpDecay                 = new std::vector<std::string>;
+  m_tp_dVtx_ID                       = new std::vector<int>;
+  m_tp_dVtx_index                    = new std::vector<int>;
+  m_tp_dVtx_barcode                  = new std::vector<int>;
+  m_tp_dVtx_r                        = new std::vector<float>;
+  m_tp_truthJetMatch                 = new std::vector<uint8_t>;
+  m_tp_truthJetMatch_ID              = new std::vector<int>;
+  m_tp_truthJetMatch_index           = new std::vector<int>;
+  m_tp_truthJetMatch_dR              = new std::vector<float>;
+  m_tp_darkJetMatch                  = new std::vector<uint8_t>;
+  m_tp_darkJetMatch_ID               = new std::vector<int>;
+  m_tp_darkJetMatch_index            = new std::vector<int>;
+  m_tp_darkJetMatch_dR               = new std::vector<float>;
   if ( m_doEMTopoJets ) {
-    m_tp_emtopoJetMatch       = new std::vector<uint8_t>;
-    m_tp_emtopoJetMatch_ID    = new std::vector<int>;
-    m_tp_emtopoJetMatch_index = new std::vector<int>;
-    m_tp_emtopoJetMatch_dR    = new std::vector<float>;
+    m_tp_emtopoJetMatch              = new std::vector<uint8_t>;
+    m_tp_emtopoJetMatch_ID           = new std::vector<int>;
+    m_tp_emtopoJetMatch_index        = new std::vector<int>;
+    m_tp_emtopoJetMatch_dR           = new std::vector<float>;
   }
   if ( m_doPFlowJets ) {
-    m_tp_pflowJetMatch        = new std::vector<uint8_t>;
-    m_tp_pflowJetMatch_ID     = new std::vector<int>;
-    m_tp_pflowJetMatch_index  = new std::vector<int>;
-    m_tp_pflowJetMatch_dR     = new std::vector<float>;
+    m_tp_pflowJetMatch               = new std::vector<uint8_t>;
+    m_tp_pflowJetMatch_ID            = new std::vector<int>;
+    m_tp_pflowJetMatch_index         = new std::vector<int>;
+    m_tp_pflowJetMatch_dR            = new std::vector<float>;
   }
 
-  m_trk_nSelected               = 0;
-  m_trk_nAssociated             = 0;
-  m_trk_ID                      = new std::vector<int>;
-  m_trk_index                   = new std::vector<int>;
-  m_trk_expectInnerPixelHit     = new std::vector<uint8_t>;
-  m_trk_expectNextInnerPixelHit = new std::vector<uint8_t>;
-  m_trk_M                       = new std::vector<float>;
-  m_trk_d0                      = new std::vector<float>;
-  m_trk_errd0                   = new std::vector<float>;
-  m_trk_errz0                   = new std::vector<float>;
-  m_trk_chiSquared              = new std::vector<float>;
-  m_trk_numberDoF               = new std::vector<float>;
-  m_trk_chi2                    = new std::vector<float>;
-  m_trk_charge                  = new std::vector<float>;
-  m_trk_isSelected              = new std::vector<uint8_t>;
-  m_trk_isAssociated            = new std::vector<uint8_t>;
-  m_trk_passSel                 = new std::vector<uint8_t>;
-  m_trk_isSecVtxTrk             = new std::vector<uint8_t>;
-  m_trk_isSecVtxCleanTrk        = new std::vector<uint8_t>;
-  m_trk_isSecVtxFiltTrk         = new std::vector<uint8_t>;
-  m_trk_secVtxID                = new std::vector<int>;
-  m_trk_secVtxIndex             = new std::vector<int>;
+  m_trk_ID                           = new std::vector<int>;
+  m_trk_index                        = new std::vector<int>;
+  m_trk_M                            = new std::vector<float>;
+  m_trk_d0                           = new std::vector<float>;
+  m_trk_errd0                        = new std::vector<float>;
+  m_trk_errz0                        = new std::vector<float>;
+  m_trk_chiSquared                   = new std::vector<float>;
+  m_trk_numberDoF                    = new std::vector<float>;
+  m_trk_chi2                         = new std::vector<float>;
+  m_trk_charge                       = new std::vector<float>;
+  m_trk_nPixelHits                   = new std::vector<uint8_t>;
+  m_trk_nPixelHoles                  = new std::vector<uint8_t>;
+  m_trk_nPixelSharedHits             = new std::vector<uint8_t>;
+  m_trk_nPixelDeadSensors            = new std::vector<uint8_t>;
+  m_trk_expectInnerPixelLayerHit     = new std::vector<uint8_t>;
+  m_trk_nInnerPixelLayerHits         = new std::vector<uint8_t>;
+  m_trk_expectNextInnerPixelLayerHit = new std::vector<uint8_t>;
+  m_trk_nNextInnerPixelLayerHits     = new std::vector<uint8_t>;
+  m_trk_nSCTHits                     = new std::vector<uint8_t>;
+  m_trk_nSCTHoles                    = new std::vector<uint8_t>;
+  m_trk_nSCTSharedHits               = new std::vector<uint8_t>;
+  m_trk_nSCTDeadSensors              = new std::vector<uint8_t>;
+  m_trk_nTRTHits                     = new std::vector<uint8_t>;
+  m_trk_nTRTOutliers                 = new std::vector<uint8_t>;
+  m_trk_isLRT                        = new std::vector<uint8_t>;
+  m_trk_isSelected                   = new std::vector<uint8_t>;
+  m_trk_isAssociated                 = new std::vector<uint8_t>;
+  m_trk_isSecVtxTrk                  = new std::vector<uint8_t>;
+  m_trk_isSecVtxCleanTrk             = new std::vector<uint8_t>;
+  m_trk_isSecVtxFiltTrk              = new std::vector<uint8_t>;
+  m_trk_isSecVtxFinalTrk             = new std::vector<uint8_t>;
+  m_trk_secVtxID                     = new std::vector<int>;
+  m_trk_secVtxIndex                  = new std::vector<int>;
   if ( m_isMC ) {
-    m_trk_isTruth               = new std::vector<uint8_t>;
-    m_trk_truthProb             = new std::vector<float>;
-    m_trk_truthID               = new std::vector<int>;
-    m_trk_truthIndex            = new std::vector<int>;
-    m_trk_truthBarcode          = new std::vector<int>;
-    m_trk_truthPdgId            = new std::vector<int>;
-    m_trk_truthIsDesc           = new std::vector<uint8_t>;
-    m_trk_truthAncestorLLPDecay = new std::vector<std::vector<std::string>>;
-    m_trk_truthAncestorID       = new std::vector<std::vector<int>>;
-    m_trk_truthAncestorIndex    = new std::vector<std::vector<int>>;
-    m_trk_truthJetMatch         = new std::vector<uint8_t>;
-    m_trk_truthJetMatch_ID      = new std::vector<int>;
-    m_trk_truthJetMatch_index   = new std::vector<int>;
-    m_trk_truthJetMatch_dR      = new std::vector<float>;
-    m_trk_darkJetMatch          = new std::vector<uint8_t>;
-    m_trk_darkJetMatch_ID       = new std::vector<int>;
-    m_trk_darkJetMatch_index    = new std::vector<int>;
-    m_trk_darkJetMatch_dR       = new std::vector<float>;
+    m_trk_isTruth                    = new std::vector<uint8_t>;
+    m_trk_truthProb                  = new std::vector<float>;
+    m_trk_truthID                    = new std::vector<int>;
+    m_trk_truthIndex                 = new std::vector<int>;
+    m_trk_truthBarcode               = new std::vector<int>;
+    m_trk_truthPdgId                 = new std::vector<int>;
+    m_trk_truthIsDesc                = new std::vector<uint8_t>;
+    m_trk_truthAncestorLLPDecay      = new std::vector<std::vector<std::string>>;
+    m_trk_truthAncestorID            = new std::vector<std::vector<int>>;
+    m_trk_truthAncestorIndex         = new std::vector<std::vector<int>>;
+    m_trk_truthJetMatch              = new std::vector<uint8_t>;
+    m_trk_truthJetMatch_ID           = new std::vector<int>;
+    m_trk_truthJetMatch_index        = new std::vector<int>;
+    m_trk_truthJetMatch_dR           = new std::vector<float>;
+    m_trk_darkJetMatch               = new std::vector<uint8_t>;
+    m_trk_darkJetMatch_ID            = new std::vector<int>;
+    m_trk_darkJetMatch_index         = new std::vector<int>;
+    m_trk_darkJetMatch_dR            = new std::vector<float>;
   }
   if ( m_doEMTopoJets ) {
-    m_trk_emtopoJetMatch        = new std::vector<uint8_t>;
-    m_trk_emtopoJetMatch_ID     = new std::vector<int>;
-    m_trk_emtopoJetMatch_index  = new std::vector<int>;
-    m_trk_emtopoJetMatch_dR     = new std::vector<float>;
+    m_trk_emtopoJetMatch             = new std::vector<uint8_t>;
+    m_trk_emtopoJetMatch_ID          = new std::vector<int>;
+    m_trk_emtopoJetMatch_index       = new std::vector<int>;
+    m_trk_emtopoJetMatch_dR          = new std::vector<float>;
   }
   if ( m_doPFlowJets ) {
-    m_trk_pflowJetMatch         = new std::vector<uint8_t>;
-    m_trk_pflowJetMatch_ID      = new std::vector<int>;
-    m_trk_pflowJetMatch_index   = new std::vector<int>;
-    m_trk_pflowJetMatch_dR      = new std::vector<float>;
+    m_trk_pflowJetMatch              = new std::vector<uint8_t>;
+    m_trk_pflowJetMatch_ID           = new std::vector<int>;
+    m_trk_pflowJetMatch_index        = new std::vector<int>;
+    m_trk_pflowJetMatch_dR           = new std::vector<float>;
   }
   
 }
@@ -897,63 +908,71 @@ void EJsHelpTreeBase :: ClearTruthUser ( const std::string truthName )
 void EJsHelpTreeBase :: AddTracksUser ( const std::string trackName, const std::string detailStr )
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddTracksUser()", "adding EJs-user track variables" );
-
-  std::string selCounterName   = "n" + trackName + "Selected";
-  std::string assocCounterName = "n" + trackName + "Associated";
-  m_tree->Branch( selCounterName  .c_str(), &m_trk_nSelected,   (selCounterName  +"/i").c_str() );
-  m_tree->Branch( assocCounterName.c_str(), &m_trk_nAssociated, (assocCounterName+"/i").c_str() );
   
-  setBranch<int>                        ( trackName, "ID",                                 m_trk_ID                      );
-  setBranch<int>                        ( trackName, "index",                              m_trk_index                   );
-  setBranch<uint8_t>                    ( trackName, "expectInnermostPixelLayerHit",       m_trk_expectInnerPixelHit     );
-  setBranch<uint8_t>                    ( trackName, "expectNextToInnermostPixelLayerHit", m_trk_expectNextInnerPixelHit );
-  setBranch<float>                      ( trackName, "M",                                  m_trk_M                       );
-  setBranch<float>                      ( trackName, "d0",                                 m_trk_d0                      );
-  setBranch<float>                      ( trackName, "errd0",                              m_trk_errd0                   );
-  setBranch<float>                      ( trackName, "errz0",                              m_trk_errz0                   );
-  setBranch<float>                      ( trackName, "chiSquared",                         m_trk_chiSquared              );
-  setBranch<float>                      ( trackName, "numberDoF",                          m_trk_numberDoF               );
-  setBranch<float>                      ( trackName, "chi2",                               m_trk_chi2                    );
-  setBranch<float>                      ( trackName, "charge",                             m_trk_charge                  );
-  setBranch<uint8_t>                    ( trackName, "isSelected",                         m_trk_isSelected              );
-  setBranch<uint8_t>                    ( trackName, "isAssociated",                       m_trk_isAssociated            );
-  setBranch<uint8_t>                    ( trackName, "passSel",                            m_trk_passSel                 );
-  setBranch<uint8_t>                    ( trackName, "isSecVtxTrk",                        m_trk_isSecVtxTrk             );
-  setBranch<uint8_t>                    ( trackName, "isSecVtxCleanTrk",                   m_trk_isSecVtxCleanTrk        );
-  setBranch<uint8_t>                    ( trackName, "isSecVtxFiltTrk",                    m_trk_isSecVtxFiltTrk         );
-  setBranch<int>                        ( trackName, "secVtxID",                           m_trk_secVtxID                );
-  setBranch<int>                        ( trackName, "secVtxIndex",                        m_trk_secVtxIndex             );
+  setBranch<int>                        ( trackName, "ID",                           m_trk_ID                           );
+  setBranch<int>                        ( trackName, "index",                        m_trk_index                        );
+  setBranch<float>                      ( trackName, "M",                            m_trk_M                            );
+  setBranch<float>                      ( trackName, "d0",                           m_trk_d0                           );
+  setBranch<float>                      ( trackName, "errd0",                        m_trk_errd0                        );
+  setBranch<float>                      ( trackName, "errz0",                        m_trk_errz0                        );
+  setBranch<float>                      ( trackName, "chiSquared",                   m_trk_chiSquared                   );
+  setBranch<float>                      ( trackName, "numberDoF",                    m_trk_numberDoF                    );
+  setBranch<float>                      ( trackName, "chi2",                         m_trk_chi2                         );
+  setBranch<float>                      ( trackName, "charge",                       m_trk_charge                       );
+  setBranch<uint8_t>                    ( trackName, "nPixelHits",                   m_trk_nPixelHits                   );
+  setBranch<uint8_t>                    ( trackName, "nPixelHoles",                  m_trk_nPixelHoles                  );
+  setBranch<uint8_t>                    ( trackName, "nPixelSharedHits",             m_trk_nPixelSharedHits             );
+  setBranch<uint8_t>                    ( trackName, "nPixelDeadSensors",            m_trk_nPixelDeadSensors            );
+  setBranch<uint8_t>                    ( trackName, "expectInnerPixelLayerHit",     m_trk_expectInnerPixelLayerHit     );
+  setBranch<uint8_t>                    ( trackName, "nInnerPixelLayerHits",         m_trk_nInnerPixelLayerHits         );
+  setBranch<uint8_t>                    ( trackName, "expectNextInnerPixelLayerHit", m_trk_expectNextInnerPixelLayerHit );
+  setBranch<uint8_t>                    ( trackName, "nNextInnerPixelLayerHits",     m_trk_nNextInnerPixelLayerHits     );
+  setBranch<uint8_t>                    ( trackName, "nSCTHits",                     m_trk_nSCTHits                     );
+  setBranch<uint8_t>                    ( trackName, "nSCTHoles",                    m_trk_nSCTHoles                    );
+  setBranch<uint8_t>                    ( trackName, "nSCTSharedHits",               m_trk_nSCTSharedHits               );
+  setBranch<uint8_t>                    ( trackName, "nSCTDeadSensors",              m_trk_nSCTDeadSensors              );
+  setBranch<uint8_t>                    ( trackName, "nTRTHits",                     m_trk_nTRTHits                     );
+  setBranch<uint8_t>                    ( trackName, "nTRTOutliers",                 m_trk_nTRTOutliers                 );
+  setBranch<uint8_t>                    ( trackName, "isLRT",                        m_trk_isLRT                        );
+  setBranch<uint8_t>                    ( trackName, "isSelected",                   m_trk_isSelected                   );
+  setBranch<uint8_t>                    ( trackName, "isAssociated",                 m_trk_isAssociated                 );
+  setBranch<uint8_t>                    ( trackName, "isSecVtxTrk",                  m_trk_isSecVtxTrk                  );
+  setBranch<uint8_t>                    ( trackName, "isSecVtxCleanTrk",             m_trk_isSecVtxCleanTrk             );
+  setBranch<uint8_t>                    ( trackName, "isSecVtxFiltTrk",              m_trk_isSecVtxFiltTrk              );
+  setBranch<uint8_t>                    ( trackName, "isSecVtxFinalTrk",             m_trk_isSecVtxFinalTrk             );
+  setBranch<int>                        ( trackName, "secVtxID",                     m_trk_secVtxID                     );
+  setBranch<int>                        ( trackName, "secVtxIndex",                  m_trk_secVtxIndex                  );
   if ( m_isMC ) {
-    setBranch<uint8_t>                  ( trackName, "isTruth",                            m_trk_isTruth                 );
-    setBranch<float>                    ( trackName, "truthProb",                          m_trk_truthProb               );
-    setBranch<int>                      ( trackName, "truthID",                            m_trk_truthID                 );
-    setBranch<int>                      ( trackName, "truthIndex",                         m_trk_truthIndex              );
-    setBranch<int>                      ( trackName, "truthBarcode",                       m_trk_truthBarcode            );
-    setBranch<int>                      ( trackName, "truthPdgId",                         m_trk_truthPdgId              );
-    setBranch<uint8_t>                  ( trackName, "truthIsDesc",                        m_trk_truthIsDesc             );
-    setBranch<std::vector<std::string>> ( trackName, "truthAncestorLLPDecay",              m_trk_truthAncestorLLPDecay   );
-    setBranch<std::vector<int>>         ( trackName, "truthAncestorID",                    m_trk_truthAncestorID         );
-    setBranch<std::vector<int>>         ( trackName, "truthAncestorIndex",                 m_trk_truthAncestorIndex      );
-    setBranch<uint8_t>                  ( trackName, "truthJetMatch",                      m_trk_truthJetMatch           );
-    setBranch<int>                      ( trackName, "truthJetMatch_ID",                   m_trk_truthJetMatch_ID        );
-    setBranch<int>                      ( trackName, "truthJetMatch_index",                m_trk_truthJetMatch_index     );
-    setBranch<float>                    ( trackName, "truthJetMatch_dR",                   m_trk_truthJetMatch_dR        );
-    setBranch<uint8_t>                  ( trackName, "darkJetMatch",                       m_trk_darkJetMatch            );
-    setBranch<int>                      ( trackName, "darkJetMatch_ID",                    m_trk_darkJetMatch_ID         );
-    setBranch<int>                      ( trackName, "darkJetMatch_index",                 m_trk_darkJetMatch_index      );
-    setBranch<float>                    ( trackName, "darkJetMatch_dR",                    m_trk_darkJetMatch_dR         );
+    setBranch<uint8_t>                  ( trackName, "isTruth",                      m_trk_isTruth                      );
+    setBranch<float>                    ( trackName, "truthProb",                    m_trk_truthProb                    );
+    setBranch<int>                      ( trackName, "truthID",                      m_trk_truthID                      );
+    setBranch<int>                      ( trackName, "truthIndex",                   m_trk_truthIndex                   );
+    setBranch<int>                      ( trackName, "truthBarcode",                 m_trk_truthBarcode                 );
+    setBranch<int>                      ( trackName, "truthPdgId",                   m_trk_truthPdgId                   );
+    setBranch<uint8_t>                  ( trackName, "truthIsDesc",                  m_trk_truthIsDesc                  );
+    setBranch<std::vector<std::string>> ( trackName, "truthAncestorLLPDecay",        m_trk_truthAncestorLLPDecay        );
+    setBranch<std::vector<int>>         ( trackName, "truthAncestorID",              m_trk_truthAncestorID              );
+    setBranch<std::vector<int>>         ( trackName, "truthAncestorIndex",           m_trk_truthAncestorIndex           );
+    setBranch<uint8_t>                  ( trackName, "truthJetMatch",                m_trk_truthJetMatch                );
+    setBranch<int>                      ( trackName, "truthJetMatch_ID",             m_trk_truthJetMatch_ID             );
+    setBranch<int>                      ( trackName, "truthJetMatch_index",          m_trk_truthJetMatch_index          );
+    setBranch<float>                    ( trackName, "truthJetMatch_dR",             m_trk_truthJetMatch_dR             );
+    setBranch<uint8_t>                  ( trackName, "darkJetMatch",                 m_trk_darkJetMatch                 );
+    setBranch<int>                      ( trackName, "darkJetMatch_ID",              m_trk_darkJetMatch_ID              );
+    setBranch<int>                      ( trackName, "darkJetMatch_index",           m_trk_darkJetMatch_index           );
+    setBranch<float>                    ( trackName, "darkJetMatch_dR",              m_trk_darkJetMatch_dR              );
   }
   if ( m_doEMTopoJets ) {
-    setBranch<uint8_t>                  ( trackName, "emtopoJetMatch",                     m_trk_emtopoJetMatch          );
-    setBranch<int>                      ( trackName, "emtopoJetMatch_ID",                  m_trk_emtopoJetMatch_ID       );
-    setBranch<int>                      ( trackName, "emtopoJetMatch_index",               m_trk_emtopoJetMatch_index    );
-    setBranch<float>                    ( trackName, "emtopoJetMatch_dR",                  m_trk_emtopoJetMatch_dR       );
+    setBranch<uint8_t>                  ( trackName, "emtopoJetMatch",               m_trk_emtopoJetMatch               );
+    setBranch<int>                      ( trackName, "emtopoJetMatch_ID",            m_trk_emtopoJetMatch_ID            );
+    setBranch<int>                      ( trackName, "emtopoJetMatch_index",         m_trk_emtopoJetMatch_index         );
+    setBranch<float>                    ( trackName, "emtopoJetMatch_dR",            m_trk_emtopoJetMatch_dR            );
   }
   if ( m_doPFlowJets ) {
-    setBranch<uint8_t>                  ( trackName, "pflowJetMatch",                      m_trk_pflowJetMatch           );
-    setBranch<int>                      ( trackName, "pflowJetMatch_ID",                   m_trk_pflowJetMatch_ID        );
-    setBranch<int>                      ( trackName, "pflowJetMatch_index",                m_trk_pflowJetMatch_index     );
-    setBranch<float>                    ( trackName, "pflowJetMatch_dR",                   m_trk_pflowJetMatch_dR        );
+    setBranch<uint8_t>                  ( trackName, "pflowJetMatch",                m_trk_pflowJetMatch                );
+    setBranch<int>                      ( trackName, "pflowJetMatch_ID",             m_trk_pflowJetMatch_ID             );
+    setBranch<int>                      ( trackName, "pflowJetMatch_index",          m_trk_pflowJetMatch_index          );
+    setBranch<float>                    ( trackName, "pflowJetMatch_dR",             m_trk_pflowJetMatch_dR             );
   }
 }
 
@@ -963,29 +982,17 @@ void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName, const xAOD
   if ( treeName == "nominal" ) treeName = "";
   
   bool is_selected = false;
-  if ( track->isAvailable<char>("is_selected") ) {
-    if ( track->auxdataConst<char>("is_selected") ) {
+  if ( track->isAvailable<char>("is_selected") )
+    if ( track->auxdataConst<char>("is_selected") )
       is_selected = true;
-      m_trk_nSelected++;
-    }
-  }
-  bool is_associated = false;
-  if ( track->isAvailable<char>("is_associated") ) {
-    if ( track->auxdataConst<char>("is_associated") ) {
-      is_associated = true;
-      m_trk_nAssociated++;
-    }
-  }
   
-  bool passSel = true;
-  if ( track->isAvailable<char>("passSel") )
-    if ( !track->auxdataConst<char>("passSel") )
-      passSel = false;
-
+  bool is_associated = false;
+  if ( track->isAvailable<char>("is_associated") )
+    if ( track->auxdataConst<char>("is_associated") )
+      is_associated = true;
+  
   m_trk_ID                      ->push_back( AUXDYN( track, int,     "ID"                                        ) );
   m_trk_index                   ->push_back( AUXDYN( track, int,     "index"                                     ) );
-  m_trk_expectInnerPixelHit     ->push_back( AUXDYN( track, uint8_t, "expectInnermostPixelLayerHit"              ) );
-  m_trk_expectNextInnerPixelHit ->push_back( AUXDYN( track, uint8_t, "expectNextToInnermostPixelLayerHit"        ) );
   m_trk_M                       ->push_back( track->m() / m_units                                                  );
   m_trk_d0                      ->push_back( track->d0()                                                           );
   m_trk_errd0                   ->push_back( track->definingParametersCovMatrix()(0,0)                             );
@@ -994,14 +1001,58 @@ void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName, const xAOD
   m_trk_numberDoF               ->push_back( track->numberDoF()                                                    );
   m_trk_chi2                    ->push_back( track->chiSquared() / (track->numberDoF() + AlgConsts::infinitesimal) );
   m_trk_charge                  ->push_back( track->charge()                                                       );
+  m_trk_isLRT                   ->push_back( track->patternRecoInfo().test(xAOD::SiSpacePointsSeedMaker_LargeD0)   );
   m_trk_isSelected              ->push_back( is_selected                                                           );
   m_trk_isAssociated            ->push_back( is_associated                                                         );
-  m_trk_passSel                 ->push_back( passSel                                                               );
+
+
+  // get track summary information
+  uint8_t nPix       = 0;
+  uint8_t nPixHole   = 0;
+  uint8_t nPixShare  = 0;
+  uint8_t nPixDead   = 0;
+  uint8_t nInPix     = 0;
+  uint8_t nNextInPix = 0;
+  uint8_t nSCT       = 0;
+  uint8_t nSCTHole   = 0;
+  uint8_t nSCTShare  = 0;
+  uint8_t nSCTDead   = 0;
+  uint8_t nTRT       = 0;
+  uint8_t nTRTOut    = 0;
+  track->summaryValue( nPix,       xAOD::numberOfPixelHits                     );
+  track->summaryValue( nPixHole,   xAOD::numberOfPixelHoles                    );
+  track->summaryValue( nPixShare,  xAOD::numberOfPixelSharedHits               );
+  track->summaryValue( nPixDead,   xAOD::numberOfPixelDeadSensors              );
+  track->summaryValue( nInPix,     xAOD::numberOfInnermostPixelLayerHits       );
+  track->summaryValue( nNextInPix, xAOD::numberOfNextToInnermostPixelLayerHits );
+  track->summaryValue( nSCT,       xAOD::numberOfSCTHits                       );
+  track->summaryValue( nSCTHole,   xAOD::numberOfSCTHoles                      );
+  track->summaryValue( nSCTShare,  xAOD::numberOfSCTSharedHits                 );
+  track->summaryValue( nSCTDead,   xAOD::numberOfSCTDeadSensors                );
+  track->summaryValue( nTRT,       xAOD::numberOfTRTHits                       );
+  track->summaryValue( nTRTOut,    xAOD::numberOfTRTOutliers                   );
+  
+  m_trk_nPixelHits                   ->push_back( nPix                                                           );
+  m_trk_nPixelHoles                  ->push_back( nPixHole                                                       );
+  m_trk_nPixelSharedHits             ->push_back( nPixShare                                                      );
+  m_trk_nPixelDeadSensors            ->push_back( nPixDead                                                       );
+  m_trk_expectInnerPixelLayerHit     ->push_back( AUXDYN( track, uint8_t, "expectInnermostPixelLayerHit"       ) );
+  m_trk_nInnerPixelLayerHits         ->push_back( nNextInPix                                                     );
+  m_trk_expectNextInnerPixelLayerHit ->push_back( AUXDYN( track, uint8_t, "expectNextToInnermostPixelLayerHit" ) );
+  m_trk_nNextInnerPixelLayerHits     ->push_back( nNextInPix                                                     );
+  m_trk_nSCTHits                     ->push_back( nSCT                                                           );
+  m_trk_nSCTHoles                    ->push_back( nSCTHole                                                       );
+  m_trk_nSCTSharedHits               ->push_back( nSCTShare                                                      );
+  m_trk_nSCTDeadSensors              ->push_back( nSCTDead                                                       );
+  m_trk_nTRTHits                     ->push_back( nTRT                                                           );
+  m_trk_nTRTOutliers                 ->push_back( nTRTOut                                                        );
+  
 
   // get linked secondary vertex
   bool trackIsSecVtxTrk      = false;
   bool trackIsSecVtxCleanTrk = false;
   bool trackIsSecVtxFiltTrk  = false;
+  bool trackIsSecVtxFinalTrk = false;
   int  secVtxID              = AlgConsts::invalidInt;
   int  secVtxIndex           = AlgConsts::invalidInt;
   static SG::AuxElement::ConstAccessor<EJsHelper::VertexLink_t> secVtxAccess("secondaryVertexLink");
@@ -1014,12 +1065,14 @@ void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName, const xAOD
     } catch(...) {}
   }
   if ( trackIsSecVtxTrk ) {
-    trackIsSecVtxCleanTrk = AUXDYN( track, char, "isClean"    );
-    trackIsSecVtxFiltTrk  = AUXDYN( track, char, "isFiltered" );
+    trackIsSecVtxCleanTrk = AUXDYN( track, char, "isClean"        );
+    trackIsSecVtxFiltTrk  = AUXDYN( track, char, "isFiltered"     );
+    trackIsSecVtxFinalTrk = AUXDYN( track, char, "is_svtrk_final" );
   }
   m_trk_isSecVtxTrk         ->push_back( trackIsSecVtxTrk      );
   m_trk_isSecVtxCleanTrk    ->push_back( trackIsSecVtxCleanTrk );
   m_trk_isSecVtxFiltTrk     ->push_back( trackIsSecVtxFiltTrk  );
+  m_trk_isSecVtxFinalTrk    ->push_back( trackIsSecVtxFinalTrk );
   m_trk_secVtxID            ->push_back( secVtxID              );
   m_trk_secVtxIndex         ->push_back( secVtxIndex           );
 
@@ -1123,59 +1176,69 @@ void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName, const xAOD
 
 void EJsHelpTreeBase :: ClearTracksUser ( const std::string trackName )
 {
-  m_trk_nSelected   = 0;
-  m_trk_nAssociated = 0;
-
-  m_trk_ID                      ->clear();
-  m_trk_index                   ->clear();
-  m_trk_expectInnerPixelHit     ->clear();
-  m_trk_expectNextInnerPixelHit ->clear();
-  m_trk_M                       ->clear();
-  m_trk_d0                      ->clear();
-  m_trk_errd0                   ->clear();
-  m_trk_errz0                   ->clear();
-  m_trk_chiSquared              ->clear();
-  m_trk_numberDoF               ->clear();
-  m_trk_chi2                    ->clear();
-  m_trk_charge                  ->clear();
-  m_trk_isSelected              ->clear();
-  m_trk_isAssociated            ->clear();
-  m_trk_passSel                 ->clear();
-  m_trk_isSecVtxTrk             ->clear();
-  m_trk_isSecVtxCleanTrk        ->clear();
-  m_trk_isSecVtxFiltTrk         ->clear();
-  m_trk_secVtxID                ->clear();
-  m_trk_secVtxIndex             ->clear();
+  m_trk_ID                           ->clear();
+  m_trk_index                        ->clear();
+  m_trk_M                            ->clear();
+  m_trk_d0                           ->clear();
+  m_trk_errd0                        ->clear();
+  m_trk_errz0                        ->clear();
+  m_trk_chiSquared                   ->clear();
+  m_trk_numberDoF                    ->clear();
+  m_trk_chi2                         ->clear();
+  m_trk_charge                       ->clear();
+  m_trk_nPixelHits                   ->clear();
+  m_trk_nPixelHoles                  ->clear();
+  m_trk_nPixelSharedHits             ->clear();
+  m_trk_nPixelDeadSensors            ->clear();
+  m_trk_expectInnerPixelLayerHit     ->clear();
+  m_trk_nInnerPixelLayerHits         ->clear();
+  m_trk_expectNextInnerPixelLayerHit ->clear();
+  m_trk_nNextInnerPixelLayerHits     ->clear();
+  m_trk_nSCTHits                     ->clear();
+  m_trk_nSCTHoles                    ->clear();
+  m_trk_nSCTSharedHits               ->clear();
+  m_trk_nSCTDeadSensors              ->clear();
+  m_trk_nTRTHits                     ->clear();
+  m_trk_nTRTOutliers                 ->clear();
+  m_trk_isLRT                        ->clear();
+  m_trk_isSelected                   ->clear();
+  m_trk_isAssociated                 ->clear();
+  m_trk_isSecVtxTrk                  ->clear();
+  m_trk_isSecVtxCleanTrk             ->clear();
+  m_trk_isSecVtxFiltTrk              ->clear();
+  m_trk_isSecVtxFinalTrk             ->clear();
+  m_trk_secVtxID                     ->clear();
+  m_trk_secVtxIndex                  ->clear();
   if ( m_isMC ) {
-    m_trk_isTruth               ->clear();
-    m_trk_truthProb             ->clear();
-    m_trk_truthID               ->clear();
-    m_trk_truthIndex            ->clear();
-    m_trk_truthBarcode          ->clear();
-    m_trk_truthPdgId            ->clear();
-    m_trk_truthIsDesc           ->clear();
-    m_trk_truthAncestorLLPDecay ->clear();
-    m_trk_truthAncestorID       ->clear();
-    m_trk_truthAncestorIndex    ->clear();
-    m_trk_truthJetMatch         ->clear();
-    m_trk_truthJetMatch_ID      ->clear();
-    m_trk_truthJetMatch_index   ->clear();
-    m_trk_truthJetMatch_dR      ->clear();
-    m_trk_darkJetMatch          ->clear();
-    m_trk_darkJetMatch_ID       ->clear();
-    m_trk_darkJetMatch_index    ->clear();
-    m_trk_darkJetMatch_dR       ->clear();
+    m_trk_isTruth                    ->clear();
+    m_trk_truthProb                  ->clear();
+    m_trk_truthID                    ->clear();
+    m_trk_truthIndex                 ->clear();
+    m_trk_truthBarcode               ->clear();
+    m_trk_truthPdgId                 ->clear();
+    m_trk_truthIsDesc                ->clear();
+    m_trk_truthAncestorLLPDecay      ->clear();
+    m_trk_truthAncestorID            ->clear();
+    m_trk_truthAncestorIndex         ->clear();
+    m_trk_truthJetMatch              ->clear();
+    m_trk_truthJetMatch_ID           ->clear();
+    m_trk_truthJetMatch_index        ->clear();
+    m_trk_truthJetMatch_dR           ->clear();
+    m_trk_darkJetMatch               ->clear();
+    m_trk_darkJetMatch_ID            ->clear();
+    m_trk_darkJetMatch_index         ->clear();
+    m_trk_darkJetMatch_dR            ->clear();
   }
   if ( m_doEMTopoJets ) {
-    m_trk_emtopoJetMatch         ->clear();
-    m_trk_emtopoJetMatch_ID      ->clear();
-    m_trk_emtopoJetMatch_index   ->clear();
-    m_trk_emtopoJetMatch_dR      ->clear();
+    m_trk_emtopoJetMatch              ->clear();
+    m_trk_emtopoJetMatch_ID           ->clear();
+    m_trk_emtopoJetMatch_index        ->clear();
+    m_trk_emtopoJetMatch_dR           ->clear();
   }
   if ( m_doPFlowJets ) {
-    m_trk_pflowJetMatch         ->clear();
-    m_trk_pflowJetMatch_ID      ->clear();
-    m_trk_pflowJetMatch_index   ->clear();
-    m_trk_pflowJetMatch_dR      ->clear();
+    m_trk_pflowJetMatch              ->clear();
+    m_trk_pflowJetMatch_ID           ->clear();
+    m_trk_pflowJetMatch_index        ->clear();
+    m_trk_pflowJetMatch_dR           ->clear();
   }
 }

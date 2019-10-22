@@ -202,12 +202,8 @@ class EJsHelpTreeBase : public HelpTreeBase
         
   
   // tracks
-  int                                    m_trk_nSelected;
-  int                                    m_trk_nAssociated;
   std::vector<int>*                      m_trk_ID;
   std::vector<int>*                      m_trk_index;
-  std::vector<uint8_t>*                  m_trk_expectInnerPixelHit;
-  std::vector<uint8_t>*                  m_trk_expectNextInnerPixelHit;
   std::vector<float>*                    m_trk_M;
   std::vector<float>*                    m_trk_d0;
   std::vector<float>*                    m_trk_errd0;
@@ -216,9 +212,25 @@ class EJsHelpTreeBase : public HelpTreeBase
   std::vector<float>*                    m_trk_numberDoF;
   std::vector<float>*                    m_trk_chi2;
   std::vector<float>*                    m_trk_charge;
+  // track summary information
+  std::vector<uint8_t>*                  m_trk_nPixelHits;
+  std::vector<uint8_t>*                  m_trk_nPixelHoles;
+  std::vector<uint8_t>*                  m_trk_nPixelSharedHits;
+  std::vector<uint8_t>*                  m_trk_nPixelDeadSensors;
+  std::vector<uint8_t>*                  m_trk_expectInnerPixelLayerHit;
+  std::vector<uint8_t>*                  m_trk_nInnerPixelLayerHits;
+  std::vector<uint8_t>*                  m_trk_expectNextInnerPixelLayerHit;
+  std::vector<uint8_t>*                  m_trk_nNextInnerPixelLayerHits;
+  std::vector<uint8_t>*                  m_trk_nSCTHits;
+  std::vector<uint8_t>*                  m_trk_nSCTHoles;
+  std::vector<uint8_t>*                  m_trk_nSCTSharedHits;
+  std::vector<uint8_t>*                  m_trk_nSCTDeadSensors;
+  std::vector<uint8_t>*                  m_trk_nTRTHits;
+  std::vector<uint8_t>*                  m_trk_nTRTOutliers;
+  // track type
+  std::vector<uint8_t>*                  m_trk_isLRT;
   std::vector<uint8_t>*                  m_trk_isSelected;
   std::vector<uint8_t>*                  m_trk_isAssociated;
-  std::vector<uint8_t>*                  m_trk_passSel;
   std::vector<uint8_t>*                  m_trk_isTruth;
   std::vector<float>*                    m_trk_truthProb;
   std::vector<int>*                      m_trk_truthID;
@@ -233,6 +245,7 @@ class EJsHelpTreeBase : public HelpTreeBase
   std::vector<uint8_t>*                  m_trk_isSecVtxTrk;
   std::vector<uint8_t>*                  m_trk_isSecVtxCleanTrk;
   std::vector<uint8_t>*                  m_trk_isSecVtxFiltTrk;
+  std::vector<uint8_t>*                  m_trk_isSecVtxFinalTrk;
   std::vector<int>*                      m_trk_secVtxID;
   std::vector<int>*                      m_trk_secVtxIndex;
   // matching jets (jets to which tracks are dR-matched)

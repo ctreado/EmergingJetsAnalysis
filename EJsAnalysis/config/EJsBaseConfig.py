@@ -255,7 +255,8 @@ Dict_VertexMatcher = {
     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
     "m_truthLLP"                       : "DarkPion Kshort",
     "m_distanceCutoff"                 : 10, 
-    "m_doTruthTrackMatching"           : False, # already done above...
+    "m_doTruthTrackMatching"           : False, # already done in ObjectMatcher above...
+    "m_setObjectIdentifiers"           : False, # already done in ObjectMatcher above...
     "m_vtx_matchScore"                 : 0,     # off for now --> can apply score requirement later (i.e. in histo alg)...
 }
 
@@ -281,15 +282,15 @@ Dict_EJsMiniNtuple = {
     "m_msgLevel"                     : "info",
     "m_evtDetailStr"                 : "pileup pileupsys",
     "m_trigDetailStr"                : "basic passTriggers prescales",
-    "m_jetDetailStr"                 : "kinematic rapidity clean energy trackAll trackPV allTrack allTrackDetail constituent area truth charge ghost match",
+    "m_jetDetailStr"                 : "kinematic rapidity clean energy trackAll trackPV allTrack constituent area truth charge ghost match", # add "allTrackDetail", "detail" to regain full ntuple contents
     "m_jetContainerName"             : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
     "m_jetBranchName"                : "jet pflowJet",
     "m_jetSystsVec"                  : "AntiKt4EMPFlowJets_Calib_Select_EJsxAODAna_Algo", # --> PFlow = rec R21 jet container
     "m_jetSystsContainerIndex"       : 1,
-    "m_truthJetDetailStr"            : "kinematic rapidity energyLight constituent constituentAll area truthJets truthVerts truthParts",
+    "m_truthJetDetailStr"            : "kinematic rapidity energyLight constituent constituentAll area truthJets truthVerts truthParts", # add "detail" to regain full ntuple contents
     "m_truthJetContainerName"        : "AntiKt4TruthJets AntiKt4TruthDarkJets",
     "m_truthJetBranchName"           : "truthJet darkJet",
-    "m_trackPartDetailStr"           : "kinematic numbers vertex",
+    "m_trackPartDetailStr"           : "kinematic vertex",
     "m_trackPartContainerName"       : "InDetTrackParticles_Select",
     "m_trackPartBranchName"          : "track",
     "m_truthPartDetailStr"           : "kinematic parents children",

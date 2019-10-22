@@ -51,6 +51,9 @@ class VertexMatcher : public xAH::Algorithm
 
   // do truth-track matching
   bool m_doTruthTrackMatching = true;
+
+  // set object identifiers
+  bool m_setObjectIdentifiers = true;
   
 
 

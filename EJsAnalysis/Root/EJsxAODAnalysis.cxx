@@ -415,7 +415,6 @@ EL::StatusCode EJsxAODAnalysis :: executeSelection ( const xAOD::EventInfo* even
       double njet_ht = 0;
       for ( const auto& jet : *inJets ) {
 	if ( njets >= m_nSignalJets ) break;
-	//if ( jet->index() >= m_nSignalJets ) break;
 	njet_ht += jet->pt();
 	++njets;
       }
