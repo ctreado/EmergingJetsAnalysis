@@ -177,6 +177,7 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
     m_signal_cutflowHist    = new TH1D( "cutflow_ejs_signal", "cutflow_ejs_signal", 1, 1, 2 );
     m_signal_cutflowHist    ->SetCanExtend( TH1::kAllAxes );   
     m_signal_cutflow_all    = m_signal_cutflowHist->GetXaxis()->FindBin( "all"                                );
+    m_signal_cutflow_init   = m_signal_cutflowHist->GetXaxis()->FindBin( "init"                               );
     m_signal_cutflow_trig   = m_signal_cutflowHist->GetXaxis()->FindBin( m_signalTrigLabel.c_str()            );
     m_signal_cutflow_njet   = m_signal_cutflowHist->GetXaxis()->FindBin( ("nJets_"  + m_cutflowJets).c_str()  );
     m_signal_cutflow_jetpt  = m_signal_cutflowHist->GetXaxis()->FindBin( ("jetPt_"  + m_cutflowJets).c_str()  );
@@ -187,6 +188,7 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
     m_valid_cutflowHist     = new TH1D( "cutflow_ejs_valid", "cutflow_ejs_valid", 1, 1, 2 );
     m_valid_cutflowHist     ->SetCanExtend( TH1::kAllAxes );
     m_valid_cutflow_all     = m_valid_cutflowHist->GetXaxis()->FindBin( "all"                                 );
+    m_valid_cutflow_init    = m_valid_cutflowHist->GetXaxis()->FindBin( "init"                                );
     m_valid_cutflow_trig    = m_valid_cutflowHist->GetXaxis()->FindBin( m_validTrigLabel.c_str()              );
     m_valid_cutflow_njetmin = m_valid_cutflowHist->GetXaxis()->FindBin( ("nJetsMin_" + m_cutflowJets).c_str() );
     m_valid_cutflow_jetpt   = m_valid_cutflowHist->GetXaxis()->FindBin( ("jetPt_"    + m_cutflowJets).c_str() );
@@ -297,6 +299,10 @@ EL::StatusCode EJsxAODAnalysis :: execute ()
   ++m_numPassEvents;
   m_numPassWeightEvents += m_mcEventWeight;
 
+  // save number of "all" initial events (before any selections)
+  m_numTotalEvents = m_cutflowHist ->GetBinContent( 1 );
+  eventInfo->auxdecor<Long64_t>("nTotalEvents") = m_numTotalEvents;
+
   return EL::StatusCode::SUCCESS;
 }
 
@@ -345,6 +351,8 @@ EL::StatusCode EJsxAODAnalysis :: finalize ()
     // write new ejs cutflows to output file
     TFile *file = wk()->getOutputFile( "cutflow" );
     file->cd();
+    m_signal_cutflowHist ->SetBinContent( m_signal_cutflow_all, m_numTotalEvents );
+    m_valid_cutflowHist  ->SetBinContent( m_valid_cutflow_all,  m_numTotalEvents );
     m_signal_cutflowHist ->LabelsDeflate("X");
     m_valid_cutflowHist  ->LabelsDeflate("X");
     m_signal_cutflowHist ->Write();
@@ -479,9 +487,9 @@ int EJsxAODAnalysis :: PassSignalCuts ( const xAOD::EventInfo* eventInfo, const 
   eventInfo   ->auxdecor<char>("passSignalNJetHtSel_" + decor_label) = false;
   eventInfo   ->auxdecor<char>("passSignalNEJSel_"    + decor_label) = false;
 
-  // all events (after prior alg selections)
+  // initial events (after prior alg selections)
   if ( m_isNominalCase && m_isFirstJetContainer && m_useCutFlow )
-    m_signal_cutflowHist ->Fill( m_signal_cutflow_all, 1 );
+    m_signal_cutflowHist ->Fill( m_signal_cutflow_init, 1 );
   
   // trigger selection
   if ( !m_truthLevelOnly ) {
@@ -579,9 +587,9 @@ int EJsxAODAnalysis :: PassValidationCuts ( const xAOD::EventInfo* eventInfo, co
   eventInfo   ->auxdecor<char>("passValidJetPtSel_"   + decor_label) = false;
   eventInfo   ->auxdecor<char>("passValidJetEtaSel_"  + decor_label) = false;
 
-  // all events (after prior alg selections)
+  // initial events (after prior alg selections)
   if ( m_isNominalCase && m_isFirstJetContainer && m_useCutFlow )
-    m_valid_cutflowHist ->Fill( m_valid_cutflow_all, 1 );
+    m_valid_cutflowHist ->Fill( m_valid_cutflow_init, 1 );
 
   // trigger selection
   if ( !m_truthLevelOnly ) {

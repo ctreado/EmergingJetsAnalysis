@@ -104,6 +104,8 @@ class EJsxAODAnalysis : public xAH::Algorithm
   std::vector<int> m_numCtrlWeightEvents; //!
   std::vector<int> m_numSignalValidWeightEvents; //!
 
+  Long64_t m_numTotalEvents; //!
+
   // FIX CUTFLOW IMPLEMENTATION --> ADD DO CONFIG; MOVE BIN INTEGERS HER; ETC.
   
   TH1D* m_cutflowHist  = 0; //!
@@ -113,6 +115,7 @@ class EJsxAODAnalysis : public xAH::Algorithm
   // signal- / validation- level cutflow
   TH1D* m_signal_cutflowHist = 0; //!
   int   m_signal_cutflow_all;     //!
+  int   m_signal_cutflow_init;    //!
   int   m_signal_cutflow_trig;    //!
   int   m_signal_cutflow_njet;    //!
   int   m_signal_cutflow_jetpt;   //!
@@ -121,6 +124,7 @@ class EJsxAODAnalysis : public xAH::Algorithm
   int   m_signal_cutflow_nej;     //!
   TH1D* m_valid_cutflowHist  = 0; //!
   int   m_valid_cutflow_all;      //!
+  int   m_valid_cutflow_init;     //!
   int   m_valid_cutflow_trig;     //!
   int   m_valid_cutflow_njetmin;  //!
   int   m_valid_cutflow_jetpt;    //!

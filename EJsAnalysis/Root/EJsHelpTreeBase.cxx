@@ -18,14 +18,15 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
 
   m_treeName = m_tree->GetName();
   
-  m_pv_x        = 0;
-  m_pv_y        = 0;
-  m_pv_z        = 0;
-  m_pv_r        = 0;
-  m_pv_phi      = 0;
-  m_pv_nTracks  = 0;
-  m_pv_location = 0;
+  m_pv_x                  = 0;
+  m_pv_y                  = 0;
+  m_pv_z                  = 0;
+  m_pv_r                  = 0;
+  m_pv_phi                = 0;
+  m_pv_nTracks            = 0;
+  m_pv_location           = 0;
 
+  m_nTotalEvents          = 0;
   m_eventIsMC             = 0;
   
   if ( !m_truthLevelOnly ) {
@@ -341,11 +342,12 @@ void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddEventUser()", "adding EJs-user event variables" );
 
-  m_tree->Branch( "isMC", &m_eventIsMC );
+  m_tree  ->Branch( "nTotalEvents",              &m_nTotalEvents        );
+  m_tree  ->Branch( "isMC",                      &m_eventIsMC           );
 
   if ( !m_truthLevelOnly ) {
-    m_tree->Branch( "passesSignalTrigger", &m_signalTrig );
-    m_tree->Branch( "passesValidTrigger",  &m_validTrig  );
+    m_tree->Branch( "passesSignalTrigger",       &m_signalTrig          );
+    m_tree->Branch( "passesValidTrigger",        &m_validTrig           );
   }
   
   if ( m_doEMTopoJets ) {
@@ -367,40 +369,40 @@ void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
   }
   
   if ( m_doPFlowJets ) {
-    m_tree->Branch( "isSignal_PFlow",           &m_signal_pflow       );
-    m_tree->Branch( "isValid_PFlow",            &m_valid_pflow        );
-    m_tree->Branch( "isCtrl_PFlow",             &m_ctrl_pflow         );
+    m_tree->Branch( "isSignal_PFlow",            &m_signal_pflow        );
+    m_tree->Branch( "isValid_PFlow",             &m_valid_pflow         );
+    m_tree->Branch( "isCtrl_PFlow",              &m_ctrl_pflow          );
 
-    m_tree->Branch( "passesSignalNJet_PFlow",   &m_signalNJet_pflow   );
-    m_tree->Branch( "passesSignalJetPt_PFlow",  &m_signalJetPt_pflow  );
-    m_tree->Branch( "passesSignalJetEta_PFlow", &m_signalJetEta_pflow );
-    m_tree->Branch( "passesSignalNJetHt_PFlow", &m_signalNJetHt_pflow );
+    m_tree->Branch( "passesSignalNJet_PFlow",    &m_signalNJet_pflow    );
+    m_tree->Branch( "passesSignalJetPt_PFlow",   &m_signalJetPt_pflow   );
+    m_tree->Branch( "passesSignalJetEta_PFlow",  &m_signalJetEta_pflow  );
+    m_tree->Branch( "passesSignalNJetHt_PFlow",  &m_signalNJetHt_pflow  );
     
-    m_tree->Branch( "passesValidNJetMin_PFlow", &m_validNJetMin_pflow );
-    m_tree->Branch( "passesValidNJetMax_PFlow", &m_validNJetMax_pflow );
-    m_tree->Branch( "passesValidJetPt_PFlow",   &m_validJetPt_pflow   );
-    m_tree->Branch( "passesValidJetEta_PFlow",  &m_validJetEta_pflow  );
+    m_tree->Branch( "passesValidNJetMin_PFlow",  &m_validNJetMin_pflow  );
+    m_tree->Branch( "passesValidNJetMax_PFlow",  &m_validNJetMax_pflow  );
+    m_tree->Branch( "passesValidJetPt_PFlow",    &m_validJetPt_pflow    );
+    m_tree->Branch( "passesValidJetEta_PFlow",   &m_validJetEta_pflow   );
   
-    m_tree->Branch( "NJetHt_PFlow",             &m_njetHt_pflow       );
+    m_tree->Branch( "NJetHt_PFlow",              &m_njetHt_pflow        );
   }
 
   if ( m_truthLevelOnly ) {
-    m_tree->Branch( "isSignal_Truth",           &m_signal_truth       );
-    m_tree->Branch( "isValid_Truth",            &m_valid_truth        );
-    m_tree->Branch( "isCtrl_Truth",             &m_ctrl_truth         );
+    m_tree->Branch( "isSignal_Truth",            &m_signal_truth        );
+    m_tree->Branch( "isValid_Truth",             &m_valid_truth         );
+    m_tree->Branch( "isCtrl_Truth",              &m_ctrl_truth          );
 
-    m_tree->Branch( "passesSignalNJet_Truth",   &m_signalNJet_truth   );
-    m_tree->Branch( "passesSignalJetPt_Truth",  &m_signalJetPt_truth  );
-    m_tree->Branch( "passesSignalJetEta_Truth", &m_signalJetEta_truth );
-    m_tree->Branch( "passesSignalNJetHt_Truth", &m_signalNJetHt_truth );
-    m_tree->Branch( "passesSignalNEJ_Truth",    &m_signalNEJ_truth    );
+    m_tree->Branch( "passesSignalNJet_Truth",    &m_signalNJet_truth    );
+    m_tree->Branch( "passesSignalJetPt_Truth",   &m_signalJetPt_truth   );
+    m_tree->Branch( "passesSignalJetEta_Truth",  &m_signalJetEta_truth  );
+    m_tree->Branch( "passesSignalNJetHt_Truth",  &m_signalNJetHt_truth  );
+    m_tree->Branch( "passesSignalNEJ_Truth",     &m_signalNEJ_truth     );
     
-    m_tree->Branch( "passesValidNJetMin_Truth", &m_validNJetMin_truth );
-    m_tree->Branch( "passesValidNJetMax_Truth", &m_validNJetMax_truth );
-    m_tree->Branch( "passesValidJetPt_Truth",   &m_validJetPt_truth   );
-    m_tree->Branch( "passesValidJetEta_Truth",  &m_validJetEta_truth  );
+    m_tree->Branch( "passesValidNJetMin_Truth",  &m_validNJetMin_truth  );
+    m_tree->Branch( "passesValidNJetMax_Truth",  &m_validNJetMax_truth  );
+    m_tree->Branch( "passesValidJetPt_Truth",    &m_validJetPt_truth    );
+    m_tree->Branch( "passesValidJetEta_Truth",   &m_validJetEta_truth   );
   
-    m_tree->Branch( "NJetHt_Truth",             &m_njetHt_truth       );
+    m_tree->Branch( "NJetHt_Truth",              &m_njetHt_truth        );
   }
 }
 
@@ -409,7 +411,8 @@ void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
   std::string treeName = m_treeName;
   if ( treeName == "nominal" ) treeName = "";
 
-  m_eventIsMC = m_isMC;
+  m_nTotalEvents = event->auxdataConst<Long64_t>( "nTotalEvents" );
+  m_eventIsMC    = m_isMC;
   
   if ( event->isAvailable<char>( "passSignalTrigSel" ) ) {
     m_signalTrig = event->auxdataConst<char>( "passSignalTrigSel" );
@@ -521,7 +524,8 @@ void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
 
 void EJsHelpTreeBase :: ClearEventUser ( )
 {
-  m_eventIsMC = 0;
+  m_nTotalEvents = 0;
+  m_eventIsMC    = 0;
 
   if ( !m_truthLevelOnly ) {
     m_signalTrig = 0;
