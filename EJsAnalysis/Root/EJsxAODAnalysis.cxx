@@ -299,10 +299,6 @@ EL::StatusCode EJsxAODAnalysis :: execute ()
   ++m_numPassEvents;
   m_numPassWeightEvents += m_mcEventWeight;
 
-  // save number of "all" initial events (before any selections)
-  m_numTotalEvents = m_cutflowHist ->GetBinContent( 1 );
-  eventInfo->auxdecor<Long64_t>("nTotalEvents") = m_numTotalEvents;
-
   return EL::StatusCode::SUCCESS;
 }
 
@@ -351,12 +347,23 @@ EL::StatusCode EJsxAODAnalysis :: finalize ()
     // write new ejs cutflows to output file
     TFile *file = wk()->getOutputFile( "cutflow" );
     file->cd();
+    m_numTotalEvents     = m_cutflowHist ->GetBinContent( 1 );
     m_signal_cutflowHist ->SetBinContent( m_signal_cutflow_all, m_numTotalEvents );
     m_valid_cutflowHist  ->SetBinContent( m_valid_cutflow_all,  m_numTotalEvents );
     m_signal_cutflowHist ->LabelsDeflate("X");
     m_valid_cutflowHist  ->LabelsDeflate("X");
     m_signal_cutflowHist ->Write();
     m_valid_cutflowHist  ->Write();
+
+    // get metadata histogram
+    TFile *metaFile    = wk()  ->getOutputFile( "metadata"            );
+    m_meta_cutflowHist = (TH1D*) metaFile->Get( "MetaData_EventCount" );
+    m_meta_cutflowHist ->LabelsDeflate("X");
+    m_meta_cutflowHist ->Write();
+    // save metadata histogram to data-tree
+    TFile *treeFile    = wk() ->getOutputFile( "tree" );
+    m_meta_cloneHist   = (TH1D*) m_meta_cutflowHist->Clone();
+    m_meta_cloneHist   ->SetDirectory( treeFile );
   }
 
   delete m_signal_cutflowHist;

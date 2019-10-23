@@ -106,11 +106,11 @@ class EJsxAODAnalysis : public xAH::Algorithm
 
   Long64_t m_numTotalEvents; //!
 
-  // FIX CUTFLOW IMPLEMENTATION --> ADD DO CONFIG; MOVE BIN INTEGERS HER; ETC.
-  
-  TH1D* m_cutflowHist  = 0; //!
-  TH1D* m_cutflowHistW = 0; //!
-  int   m_cutflow_bin;      //!
+
+  // event cutflow
+  TH1D* m_cutflowHist        = 0; //!
+  TH1D* m_cutflowHistW       = 0; //!
+  int   m_cutflow_bin;            //!
 
   // signal- / validation- level cutflow
   TH1D* m_signal_cutflowHist = 0; //!
@@ -130,6 +130,10 @@ class EJsxAODAnalysis : public xAH::Algorithm
   int   m_valid_cutflow_jetpt;    //!
   int   m_valid_cutflow_jeteta;   //!
   int   m_valid_cutflow_njetmax;  //!
+
+  // metadata cutflow / clone
+  TH1D* m_meta_cutflowHist   = 0; //!
+  TH1D* m_meta_cloneHist     = 0; //!
 
   double m_mcEventWeight; //!
 

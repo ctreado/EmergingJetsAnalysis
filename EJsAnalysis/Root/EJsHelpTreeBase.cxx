@@ -26,7 +26,6 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
   m_pv_nTracks            = 0;
   m_pv_location           = 0;
 
-  m_nTotalEvents          = 0;
   m_eventIsMC             = 0;
   
   if ( !m_truthLevelOnly ) {
@@ -342,7 +341,6 @@ void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddEventUser()", "adding EJs-user event variables" );
 
-  m_tree  ->Branch( "nTotalEvents",              &m_nTotalEvents        );
   m_tree  ->Branch( "isMC",                      &m_eventIsMC           );
 
   if ( !m_truthLevelOnly ) {
@@ -411,8 +409,7 @@ void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
   std::string treeName = m_treeName;
   if ( treeName == "nominal" ) treeName = "";
 
-  m_nTotalEvents = event->auxdataConst<Long64_t>( "nTotalEvents" );
-  m_eventIsMC    = m_isMC;
+  m_eventIsMC = m_isMC;
   
   if ( event->isAvailable<char>( "passSignalTrigSel" ) ) {
     m_signalTrig = event->auxdataConst<char>( "passSignalTrigSel" );
@@ -524,8 +521,7 @@ void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
 
 void EJsHelpTreeBase :: ClearEventUser ( )
 {
-  m_nTotalEvents = 0;
-  m_eventIsMC    = 0;
+  m_eventIsMC = 0;
 
   if ( !m_truthLevelOnly ) {
     m_signalTrig = 0;
