@@ -21,7 +21,8 @@ void makeLocalStackPlots ( TString hname   = "nPV",  TString htype  = "mc16d", T
 			   Bool_t  doNorm  = true,   Bool_t  doLogy = true )
 {
   // set sample vectors
-  TString hpath = "$EJ_PATH/../output/localOutput/hist-tree/"; // make sure $EJ_PATH set to local repo dir: 'export EJ_PATH=$(pwd)'
+  // --> make sure $EJ_PATH set to local repo dir: 'export EJ_PATH=$(pwd)'
+  TString hpath = "$EJ_PATH/../output/localOutput/hist-tree/latest/";
   TString hfile = "/hist-data-tree.root";
 
   // set file, legend names; line colors, styles; stack title
@@ -45,20 +46,20 @@ void makeLocalStackPlots ( TString hname   = "nPV",  TString htype  = "mc16d", T
   // data15 vs 16 vs 17 vs 18
   if ( htype.Contains("data") && !htype.Contains("mc16") ) {
     TString path = "hists.local.data";
-    fname.push_back( path + "18.363830" );
+    //fname.push_back( path + "18.363830" );
     fname.push_back( path + "17.331804" );
-    fname.push_back( path + "16.303208" );
-    fname.push_back( path + "15.280862" );
+    //fname.push_back( path + "16.303208" );
+    //fname.push_back( path + "15.280862" );
     
-    lname.push_back( "data18 (r363830)" );
+    //lname.push_back( "data18 (r363830)" );
     lname.push_back( "data17 (r331804)" );
-    lname.push_back( "data16 (r303208)" );
-    lname.push_back( "data15 (r280862)" );
+    //lname.push_back( "data16 (r303208)" );
+    //lname.push_back( "data15 (r280862)" );
 
-    hcolor.push_back( hc.at(0) );
+    //hcolor.push_back( hc.at(0) );
     hcolor.push_back( hc.at(1) );
-    hcolor.push_back( hc.at(2) );
-    hcolor.push_back( hc.at(3) );
+    //hcolor.push_back( hc.at(2) );
+    //hcolor.push_back( hc.at(3) );
 
     htitle = "Data";
     if ( hreg != "all" ) htitle += " [" + hreg + "]";
@@ -302,11 +303,13 @@ void makeLocalStackPlots ( TString hname   = "nPV",  TString htype  = "mc16d", T
 
   // fill stack
   for ( size_t i = 0; i != fname.size(); ++i ) {
-    f = TFile::Open( hpath + fname.at(i) + hfile, "READ" );
+    //f = TFile::Open( hpath + fname.at(i) + hfile, "READ" );
+    f = TFile::Open( hpath + fname.at(i) + ".trigger" + hfile, "READ" ); // trigger studies
     if ( !f ) std::cout << "ZERO POINTER" << std::endl;
     else {
       std::cout << "file pointer: " << f                           << std::endl;
-      std::cout << "   file name: " << hpath + fname.at(i) + hfile << std::endl;
+      //std::cout << "   file name: " << hpath + fname.at(i) + hfile << std::endl;
+      std::cout << "   file name: " << hpath + fname.at(i) + ".trigger" + hfile << std::endl; // trigger studies
     }
     f->cd( "EJsHists/" + htree + "/" + hreg );
 
@@ -367,7 +370,7 @@ void makeLocalStackPlots ( TString hname   = "nPV",  TString htype  = "mc16d", T
   lumiText ->Draw( "same" );
 
   // save plot
-  TString hdir = hpath + "../plots/";
+  TString hdir = hpath + "../../plots/";
   if ( houtdir != "" ) hdir += houtdir + "/";
   TString hout = hdir + "h_" + hname + "_" + hreg + "_" + htype;
   c1->SaveAs( hout + "." + hext );

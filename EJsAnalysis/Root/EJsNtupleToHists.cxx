@@ -51,6 +51,12 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   // get input file name
   TFile* inFile = wk()->inputFile();
   std::string inFileName = inFile->GetName();
+
+  // get total number of initial events
+  TH1F* metadata_cutflow = (TH1F*) inFile->Get( "MetaData_EventCount" );
+  //m_nTotalEvents = metadata_cutflow->GetBinContent(3); // sumOfWeights (numberOfEvents = bin-1)
+  m_nTotalEvents = 6000; // SWAP W/ ABOVE AFTER RE-RUNNING SAMPLES W/ METADATA SAVED TO DATA-TREE
+  ANA_MSG_INFO( "Found initial number of events: " << m_nTotalEvents );
   
   // set m_isMC
   m_isMC = false;
@@ -72,11 +78,18 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
     m_regions.push_back( region );
   }
 
-  if ( m_truthLevelOnly       ) m_jetStr       = "Truth";
-  if ( m_jetHistoName.empty() ) m_jetHistoName = m_jetBranchName;
+  if ( m_jetHistoName      .empty() ) m_jetHistoName      = m_jetBranchName;
+  if ( m_otherJetHistoName .empty() ) m_otherJetHistoName = m_otherJetBranchName;
+  
+  if ( m_truthLevelOnly )
+    m_jetStr = "Truth";
+  if ( m_jetBranchName.find("PFlow")  != std::string::npos || m_jetBranchName.find("pflow")  != std::string::npos )
+    m_jetStr = "PFlow";
+  if ( m_jetBranchName.find("EMTopo") != std::string::npos || m_jetBranchName.find("emtopo") != std::string::npos )
+    m_jetStr = "EMTopo";
   
   // declare histogram manager class + add histograms to ouput
-  m_plots = new EJsHistogramManager ( m_name, m_detailStr, m_jetStr, m_debug, m_isMC, m_truthLevelOnly );
+  m_plots = new EJsHistogramManager ( m_name, m_detailStr, m_jetStr, m_nTotalEvents, m_debug, m_isMC, m_unblind );
   ANA_CHECK( m_plots ->initialize( outFileName, m_regionNames, m_jetHistoName ) );
   m_plots->record( wk() );
 
@@ -114,19 +127,31 @@ EL::StatusCode EJsNtupleToHists :: changeInput ( bool /*firstFile*/ )
   TTree* tree = wk()->tree();
   tree->SetBranchStatus( "*", 0 ); // disable all branches
 
-  ANA_CHECK   ( m_plots ->connectEvents         ( tree ) );
+  if ( m_doEventInfo )
+    ANA_CHECK   ( m_plots ->connectEvents         ( tree                              ) );
   if ( !m_truthLevelOnly ) {
-    ANA_CHECK ( m_plots ->connectTriggers       ( tree ) );
-    ANA_CHECK ( m_plots ->connectJets           ( tree, m_jetBranchName             ) );
-    ANA_CHECK ( m_plots ->connectTrigJets       ( tree, m_trigJetBranchName         ) );
-    ANA_CHECK ( m_plots ->connectTracks         ( tree, m_trackPartBranchName       ) );
-    ANA_CHECK ( m_plots ->connectSecondaryVerts ( tree, m_secondaryVertexBranchName ) );
+    if ( m_doTriggers )
+      ANA_CHECK ( m_plots ->connectTriggers       ( tree                              ) );
+    if ( m_doJets )
+      ANA_CHECK ( m_plots ->connectJets           ( tree, m_jetBranchName             ) );
+    if ( m_doOtherJets )
+      ANA_CHECK ( m_plots ->connectOtherJets      ( tree, m_otherJetBranchName        ) );
+    if ( m_doTrigJets )
+      ANA_CHECK ( m_plots ->connectTrigJets       ( tree, m_trigJetBranchName         ) );
+    if ( m_doTracks )
+      ANA_CHECK ( m_plots ->connectTracks         ( tree, m_trackPartBranchName       ) );
+    if ( m_doSecondaryVertices )
+      ANA_CHECK ( m_plots ->connectSecondaryVerts ( tree, m_secondaryVertexBranchName ) );
   }
   if ( m_isMC ) {
-    ANA_CHECK ( m_plots ->connectTruthJets      ( tree, m_truthJetBranchName     ) );
-    ANA_CHECK ( m_plots ->connectTruthDarkJets  ( tree, m_truthDarkJetBranchName ) );
-    ANA_CHECK ( m_plots ->connectTruthParts     ( tree, m_truthPartBranchName    ) );
-    ANA_CHECK ( m_plots ->connectTruthVerts     ( tree, m_truthVertexBranchName  ) );
+    if ( m_doTruthJets )
+      ANA_CHECK ( m_plots ->connectTruthJets      ( tree, m_truthJetBranchName        ) );
+    if ( m_doTruthDarkJets )
+      ANA_CHECK ( m_plots ->connectTruthDarkJets  ( tree, m_truthDarkJetBranchName    ) );
+    if ( m_doTruthParts )
+      ANA_CHECK ( m_plots ->connectTruthParts     ( tree, m_truthPartBranchName       ) );
+    if ( m_doTruthVertices )
+      ANA_CHECK ( m_plots ->connectTruthVerts     ( tree, m_truthVertexBranchName     ) );
   }
 
   return EL::StatusCode::SUCCESS;
@@ -185,6 +210,8 @@ EL::StatusCode EJsNtupleToHists :: finalize ()
   // processed on worker node; allows finishing up objects created
   // in initialize() before they're written to disk; only gets
   // called on worker nodes that processed input events
+
+  ANA_CHECK( m_plots ->finalize() );
 
   return EL::StatusCode::SUCCESS;
 }

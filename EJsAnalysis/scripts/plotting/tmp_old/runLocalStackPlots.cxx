@@ -7,13 +7,14 @@ void runLocalStackPlots( )
   // htypes = "data", "mc16*[_mod*/_xdm*]", "mc16*_data*", "mc16*_bkgd", "mc16*_data*_bkgd", "data*_bkgd"
   // --> any permutation will work; with mc, data, specifying campaign or year will dictate the other...
 
-  TString hjetStr = "PFlow"; // --> change to input argument
+  TString hjetStr = "EMTopo"; // --> change to input argument
   TString hjetLow = ToLower( hjetStr );
   TString hjetUp  = hjetStr + "Jet";
   TString hjet    = hjetLow + "Jet";
 
   // --> update code to make new output directory if it doesn't already exist...not sure if this is feasible???
-  TString hdir = "ueh_829_" + hjetLow;
+  //TString hdir = "ueh_829_" + hjetLow;
+  TString hdir = "latest/trig_study";
 
   int nJets    = 4; // can these be configurable ?? can we pull this info from somewhere ??
   int nVtxTrks = 5;
@@ -30,13 +31,13 @@ void runLocalStackPlots( )
   //ptype.push_back( "mc16d_xdm1000"   );
   //ptype.push_back( "mc16d_xdm600"    );
   ptype.push_back( "mc16d_data"      );
-  ptype.push_back( "mc16d_bkgd"      );
+  //ptype.push_back( "mc16d_bkgd"      );
   //ptype.push_back( "mc16d_data_bkgd" );
 
   std::vector<TString> pregion;
   pregion.push_back( "all"    );
-  pregion.push_back( "signal" );
-  pregion.push_back( "valid"  );
+  //pregion.push_back( "signal" );
+  //pregion.push_back( "valid"  );
 
   // --> change "doNorm" boolean to enum (or something)
   // so we can choose to leave unnormalized or normalize one of set of certain values
@@ -51,6 +52,21 @@ void runLocalStackPlots( )
     for ( size_t j = 0; j != pregion.size(); ++j ) {
       
       TString reg = pregion.at(j);
+
+      makeLocalStackPlots( "triggerEfficiency",         type, reg, "", "trigger efficiency",       hdir,
+			   "pdf", "nominal", false );
+      makeLocalStackPlots( "searchTriggerEfficiency",   type, reg, "", "search region efficiency", hdir,
+			   "pdf", "nominal", false );
+      if ( !type.Contains("data") )
+	makeLocalStackPlots( "signalTriggerEfficiency", type, reg, "", "signal efficiency",        hdir,
+			     "pdf", "nominal", false );
+      
+      makeLocalStackPlots( "NJetHt",                  type, reg, "Leading four-EMTopo-jet H_{T} [GeV]",   "", hdir );
+      makeLocalStackPlots( "NJetOthHt",               type, reg, "Leading four-PFlow-jet H_{T} [GeV]",    "", hdir );
+      makeLocalStackPlots( "byJetDV_n",               type, reg, "n DVs around EMTopo jets",              "", hdir );
+      makeLocalStackPlots( "byJetOthDV_n",            type, reg, "n DVs around PFlow jets",               "", hdir );
+      makeLocalStackPlots( "byLeadJetDV_n",           type, reg, "n DVs around four leading EMTopo jets", "", hdir );
+      makeLocalStackPlots( "byLeadJetOthDV_n",        type, reg, "n DVs around four leading PFlow jets",  "", hdir );
 
       // // event info
       // makeLocalStackPlots( "nPV",               type, reg, "n PV",              "", hdir );

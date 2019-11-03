@@ -42,7 +42,9 @@ void ttree_draw_test_mc() {
   //point.push_back( "E_600_0p5"  );
 
   // set path + file names --> make sure $EJ_PATH set to local repo dir: 'export EJ_PATH=$(pwd)'
-  TString path = "$EJ_PATH/../run/local.MC16d";
+  // TString path = "$EJ_PATH/../run/local.MC16d";
+  TString path = "$EJ_PATH/../output/localOutput/tree/latest/local.MC16d";
+  //TString path = "$EJ_PATH/../output/localOutput/tree/2fbd76f3/local.MC16d";
   TString fp1   = ".EJ_Model";
   TString fp2   = "/data-tree/";
   TString fn1   = "mc16_13TeV.";
@@ -51,18 +53,18 @@ void ttree_draw_test_mc() {
   std::vector<TString> fpath;
   std::vector<TString> fname;
   for ( size_t i = 0; i != dsid.size(); ++i ) {
-    fpath.push_back( path + "." + dsid.at(i) + fp1 + point.at(i) + fp2 ); // single runs
-    //fpath.push_back( path       + fp2                                  );
+    //fpath.push_back( path + "." + dsid.at(i) + fp1 + point.at(i) + fp2 ); // single runs
+    fpath.push_back( path       + fp2                                  );
     fname.push_back( fn1        + dsid.at(i) + fn2 + point.at(i) + fn3 );
   }
 
   // initialize canvas, file, and tree + loop over samples
-  TCanvas *c = 0;
+  // TCanvas *c = 0;
   TFile   *f = 0;
   TTree   *t = 0;
   for ( size_t i = 0; i != fname.size(); ++i ) {
-    // set canvas
-    //c = new TCanvas( "c"+dsid.at(i), "c"+dsid.at(i) );
+  //   // set canvas
+  //   //c = new TCanvas( "c"+dsid.at(i), "c"+dsid.at(i) );
     
     // open file
     f = TFile::Open( fpath.at(i) + fname.at(i), "READ" );
@@ -74,24 +76,15 @@ void ttree_draw_test_mc() {
 
     // get nominal tree
     t = (TTree*)gDirectory->Get("nominal");
-
-    std::vector<float>* darkJet_pt = 0;
-    t->SetBranchAddress( "darkJet_pt", &darkJet_pt );
-
-    for ( Long64_t j = 0; j != t->GetEntries(); ++j ) {
-      t->GetEntry(j);
-      // std::cout << "entry " << j << ": ";
-      // for ( size_t k = 0; k != darkJet_pt->size(); ++k )
-      // 	//if ( j == 5 || j == 50 )
-      // 	  std::cout << darkJet_pt->at(k) << " ";
-      // //if ( j == 5 || j == 50 )
-      // 	std::cout << std::endl;
-      std::cout << "entry " << j << ": " << darkJet_pt->size() << std::endl;
-    }
     
 
     // draw variables
-    //t->Draw("track_isSelected","track_passSel==0");
+    //t->Draw("secVtx_trk_d0_wrtSV");
+    //t->Draw("secVtx_trk_d0_wrtSV","secVtx_trk_isFiltered");
+    //t->Draw("fabs(secVtx_trk_d0)", "secVtx_trk_isClean && fabs(secVtx_trk_d0)>20");
+    //t->Draw("secVtx_trk_phi", "secVtx_trk_isAssociated" );
+    //t->Draw("fabs(secVtx_trk_d0)", "secVtx_trk_isAssociated");
+    t->Draw("jet_pt", "isValid_EMTopo");
 
     //t->Draw("truthPart_pt","truthPart_pt<10"); 
     //t->Draw("truthPart_pdgId","truthPart_barcode==5000");

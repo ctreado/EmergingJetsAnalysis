@@ -1,0 +1,3 @@
+../../../datasets/data/data16/DAOD/official/exot23/data16_13TeV.00301973.physics_Main.deriv.DAOD_EXOT23.r9264_r10573_p3578_p3664/
+../../../datasets/data/data16/DAOD/official/exot23/data16_13TeV.00303208.physics_Main.deriv.DAOD_EXOT23.r9264_r10573_p3578_p3664/
+../../../datasets/data/data16/DAOD/official/exot23/data16_13TeV.00309440.physics_Main.deriv.DAOD_EXOT23.r9264_r10573_p3578_p3664/

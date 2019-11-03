@@ -38,18 +38,21 @@ void ttree_draw_test_data() {
   tag.push_back( "r9264_r10573_p3578"       );
 
   // set path + file names --> make sure $EJ_PATH set to local repo dir: 'export EJ_PATH=$(pwd)'
-  TString path = "$EJ_PATH/../run/local.";
+  //TString path = "$EJ_PATH/../run/local.";
+  TString path = "$EJ_PATH/../output/localOutput/tree/2fbd76f3/local.";
   TString fp   = "/data-tree/";
   TString fn1  = "_13TeV.";
   TString fn2  = ".physics_Main.deriv.DAOD_EXOT23.";
   TString fn3  = "_p3664.root";
   std::vector<TString> fpath;
   std::vector<TString> fname;
-  for ( size_t i = 0; i != run.size(); ++i ) {
-    //fpath.push_back( path + year.at(i / (run.size()/year.size())) + "." + run.at(i) + fp ); // single runs
-    fpath.push_back( path + year.at(i / (run.size()/year.size())) + fp                                      );
-    fname.push_back(        year.at(i / (run.size()/year.size())) + fn1 + run.at(i) + fn2 + tag.at(i) + fn3 );
-  }
+  // for ( size_t i = 0; i != run.size(); ++i ) {
+  //   //fpath.push_back( path + year.at(i / (run.size()/year.size())) + "." + run.at(i) + fp ); // single runs
+  //   fpath.push_back( path + year.at(i / (run.size()/year.size())) + fp                                      );
+  //   fname.push_back(        year.at(i / (run.size()/year.size())) + fn1 + run.at(i) + fn2 + tag.at(i) + fn3 );
+  // }
+  fpath.push_back( path + "data16" + fp );
+  fname.push_back( "data16" + fn1 + "00303208" + fn2 + "r9264_r10573_p3578" + fn3 );
 
   // initialize canvas, file, and tree + loop over samples
   TCanvas *c = 0;
@@ -81,7 +84,10 @@ void ttree_draw_test_data() {
     //t->Draw("track_chi2","track_isSelected && track_chi2>10");
     //t->Draw("track_chi2","track_chi2>10");
     //t->Draw("track_chi2","track_isSelected && track_chi2>7");
-    t->Draw("track_chi2","track_chi2>7 && track_chi2<50");
+    //t->Draw("track_chi2","track_chi2>7 && track_chi2<50");
+    //t->Draw("fabs(secVtx_trk_d0)", "secVtx_trk_isAssociated && fabs(secVtx_trk_d0)>20");
+    t->Draw("fabs(track_d0)", "fabs(track_d0)>20");
+    //t->Draw("secVtx_trk_d0", "secVtx_trk_d0>100");
 
     //t->Draw("TMath::Prob(track_chiSquared,track_numberDoF)","track_isSelected");
   }
