@@ -8,7 +8,7 @@
 # Colleen Treado                               #
 ################################################
 
-import os, sys, glob, shutil
+import os, sys, glob, subprocess, time, shutil
 import argparse
 
 
@@ -24,19 +24,18 @@ parser.add_argument( "--inFiles", dest = "inFiles",
                          File lists passed here need to be enclosed in quotes (i.e. '--inFiles \"File1 File2\"')" )
 parser.add_argument( "--jo", dest = "jo", default = os.getenv('EJ_PATH') + "/EJsAnalysis/config/EJsConfig_mc16d.py",
                          help = "Job configuration file." )
-parser.add_argument( "--subDir", dest = "subDir", default = "local.MC16d", help = "Output submission directory." )
+parser.add_argument( "--subDir", dest = "subDir", default = "local.trees", help = "Output submission directory." )
 parser.add_argument( "--nevents", dest = "nevents", default = "-1", help = "Number of events to run over per file." )
 parser.add_argument( "--isMC", dest = "isMC", action = "store_true", default = False, help = "Running over MC sample(s)." )
 parser.add_argument( "--driver", dest = "driver", default = "direct", help = "Driver to use to run the code." )
-parser.add_argument( "--log", dest = "log", default = "log.MC16d.out", help = "Output log file." )
 parser.add_argument( "--txtInput", dest = "txtInput", action = "store_true", default = False,
                          help = "Run over list of files in input text file" )
 # arguments to move files to another output directory
 parser.add_argument( "--outDir", dest = "outDir", default = os.getenv('EJ_PATH') + "/../output/localOutput/",
                          help = "Output directory into which final trees are moved." )
 parser.add_argument( "--outTag", dest = "outTag", default = "latest",
-                         help = "Output directory tag to differentiate b/w ntuple versions (i.e. 'latest', 'trigger')" )
-parser.add_argument( "--doMove", dest = "doMove", action = "store_true", default = False,
+                         help = "Output directory tag to differentiate b/w ntuple versions (i.e. 'latest', 'trigger')." )
+parser.add_argument( "--move", dest = "move", action = "store_true", default = False,
                          help = "Move final trees into output directory." )
 parser.add_argument( "--moveTypes", dest = "moveTypes", default = "tree,cutflow,duplicates,metadata,hist-output",
                          help = "Comma separated list of types of datasets to move and save \
@@ -63,6 +62,8 @@ def main():
                     inFiles += " " + line
         else:
             inFiles += " " + file
+    # set log file name
+    log = "EJsMiniNtuple_{0}".format(args.subDir) + ".log"
 
     # submit xAH_run job
     command = "xAH_run.py"
@@ -73,24 +74,55 @@ def main():
     if args.isMC:
         command += " --isMC"
     command += " "             + args.driver
-    command += " | tee "       + args.log
     
     print(command)
-    os.system(command)
+    process_result = submit_local_job( command, log )
 
-    # move output trees
-    if args.doMove:
-      moveOutFiles()
+    # wait for job to finish and close log file
+    wait( process_result[0], process_result[1] )
+    process_result[1].close()
+
+    # move output trees and log
+    if args.move:
+      moveOutFiles( log )
 
 
-def moveOutFiles():
+def submit_local_job( exec_seq, logfile ):
+    log_out = open( logfile, 'w' )
+    proc = subprocess.Popen( exec_seq, shell = True, stderr = log_out, stdout = log_out )
+    time.sleep( 0.5 ) # wait to prevent opening / closing of several files
+    return proc, log_out
+
+
+def wait( pid, logfile ):
+    print "'Wait for completion of launched job'"
+    while True:
+        if pid.poll() is not None:
+            print "\nProcess", pid.pid, "has completed"
+            logfile.close()
+            return
+        print ".",
+        sys.stdout.flush()
+        time.sleep(3) # wait before retrying
+
+        
+def moveOutFiles( logfile ):
     outDir = os.path.join( args.outDir, args.outTag )
     datasetTypes = args.moveTypes.split(',')
     subdir = args.subDir
 
     # prepare general output directory
     if not os.path.exists( outDir ):
-      os.makedirs( outDir ) 
+      os.makedirs( outDir )
+
+    # create output log directory and move log file there
+    outLogDir = os.path.join( outDir, "logs/ntup_" + time.strftime("%Y%m%d") )
+    if not os.path.exists( outLogDir ):
+        os.makedirs( outLogDir )
+    out_logFile = os.path.join( outLogDir, logfile )
+    if not os.path.exists( out_logFile ) or args.forceMove:
+        print "Moving " + logfile + " to " + outLogDir
+        shutil.move( logfile, out_logFile )
 
     # prepare specific output directories for dataset types + grab datasets to move
     for type in datasetTypes:
@@ -109,6 +141,7 @@ def moveOutFiles():
         elif "hist" in type:
             subdir_type = os.path.join( subdir, "hist-" )
         # move datasets to output directories and delete submitDir
+        successfulMove = True
         files = glob.glob(subdir_type + "*")
         for file in files:
             file_split = file.split("/")
@@ -118,9 +151,11 @@ def moveOutFiles():
                 print "Moving " + file + " to " + out_directory
                 shutil.move( file, out_file )
             else:
-                print "Destination path " + out_file + "already exists. Either re-run with --forceMove, choose a different --outDir and/or --outTag, or rm -rf it yourself."
+                print "Destination path " + out_file + "already exists. Not moving or deleting. Either re-run with --forceMove, choose a different outDir and/or rm -rf it yourself."
+                successfulMove = False
                 return
-    if ( args.deleteSubDir ):
+    # delete initial submission directory (assuming files successfully moved)
+    if ( args.deleteSubDir and successfulMove ):
         print "Deleting " + subdir
         shutil.rmtree( subdir )
 
