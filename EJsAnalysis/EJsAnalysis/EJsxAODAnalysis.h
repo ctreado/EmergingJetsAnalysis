@@ -6,7 +6,11 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
+#include <sstream>
 
+#include <TSystem.h>
+#include <TFile.h>
 #include <TH1.h>
 
 #include <xAODEventInfo/EventInfo.h>
@@ -52,6 +56,9 @@ class EJsxAODAnalysis : public xAH::Algorithm
   std::string m_signalTrigList;
   std::string m_validTrigList;
   std::string m_ctrlTrigList;
+
+  // input metadata text file
+  std::string m_metadataFileName = "";
 
   // event selections
   unsigned m_nSignalJets  = 4;
@@ -106,6 +113,17 @@ class EJsxAODAnalysis : public xAH::Algorithm
 
   Long64_t m_numTotalEvents; //!
 
+  double m_mcEventWeight;   //!
+  int    m_mcChannelNumber; //!
+  double m_xsec       = 1.; //!
+  double m_kfactor    = 1.; //!
+  double m_filteff    = 1.; //!
+
+  std::vector<std::string> m_passedTriggers; //!
+
+  bool m_isNominalCase; //!
+  bool m_isFirstJetContainer; //!
+
 
   // event cutflow
   TH1D* m_cutflowHist        = 0; //!
@@ -131,16 +149,11 @@ class EJsxAODAnalysis : public xAH::Algorithm
   int   m_valid_cutflow_jeteta;   //!
   int   m_valid_cutflow_njetmax;  //!
 
-  // metadata cutflow / clone
-  TH1D* m_meta_cutflowHist   = 0; //!
-  TH1D* m_meta_cloneHist     = 0; //!
-
-  double m_mcEventWeight; //!
-
-  std::vector<std::string> m_passedTriggers; //!
-
-  bool m_isNominalCase; //!
-  bool m_isFirstJetContainer; //!
+  // metadata weights
+  TH1D* m_meta_weightHist = 0; //!
+  int m_meta_weight_xsec;      //!
+  int m_meta_weight_kfactor;   //!
+  int m_meta_weight_filteff;   //!
 
   
  public:

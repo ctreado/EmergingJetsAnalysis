@@ -158,7 +158,7 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
   if ( m_useCutFlow ) {
     
     // retrieve file in which cutflow hists are stored
-    TFile *file = wk()->getOutputFile( "cutflow" );
+    TFile* file = wk()->getOutputFile( "cutflow" );
     
     // retrieve event cutflows
     m_cutflowHist  = (TH1D*)file->Get( "cutflow"          );
@@ -194,13 +194,49 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
     m_valid_cutflow_njetmin = m_valid_cutflowHist->GetXaxis()->FindBin( ("nJetsMin_" + m_cutflowJets).c_str() );
     m_valid_cutflow_jetpt   = m_valid_cutflowHist->GetXaxis()->FindBin( ("jetPt_"    + m_cutflowJets).c_str() );
     m_valid_cutflow_jeteta  = m_valid_cutflowHist->GetXaxis()->FindBin( ("jetEta_"   + m_cutflowJets).c_str() );
-    m_valid_cutflow_njetmax = m_valid_cutflowHist->GetXaxis()->FindBin( ("nJetsMax_" + m_cutflowJets).c_str() );
-    
+    m_valid_cutflow_njetmax = m_valid_cutflowHist->GetXaxis()->FindBin( ("nJetsMax_" + m_cutflowJets).c_str() );  
   }
 
-  if ( m_outputAlgo.empty() ) {
-    m_outputAlgo = m_inputAlgo + "_EJsxAODAna";
+  
+  // get metadata from input text file for corresponding mc channel number
+  if ( xAH::Algorithm::isMC() ) {
+    
+    const xAOD::EventInfo* eventInfo = 0;
+    ANA_CHECK( HelperFunctions::retrieve( eventInfo, "EventInfo", m_event, m_store, msg() ) );
+    m_mcChannelNumber         = eventInfo ->mcChannelNumber();
+    
+    const char* metadataPath = gSystem->ExpandPathName( m_metadataFileName.c_str() );
+    std::ifstream m_metadataFile( metadataPath );
+    delete [] metadataPath;
+    
+    std::string line;
+    double word;
+    std::vector<double> metadata;
+    if ( m_metadataFile.is_open() ) {
+      while ( std::getline( m_metadataFile, line ) ) {
+	std::istringstream iss( line );
+	int i = 0;
+	while ( iss >> word ) {
+	  if ( i == 0 && word != m_mcChannelNumber ) continue;
+	  metadata.push_back( word );
+	  ++i;
+	}
+      }
+    }
+    // metadata = { dataset_number, crossSection [nb], kFactor, genFiltEff }
+    m_xsec    = metadata.at(1);
+    m_kfactor = metadata.at(2);
+    m_filteff = metadata.at(3);  
   }
+  std::cout << "SAMPLE METADATA: " << m_xsec << " " << m_kfactor << " " << m_filteff << std::endl;
+  // initialize metadata histogram
+  m_meta_weightHist     = new TH1D( "MetaData_Weights", "MetaData_Weights", 1, 1, 2 );
+  m_meta_weightHist     ->SetCanExtend( TH1::kAllAxes );
+  m_meta_weight_xsec    = m_meta_weightHist->GetXaxis()->FindBin( "cross-section"  );
+  m_meta_weight_kfactor = m_meta_weightHist->GetXaxis()->FindBin( "k-factor"       );
+  m_meta_weight_filteff = m_meta_weightHist->GetXaxis()->FindBin( "gen-filter eff" );
+  
+  
 
   // initialize counters
   m_eventNumber         = 0;
@@ -218,6 +254,10 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
 
   m_isNominalCase       = true;
   m_isFirstJetContainer = false;
+
+  if ( m_outputAlgo.empty() ) {
+    m_outputAlgo = m_inputAlgo + "_EJsxAODAna";
+  }
 
   return EL::StatusCode::SUCCESS;
 }
@@ -345,8 +385,8 @@ EL::StatusCode EJsxAODAnalysis :: finalize ()
     m_cutflowHist  ->LabelsDeflate("X");
     m_cutflowHistW ->LabelsDeflate("X");
 
-    // write new ejs cutflows to output file
-    TFile *file = wk()->getOutputFile( "cutflow" );
+    // write new ejs cutflows to output cutflow file
+    TFile* file = wk()->getOutputFile( "cutflow" );
     file->cd();
     m_numTotalEvents     = m_cutflowHist ->GetBinContent( 1 );
     m_signal_cutflowHist ->SetBinContent( m_signal_cutflow_all, m_numTotalEvents );
@@ -355,20 +395,31 @@ EL::StatusCode EJsxAODAnalysis :: finalize ()
     m_valid_cutflowHist  ->LabelsDeflate("X");
     m_signal_cutflowHist ->Write();
     m_valid_cutflowHist  ->Write();
+    
+    // save event cutflows to output tree file
+    TFile* treeFile        = wk() ->getOutputFile( "tree" );
+    treeFile->cd();
+    m_cutflowHist        ->Write();
+    m_signal_cutflowHist ->Write();
+    m_valid_cutflowHist  ->Write();
 
-    // get metadata histogram
-    TFile *metaFile    = wk()  ->getOutputFile( "metadata"            );
-    m_meta_cutflowHist = (TH1D*) metaFile->Get( "MetaData_EventCount" );
-    m_meta_cutflowHist ->LabelsDeflate("X");
-    m_meta_cutflowHist ->Write();
-    // save metadata histogram to data-tree
-    TFile *treeFile    = wk() ->getOutputFile( "tree" );
-    m_meta_cloneHist   = (TH1D*) m_meta_cutflowHist->Clone();
-    m_meta_cloneHist   ->SetDirectory( treeFile );
+    // get metadata cutflow histogram and save to output tree file
+    TFile* metaFile        = wk()  ->getOutputFile( "metadata"            );
+    TH1D* meta_cutflowHist = (TH1D*) metaFile->Get( "MetaData_EventCount" );
+    meta_cutflowHist       ->LabelsDeflate("X");
+    meta_cutflowHist       ->Write();
+
+    // write new metadata weight histogram to output tree file
+    m_meta_weightHist ->SetBinContent( m_meta_weight_xsec,    m_xsec    );
+    m_meta_weightHist ->SetBinContent( m_meta_weight_kfactor, m_kfactor );
+    m_meta_weightHist ->SetBinContent( m_meta_weight_filteff, m_filteff );
+    m_meta_weightHist ->LabelsDeflate("X");
+    m_meta_weightHist ->Write();
   }
 
   delete m_signal_cutflowHist;
   delete m_valid_cutflowHist;
+  delete m_meta_weightHist;
 
   return EL::StatusCode::SUCCESS;
 }
