@@ -62,8 +62,8 @@ class EJsMiniNtuple : public xAH::Algorithm
   unsigned m_jetSystsContainerIndex = 0;
 
   // jet types to include
-  bool m_jetEMTopo = false;
-  bool m_jetPFlow  = true;
+  bool m_jetEMTopo = true;
+  bool m_jetPFlow  = false;
 
   bool m_truthLevelOnly = false;
 

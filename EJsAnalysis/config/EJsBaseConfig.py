@@ -140,7 +140,7 @@ Dict_JetCalibrator_PFlow = {
 Dict_JetSelector_EMTopo = {
     "m_name"                    : "JetSelect_AntiKt4EMTopo",
     "m_msgLevel"                : "info",
-    "m_useCutFlow"              : False,    # --> can only use one jet-selector cutflow -- using PFlow for now...
+    "m_useCutFlow"              : True,
     "m_inContainerName"         : "AntiKt4EMTopoJets_Calib",
     "m_outContainerName"        : "AntiKt4EMTopoJets_Calib_Select",
     "m_inputAlgo"               : "AntiKt4EMTopoJets_Calib_Algo",
@@ -168,7 +168,7 @@ Dict_JetSelector_EMTopo = {
 Dict_JetSelector_PFlow = {
     "m_name"                    : "JetSelect_AntiKt4EMPlow",
     "m_msgLevel"                : "info",
-    "m_useCutFlow"              : True,
+    "m_useCutFlow"              : False, # --> can only use one jet-selector cutflow -- using EMTopo
     "m_inContainerName"         : "AntiKt4EMPFlowJets_Calib",
     "m_outContainerName"        : "AntiKt4EMPFlowJets_Calib_Select",
     "m_inputAlgo"               : "AntiKt4EMPFlowJets_Calib_Algo",
@@ -241,7 +241,7 @@ Dict_ObjectMatcher = {
     "m_inTrackPartContainerName"       : "InDetTrackParticles_Select",
     "m_inTruthVertexContainerName"     : "TruthVertices_Select",
     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
-    "m_inputAlgo"                      : "AntiKt4EMPFlowJets_Calib_Select_Algo", # --> PFlow = rec R21 jet container
+    "m_inputAlgo"                      : "AntiKt4EMTopoJets_Calib_Select_Algo",
     "m_jetSystsContainerIndex"         : 1,
     "m_jet_matchRadius"                : 0.3,
     "m_jet_vtx_matchRadius"            : 0.6,
@@ -269,10 +269,10 @@ Dict_EJsxAODAnalysis = {
     "m_msgLevel"               : "info",
     "m_inJetContainerName"     : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
     "m_inJetBinName"           : "EMTopo PFlow",
-    "m_inputAlgo"              : "AntiKt4EMPFlowJets_Calib_Select_Algo",            # --> PFlow = rec R21 jet container
-    "m_outputAlgo"             : "AntiKt4EMPFlowJets_Calib_Select_EJsxAODAna_Algo", # --> PFlow = rec R21 jet container
+    "m_inputAlgo"              : "AntiKt4EMTopoJets_Calib_Select_Algo",
+    "m_outputAlgo"             : "AntiKt4EMTopoJets_Calib_Select_EJsxAODAna_Algo",
     "m_jetSystsContainerIndex" : 1,
-    "m_cutflowJets"            : "PFlow", # --> only fill cutflows for one jet container
+    "m_cutflowJets"            : "EMTopo", # --> only fill cutflows for one jet container
     "m_signalTrigList"         : fourJetTriggers,
     "m_validTrigList"          : singleJetTriggers,
     "m_metadataFileName"       : metadataPath + "mc16.metadata.txt"
@@ -288,7 +288,7 @@ Dict_EJsMiniNtuple = {
     "m_jetDetailStr"                 : "kinematic rapidity clean energy trackAll trackPV allTrack constituent area truth charge ghost match", # add "allTrackDetail", "detail" to regain full ntuple contents
     "m_jetContainerName"             : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
     "m_jetBranchName"                : "jet pflowJet",
-    "m_jetSystsVec"                  : "AntiKt4EMPFlowJets_Calib_Select_EJsxAODAna_Algo", # --> PFlow = rec R21 jet container
+    "m_jetSystsVec"                  : "AntiKt4EMTopoJets_Calib_Select_EJsxAODAna_Algo",
     "m_jetSystsContainerIndex"       : 1,
     "m_truthJetDetailStr"            : "kinematic rapidity energyLight constituent constituentAll area truthJets truthVerts truthParts", # add "detail" to regain full ntuple contents
     "m_truthJetContainerName"        : "AntiKt4TruthJets AntiKt4TruthDarkJets",
