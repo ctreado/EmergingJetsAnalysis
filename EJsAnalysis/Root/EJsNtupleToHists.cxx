@@ -51,12 +51,43 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   // get input file name
   TFile* inFile = wk()->inputFile();
   std::string inFileName = inFile->GetName();
-
+  
   // get total number of initial events
-  TH1F* metadata_cutflow = (TH1F*) inFile->Get( "MetaData_EventCount" );
-  //m_nTotalEvents = metadata_cutflow->GetBinContent(3); // sumOfWeights (numberOfEvents = bin-1)
-  m_nTotalEvents = 6000; // SWAP W/ ABOVE AFTER RE-RUNNING SAMPLES W/ METADATA SAVED TO DATA-TREE
-  ANA_MSG_INFO( "Found initial number of events: " << m_nTotalEvents );
+  if ( inFile->GetListOfKeys()->Contains( "MetaData_EventCount" ) ) {
+    TH1F* metadata_cutflow = (TH1F*) inFile->Get( "MetaData_EventCount" );
+    m_nEvents_init = metadata_cutflow->GetBinContent(1);
+    m_nEvents_sel  = metadata_cutflow->GetBinContent(2);
+    m_sumw_init    = metadata_cutflow->GetBinContent(3); // initial number of weighted events
+    m_sumw_sel     = metadata_cutflow->GetBinContent(4);
+    m_sumw2_init   = metadata_cutflow->GetBinContent(5);
+    m_sumw2_sel    = metadata_cutflow->GetBinContent(6);
+    ANA_MSG_INFO( "Found initial number of events: " << m_sumw_init );
+  }
+  else
+    ANA_MSG_INFO( "No MetaData_EventCount information available." );
+  
+  // get weights
+  if ( inFile->GetListOfKeys()->Contains( "MetaData_Weights" ) ) {
+    TH1F* metadata_weights = (TH1F*) inFile->Get( "MetaData_Weights" );
+    m_crossSection = metadata_weights->GetBinContent(1);
+    m_kFactor      = metadata_weights->GetBinContent(2);
+    m_genFilterEff = metadata_weights->GetBinContent(3);
+    ANA_MSG_INFO( "Found cross-section, k-factor, generator filter efficiency: " << m_crossSection << " " <<
+		  m_kFactor << " " << m_genFilterEff );
+  }
+  else
+    ANA_MSG_INFO( "No MetaData_Weights information available." );
+
+  // set metadata map
+  m_metadata[ "eventCount_init" ] = m_nEvents_init;
+  m_metadata[ "eventCount_sel"  ] = m_nEvents_sel;
+  m_metadata[ "sumw_init"       ] = m_sumw_init;
+  m_metadata[ "sumw_sel"        ] = m_sumw_sel;
+  m_metadata[ "sumw2_init"      ] = m_sumw2_init;
+  m_metadata[ "sumw2_sel"       ] = m_sumw2_sel;
+  m_metadata[ "crossSection"    ] = m_crossSection;
+  m_metadata[ "kFactor"         ] = m_kFactor;
+  m_metadata[ "genFilterEff"    ] = m_genFilterEff;
   
   // set m_isMC
   m_isMC = false;
@@ -89,8 +120,8 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
     m_jetStr = "EMTopo";
   
   // declare histogram manager class + add histograms to ouput
-  m_plots = new EJsHistogramManager ( m_name, m_detailStr, m_jetStr, m_nTotalEvents, m_debug, m_isMC, m_unblind );
-  ANA_CHECK( m_plots ->initialize( outFileName, m_regionNames, m_jetHistoName ) );
+  m_plots = new EJsHistogramManager ( m_name, m_detailStr, m_jetStr, m_metadata, m_lumi, m_debug, m_isMC, m_unblind );
+  ANA_CHECK( m_plots ->initialize( outFileName, m_regions, m_jetHistoName ) );
   m_plots->record( wk() );
 
   return EL::StatusCode::SUCCESS;
@@ -211,7 +242,7 @@ EL::StatusCode EJsNtupleToHists :: finalize ()
   // in initialize() before they're written to disk; only gets
   // called on worker nodes that processed input events
 
-  ANA_CHECK( m_plots ->finalize() );
+  ANA_CHECK( m_plots ->finalize( m_regions ) );
 
   return EL::StatusCode::SUCCESS;
 }

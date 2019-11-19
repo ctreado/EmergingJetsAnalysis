@@ -23,7 +23,8 @@ class EJsHistogramManager : public HistogramManager
 {
  public:
   EJsHistogramManager ( const std::string& name, const std::string& detailStr, const std::string& jetStr,
-			float nevents, bool debug = false, bool mc = false, bool unblind = false );
+			const std::map<std::string, float>& metadata, float lumi = 139.,
+			bool debug = false, bool mc = false, bool unblind = false );
   virtual ~EJsHistogramManager ();
 
   StatusCode connectEvents         ( TTree* tree );
@@ -38,10 +39,10 @@ class EJsHistogramManager : public HistogramManager
   StatusCode connectTruthParts     ( TTree* tree, const std::string& truthPartName = "truthPart" );
   StatusCode connectTruthVerts     ( TTree* tree, const std::string& truthVtxName  = "truthVtx"  );
 
-  StatusCode initialize ( const std::string& outFileName,  const std::vector<std::string>& regions,
+  StatusCode initialize ( const std::string& outFileName,  const std::vector<EJsHelper::Region>& regions,
 			  const std::string& jetHistName );
   StatusCode execute    ( TTree* tree, Long64_t treeEntry, const std::vector<EJsHelper::Region>& regions );
-  StatusCode finalize   ( );
+  StatusCode finalize   ( const std::vector<EJsHelper::Region>& regions );
 
   using HistogramManager::book;       // overload
   using HistogramManager::initialize; // overload
@@ -56,57 +57,46 @@ class EJsHistogramManager : public HistogramManager
  private:
   std::string m_jetStr;
   std::string m_jetStrOth;
-  float       m_nEvents;
+  float       m_nEvents_init;
+  float       m_nEvents_sel;
+  float       m_sumw_init;
+  float       m_sumw_sel;
+  float       m_sumw2_init;
+  float       m_sumw2_sel;
+  float       m_xsec;
+  float       m_kfactor;
+  float       m_filteff;
+  float       m_lumi;
   bool        m_debug;
   bool        m_mc;
   bool        m_unblind; // un-blind analysis -- default = False to blind signal events in data
   int         m_numLeadJets;
 
-  float weight     = 1.0;
+  float weight = 1.0;
+  float lumi   = 139.; // [fb-1]  
 
   // counters
-  std::vector<int> m_nEntries;
-  std::vector<int> m_nFourJets;
-  std::vector<int> m_nFourJets_other;
-  std::vector<int> m_nSearch;
-  std::vector<int> m_nSearch_other;
-  std::vector<int> m_nSignal;
-  std::vector<int> m_nSignal_other;
-  std::vector<int> m_nTrig_4j120;
-  std::vector<int> m_nOffTrig_4j120;
-  std::vector<int> m_nOffTrig_4j120_other;
-  std::vector<int> m_nOffTrigJVT_4j120;
-  std::vector<int> m_nOffTrigJVT_4j120_other;
-  std::vector<int> m_nTrig_fourJet;
-  std::vector<int> m_nOffTrig_fourJet;
-  std::vector<int> m_nOthOffTrig_fourJet;
-  std::vector<int> m_nOffTrigJVT_fourJet;
-  std::vector<int> m_nOthOffTrigJVT_fourJet;
-  std::vector<int> m_nTrig_fourJetOth;
-  std::vector<int> m_nOffTrig_fourJetOth;
-  std::vector<int> m_nOthOffTrig_fourJetOth;
-  std::vector<int> m_nOffTrigJVT_fourJetOth;
-  std::vector<int> m_nOthOffTrigJVT_fourJetOth;
-  std::vector<int> m_nTrig_search;
-  std::vector<int> m_nOffTrig_search;
-  std::vector<int> m_nOthOffTrig_search;
-  std::vector<int> m_nOffTrigJVT_search;
-  std::vector<int> m_nOthOffTrigJVT_search;
-  std::vector<int> m_nTrig_searchOth;
-  std::vector<int> m_nOffTrig_searchOth;
-  std::vector<int> m_nOthOffTrig_searchOth;
-  std::vector<int> m_nOffTrigJVT_searchOth;
-  std::vector<int> m_nOthOffTrigJVT_searchOth;
-  std::vector<int> m_nTrig_signal;
-  std::vector<int> m_nOffTrig_signal;
-  std::vector<int> m_nOthOffTrig_signal;
-  std::vector<int> m_nOffTrigJVT_signal;
-  std::vector<int> m_nOthOffTrigJVT_signal;
-  std::vector<int> m_nTrig_signalOth;
-  std::vector<int> m_nOffTrig_signalOth;
-  std::vector<int> m_nOthOffTrig_signalOth;
-  std::vector<int> m_nOffTrigJVT_signalOth;
-  std::vector<int> m_nOthOffTrigJVT_signalOth;
+  std::vector<int>   m_nEntries;
+  std::vector<float> m_nWeightedEntries;
+  std::vector<int>   m_nFourJets;
+  std::vector<int>   m_nFourJets_other;
+  std::vector<int>   m_nSearch;
+  std::vector<int>   m_nSearch_other;
+  std::vector<int>   m_nTrig_4j120;
+  std::vector<int>   m_nOffTrig_4j120;
+  std::vector<int>   m_nOffTrig_4j120_other;
+  std::vector<int>   m_nOffTrigJVT_4j120;
+  std::vector<int>   m_nOffTrigJVT_4j120_other;
+  std::vector<int>   m_nTrig_fourJet;
+  std::vector<int>   m_nOffTrig_fourJet;
+  std::vector<int>   m_nOthOffTrig_fourJet;
+  std::vector<int>   m_nOffTrigJVT_fourJet;
+  std::vector<int>   m_nOthOffTrigJVT_fourJet;
+  std::vector<int>   m_nTrig_search;
+  std::vector<int>   m_nOffTrig_search;
+  std::vector<int>   m_nOthOffTrig_search;
+  std::vector<int>   m_nOffTrigJVT_search;
+  std::vector<int>   m_nOthOffTrigJVT_search;
 
   // analysis selections
   int    m_nJets      = 4;
@@ -124,7 +114,6 @@ class EJsHistogramManager : public HistogramManager
 
 
   // --- BRANCHES --- //
-
   // EVENT BRANCHES
   // event info: basics
   int      m_runNumber;           //!
@@ -148,21 +137,21 @@ class EJsHistogramManager : public HistogramManager
   int      m_randRunNr;           //!
   int      m_randLumiBlockNr;     //!
   // event info: region / analysis selections
-  uint8_t  m_signal;              //!
+  uint8_t  m_search;              //!
   uint8_t  m_valid;               //!
   float    m_njetHt;              //!
-  uint8_t  m_signal_njet;         //!
-  uint8_t  m_signal_jetPt;        //!
-  uint8_t  m_signal_jetEta;       //!
-  uint8_t  m_signal_njetHt;       //!
+  uint8_t  m_search_njet;         //!
+  uint8_t  m_search_jetPt;        //!
+  uint8_t  m_search_jetEta;       //!
+  uint8_t  m_search_njetHt;       //!
   // event info: region / analysis selections for other jet type
-  uint8_t  m_signal_other;        //!
+  uint8_t  m_search_other;        //!
   uint8_t  m_valid_other;         //!
   float    m_njetHt_other;        //!
-  uint8_t  m_signal_njet_other;   //!
-  uint8_t  m_signal_jetPt_other;  //!
-  uint8_t  m_signal_jetEta_other; //!
-  uint8_t  m_signal_njetHt_other; //!
+  uint8_t  m_search_njet_other;   //!
+  uint8_t  m_search_jetPt_other;  //!
+  uint8_t  m_search_jetEta_other; //!
+  uint8_t  m_search_njetHt_other; //!
   // PV info
   float    m_pv_x;                //!
   float    m_pv_y;                //!
@@ -227,6 +216,11 @@ class EJsHistogramManager : public HistogramManager
 
   // --- HISTOGRAMS --- //
 
+  // METADATA HISTOS
+  std::vector<TH1F*> h_MetaData_EventCount; //!
+  std::vector<TH1F*> h_MetaData_Weights;    //!
+  // --> not region-dependent, but save one for each region for ease of access downstream...
+
   // EVENT HISTOS
   // pileup
   std::vector<TH1F*> h_npv;                //!
@@ -246,6 +240,14 @@ class EJsHistogramManager : public HistogramManager
   // leading N-jet Ht
   std::vector<TH1F*> h_njetHt;    //!
   std::vector<TH1F*> h_njetOthHt; //!
+
+  // 2D EVENT HISTOS -- ABCD PLANE TESTS
+  std::vector<TH2F*> h_abcd_nDV_njetHt;              //!
+  std::vector<TH2F*> h_abcd_nJetDV_njetHt;           //!
+  std::vector<TH2F*> h_abcd_nLeadJetDV_njetHt;       //!
+  std::vector<TH2F*> h_abcd_nDV_njetOthHt;           //!
+  std::vector<TH2F*> h_abcd_nJetOthDV_njetOthHt;     //!
+  std::vector<TH2F*> h_abcd_nLeadJetOthDV_njetOthHt; //!
 
   // JET HISTOS
   // basics
@@ -306,6 +308,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_byLeadJetDV_n;    //!
   std::vector<TH1F*> h_byLeadJetOthDV_n; //!
 
+  
   // TRIGGER STUDY HISTOS
   std::vector<TH1F*> h_nthJetPt;                     //!
   std::vector<TH1F*> h_nthJetPt_trig;                //!
@@ -313,31 +316,15 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_nthJetPt_othOffTrig;          //!
   std::vector<TH1F*> h_nthJetPt_offTrigJVT;          //!
   std::vector<TH1F*> h_nthJetPt_othOffTrigJVT;       //!
-  std::vector<TH1F*> h_nthJetOthPt;                  //!
-  std::vector<TH1F*> h_nthJetOthPt_trig;             //!
-  std::vector<TH1F*> h_nthJetOthPt_offTrig;          //!
-  std::vector<TH1F*> h_nthJetOthPt_othOffTrig;       //!
-  std::vector<TH1F*> h_nthJetOthPt_offTrigJVT;       //!
-  std::vector<TH1F*> h_nthJetOthPt_othOffTrigJVT;    //!
   std::vector<TH1F*> h_trigEff_nthJetPt;             //!
   std::vector<TH1F*> h_offTrigEff_nthJetPt;          //!
   std::vector<TH1F*> h_othOffTrigEff_nthJetPt;       //!
   std::vector<TH1F*> h_offTrigJVTEff_nthJetPt;       //!
   std::vector<TH1F*> h_othOffTrigJVTEff_nthJetPt;    //!
-  std::vector<TH1F*> h_trigEff_nthJetOthPt;          //!
-  std::vector<TH1F*> h_offTrigEff_nthJetOthPt;       //!
-  std::vector<TH1F*> h_othOffTrigEff_nthJetOthPt;    //!
-  std::vector<TH1F*> h_offTrigJVTEff_nthJetOthPt;    //!
-  std::vector<TH1F*> h_othOffTrigJVTEff_nthJetOthPt; //!
   std::vector<TH1F*> h_triggerEfficiency;            //!
   std::vector<TH1F*> h_triggerEfficiency_fourJet;    //!
   std::vector<TH1F*> h_triggerEfficiency_search;     //!
-  std::vector<TH1F*> h_triggerEfficiency_signal;     //!
   std::vector<TH1F*> h_searchTriggerEfficiency;      //!
-  std::vector<TH1F*> h_signalTriggerEfficiency;      //!
-
-
-  
   
 };
 

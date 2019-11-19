@@ -6,13 +6,23 @@
 
 
 EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std::string& detailStr, const std::string& jetStr,
-					     float nevents, bool debug, bool mc, bool unblind )
+					     const std::map<std::string, float>& metadata, float lumi,
+					     bool debug, bool mc, bool unblind )
   : HistogramManager ( name, detailStr )
 {
   m_histoInfoSwitch = new EJsHelperClasses::HistogramInfoSwitch( detailStr );
   m_jetStr          = jetStr;
   m_jetStrOth       = ( jetStr == "EMTopo" ) ? "PFlow" : "EMTopo";
-  m_nEvents         = nevents;
+  m_nEvents_init    = metadata.find( "eventCount_init" )->second;
+  m_nEvents_sel     = metadata.find( "eventCount_sel"  )->second;
+  m_sumw_init       = metadata.find( "sumw_init"       )->second;
+  m_sumw_sel        = metadata.find( "sumw_sel"        )->second;
+  m_sumw2_init      = metadata.find( "sumw2_init"      )->second;
+  m_sumw2_sel       = metadata.find( "sumw2_sel"       )->second;
+  m_xsec            = metadata.find( "crossSection"    )->second;
+  m_kfactor         = metadata.find( "kFactor"         )->second;
+  m_filteff         = metadata.find( "genFilterEff"    )->second;
+  m_lumi            = lumi;
   m_debug           = debug;
   m_mc              = mc;
   m_unblind         = unblind;
@@ -38,20 +48,20 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_corrScaleAverageMu  = 0;
   m_randRunNr           = 0;
   m_randLumiBlockNr     = 0;
-  m_signal              = 0;
+  m_search              = 0;
   m_valid               = 0;
   m_njetHt              = 0;
-  m_signal_njet         = 0;
-  m_signal_jetPt        = 0;
-  m_signal_jetEta       = 0;
-  m_signal_njetHt       = 0;
-  m_signal_other        = 0;
+  m_search_njet         = 0;
+  m_search_jetPt        = 0;
+  m_search_jetEta       = 0;
+  m_search_njetHt       = 0;
+  m_search_other        = 0;
   m_valid_other         = 0;
   m_njetHt_other        = 0;
-  m_signal_njet_other   = 0;
-  m_signal_jetPt_other  = 0;
-  m_signal_jetEta_other = 0;
-  m_signal_njetHt_other = 0;
+  m_search_njet_other   = 0;
+  m_search_jetPt_other  = 0;
+  m_search_jetEta_other = 0;
+  m_search_njetHt_other = 0;
   m_pv_x                = 0;
   m_pv_y                = 0;
   m_pv_z                = 0;
@@ -173,7 +183,6 @@ StatusCode EJsHistogramManager :: connectEvents ( TTree* tree )
   if ( m_mc )
     connectBranch<float>  ( tree, "mcEventWeight", &m_mcEventWeight );
   connectBranch<float>    ( tree, "weight_pileup", &m_weight_pileup );
-  // --> add remaining weight branches here...
 
   // pileup
   connectBranch<int>      ( tree, "NPV",                            &m_npv                );
@@ -188,22 +197,22 @@ StatusCode EJsHistogramManager :: connectEvents ( TTree* tree )
     connectBranch<int>    ( tree, "rand_lumiblock_nr",              &m_randLumiBlockNr    );
   }
 
-  // signal / validation region selections
-  connectBranch<uint8_t>  ( tree, "isSignal_"           + m_jetStr,    &m_signal              );
+  // search / validation region selections
+  connectBranch<uint8_t>  ( tree, "isSignal_"           + m_jetStr,    &m_search              );
   connectBranch<uint8_t>  ( tree, "isValid_"            + m_jetStr,    &m_valid               );
   connectBranch<float>    ( tree, "NJetHt_"             + m_jetStr,    &m_njetHt              );
-  connectBranch<uint8_t>  ( tree, "passesSignalNJet_"   + m_jetStr,    &m_signal_njet         );
-  connectBranch<uint8_t>  ( tree, "passesSignalJetPt_"  + m_jetStr,    &m_signal_jetPt        );
-  connectBranch<uint8_t>  ( tree, "passesSignalJetEta_" + m_jetStr,    &m_signal_jetEta       );
-  connectBranch<uint8_t>  ( tree, "passesSignalNJetHt_" + m_jetStr,    &m_signal_njetHt       );
+  connectBranch<uint8_t>  ( tree, "passesSignalNJet_"   + m_jetStr,    &m_search_njet         );
+  connectBranch<uint8_t>  ( tree, "passesSignalJetPt_"  + m_jetStr,    &m_search_jetPt        );
+  connectBranch<uint8_t>  ( tree, "passesSignalJetEta_" + m_jetStr,    &m_search_jetEta       );
+  connectBranch<uint8_t>  ( tree, "passesSignalNJetHt_" + m_jetStr,    &m_search_njetHt       );
   // signal validation region selections using other jet type
-  connectBranch<uint8_t>  ( tree, "isSignal_"           + m_jetStrOth, &m_signal_other        );
+  connectBranch<uint8_t>  ( tree, "isSignal_"           + m_jetStrOth, &m_search_other        );
   connectBranch<uint8_t>  ( tree, "isValid_"            + m_jetStrOth, &m_valid_other         );
   connectBranch<float>    ( tree, "NJetHt_"             + m_jetStrOth, &m_njetHt_other        );
-  connectBranch<uint8_t>  ( tree, "passesSignalNJet_"   + m_jetStrOth, &m_signal_njet_other   );
-  connectBranch<uint8_t>  ( tree, "passesSignalJetPt_"  + m_jetStrOth, &m_signal_jetPt_other  );
-  connectBranch<uint8_t>  ( tree, "passesSignalJetEta_" + m_jetStrOth, &m_signal_jetEta_other );
-  connectBranch<uint8_t>  ( tree, "passesSignalNJetHt_" + m_jetStrOth, &m_signal_njetHt_other );
+  connectBranch<uint8_t>  ( tree, "passesSignalNJet_"   + m_jetStrOth, &m_search_njet_other   );
+  connectBranch<uint8_t>  ( tree, "passesSignalJetPt_"  + m_jetStrOth, &m_search_jetPt_other  );
+  connectBranch<uint8_t>  ( tree, "passesSignalJetEta_" + m_jetStrOth, &m_search_jetEta_other );
+  connectBranch<uint8_t>  ( tree, "passesSignalNJetHt_" + m_jetStrOth, &m_search_njetHt_other );
 
   // PV info
   connectBranch<float>    ( tree, "PV_x",        &m_pv_x        );
@@ -378,7 +387,7 @@ StatusCode EJsHistogramManager :: connectTruthVerts ( TTree* tree, const std::st
 
 
 
-StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, const std::vector<std::string>& regions,
+StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, const std::vector<EJsHelper::Region>& regions,
 					       const std::string& jetHistName )
 {
   if ( m_debug ) Info( "EJsHistogramManager::initialize()", "booking histograms" );
@@ -390,19 +399,16 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   std::string htjet      = "truthJet";
   std::string hdjet      = "darkJet";
 
-  int ireg = 0;
-
   // loop over regions + book histograms
-  for ( const auto& region : regions ) {
-    const std::string name = m_name + outFileName + "/" + region + "/";
+  for ( size_t ireg = 0; ireg != regions.size(); ++ireg ) {
+    const EJsHelper::Region region = regions.at(ireg);
+    const std::string       name   = m_name + outFileName + "/" + region.name + "/";
 
     // initialize count vectors
     m_nEntries                    .push_back( 0 );
     if ( m_histoInfoSwitch->m_trigTest ) {
       m_nFourJets                 .push_back( 0 );
-      m_nFourJets_other           .push_back( 0 );
       m_nSearch                   .push_back( 0 );
-      m_nSearch_other             .push_back( 0 );
       m_nTrig_4j120               .push_back( 0 );
       m_nOffTrig_4j120            .push_back( 0 );
       m_nOffTrig_4j120_other      .push_back( 0 );
@@ -413,35 +419,31 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       m_nOthOffTrig_fourJet       .push_back( 0 );
       m_nOffTrigJVT_fourJet       .push_back( 0 );
       m_nOthOffTrigJVT_fourJet    .push_back( 0 );
-      m_nTrig_fourJetOth          .push_back( 0 );
-      m_nOffTrig_fourJetOth       .push_back( 0 );
-      m_nOthOffTrig_fourJetOth    .push_back( 0 );
-      m_nOffTrigJVT_fourJetOth    .push_back( 0 );
-      m_nOthOffTrigJVT_fourJetOth .push_back( 0 );
       m_nTrig_search              .push_back( 0 );
       m_nOffTrig_search           .push_back( 0 );
       m_nOthOffTrig_search        .push_back( 0 );
       m_nOffTrigJVT_search        .push_back( 0 );
       m_nOthOffTrigJVT_search     .push_back( 0 );
-      m_nTrig_searchOth           .push_back( 0 );
-      m_nOffTrig_searchOth        .push_back( 0 );
-      m_nOthOffTrig_searchOth     .push_back( 0 );
-      m_nOffTrigJVT_searchOth     .push_back( 0 );
-      m_nOthOffTrigJVT_searchOth  .push_back( 0 );
-      m_nSignal                   .push_back( 0 );
-      m_nSignal_other             .push_back( 0 );
-      m_nTrig_signal              .push_back( 0 );
-      m_nOffTrig_signal           .push_back( 0 );
-      m_nOthOffTrig_signal        .push_back( 0 );
-      m_nOffTrigJVT_signal        .push_back( 0 );
-      m_nOthOffTrigJVT_signal     .push_back( 0 );
-      m_nTrig_signalOth           .push_back( 0 );
-      m_nOffTrig_signalOth        .push_back( 0 );
-      m_nOthOffTrig_signalOth     .push_back( 0 );
-      m_nOffTrigJVT_signalOth     .push_back( 0 );
-      m_nOthOffTrigJVT_signalOth  .push_back( 0 );
     }
 
+    // set bins
+    float njetht_xmin = 0;
+    if      ( region.type == EJsHelper::SEARCH     ) njetht_xmin = 950;
+    else if ( region.type == EJsHelper::VALIDATION ) njetht_xmin = 200;
+
+    // --- METADATA --- //
+    h_MetaData_EventCount .push_back( book( name, "MetaData_EventCount", "", 6, 1, 7 ) );
+    h_MetaData_EventCount .at(ireg) ->GetXaxis()->SetBinLabel( 1, "nEvents initial"              );
+    h_MetaData_EventCount .at(ireg) ->GetXaxis()->SetBinLabel( 2, "nEvents selected"             );
+    h_MetaData_EventCount .at(ireg) ->GetXaxis()->SetBinLabel( 3, "sumOfWeights initial"         );
+    h_MetaData_EventCount .at(ireg) ->GetXaxis()->SetBinLabel( 4, "sumOfWeights selected"        );
+    h_MetaData_EventCount .at(ireg) ->GetXaxis()->SetBinLabel( 5, "sumOfWeightsSquared initial"  );
+    h_MetaData_EventCount .at(ireg) ->GetXaxis()->SetBinLabel( 6, "sumOfWeightsSquared selected" );
+    h_MetaData_Weights    .push_back( book( name, "MetaData_Weights", "", 4, 1, 5 ) );
+    h_MetaData_Weights    .at(ireg) ->GetXaxis()->SetBinLabel( 1, "cross-section [fb]" );
+    h_MetaData_Weights    .at(ireg) ->GetXaxis()->SetBinLabel( 2, "k-factor"           );
+    h_MetaData_Weights    .at(ireg) ->GetXaxis()->SetBinLabel( 3, "gen-filter eff"     );
+    h_MetaData_Weights    .at(ireg) ->GetXaxis()->SetBinLabel( 4, "lumi scale [ifb]"   ); // --> luminosity to scale to 
     
     // --- EVENT INFO --- //
     // event info: pileup
@@ -469,8 +471,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       h_pv_ntrk .push_back( book( name, "pv_nTrk", "n PV tracks",   100,    0, 250 ) );
     }
     // event info: leading N-jet Ht
-    h_njetHt    .push_back( book( name, "NJetHt",    "Leading N-" + m_jetStr    + "-jet scalar sum-p_{T} [GeV]", 100, 0, 5000 ) );
-    h_njetOthHt .push_back( book( name, "NJetOthHt", "Leading N-" + m_jetStrOth + "-jet scalar sum-p_{T} [GeV]", 100, 0, 5000 ) );
+    h_njetHt    .push_back( book( name, "NJetHt",    "Leading N-" + m_jetStr    + "-jet scalar sum-p_{T} [GeV]", 100, njetht_xmin, 3500 ) );
+    h_njetOthHt .push_back( book( name, "NJetOthHt", "Leading N-" + m_jetStrOth + "-jet scalar sum-p_{T} [GeV]", 100, njetht_xmin, 3500 ) );
 
     
     // --- RECO JETS --- //
@@ -565,14 +567,26 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     h_trk_n .push_back( book( name, "trk_n", "n tracks", 100, 0, 10000 ) );
 
 
-    // --- SECONDARY VERTICES //
+    // --- SECONDARY VERTICES -- //
     // vertices: basics / kinematics
     h_DV_n .push_back( book( name, "DV_n", "n secondary vertices", 15, 0, 15 ) );
     // vertices nearby to (lead) jets
-    h_byJetDV_n        .push_back( book( name, "byJetDV_n",        "n DVs by "        + m_jetStr    + " jets", 15, 0, 15 ) );
-    h_byJetOthDV_n     .push_back( book( name, "byJetOthDV_n",     "n DVs by "        + m_jetStrOth + " jets", 15, 0, 15 ) );
-    h_byLeadJetDV_n    .push_back( book( name, "byLeadJetDV_n",    "n DVs by N-lead " + m_jetStr    + " jets", 15, 0, 15 ) );
-    h_byLeadJetOthDV_n .push_back( book( name, "byLeadJetOthDV_n", "n DVs by N-lead " + m_jetStrOth + " jets", 15, 0, 15 ) );
+    h_byJetDV_n        .push_back( book( name, "byJetDV_n",        "n DVs by "        + m_jetStr    + " jets", 12, 0, 12 ) );
+    h_byLeadJetDV_n    .push_back( book( name, "byLeadJetDV_n",    "n DVs by N-lead " + m_jetStr    + " jets", 10, 0, 10 ) );
+
+
+    // --- ABCD HISTOS --- //
+    if ( m_histoInfoSwitch->m_abcd ) {
+      h_abcd_nDV_njetHt
+	.push_back( book( name, "ABCD_nDV_NJetHt", "Leading N " + m_jetStr + " jet H_{T} [GeV]", 100, njetht_xmin, 3000,
+			  "n DVs", 16, -1, 15 ) );
+       h_abcd_nJetDV_njetHt
+	.push_back( book( name, "ABCD_nByJetDV_NJetHt", "Leading N " + m_jetStr + " jet H_{T} [GeV]", 100, njetht_xmin, 3000,
+			  "n DVs by " + m_jetStr + " jets", 13, -1, 12 ) );
+       h_abcd_nLeadJetDV_njetHt
+	.push_back( book( name, "ABCD_nByLeadJetDV_NJetHt", "Leading N " + m_jetStr + " jet H_{T} [GeV]", 100, njetht_xmin, 3000,
+			  "n DVs by leading N " + m_jetStr + " jets", 11, -1, 10 ) );
+    }
 
 
     // --- TRIGGER STUDIES --- //
@@ -601,30 +615,6 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       h_nthJetPt_othOffTrigJVT
 	.push_back( book( name, "nthJetPt_othOffTrigJVT",
 			  "nth leading " + hjetStr    + " p_{T} [GeV] (offline JVT " + hjetStrOth + " trigger event)",
-			  100, 50, 500 ) );
-      h_nthJetOthPt
-	.push_back( book( name, "nthJetOthPt",
-			  "nth leading " + hjetStrOth + " p_{T} [GeV] (n-" + m_jetStrOth + "-jet event)",
-			  100, 50, 500 ) );
-      h_nthJetOthPt_trig
-	.push_back( book( name, "nthJetOthPt_trig",
-			  "nth leading " + hjetStrOth + " p_{T} [GeV] (HLT trigger event)",
-			  100, 50, 500 ) );
-      h_nthJetOthPt_offTrig
-	.push_back( book( name, "nthJetOthPt_offTrig",
-			  "nth leading " + hjetStrOth + " p_{T} [GeV] (offline "     + hjetStr    + " trigger event)",
-			  100, 50, 500 ) );
-      h_nthJetOthPt_othOffTrig
-	.push_back( book( name, "nthJetOthPt_othOffTrig",
-			  "nth leading " + hjetStrOth + " p_{T} [GeV] (offline "     + hjetStrOth + " trigger event)",
-			  100, 50, 500 ) );
-      h_nthJetOthPt_offTrigJVT
-	.push_back( book( name, "nthJetOthPt_offTrigJVT",
-			  "nth leading " + hjetStrOth + " p_{T} [GeV] (offline JVT " + hjetStr    + " trigger event)",
-			  100, 50, 500 ) );
-      h_nthJetOthPt_othOffTrigJVT
-	.push_back( book( name, "nthJetOthPt_othOffTrigJVT",
-			  "nth leading " + hjetStrOth + " p_{T} [GeV] (offline JVT " + hjetStrOth + " trigger event)",
 			  100, 50, 500 ) );
       
       // trigger efficiency: nthJetPt_trig / nthJetPt
@@ -657,80 +647,28 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 			  "nth leading " + hjetStr + " p_{T} [GeV]",    100, 50, 500 ) );
       h_othOffTrigJVTEff_nthJetPt
 	.at(ireg)->GetYaxis()->SetTitle( ( "offline " + hjetStrOth + " JVT trigger efficiency" ).c_str() );
-      // trigger efficiency: nthJetOthPt_trig / nthJetOthPt
-      h_trigEff_nthJetOthPt
-	.push_back( book( name, "trigEff_nthJetOthPt",
-			  "nth leading " + hjetStrOth + " p_{T} [GeV]", 100, 50, 500 ) );
-      h_trigEff_nthJetOthPt
-	.at(ireg)->GetYaxis()->SetTitle( "HLT trigger efficiency" );
-      // trigger efficiency: nthJetOthPt_offTrig / nthJetOthPt
-      h_offTrigEff_nthJetOthPt
-      	.push_back( book( name, "offTrigEff_nthJetOthPt",
-      			  "nth leading " + hjetStrOth + " p_{T} [GeV]", 100, 50, 500 ) );
-      h_offTrigEff_nthJetOthPt
-	.at(ireg)->GetYaxis()->SetTitle( ( "offline " + hjetStr    + " trigger efficiency" ).c_str() );
-      // trigger efficiency: nthJetOthPt_othOffTrig / nthJetOthPt
-      h_othOffTrigEff_nthJetOthPt
-      	.push_back( book( name, "othOffTrigEff_nthJetOthPt",
-      			  "nth leading " + hjetStrOth + " p_{T} [GeV]", 100, 50, 500 ) );
-      h_othOffTrigEff_nthJetOthPt
-	.at(ireg)->GetYaxis()->SetTitle( ( "offline " + hjetStrOth + " trigger efficiency" ).c_str() );
-      // trigger efficiency: nthJetOthPt_offTrigJVT / nthJetOthPt
-      h_offTrigJVTEff_nthJetOthPt
-	.push_back( book( name, "offTrigJVTEff_nthJetOthPt",
-			  "nth leading " + hjetStrOth + " p_{T} [GeV]", 100, 50, 500 ) );
-      h_offTrigJVTEff_nthJetOthPt
-	.at(ireg)->GetYaxis()->SetTitle( ( "offline " + hjetStr    + " JVT trigger efficiency" ).c_str() );
-      // trigger efficiency: nthJetOthPt_othOffTrigJVT / nthJetOthPt
-      h_othOffTrigJVTEff_nthJetOthPt
-	.push_back( book( name, "othOffTrigJVTEff_nthJetOthPt",
-			  "nth leading " + hjetStrOth + " p_{T} [GeV]", 100, 50, 500 ) );
-      h_othOffTrigJVTEff_nthJetOthPt
-	.at(ireg)->GetYaxis()->SetTitle( ( "offline " + hjetStrOth + " JVT trigger efficiency" ).c_str() );
       
       // overall trigger efficiency comparison
       std::vector<std::string> trigEffLabels = { "HLT_4j120",
 						 "offline EM 4j120",       "offline PF 4j120",
 						 "offline EM 4j120 + JVT", "offline PF 4j120 + JVT" };
-      std::vector<std::string> trigEffLabels_2j;
-      
       int nTEL = trigEffLabels.size();
-      h_triggerEfficiency   .push_back( book( name, "triggerEfficiency", "", nTEL, 1, nTEL+1 ) );
+      h_triggerEfficiency           .push_back( book( name, "triggerEfficiency",         "", nTEL, 1, nTEL+1 ) );
+      h_triggerEfficiency_fourJet   .push_back( book( name, "triggerEfficiency_fourJet", "", nTEL, 1, nTEL+1 ) );
+      h_triggerEfficiency_search    .push_back( book( name, "triggerEfficiency_search",  "", nTEL, 1, nTEL+1 ) );
+      h_searchTriggerEfficiency     .push_back( book( name, "searchTriggerEfficiency",   "", nTEL, 1, nTEL+1 ) );
       for ( int i = 0; i != nTEL; ++i ) {
-	h_triggerEfficiency .at(ireg)->GetXaxis()->SetBinLabel( i+1, (trigEffLabels.at(i)).c_str() );
-	trigEffLabels_2j    .push_back( trigEffLabels.at(i) + " [EM SR]" );
+	h_triggerEfficiency         .at(ireg)->GetXaxis()->SetBinLabel( i+1, (trigEffLabels.at(i)).c_str() );
+	h_triggerEfficiency_fourJet .at(ireg)->GetXaxis()->SetBinLabel( i+1, (trigEffLabels.at(i)).c_str() );
+       	h_triggerEfficiency_search  .at(ireg)->GetXaxis()->SetBinLabel( i+1, (trigEffLabels.at(i)).c_str() );
+       	h_searchTriggerEfficiency   .at(ireg)->GetXaxis()->SetBinLabel( i+1, (trigEffLabels.at(i)).c_str() );
       }
-      for ( int j = 0; j != nTEL; ++j )
-	trigEffLabels_2j    .push_back( trigEffLabels.at(j) + " [PF SR]" );
-      int nTEL2 = trigEffLabels_2j.size();
-      h_triggerEfficiency_fourJet    .push_back( book( name, "triggerEfficiency_fourJet", "", nTEL2, 1, nTEL2+1 ) );
-      h_triggerEfficiency_search     .push_back( book( name, "triggerEfficiency_search",  "", nTEL2, 1, nTEL2+1 ) );
-      h_searchTriggerEfficiency      .push_back( book( name, "searchTriggerEfficiency",   "", nTEL2, 1, nTEL2+1 ) );
-      if ( m_mc || m_unblind ) {
-	h_triggerEfficiency_signal   .push_back( book( name, "triggerEfficiency_signal",  "", nTEL2, 1, nTEL2+1 ) );
-	h_signalTriggerEfficiency    .push_back( book( name, "signalTriggerEfficiency",   "", nTEL2, 1, nTEL2+1 ) );
-      }
-      for ( int k = 0; k != nTEL2; ++k ) {
-      	h_triggerEfficiency_fourJet  .at(ireg)->GetXaxis()->SetBinLabel( k+1, (trigEffLabels_2j.at(k)).c_str() );
-       	h_triggerEfficiency_search   .at(ireg)->GetXaxis()->SetBinLabel( k+1, (trigEffLabels_2j.at(k)).c_str() );
-       	h_searchTriggerEfficiency    .at(ireg)->GetXaxis()->SetBinLabel( k+1, (trigEffLabels_2j.at(k)).c_str() );
-	if ( m_mc || m_unblind ) {
-	  h_triggerEfficiency_signal .at(ireg)->GetXaxis()->SetBinLabel( k+1, (trigEffLabels_2j.at(k)).c_str() );
-	  h_signalTriggerEfficiency  .at(ireg)->GetXaxis()->SetBinLabel( k+1, (trigEffLabels_2j.at(k)).c_str() );
-	}
-      }
-      h_triggerEfficiency          .at(ireg)->GetYaxis()->SetTitle( "overall trigger efficiency"          );
-      h_triggerEfficiency_fourJet  .at(ireg)->GetYaxis()->SetTitle( "four-jet trigger efficiency"         );
-      h_triggerEfficiency_search   .at(ireg)->GetYaxis()->SetTitle( "search-region trigger efficiency"    );
-      h_searchTriggerEfficiency    .at(ireg)->GetYaxis()->SetTitle( "search-region efficiency vs trigger" );
-      if ( m_mc || m_unblind ) {
-	h_triggerEfficiency_signal .at(ireg)->GetYaxis()->SetTitle( "signal-region trigger efficiency"    );
-	h_signalTriggerEfficiency  .at(ireg)->GetYaxis()->SetTitle( "signal efficiency vs trigger"        );
-      }
+      h_triggerEfficiency           .at(ireg)->GetYaxis()->SetTitle( "overall trigger efficiency"          );
+      h_triggerEfficiency_fourJet   .at(ireg)->GetYaxis()->SetTitle( "four-jet trigger efficiency"         );
+      h_triggerEfficiency_search    .at(ireg)->GetYaxis()->SetTitle( "search-region trigger efficiency"    );
+      h_searchTriggerEfficiency     .at(ireg)->GetYaxis()->SetTitle( "search-region efficiency vs trigger" );
       
     } // end trigger study
-    
-    ++ireg;
   
   } // end loop over regions
 
@@ -745,18 +683,54 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 
   tree->GetEntry( treeEntry );
 
-  // set weight here -- implementation may vary based on mc sample type, channel/run number, etc.
-  // --> basic implementation for now, but will want to modify eventually
-  if ( m_mc ) weight = m_mcEventWeight; // eventually want to include weights fors pileup, cross-section, k-factor, etc.
+  // set weights
+  if ( m_mc ) weight = m_mcEventWeight * m_filteff * m_xsec * 1e6 * lumi / m_sumw_init; // --> include pileup? k-factor? branching ratio?
+  // --> sum of weights only includes mcEventWeight; rest is just scaling factor we can apply at once to histograms as a whole
 
+  // check for abcd region event
+  bool m_abcd_a = false;
+  bool m_abcd_b = false;
+  bool m_abcd_c = false;
+  bool m_abcd_d = false;
+  int m_nDV_nearJets     = 0; // for testing purposes...
+  int m_nDV_nearLeadJets = 0; // --> this is what we really want (for now)
+  for ( int i = 0; i != m_secVtx_n; ++i ) {
+    // n DVs near jets
+    if ( m_secVtx_jetMatched    ->at(i) )
+      ++m_nDV_nearJets;
+    // n DVs near lead jets
+    if ( m_secVtx_jetMatched    ->at(i) && m_secVtx_jetMatch_index    ->at(i) < m_nJets )
+      ++m_nDV_nearLeadJets;
+  }
+  if      ( ( m_njetHt >= m_ABCD_njetHt ) && ( m_nDV_nearLeadJets >= m_ABCD_nDV ) ) m_abcd_a = true;
+  else if ( ( m_njetHt >= m_ABCD_njetHt ) && ( m_nDV_nearLeadJets <  m_ABCD_nDV ) ) m_abcd_b = true;
+  else if ( ( m_njetHt <  m_ABCD_njetHt ) && ( m_nDV_nearLeadJets >= m_ABCD_nDV ) ) m_abcd_c = true;
+  else if ( ( m_njetHt <  m_ABCD_njetHt ) && ( m_nDV_nearLeadJets <  m_ABCD_nDV ) ) m_abcd_d = true;
+
+  // check for signal region event
+  bool m_signal = false;
+  if ( m_search && m_abcd_a ) m_signal = true;
+    
   // loop over regions + fill histograms
   for ( size_t ireg = 0; ireg != regions.size(); ++ireg ) {
     const EJsHelper::Region region = regions.at(ireg);
 
-    // these regions will probably evolve; may need to require events to pass additional selections...
-    if      ( region.type == EJsHelper::SIGNAL     ) { if ( !m_signal ) continue; }
+    // skip events outside specified region
+    if      ( region.type == EJsHelper::SEARCH     ) { if ( !m_search ) continue; }
     else if ( region.type == EJsHelper::VALIDATION ) { if ( !m_valid  ) continue; }
+    else if ( region.type == EJsHelper::SIGNAL     ) { if ( !m_signal || ( !m_mc && !m_unblind ) ) continue; }
+    // --> skip signal events in data until we unblind
 
+    // --- ABCD PLANE TESTS --- //
+    if ( m_histoInfoSwitch->m_abcd ) {
+      h_abcd_nDV_njetHt              .at(ireg) ->Fill( m_njetHt,       m_secVtx_n,               weight );
+      h_abcd_nJetDV_njetHt           .at(ireg) ->Fill( m_njetHt,       m_nDV_nearJets,           weight );
+      h_abcd_nLeadJetDV_njetHt       .at(ireg) ->Fill( m_njetHt,       m_nDV_nearLeadJets,       weight );
+    }
+
+    if ( region.type == EJsHelper::SEARCH ) { if ( !m_mc && !m_unblind ) continue; }
+    // --> skip remaining search events in data for now --> ...
+    // ... maybe okay to look at search_minus_signal region, but not until signal region wholly finalized
 
     // ------------------ //
     // --- EVENT INFO --- //
@@ -870,33 +844,9 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // -------------------------- //
     // --- SECONDARY VERTICES --- //
     // -------------------------- //
-    h_DV_n .at(ireg) ->Fill( m_secVtx_n );
-
-    int nDV_nearJets           = 0;
-    int nDV_nearJets_other     = 0;
-    int nDV_nearLeadJets       = 0;
-    int nDV_nearLeadJets_other = 0;
-    
-    // loop over secondary vertices
-    for ( int i = 0; i != m_secVtx_n; ++i ) {
-    
-      // secondary vertices w/in radius of (lead) jets
-      if ( m_secVtx_jetMatched ->at(i)    ) {
-	++nDV_nearJets;
-	if ( m_secVtx_jetMatch_index ->at(i) < m_nJets )
-	  ++nDV_nearLeadJets;
-      }
-      if ( m_secVtx_jetOthMatched ->at(i) ) {
-	++nDV_nearJets_other;
-	if ( m_secVtx_jetMatch_index ->at(i) < m_nJets )
-	  ++nDV_nearLeadJets_other;
-      }
-    } // end loop over secondary vertices
-    
-    h_byJetDV_n        .at(ireg) ->Fill( nDV_nearJets,           weight );
-    h_byJetOthDV_n     .at(ireg) ->Fill( nDV_nearJets_other,     weight );
-    h_byLeadJetDV_n    .at(ireg) ->Fill( nDV_nearLeadJets,       weight );
-    h_byLeadJetOthDV_n .at(ireg) ->Fill( nDV_nearLeadJets_other, weight );
+    h_DV_n             .at(ireg) ->Fill( m_secVtx_n,               weight );
+    h_byJetDV_n        .at(ireg) ->Fill( m_nDV_nearJets,           weight );
+    h_byLeadJetDV_n    .at(ireg) ->Fill( m_nDV_nearLeadJets,       weight );
 
 
 
@@ -911,22 +861,18 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	++m_nFourJets .at(ireg);
       }
       bool fourJetOthEvent = false;
-      if ( m_jetOth_n >= m_nJets ) {
+      if ( m_jetOth_n >= m_nJets )
 	fourJetOthEvent     = true;
-	++m_nFourJets_other .at(ireg);
-      }
 
       // count number of search-region events (excluding trigger requirement)
       bool searchRegionEvent    = false;
-      if ( m_signal_njet       && m_signal_jetPt       && m_signal_jetEta       && m_signal_njetHt       ) {
+      if ( m_search_njet       && m_search_jetPt       && m_search_jetEta       && m_search_njetHt       ) {
       	searchRegionEvent = true;
       	++m_nSearch       .at(ireg);
       }
       bool otherSearchRegionEvent = false;
-      if ( m_signal_njet_other && m_signal_jetPt_other && m_signal_jetEta_other && m_signal_njetHt_other ) {
+      if ( m_search_njet_other && m_search_jetPt_other && m_search_jetEta_other && m_search_njetHt_other )
       	otherSearchRegionEvent = true;
-      	++m_nSearch_other      .at(ireg);
-      }
 
       // count number of events passing trigger
       bool passTrig_4j120 = false;
@@ -1005,30 +951,6 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
       	  ++m_nOthOffTrigJVT_fourJet .at(ireg);
       	}
       }
-      if ( fourJetOthEvent ) {
-      	double nth_jetOth_pt = m_jetOth_pt ->at(m_nJets-1);
-      	h_nthJetOthPt                   .at(ireg) ->Fill( nth_jetOth_pt, weight );
-      	if ( passTrig_4j120             ) {
-      	  h_nthJetOthPt_trig            .at(ireg) ->Fill( nth_jetOth_pt, weight );
-      	  ++m_nTrig_fourJetOth          .at(ireg);
-      	}
-      	if ( passOffTrig_4j120          ) {
-      	  h_nthJetOthPt_offTrig         .at(ireg) ->Fill( nth_jetOth_pt, weight );
-      	  ++m_nOffTrig_fourJetOth       .at(ireg);
-      	}
-      	if ( passOffTrig_4j120_other    ) {
-      	  h_nthJetOthPt_othOffTrig      .at(ireg) ->Fill( nth_jetOth_pt, weight );
-      	  ++m_nOthOffTrig_fourJetOth    .at(ireg);
-      	}
-      	if ( passOffTrigJVT_4j120       ) {
-      	  h_nthJetOthPt_offTrigJVT      .at(ireg) ->Fill( nth_jetOth_pt, weight );
-      	  ++m_nOffTrigJVT_fourJetOth    .at(ireg);
-      	}
-      	if ( passOffTrigJVT_4j120_other ) {
-      	  h_nthJetOthPt_othOffTrigJVT   .at(ireg) ->Fill( nth_jetOth_pt, weight );
-      	  ++m_nOthOffTrigJVT_fourJetOth .at(ireg);
-      	}
-      }
 
       // count number of search-region events passing trigger
       if ( searchRegionEvent ) {
@@ -1037,44 +959,6 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
       	if ( passOffTrig_4j120_other      ) ++m_nOthOffTrig_search       .at(ireg);
       	if ( passOffTrigJVT_4j120         ) ++m_nOffTrigJVT_search       .at(ireg);
       	if ( passOffTrigJVT_4j120_other   ) ++m_nOthOffTrigJVT_search    .at(ireg);
-      }
-      if ( otherSearchRegionEvent ) {
-      	if ( passTrig_4j120               ) ++m_nTrig_searchOth          .at(ireg);
-      	if ( passOffTrig_4j120            ) ++m_nOffTrig_searchOth       .at(ireg);
-      	if ( passOffTrig_4j120_other      ) ++m_nOthOffTrig_searchOth    .at(ireg);
-      	if ( passOffTrigJVT_4j120         ) ++m_nOffTrigJVT_searchOth    .at(ireg);
-      	if ( passOffTrigJVT_4j120_other   ) ++m_nOthOffTrigJVT_searchOth .at(ireg);
-      }
-
-      // count number of signal-region events (excluding trigger requirement) [MC ONLY (for now)]
-      if ( m_mc || m_unblind ) {
-	bool signalRegionEvent      = false;
-	if ( searchRegionEvent      &&
-	     ( m_njetHt       >= m_ABCD_njetHt ) && ( nDV_nearLeadJets       >= m_ABCD_nDV ) ) {
-	  signalRegionEvent      = true;
-	  ++m_nSignal            .at(ireg);
-	}
-	bool otherSignalRegionEvent = false;
-	if ( otherSearchRegionEvent &&
-	     ( m_njetHt_other >= m_ABCD_njetHt ) && ( nDV_nearLeadJets_other >= m_ABCD_nDV ) ) {
-	  otherSignalRegionEvent = true;
-	  ++m_nSignal_other      .at(ireg);
-	}
-	// count number of signal-region events passing trigger [MC ONLY (for now)]
-	if ( signalRegionEvent ) {
-	  if ( passTrig_4j120             ) ++m_nTrig_signal             .at(ireg);
-	  if ( passOffTrig_4j120          ) ++m_nOffTrig_signal          .at(ireg);
-	  if ( passOffTrig_4j120_other    ) ++m_nOthOffTrig_signal       .at(ireg);
-	  if ( passOffTrigJVT_4j120       ) ++m_nOffTrigJVT_signal       .at(ireg);
-	  if ( passOffTrigJVT_4j120_other ) ++m_nOthOffTrigJVT_signal    .at(ireg);
-	}
-	if ( otherSignalRegionEvent ) {
-	  if ( passTrig_4j120             ) ++m_nTrig_signalOth          .at(ireg);
-	  if ( passOffTrig_4j120          ) ++m_nOffTrig_signalOth       .at(ireg);
-	  if ( passOffTrig_4j120_other    ) ++m_nOthOffTrig_signalOth    .at(ireg);
-	  if ( passOffTrigJVT_4j120       ) ++m_nOffTrigJVT_signalOth    .at(ireg);
-	  if ( passOffTrigJVT_4j120_other ) ++m_nOthOffTrigJVT_signalOth .at(ireg);
-	}
       }
       
     } // end trigger test
@@ -1123,9 +1007,22 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 
 
 
-StatusCode EJsHistogramManager :: finalize ( )
+StatusCode EJsHistogramManager :: finalize ( const std::vector<EJsHelper::Region>& regions )
 {
-  for ( int ireg = 0; ireg != h_trigEff_nthJetPt.size(); ++ireg ) {
+  
+  for ( int ireg = 0; ireg != regions.size(); ++ireg ) {
+
+    // fill metadata histograms
+    h_MetaData_EventCount .at(ireg) ->Fill( 1, m_nEvents_init );
+    h_MetaData_EventCount .at(ireg) ->Fill( 2, m_nEvents_sel  );
+    h_MetaData_EventCount .at(ireg) ->Fill( 3, m_sumw_init    );
+    h_MetaData_EventCount .at(ireg) ->Fill( 4, m_sumw_sel     );
+    h_MetaData_EventCount .at(ireg) ->Fill( 5, m_sumw2_init   );
+    h_MetaData_EventCount .at(ireg) ->Fill( 6, m_sumw2_sel    );
+    h_MetaData_Weights    .at(ireg) ->Fill( 1, m_xsec * 1e6   ); // [fb]
+    h_MetaData_Weights    .at(ireg) ->Fill( 2, m_kfactor      );
+    h_MetaData_Weights    .at(ireg) ->Fill( 3, m_filteff      );
+    h_MetaData_Weights    .at(ireg) ->Fill( 4, m_lumi         ); // [ifb]
     
     if ( m_histoInfoSwitch->m_trigTest ) {
       // trigger efficiency as function of nth leading jet pt
@@ -1134,11 +1031,6 @@ StatusCode EJsHistogramManager :: finalize ( )
       h_othOffTrigEff_nthJetPt       .at(ireg) ->Divide( h_nthJetPt_othOffTrig       .at(ireg), h_nthJetPt    .at(ireg) );
       h_offTrigJVTEff_nthJetPt       .at(ireg) ->Divide( h_nthJetPt_offTrigJVT       .at(ireg), h_nthJetPt    .at(ireg) );
       h_othOffTrigJVTEff_nthJetPt    .at(ireg) ->Divide( h_nthJetPt_othOffTrigJVT    .at(ireg), h_nthJetPt    .at(ireg) );
-      h_trigEff_nthJetOthPt          .at(ireg) ->Divide( h_nthJetOthPt_trig          .at(ireg), h_nthJetOthPt .at(ireg) );
-      h_offTrigEff_nthJetOthPt       .at(ireg) ->Divide( h_nthJetOthPt_offTrig       .at(ireg), h_nthJetOthPt .at(ireg) );
-      h_othOffTrigEff_nthJetOthPt    .at(ireg) ->Divide( h_nthJetOthPt_othOffTrig    .at(ireg), h_nthJetOthPt .at(ireg) );
-      h_offTrigJVTEff_nthJetOthPt    .at(ireg) ->Divide( h_nthJetOthPt_offTrigJVT    .at(ireg), h_nthJetOthPt .at(ireg) );
-      h_othOffTrigJVTEff_nthJetOthPt .at(ireg) ->Divide( h_nthJetOthPt_othOffTrigJVT .at(ireg), h_nthJetOthPt .at(ireg) );
       
       // overall trigger efficiency (kA / nA = n trig events / n initial events)
       // --> nA = initial number of events in sample A
@@ -1152,73 +1044,21 @@ StatusCode EJsHistogramManager :: finalize ( )
       std::vector<int> nFourJetTrigEvents
       	= { m_nTrig_fourJet          .at(ireg), // four-jet region
 	    m_nOffTrig_fourJet       .at(ireg), m_nOthOffTrig_fourJet       .at(ireg),
-	    m_nOffTrigJVT_fourJet    .at(ireg), m_nOthOffTrigJVT_fourJet    .at(ireg),
-	    m_nTrig_fourJetOth       .at(ireg), // four-other-jet region
-	    m_nOffTrig_fourJetOth    .at(ireg), m_nOthOffTrig_fourJetOth    .at(ireg),
-	    m_nOffTrigJVT_fourJetOth .at(ireg), m_nOthOffTrigJVT_fourJetOth .at(ireg) };
+	    m_nOffTrigJVT_fourJet    .at(ireg), m_nOthOffTrigJVT_fourJet    .at(ireg) };
       std::vector<int> nSearchTrigEvents
       	= { m_nTrig_search           .at(ireg), // jet search region
 	    m_nOffTrig_search        .at(ireg), m_nOthOffTrig_search       .at(ireg),
-	    m_nOffTrigJVT_search     .at(ireg), m_nOthOffTrigJVT_search    .at(ireg),
-	    m_nTrig_searchOth        .at(ireg), // other jet search region
-	    m_nOffTrig_searchOth     .at(ireg), m_nOthOffTrig_searchOth    .at(ireg),
-	    m_nOffTrigJVT_searchOth  .at(ireg), m_nOthOffTrigJVT_searchOth .at(ireg) };
-      std::vector<int> nSignalTrigEvents
-      	= { m_nTrig_signal           .at(ireg), // jet signal region
-      	    m_nOffTrig_signal        .at(ireg), m_nOthOffTrig_signal       .at(ireg),
-      	    m_nOffTrigJVT_signal     .at(ireg), m_nOthOffTrigJVT_signal    .at(ireg),
-      	    m_nTrig_signalOth        .at(ireg), // other jet signal region
-      	    m_nOffTrig_signalOth     .at(ireg), m_nOthOffTrig_signalOth    .at(ireg),
-      	    m_nOffTrigJVT_signalOth  .at(ireg), m_nOthOffTrigJVT_signalOth .at(ireg) };
+	    m_nOffTrigJVT_search     .at(ireg), m_nOthOffTrigJVT_search    .at(ireg) };
       for ( size_t i = 0; i != nTrigEvents.size(); ++i ) {
 	int j = nTrigEvents.size() + i;
       	h_triggerEfficiency          .at(ireg) // trigger efficiency for all events
       	  ->Fill( i+1,   nTrigEvents        .at(i) / float( m_nEntries        .at(ireg) ) );
 	h_triggerEfficiency_fourJet  .at(ireg) // trigger efficiency for four-jet events
       	  ->Fill( i+1,   nFourJetTrigEvents .at(i) / float( m_nFourJets       .at(ireg) ) );
-      	h_triggerEfficiency_fourJet  .at(ireg)
-      	  ->Fill( j+1,   nFourJetTrigEvents .at(j) / float( m_nFourJets_other .at(ireg) ) );
       	h_triggerEfficiency_search   .at(ireg) // trigger efficiency for search-region events
       	  ->Fill( i+1,   nSearchTrigEvents  .at(i) / float( m_nSearch         .at(ireg) ) );
-      	h_triggerEfficiency_search   .at(ireg)
-      	  ->Fill( j+1,   nSearchTrigEvents  .at(j) / float( m_nSearch_other   .at(ireg) ) );
       	h_searchTriggerEfficiency    .at(ireg) // search region efficiency
       	  ->Fill( i+1,   nSearchTrigEvents  .at(i) / float( m_nEntries        .at(ireg) ) );
-      	h_searchTriggerEfficiency    .at(ireg)
-      	  ->Fill( j+1,   nSearchTrigEvents  .at(j) / float( m_nEntries        .at(ireg) ) );
-      	if ( m_mc || m_unblind ) {
-      	  h_triggerEfficiency_signal .at(ireg) // trigger efficiency for signal-region events
-      	    ->Fill( i+1, nSignalTrigEvents  .at(i) / float( m_nSignal         .at(ireg) ) );
-      	  h_triggerEfficiency_signal .at(ireg)
-      	    ->Fill( j+1, nSignalTrigEvents  .at(j) / float( m_nSignal_other   .at(ireg) ) );
-      	  h_signalTriggerEfficiency  .at(ireg) // signal efficiency
-      	    ->Fill( i+1, nSignalTrigEvents  .at(i) / float( m_nEntries        .at(ireg) ) );
-      	  h_signalTriggerEfficiency  .at(ireg)
-      	    ->Fill( j+1, nSignalTrigEvents  .at(j) / float( m_nEntries        .at(ireg) ) );
-      	}
-	
-      	// h_triggerEfficiency_fourJet  .at(ireg) // trigger efficiency for four-jet events
-      	//   ->Fill( (i+1)*2-1,   nFourJetTrigEvents .at(2*i)   / float( m_nFourJets       .at(ireg) ) );
-      	// h_triggerEfficiency_fourJet  .at(ireg)
-      	//   ->Fill( (i+1)*2,     nFourJetTrigEvents .at(2*i+1) / float( m_nFourJets_other .at(ireg) ) );
-      	// h_triggerEfficiency_search   .at(ireg) // trigger efficiency for search-region events
-      	//   ->Fill( (i+1)*2-1,   nSearchTrigEvents  .at(2*i)   / float( m_nSearch         .at(ireg) ) );
-      	// h_triggerEfficiency_search   .at(ireg)
-      	//   ->Fill( (i+1)*2,     nSearchTrigEvents  .at(2*i+1) / float( m_nSearch_other   .at(ireg) ) );
-      	// h_searchTriggerEfficiency    .at(ireg) // search region efficiency
-      	//   ->Fill( (i+1)*2-1,   nSearchTrigEvents  .at(2*i)   / float( m_nEntries        .at(ireg) ) );
-      	// h_searchTriggerEfficiency    .at(ireg)
-      	//   ->Fill( (i+1)*2,     nSearchTrigEvents  .at(2*i+1) / float( m_nEntries        .at(ireg) ) );
-      	// if ( m_mc || m_unblind ) {
-      	//   h_triggerEfficiency_signal .at(ireg) // trigger efficiency for signal-region events
-      	//     ->Fill( (i+1)*2-1, nSignalTrigEvents  .at(2*i)   / float( m_nSignal         .at(ireg) ) );
-      	//   h_triggerEfficiency_signal .at(ireg)
-      	//     ->Fill( (i+1)*2,   nSignalTrigEvents  .at(2*i+1) / float( m_nSignal_other   .at(ireg) ) );
-      	//   h_signalTriggerEfficiency  .at(ireg) // signal efficiency
-      	//     ->Fill( (i+1)*2-1, nSignalTrigEvents  .at(2*i)   / float( m_nEntries        .at(ireg) ) );
-      	//   h_signalTriggerEfficiency  .at(ireg)
-      	//     ->Fill( (i+1)*2,   nSignalTrigEvents  .at(2*i+1) / float( m_nEntries        .at(ireg) ) );
-      	// }
       }
     } // end trigger study
     

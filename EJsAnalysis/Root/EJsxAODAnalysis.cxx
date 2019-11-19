@@ -228,7 +228,6 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
     m_kfactor = metadata.at(2);
     m_filteff = metadata.at(3);  
   }
-  std::cout << "SAMPLE METADATA: " << m_xsec << " " << m_kfactor << " " << m_filteff << std::endl;
   // initialize metadata histogram
   m_meta_weightHist     = new TH1D( "MetaData_Weights", "MetaData_Weights", 1, 1, 2 );
   m_meta_weightHist     ->SetCanExtend( TH1::kAllAxes );

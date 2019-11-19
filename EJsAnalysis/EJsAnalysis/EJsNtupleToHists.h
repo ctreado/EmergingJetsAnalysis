@@ -9,11 +9,13 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 #include <xAODAnaHelpers/Algorithm.h>
 
 #include "EJsAnalysis/EJsHistogramManager.h"
 #include "EJsAnalysis/EJsHelperFunctions.h"
+#include "EJsAnalysis/AlgConsts.h"
 
 
 class EJsNtupleToHists : public xAH::Algorithm
@@ -22,7 +24,6 @@ class EJsNtupleToHists : public xAH::Algorithm
   // public so they can be seen directly from CINT + python
  public:
   // float cutValue;
-
 
   // histogram info switches
   std::string m_detailStr = "";
@@ -55,9 +56,9 @@ class EJsNtupleToHists : public xAH::Algorithm
   std::string m_truthVertexHistoName     = "";
   std::string m_secondaryVertexHistoName = "";
 
-  bool m_truthLevelOnly = false;
-  bool m_doWeights      = false;
-  bool m_unblind        = false;
+  bool  m_truthLevelOnly = false;
+  bool  m_unblind        = false;
+  float m_lumi           = 139.; // integrated luminosity to scale to (i.e. full Run2 delivered = 139) [ifb]
 
   // protect against nonexistent branches
   bool m_doEventInfo         = true;
@@ -85,9 +86,18 @@ class EJsNtupleToHists : public xAH::Algorithm
   
   EJsHistogramManager* m_plots = 0; //!
   
-  int   m_eventNumber;  //!
-  bool  m_isMC;         //!
-  float m_nTotalEvents; //!
+  int   m_eventNumber;                            //!
+  bool  m_isMC;                                   //!
+  float m_nEvents_init = AlgConsts::invalidFloat; //! // initial number of events before daod skimming
+  float m_nEvents_sel  = AlgConsts::invalidFloat; //! // initial number of events after daod skimming
+  float m_sumw_init    = AlgConsts::invalidFloat; //! // sum of weights before skimming
+  float m_sumw_sel     = AlgConsts::invalidFloat; //! // sum of weights after skimming
+  float m_sumw2_init   = AlgConsts::invalidFloat; //! // sum of weights squared before skimming
+  float m_sumw2_sel    = AlgConsts::invalidFloat; //! // sum o weights squared after skimming
+  float m_crossSection = AlgConsts::invalidFloat; //! // [nb]
+  float m_kFactor      = AlgConsts::invalidFloat; //!
+  float m_genFilterEff = AlgConsts::invalidFloat; //!
+  std::map<std::string, float> m_metadata;        //!
   
   
  public:

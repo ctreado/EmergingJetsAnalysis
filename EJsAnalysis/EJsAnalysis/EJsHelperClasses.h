@@ -87,6 +87,7 @@ namespace EJsHelperClasses {
   {
   public:
     bool m_trigTest;
+    bool m_abcd;
     bool m_pileup;
     bool m_pv;
     bool m_kinematics;

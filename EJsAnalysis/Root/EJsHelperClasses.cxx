@@ -50,6 +50,7 @@ namespace EJsHelperClasses {
 
   void HistogramInfoSwitch::initialize() {
     m_trigTest          = has_exact( "trigTest"          );
+    m_abcd              = has_exact( "abcd"              );
     m_pileup            = has_exact( "pileup"            );
     m_pv                = has_exact( "pv"                );
     m_kinematics        = has_exact( "kinematics"        );
