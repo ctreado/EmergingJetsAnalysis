@@ -34,9 +34,10 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
   }
   
   if ( m_doEMTopoJets ) {
+    m_minusone_emtopo     = 0;
+    m_search_emtopo       = 0;
     m_signal_emtopo       = 0;
     m_valid_emtopo        = 0;
-    m_ctrl_emtopo         = 0;
     m_signalNJet_emtopo   = 0;
     m_signalJetPt_emtopo  = 0;
     m_signalJetEta_emtopo = 0;
@@ -48,9 +49,10 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
     m_njetHt_emtopo       = 0;
   }
   if ( m_doPFlowJets ) {
+    m_minusone_pflow      = 0;
+    m_search_pflow        = 0;
     m_signal_pflow        = 0;
     m_valid_pflow         = 0;
-    m_ctrl_pflow          = 0;
     m_signalNJet_pflow    = 0;
     m_signalJetPt_pflow   = 0;
     m_signalJetEta_pflow  = 0;
@@ -62,9 +64,10 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
     m_njetHt_pflow        = 0;
   }
   if ( m_truthLevelOnly ) {
+    m_minusone_truth      = 0;
+    m_search_truth        = 0;
     m_signal_truth        = 0;
     m_valid_truth         = 0;
-    m_ctrl_truth          = 0;
     m_signalNJet_truth    = 0;
     m_signalJetPt_truth   = 0;
     m_signalJetEta_truth  = 0;
@@ -137,6 +140,7 @@ EJsHelpTreeBase :: EJsHelpTreeBase ( xAOD::TEvent* event, TTree* tree, TFile* fi
   m_trk_d0                           = new std::vector<float>;
   m_trk_errd0                        = new std::vector<float>;
   m_trk_errz0                        = new std::vector<float>;
+  m_trk_errP                         = new std::vector<float>;
   m_trk_chiSquared                   = new std::vector<float>;
   m_trk_numberDoF                    = new std::vector<float>;
   m_trk_chi2                         = new std::vector<float>;
@@ -349,9 +353,10 @@ void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
   }
   
   if ( m_doEMTopoJets ) {
+    m_tree->Branch( "isSearchMinusOne_EMTopo",   &m_minusone_emtopo     );
+    m_tree->Branch( "isSearch_EMTopo",           &m_search_emtopo       );
     m_tree->Branch( "isSignal_EMTopo",           &m_signal_emtopo       );
     m_tree->Branch( "isValid_EMTopo",            &m_valid_emtopo        );
-    m_tree->Branch( "isCtrl_EMTopo",             &m_ctrl_emtopo         );
 
     m_tree->Branch( "passesSignalNJet_EMTopo",   &m_signalNJet_emtopo   );
     m_tree->Branch( "passesSignalJetPt_EMTopo",  &m_signalJetPt_emtopo  );
@@ -367,9 +372,10 @@ void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
   }
   
   if ( m_doPFlowJets ) {
+    m_tree->Branch( "isSearchMinusOne_PFlow",    &m_minusone_pflow      );
+    m_tree->Branch( "isSearch_PFlow",            &m_search_pflow        );
     m_tree->Branch( "isSignal_PFlow",            &m_signal_pflow        );
     m_tree->Branch( "isValid_PFlow",             &m_valid_pflow         );
-    m_tree->Branch( "isCtrl_PFlow",              &m_ctrl_pflow          );
 
     m_tree->Branch( "passesSignalNJet_PFlow",    &m_signalNJet_pflow    );
     m_tree->Branch( "passesSignalJetPt_PFlow",   &m_signalJetPt_pflow   );
@@ -385,9 +391,10 @@ void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
   }
 
   if ( m_truthLevelOnly ) {
+    m_tree->Branch( "isSearchMinusOne_Truth",    &m_minusone_truth      );
+    m_tree->Branch( "isSearch_Truth",            &m_search_truth        );
     m_tree->Branch( "isSignal_Truth",            &m_signal_truth        );
     m_tree->Branch( "isValid_Truth",             &m_valid_truth         );
-    m_tree->Branch( "isCtrl_Truth",              &m_ctrl_truth          );
 
     m_tree->Branch( "passesSignalNJet_Truth",    &m_signalNJet_truth    );
     m_tree->Branch( "passesSignalJetPt_Truth",   &m_signalJetPt_truth   );
@@ -419,35 +426,37 @@ void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
   if ( m_doEMTopoJets ) {
     // if running EMTopo systematics...
     if ( event->isAvailable<char>( "passSignalSel_EMTopo" + treeName ) ) {
-      m_signal_emtopo = event->auxdataConst<char>( "passSignalSel_EMTopo" + treeName );
-      m_valid_emtopo  = event->auxdataConst<char>( "passValidSel_EMTopo"  + treeName );
-      m_ctrl_emtopo   = event->auxdataConst<char>( "passCtrlSel_EMTopo"   + treeName );
+      m_minusone_emtopo     = event->auxdataConst<char>( "passSearchMinusOneSel_EMTopo" + treeName );
+      m_search_emtopo       = event->auxdataConst<char>( "passSearchSel_EMTopo"         + treeName );
+      m_signal_emtopo       = event->auxdataConst<char>( "passSignalSel_EMTopo"         + treeName );
+      m_valid_emtopo        = event->auxdataConst<char>( "passValidSel_EMTopo"          + treeName );
 
-      m_signalNJet_emtopo   = event->auxdataConst<char>( "passSignalNJetSel_EMTopo"   + treeName );
-      m_signalJetPt_emtopo  = event->auxdataConst<char>( "passSignalJetPtSel_EMTopo"  + treeName );
-      m_signalJetEta_emtopo = event->auxdataConst<char>( "passSignalJetEtaSel_EMTopo" + treeName );
-      m_signalNJetHt_emtopo = event->auxdataConst<char>( "passSignalNJetHtSel_EMTopo" + treeName );
+      m_signalNJet_emtopo   = event->auxdataConst<char>( "passSignalNJetSel_EMTopo"     + treeName );
+      m_signalJetPt_emtopo  = event->auxdataConst<char>( "passSignalJetPtSel_EMTopo"    + treeName );
+      m_signalJetEta_emtopo = event->auxdataConst<char>( "passSignalJetEtaSel_EMTopo"   + treeName );
+      m_signalNJetHt_emtopo = event->auxdataConst<char>( "passSignalNJetHtSel_EMTopo"   + treeName );
       
-      m_validNJetMin_emtopo = event->auxdataConst<char>( "passValidNJetMinSel_EMTopo" + treeName );
-      m_validNJetMax_emtopo = event->auxdataConst<char>( "passValidNJetMaxSel_EMTopo" + treeName );
-      m_validJetPt_emtopo   = event->auxdataConst<char>( "passValidJetPtSel_EMTopo"   + treeName );
-      m_validJetEta_emtopo  = event->auxdataConst<char>( "passValidJetEtaSel_EMTopo"  + treeName );
+      m_validNJetMin_emtopo = event->auxdataConst<char>( "passValidNJetMinSel_EMTopo"   + treeName );
+      m_validNJetMax_emtopo = event->auxdataConst<char>( "passValidNJetMaxSel_EMTopo"   + treeName );
+      m_validJetPt_emtopo   = event->auxdataConst<char>( "passValidJetPtSel_EMTopo"     + treeName );
+      m_validJetEta_emtopo  = event->auxdataConst<char>( "passValidJetEtaSel_EMTopo"    + treeName );
     }
     // otherwise, get decorators for nominal case...
     else if ( event->isAvailable<char>( "passSignalSel_EMTopo" ) ) {
-      m_signal_emtopo = event->auxdataConst<char>( "passSignalSel_EMTopo" );
-      m_valid_emtopo  = event->auxdataConst<char>( "passValidSel_EMTopo"  );
-      m_ctrl_emtopo   = event->auxdataConst<char>( "passCtrlSel_EMTopo"   );
+      m_minusone_emtopo     = event->auxdataConst<char>( "passSearchMinusOneSel_EMTopo" );
+      m_search_emtopo       = event->auxdataConst<char>( "passSearchSel_EMTopo"         );
+      m_signal_emtopo       = event->auxdataConst<char>( "passSignalSel_EMTopo"         );
+      m_valid_emtopo        = event->auxdataConst<char>( "passValidSel_EMTopo"          );
       
-      m_signalNJet_emtopo   = event->auxdataConst<char>( "passSignalNJetSel_EMTopo"   );
-      m_signalJetPt_emtopo  = event->auxdataConst<char>( "passSignalJetPtSel_EMTopo"  );
-      m_signalJetEta_emtopo = event->auxdataConst<char>( "passSignalJetEtaSel_EMTopo" );
-      m_signalNJetHt_emtopo = event->auxdataConst<char>( "passSignalNJetHtSel_EMTopo" );
+      m_signalNJet_emtopo   = event->auxdataConst<char>( "passSignalNJetSel_EMTopo"     );
+      m_signalJetPt_emtopo  = event->auxdataConst<char>( "passSignalJetPtSel_EMTopo"    );
+      m_signalJetEta_emtopo = event->auxdataConst<char>( "passSignalJetEtaSel_EMTopo"   );
+      m_signalNJetHt_emtopo = event->auxdataConst<char>( "passSignalNJetHtSel_EMTopo"   );
 
-      m_validNJetMin_emtopo = event->auxdataConst<char>( "passValidNJetMinSel_EMTopo" );
-      m_validNJetMax_emtopo = event->auxdataConst<char>( "passValidNJetMaxSel_EMTopo" );
-      m_validJetPt_emtopo   = event->auxdataConst<char>( "passValidJetPtSel_EMTopo"   );
-      m_validJetEta_emtopo  = event->auxdataConst<char>( "passValidJetEtaSel_EMTopo"  );
+      m_validNJetMin_emtopo = event->auxdataConst<char>( "passValidNJetMinSel_EMTopo"   );
+      m_validNJetMax_emtopo = event->auxdataConst<char>( "passValidNJetMaxSel_EMTopo"   );
+      m_validJetPt_emtopo   = event->auxdataConst<char>( "passValidJetPtSel_EMTopo"     );
+      m_validJetEta_emtopo  = event->auxdataConst<char>( "passValidJetEtaSel_EMTopo"    );
     }
 
     if ( event->isAvailable<double>( "NJetHt_EMTopo" + treeName ) )
@@ -458,36 +467,38 @@ void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
 
   if ( m_doPFlowJets ) {
     // if running PFlow systematics...
-    if ( event->isAvailable<char>( "passSignalSel_PFlow" + treeName ) ) {  
-      m_signal_pflow  = event->auxdataConst<char>( "passSignalSel_PFlow" + treeName );
-      m_valid_pflow   = event->auxdataConst<char>( "passValidSel_PFlow"  + treeName );
-      m_ctrl_pflow    = event->auxdataConst<char>( "passCtrlSel_PFlow"   + treeName );
+    if ( event->isAvailable<char>( "passSignalSel_PFlow" + treeName ) ) {
+      m_minusone_pflow      = event->auxdataConst<char>( "passSearchMinusOneSel_PFlow" + treeName );
+      m_search_pflow        = event->auxdataConst<char>( "passSearchSel_PFlow"         + treeName );
+      m_signal_pflow        = event->auxdataConst<char>( "passSignalSel_PFlow"         + treeName );
+      m_valid_pflow         = event->auxdataConst<char>( "passValidSel_PFlow"          + treeName );
       
-      m_signalNJet_pflow    = event->auxdataConst<char>( "passSignalNJetSel_PFlow"   + treeName );
-      m_signalJetPt_pflow   = event->auxdataConst<char>( "passSignalJetPtSel_PFlow"  + treeName );
-      m_signalJetEta_pflow  = event->auxdataConst<char>( "passSignalJetEtaSel_PFlow" + treeName );
-      m_signalNJetHt_pflow  = event->auxdataConst<char>( "passSignalNJetHtSel_PFlow" + treeName );
+      m_signalNJet_pflow    = event->auxdataConst<char>( "passSignalNJetSel_PFlow"     + treeName );
+      m_signalJetPt_pflow   = event->auxdataConst<char>( "passSignalJetPtSel_PFlow"    + treeName );
+      m_signalJetEta_pflow  = event->auxdataConst<char>( "passSignalJetEtaSel_PFlow"   + treeName );
+      m_signalNJetHt_pflow  = event->auxdataConst<char>( "passSignalNJetHtSel_PFlow"   + treeName );
       
-      m_validNJetMin_pflow  = event->auxdataConst<char>( "passValidNJetMinSel_PFlow" + treeName );
-      m_validNJetMax_pflow  = event->auxdataConst<char>( "passValidNJetMaxSel_PFlow" + treeName );
-      m_validJetPt_pflow    = event->auxdataConst<char>( "passValidJetPtSel_PFlow"   + treeName );
-      m_validJetEta_pflow   = event->auxdataConst<char>( "passValidJetEtaSel_PFlow"  + treeName );
+      m_validNJetMin_pflow  = event->auxdataConst<char>( "passValidNJetMinSel_PFlow"   + treeName );
+      m_validNJetMax_pflow  = event->auxdataConst<char>( "passValidNJetMaxSel_PFlow"   + treeName );
+      m_validJetPt_pflow    = event->auxdataConst<char>( "passValidJetPtSel_PFlow"     + treeName );
+      m_validJetEta_pflow   = event->auxdataConst<char>( "passValidJetEtaSel_PFlow"    + treeName );
     }
     // otherwise, get decorators for nominal case...
     else if ( event->isAvailable<char>( "passSignalSel_PFlow" ) ) {
-      m_signal_pflow  = event->auxdataConst<char>( "passSignalSel_PFlow" );
-      m_valid_pflow   = event->auxdataConst<char>( "passValidSel_PFlow"  );
-      m_ctrl_pflow    = event->auxdataConst<char>( "passCtrlSel_PFlow"   );
+      m_minusone_pflow      = event->auxdataConst<char>( "passSearchMinusOneSel_PFlow" );
+      m_search_pflow        = event->auxdataConst<char>( "passSearchSel_PFlow"         );
+      m_signal_pflow        = event->auxdataConst<char>( "passSignalSel_PFlow"         );
+      m_valid_pflow         = event->auxdataConst<char>( "passValidSel_PFlow"          );
       
-      m_signalNJet_pflow    = event->auxdataConst<char>( "passSignalNJetSel_PFlow"   );
-      m_signalJetPt_pflow   = event->auxdataConst<char>( "passSignalJetPtSel_PFlow"  );
-      m_signalJetEta_pflow  = event->auxdataConst<char>( "passSignalJetEtaSel_PFlow" );
-      m_signalNJetHt_pflow  = event->auxdataConst<char>( "passSignalNJetHtSel_PFlow" );
+      m_signalNJet_pflow    = event->auxdataConst<char>( "passSignalNJetSel_PFlow"     );
+      m_signalJetPt_pflow   = event->auxdataConst<char>( "passSignalJetPtSel_PFlow"    );
+      m_signalJetEta_pflow  = event->auxdataConst<char>( "passSignalJetEtaSel_PFlow"   );
+      m_signalNJetHt_pflow  = event->auxdataConst<char>( "passSignalNJetHtSel_PFlow"   );
 
-      m_validNJetMin_pflow  = event->auxdataConst<char>( "passValidNJetMinSel_PFlow" );
-      m_validNJetMax_pflow  = event->auxdataConst<char>( "passValidNJetMaxSel_PFlow" );
-      m_validJetPt_pflow    = event->auxdataConst<char>( "passValidJetPtSel_PFlow"   );
-      m_validJetEta_pflow   = event->auxdataConst<char>( "passValidJetEtaSel_PFlow"  );
+      m_validNJetMin_pflow  = event->auxdataConst<char>( "passValidNJetMinSel_PFlow"   );
+      m_validNJetMax_pflow  = event->auxdataConst<char>( "passValidNJetMaxSel_PFlow"   );
+      m_validJetPt_pflow    = event->auxdataConst<char>( "passValidJetPtSel_PFlow"     );
+      m_validJetEta_pflow   = event->auxdataConst<char>( "passValidJetEtaSel_PFlow"    );
     }
 
     if ( event->isAvailable<double>( "NJetHt_PFlow" + treeName ) )
@@ -498,20 +509,21 @@ void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
 
   if ( m_truthLevelOnly ) {
     if ( event->isAvailable<char>( "passSignalSel_Truth" ) ) {
-      m_signal_truth  = event->auxdataConst<char>( "passSignalSel_Truth" );
-      m_valid_truth   = event->auxdataConst<char>( "passValidSel_Truth"  );
-      m_ctrl_truth    = event->auxdataConst<char>( "passCtrlSel_Truth"   );
+      m_minusone_truth      = event->auxdataConst<char>( "passSearchMinusOneSel_Truth" );
+      m_search_truth        = event->auxdataConst<char>( "passSearchSel_Truth"         );
+      m_signal_truth        = event->auxdataConst<char>( "passSignalSel_Truth"         );
+      m_valid_truth         = event->auxdataConst<char>( "passValidSel_Truth"          );
       
-      m_signalNJet_truth    = event->auxdataConst<char>( "passSignalNJetSel_Truth"   );
-      m_signalJetPt_truth   = event->auxdataConst<char>( "passSignalJetPtSel_Truth"  );
-      m_signalJetEta_truth  = event->auxdataConst<char>( "passSignalJetEtaSel_Truth" );
-      m_signalNJetHt_truth  = event->auxdataConst<char>( "passSignalNJetHtSel_Truth" );
-      m_signalNEJ_truth     = event->auxdataConst<char>( "passSignalNEJSel_Truth"    );
+      m_signalNJet_truth    = event->auxdataConst<char>( "passSignalNJetSel_Truth"     );
+      m_signalJetPt_truth   = event->auxdataConst<char>( "passSignalJetPtSel_Truth"    );
+      m_signalJetEta_truth  = event->auxdataConst<char>( "passSignalJetEtaSel_Truth"   );
+      m_signalNJetHt_truth  = event->auxdataConst<char>( "passSignalNJetHtSel_Truth"   );
+      m_signalNEJ_truth     = event->auxdataConst<char>( "passSignalNEJSel_Truth"      );
 
-      m_validNJetMin_truth  = event->auxdataConst<char>( "passValidNJetMinSel_Truth" );
-      m_validNJetMax_truth  = event->auxdataConst<char>( "passValidNJetMaxSel_Truth" );
-      m_validJetPt_truth    = event->auxdataConst<char>( "passValidJetPtSel_Truth"   );
-      m_validJetEta_truth   = event->auxdataConst<char>( "passValidJetEtaSel_Truth"  );
+      m_validNJetMin_truth  = event->auxdataConst<char>( "passValidNJetMinSel_Truth"   );
+      m_validNJetMax_truth  = event->auxdataConst<char>( "passValidNJetMaxSel_Truth"   );
+      m_validJetPt_truth    = event->auxdataConst<char>( "passValidJetPtSel_Truth"     );
+      m_validJetEta_truth   = event->auxdataConst<char>( "passValidJetEtaSel_Truth"    );
     }
     if ( event->isAvailable<double>( "NJetHt_Truth" ) )
       m_njetHt_truth = event->auxdataConst<double>( "NJetHt_Truth" );
@@ -529,9 +541,10 @@ void EJsHelpTreeBase :: ClearEventUser ( )
   }
 
   if ( m_doEMTopoJets ) {
+    m_minusone_emtopo     = 0;
+    m_search_emtopo       = 0;
     m_signal_emtopo       = 0;
     m_valid_emtopo        = 0;
-    m_ctrl_emtopo         = 0;
     
     m_signalNJet_emtopo   = 0;
     m_signalJetPt_emtopo  = 0;
@@ -547,40 +560,42 @@ void EJsHelpTreeBase :: ClearEventUser ( )
   }
 
   if ( m_doPFlowJets ) {
-    m_signal_pflow       = 0;
-    m_valid_pflow        = 0;
-    m_ctrl_pflow         = 0;
+    m_minusone_pflow      = 0;
+    m_search_pflow        = 0;
+    m_signal_pflow        = 0;
+    m_valid_pflow         = 0;
     
-    m_signalNJet_pflow   = 0;  
-    m_signalJetPt_pflow  = 0; 
-    m_signalJetEta_pflow = 0;
-    m_signalNJetHt_pflow = 0;
+    m_signalNJet_pflow    = 0;  
+    m_signalJetPt_pflow   = 0; 
+    m_signalJetEta_pflow  = 0;
+    m_signalNJetHt_pflow  = 0;
     
-    m_validNJetMin_pflow = 0; 
-    m_validNJetMax_pflow = 0; 
-    m_validJetPt_pflow   = 0; 
-    m_validJetEta_pflow  = 0;
+    m_validNJetMin_pflow  = 0; 
+    m_validNJetMax_pflow  = 0; 
+    m_validJetPt_pflow    = 0; 
+    m_validJetEta_pflow   = 0;
     
-    m_njetHt_pflow       = 0;
+    m_njetHt_pflow        = 0;
   }
 
   if ( m_truthLevelOnly ) {
-    m_signal_truth       = 0;
-    m_valid_truth        = 0;
-    m_ctrl_truth         = 0;
+    m_minusone_truth      = 0;
+    m_search_truth        = 0;
+    m_signal_truth        = 0;
+    m_valid_truth         = 0;
     
-    m_signalNJet_truth   = 0;  
-    m_signalJetPt_truth  = 0; 
-    m_signalJetEta_truth = 0;
-    m_signalNJetHt_truth = 0;
-    m_signalNEJ_truth    = 0;
+    m_signalNJet_truth    = 0;  
+    m_signalJetPt_truth   = 0; 
+    m_signalJetEta_truth  = 0;
+    m_signalNJetHt_truth  = 0;
+    m_signalNEJ_truth     = 0;
     
-    m_validNJetMin_truth = 0; 
-    m_validNJetMax_truth = 0; 
-    m_validJetPt_truth   = 0; 
-    m_validJetEta_truth  = 0;
+    m_validNJetMin_truth  = 0; 
+    m_validNJetMax_truth  = 0; 
+    m_validJetPt_truth    = 0; 
+    m_validJetEta_truth   = 0;
     
-    m_njetHt_truth       = 0;
+    m_njetHt_truth        = 0;
   }
 }
 
@@ -915,6 +930,7 @@ void EJsHelpTreeBase :: AddTracksUser ( const std::string trackName, const std::
   setBranch<float>                      ( trackName, "d0",                           m_trk_d0                           );
   setBranch<float>                      ( trackName, "errd0",                        m_trk_errd0                        );
   setBranch<float>                      ( trackName, "errz0",                        m_trk_errz0                        );
+  setBranch<float>                      ( trackName, "errP",                         m_trk_errP                         );
   setBranch<float>                      ( trackName, "chiSquared",                   m_trk_chiSquared                   );
   setBranch<float>                      ( trackName, "numberDoF",                    m_trk_numberDoF                    );
   setBranch<float>                      ( trackName, "chi2",                         m_trk_chi2                         );
@@ -997,6 +1013,7 @@ void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName, const xAOD
   m_trk_d0                      ->push_back( track->d0()                                                           );
   m_trk_errd0                   ->push_back( track->definingParametersCovMatrix()(0,0)                             );
   m_trk_errz0                   ->push_back( track->definingParametersCovMatrix()(1,1)                             );
+  m_trk_errP                    ->push_back( track->definingParametersCovMatrix()(4,4)                             );
   m_trk_chiSquared              ->push_back( track->chiSquared()                                                   );
   m_trk_numberDoF               ->push_back( track->numberDoF()                                                    );
   m_trk_chi2                    ->push_back( track->chiSquared() / (track->numberDoF() + AlgConsts::infinitesimal) );
@@ -1182,6 +1199,7 @@ void EJsHelpTreeBase :: ClearTracksUser ( const std::string trackName )
   m_trk_d0                           ->clear();
   m_trk_errd0                        ->clear();
   m_trk_errz0                        ->clear();
+  m_trk_errP                         ->clear();
   m_trk_chiSquared                   ->clear();
   m_trk_numberDoF                    ->clear();
   m_trk_chi2                         ->clear();

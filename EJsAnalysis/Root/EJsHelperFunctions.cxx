@@ -51,14 +51,10 @@ namespace EJsHelper {
   void fillRegion ( Region& region, const std::string regionName )
   {
     enum RegionType regionType = ALL;
-    if      ( regionName == "search"     || regionName == "srch"  ) regionType = SEARCH;
-    else if ( regionName == "signal"     || regionName == "sgnl"  ) regionType = SIGNAL;
-    else if ( regionName == "validation" || regionName == "valid" ) regionType = VALIDATION;
-    else if ( regionName == "control"    || regionName == "ctrl"  ) regionType = CONTROL;
-    else if ( regionName == "abcd_a"     || regionName == "a"     ) regionType = ABCD_A;
-    else if ( regionName == "abcd_b"     || regionName == "b"     ) regionType = ABCD_B;
-    else if ( regionName == "abcd_c"     || regionName == "c"     ) regionType = ABCD_C;
-    else if ( regionName == "abcd_d"     || regionName == "d"     ) regionType = ABCD_D;
+    if      ( regionName == "search-minus-one" || regionName == "srch-1"   ) regionType = SEARCH_MINUS_ONE;
+    else if ( regionName == "search"           || regionName == "srch"     ) regionType = SEARCH;
+    else if ( regionName == "signal"           || regionName == "sgnl"     ) regionType = SIGNAL;
+    else if ( regionName == "validation"       || regionName == "valid"    ) regionType = VALIDATION;
 
     region .name = regionName;
     region .type = regionType;

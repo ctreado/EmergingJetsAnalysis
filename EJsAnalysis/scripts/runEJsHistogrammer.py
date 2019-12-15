@@ -48,6 +48,7 @@ def main():
 
     # get all files in input directory
     inFiles = glob.glob( os.path.join( args.inDir, "*" ) )
+    print inFiles
 
     # select files matching input tag(s)
     tags = args.inTags.split(',')
@@ -80,9 +81,11 @@ def main():
         kobj = key.ReadObj()
         if ( isinstance( kobj, ROOT.TTree ) ):
             if len( treeList ) == 0:         # process all trees
-                trees.append( kobj.GetName() )
+                if not kobj.GetName() in trees:
+                    trees.append( kobj.GetName() )
             elif kobj.GetName() in treeList: # only process trees in list
-                trees.append( kobj.GetName() )
+                if not kobj.GetName() in trees:
+                    trees.append( kobj.GetName() )
     if len( trees ) == 0:
         print "No trees found! Exiting"
         return
@@ -123,6 +126,7 @@ def main():
             command += " --nevents "   + args.nevents
             command += " --treeName "  + os.path.join( treeDir, tree )
             command += " "             + args.driver
+            command += " | tee "       + logFile # need this when running os.system(command) --> remove when Popen call fixed
             print(command)
 
             # check tree in file
@@ -131,15 +135,16 @@ def main():
             if not tree in d.GetListOfKeys():
                 emptyFiles.append( file )
                 continue
-            
-            process_result = submit_local_job( command, logFile )
-            processes.append( process_result[0])
-            logFiles.append( process_result[1])
 
-    # wait for jobs to finish and close log files
-    wait_all( processes, logFiles )
-    for f in logFiles:
-        f.close()
+            os.system( command ) # temporary...try to get below to work (efficiently); will probably want to use once running over more, larger files --> meanwhile, consider changing submit script back to using os.system( command ) (seems faster; checks)
+            #process_result = submit_local_job( command, logFile ) # --> CAUSING ALL SORTS OF PROBLEMS; FIX !!! also seems really slow...
+            #processes.append( process_result[0])
+            #logFiles.append( process_result[1])
+
+    ## wait for jobs to finish and close log files
+    #wait_all( processes, logFiles )
+    #for f in logFiles:
+    #    f.close()
 
     # hadd files so nominal and systematics in same file for given sample
     if args.mergeDatasets:
@@ -192,6 +197,7 @@ def get_logDir():
     return logDir
 
 
+# THIS IS NOT WORKING FOR BIG JOBS --> SEEMINGLY DELETING TREES BEFORE HADD FINISHES ?? --> TURN OFF FOR NOW AND FIX !!!
 def mergeDatasets( files, emptyFiles, trees, outHistName ):
     # check that hadd exists
     devnull = open( os.devnull )
@@ -233,11 +239,24 @@ def renameAndMove( outHistName ):
                 shutil.rmtree( histDir )
             else:
                 print "Destination path", histFile, "already exists. Not moving or deleting. Either re-run with --forceMove, choose a different outDir, and/or rm -rf it yourself."
+        ## RUNS IF DATASETS NOT MERGED --> ONLY USE THIS WHEN MAKING NOMINAL HISTOS ONLY (otherwise other trees will be deleted)
+        elif outHistName in os.listdir( os.path.join( histDir, "nominal" ) ):
+            nomHistDir = os.path.join( histDir, "nominal" )
+            histFile = os.path.join( nomHistDir, outHistName )
+            renamedHistFile = os.path.join( histOutDir, "hist-" + os.path.basename( histDir ) + ".root" )
+            if not os.path.exists( renamedHistFile ) or args.forceMove:
+                print "Moving", histFile, "to", renamedHistFile
+                shutil.move( histFile, renamedHistFile )
+                print "Deleting", histDir
+                shutil.rmtree( histDir )
+            else:
+                print "Destination path", histFile, "already exists. Not moving or deleting. Either re-run with --forceMove, choose a different outDir, and/or rm -rf it yourself."
+            
     # delete empty initial directory
     if not len( os.listdir( args.subDir ) ):
         shutil.rmtree( args.subDir )
 
-    logTag = time.strftime("%Y%m%d")
+    logTag = time.strftime("%Y.%m.%d_%Hh%Mm%Ss", time.localtime())
     if args.outTag:
         logTag = args.outTag + "_" + logTag
     logOutDir = os.path.join( args.outDir, "logs/hist_" + logTag )

@@ -225,6 +225,7 @@ EL::StatusCode VertexMatcher :: execute ()
     int nOut = 0;
     for ( size_t i = 0; i != truthVtx->nOutgoingParticles(); ++i ) {
       const auto* outPart = truthVtx->outgoingParticle( i );
+      if ( !outPart               ) continue;
       if ( !outPart ->charge()    ) continue;
       if (  outPart ->pt() < 1000 ) continue; // loosen to 500 ??
       ++nOut;

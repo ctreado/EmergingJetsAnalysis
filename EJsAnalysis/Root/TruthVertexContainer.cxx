@@ -1166,7 +1166,9 @@ void TruthVertexContainer :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx
     for ( size_t i2 = 0; i2 != truthVtx->nOutgoingParticles(); ++i2 ) {
       const auto* outP2 = truthVtx->outgoingParticle(i2);
       if ( outP1 == outP2 ) continue;
-      float dR = EJsHelper::deltaR( outP1->eta(), outP2->eta(), outP1->phi(), outP2->phi() );
+      float dR = -1.0;
+      if ( outP1 && outP2 )
+	dR = EJsHelper::deltaR( outP1->eta(), outP2->eta(), outP1->phi(), outP2->phi() );
       if ( dR > childOpenAngle ) childOpenAngle = dR;
     }
   }

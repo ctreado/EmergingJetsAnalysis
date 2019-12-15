@@ -35,19 +35,19 @@ jo_15="$EJ_PATH/EJsAnalysis/config/EJsConfig_data_mc16a.py"
 
 
 ## tags
-tag="test"
+tag="tmp_search-minus-one"
 
 
 ## job steering
-submitLocalEJsJobs.py --inFiles ${input_18_1} --jo ${jo_18} --subDir ${subdir_18_1} --nevents 1 --move --delete --outTag ${tag}
-submitLocalEJsJobs.py --inFiles ${input_17_1} --jo ${jo_17} --subDir ${subdir_17_1} --nevents 1 --move --delete --outTag ${tag}
-submitLocalEJsJobs.py --inFiles ${input_16_1} --jo ${jo_16} --subDir ${subdir_16_1} --nevents 1 --move --delete --outTag ${tag}
-submitLocalEJsJobs.py --inFiles ${input_15_1} --jo ${jo_15} --subDir ${subdir_15_1} --nevents 1 --move --delete --outTag ${tag}
+#submitLocalEJsJobs.py --inFiles ${input_18_1} --jo ${jo_18} --subDir ${subdir_18_1} --nevents 1 --move --delete --outTag ${tag}
+#submitLocalEJsJobs.py --inFiles ${input_17_1} --jo ${jo_17} --subDir ${subdir_17_1} --nevents 1 --move --delete --outTag ${tag}
+#submitLocalEJsJobs.py --inFiles ${input_16_1} --jo ${jo_16} --subDir ${subdir_16_1} --nevents 1 --move --delete --outTag ${tag}
+#submitLocalEJsJobs.py --inFiles ${input_15_1} --jo ${jo_15} --subDir ${subdir_15_1} --nevents 1 --move --delete --outTag ${tag}
 
-#submitLocalEJsJobs.py --inFiles ${input_18}   --jo ${jo_18} --subDir ${subdir_18}   --nevents 100 --move --delete
-#submitLocalEJsJobs.py --inFiles ${input_17}   --jo ${jo_17} --subDir ${subdir_17}   --nevents 100 --move --delete
-#submitLocalEJsJobs.py --inFiles ${input_16}   --jo ${jo_16} --subDir ${subdir_16}   --nevents 100 --move --delete
-#submitLocalEJsJobs.py --inFiles ${input_15}   --jo ${jo_15} --subDir ${subdir_15}   --nevents 100 --move --delete
+#submitLocalEJsJobs.py --inFiles ${input_18}   --jo ${jo_18} --subDir ${subdir_18}   --nevents -1 --move --delete
+submitLocalEJsJobs.py --inFiles ${input_17}   --jo ${jo_17} --subDir ${subdir_17}   --nevents -1 --move --delete --outTag ${tag}
+#submitLocalEJsJobs.py --inFiles ${input_16}   --jo ${jo_16} --subDir ${subdir_16}   --nevents -1 --move --delete
+#submitLocalEJsJobs.py --inFiles ${input_15}   --jo ${jo_15} --subDir ${subdir_15}   --nevents -1 --move --delete
 
 
 ## trigger study

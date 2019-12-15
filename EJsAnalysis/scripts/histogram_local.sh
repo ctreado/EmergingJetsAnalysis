@@ -31,10 +31,12 @@ intags_bench_a="ModelA_1000_150"
 intags_bench_b="ModelB_1000_5"
 intags_17_331804="data17,00331804"
 intags_bkgd="jetjet"
-runEJsHistogrammer.py --inDir ${input} --outDir ${output_bench} --inTags ${intags_bench_a}   --renameAndMove
-#runEJsHistogrammer.py --inDir ${input} --outDir ${output_bench} --inTags ${intags_bench_b}   --renameAndMove
-#runEJsHistogrammer.py --inDir ${input} --outDir ${output_bench} --inTags ${intags_17_331804} --renameAndMove
-#runEJsHistogrammer.py --inDir ${input} --outDir ${output_bench} --inTags ${intags_bkgd}      --renameAndMove
+input_bench="$EJ_PATH/../output/localOutput/tmp_search-minus-one/tree/"
+#input_bench_allTV="$EJ_PATH/../output/localOutput/tmp_search-minus-one_allTV/tree/"
+runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_bench} --inTags ${intags_bench_a}   --renameAndMove
+runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_bench} --inTags ${intags_bench_b}   --renameAndMove
+runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_bench} --inTags ${intags_17_331804} --renameAndMove
+runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_bench} --inTags ${intags_bkgd}      --renameAndMove
 
 # run over latest TRIGGER mc trees
 jo_trig="$EJ_PATH/EJsAnalysis/config/EJsHistoConfig_trig.py"

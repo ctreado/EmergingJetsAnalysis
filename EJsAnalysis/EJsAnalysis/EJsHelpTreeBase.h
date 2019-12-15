@@ -99,16 +99,19 @@ class EJsHelpTreeBase : public HelpTreeBase
   
   // event info
   uint8_t m_eventIsMC;
-  
+
+  uint8_t m_minusone_emtopo;
+  uint8_t m_minusone_pflow;
+  uint8_t m_minusone_truth;
+  uint8_t m_search_emtopo;
+  uint8_t m_search_pflow;
+  uint8_t m_search_truth;
   uint8_t m_signal_emtopo;
   uint8_t m_signal_pflow;
   uint8_t m_signal_truth;
   uint8_t m_valid_emtopo;
   uint8_t m_valid_pflow;
   uint8_t m_valid_truth;
-  uint8_t m_ctrl_emtopo;
-  uint8_t m_ctrl_pflow;
-  uint8_t m_ctrl_truth;
 
   uint8_t m_signalTrig;
   uint8_t m_signalNJet_emtopo;
@@ -208,6 +211,7 @@ class EJsHelpTreeBase : public HelpTreeBase
   std::vector<float>*                    m_trk_d0;
   std::vector<float>*                    m_trk_errd0;
   std::vector<float>*                    m_trk_errz0;
+  std::vector<float>*                    m_trk_errP;
   std::vector<float>*                    m_trk_chiSquared;
   std::vector<float>*                    m_trk_numberDoF;
   std::vector<float>*                    m_trk_chi2;

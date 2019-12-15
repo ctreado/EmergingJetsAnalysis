@@ -55,7 +55,6 @@ class EJsxAODAnalysis : public xAH::Algorithm
   // input trigger lists
   std::string m_signalTrigList;
   std::string m_validTrigList;
-  std::string m_ctrlTrigList;
 
   // input metadata text file
   std::string m_metadataFileName = "";
@@ -90,25 +89,22 @@ class EJsxAODAnalysis : public xAH::Algorithm
 
  protected:
   std::vector<std::string> m_inJetContainers; //!
-  std::vector<std::string> m_inJetBins; //!
+  std::vector<std::string> m_inJetBins;       //!
 
   std::vector<std::string> m_signalTrigs; //!
-  std::vector<std::string> m_validTrigs; //!
-  std::vector<std::string> m_ctrlTrigs; //!
+  std::vector<std::string> m_validTrigs;  //!
 
  private:
   int m_eventNumber; //!
 
-  int m_numPassEvents; //!
-  std::vector<int> m_numSignalEvents; //!
-  std::vector<int> m_numValidEvents; //!
-  std::vector<int> m_numCtrlEvents; //!
+  int m_numPassEvents;                     //!
+  std::vector<int> m_numSignalEvents;      //!
+  std::vector<int> m_numValidEvents;       //!
   std::vector<int> m_numSignalValidEvents; //!
 
-  int m_numPassWeightEvents; //!
-  std::vector<int> m_numSignalWeightEvents; //!
-  std::vector<int> m_numValidWeightEvents; //!
-  std::vector<int> m_numCtrlWeightEvents; //!
+  int m_numPassWeightEvents;                     //!
+  std::vector<int> m_numSignalWeightEvents;      //!
+  std::vector<int> m_numValidWeightEvents;       //!
   std::vector<int> m_numSignalValidWeightEvents; //!
 
   Long64_t m_numTotalEvents; //!
@@ -121,7 +117,7 @@ class EJsxAODAnalysis : public xAH::Algorithm
 
   std::vector<std::string> m_passedTriggers; //!
 
-  bool m_isNominalCase; //!
+  bool m_isNominalCase;       //!
   bool m_isFirstJetContainer; //!
 
 
@@ -174,9 +170,8 @@ class EJsxAODAnalysis : public xAH::Algorithm
   // added functions not from Algorithm
   virtual EL::StatusCode executeSelection ( const xAOD::EventInfo*, const std::string&, bool& );
 
-  virtual int PassSignalCuts     ( const xAOD::EventInfo*, const xAOD::JetContainer*, const std::string& );
+  virtual int PassSignalCuts     ( const xAOD::EventInfo*, const xAOD::JetContainer*, const std::string&, int&, int& );
   virtual int PassValidationCuts ( const xAOD::EventInfo*, const xAOD::JetContainer*, const std::string& );
-  virtual int PassControlCuts    ( const xAOD::EventInfo*, const xAOD::JetContainer*, const std::string& );
 
   bool selectEmergingJet ( const xAOD::Jet* );
   

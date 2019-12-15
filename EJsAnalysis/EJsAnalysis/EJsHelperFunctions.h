@@ -67,7 +67,7 @@ namespace EJsHelper {
   // --------------- region info --------------- //
 
   // region enums
-  enum RegionType { ALL, SEARCH, SIGNAL, VALIDATION, CONTROL, ABCD_A, ABCD_B, ABCD_C, ABCD_D };
+  enum RegionType { ALL, SEARCH_MINUS_ONE, SEARCH, SIGNAL, VALIDATION };
   // region structures
   struct Region {
     std::string name;

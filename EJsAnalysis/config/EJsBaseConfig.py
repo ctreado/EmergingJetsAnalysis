@@ -256,6 +256,7 @@ Dict_VertexMatcher = {
     "m_inTruthVertexContainerName"     : "TruthVertices_Select",
     "m_inSecondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
     "m_truthLLP"                       : "DarkPion Kshort",
+    "m_filterTruthVertex_llp"          : True,
     "m_distanceCutoff"                 : 10, 
     "m_doTruthTrackMatching"           : False, # already done in ObjectMatcher above...
     "m_setObjectIdentifiers"           : False, # already done in ObjectMatcher above...

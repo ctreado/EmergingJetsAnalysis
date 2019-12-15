@@ -27,18 +27,18 @@ jo_e="$EJ_PATH/EJsAnalysis/config/EJsConfig_mc16e.py"
 
 
 ## tags
-tag="test"
+tag="tmp_search-minus-one"
 
 
 ## job steering -- single sample tests
-submitLocalEJsJobs.py --inFiles ${input_08_d} --jo ${jo_d} --subDir ${sub_08_d} --nevents 1 --isMC --outTag ${tag}
-#submitLocalEJsJobs.py --inFiles ${input_28_d} --jo ${jo_d} --subDir ${sub_28_d} --nevents 1 --isMC --outTag ${tag}
+submitLocalEJsJobs.py --inFiles ${input_08_d} --jo ${jo_d} --subDir ${sub_08_d} --nevents -1 --isMC --move --delete --outTag ${tag}
+submitLocalEJsJobs.py --inFiles ${input_28_d} --jo ${jo_d} --subDir ${sub_28_d} --nevents -1 --isMC --move --delete --outTag ${tag}
 
 ## job steering -- official signal samples
-#submitLocalEJsJobs.py --inFiles ${input_d} --jo ${jo_d} --subDir ${sub_d} --nevents 1 --isMC --move --delete --outTag ${tag}
+#submitLocalEJsJobs.py --inFiles ${input_d} --jo ${jo_d} --subDir ${sub_d} --nevents -1 --isMC --move --delete
 
 # job steering -- pythia di-jet background
-#submitLocalEJsJobs.py --inFiles ${input_bkgd_d} --jo ${jo_d} --subDir ${sub_bkgd_d} --nevents 1 --isMC --move --delete --outTag ${tag}
+submitLocalEJsJobs.py --inFiles ${input_bkgd_d} --jo ${jo_d} --subDir ${sub_bkgd_d} --nevents -1 --isMC --move --delete --outTag ${tag}
 
 
 ## trigger study

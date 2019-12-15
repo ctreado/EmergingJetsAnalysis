@@ -74,13 +74,15 @@ def main():
     if args.isMC:
         command += " --isMC"
     command += " "             + args.driver
+    command += " | tee "       + log # need this when running os.system(command) --> remove when Popen call fixed
     
     print(command)
-    process_result = submit_local_job( command, log )
+    os.system( command )
+    #process_result = submit_local_job( command, log )
 
-    # wait for job to finish and close log file
-    wait( process_result[0], process_result[1] )
-    process_result[1].close()
+    ## wait for job to finish and close log file
+    #wait( process_result[0], process_result[1] )
+    #process_result[1].close()
 
     # move output trees and log
     if args.move:
@@ -116,7 +118,7 @@ def moveOutFiles( logfile ):
       os.makedirs( outDir )
 
     # create output log directory and move log file there
-    outLogDir = os.path.join( outDir, "logs/ntup_" + time.strftime("%Y%m%d") )
+    outLogDir = os.path.join( outDir, "logs/ntup_" + time.strftime("%Y.%m.%d_%Hh%Mm%Ss", time.localtime()) )
     if not os.path.exists( outLogDir ):
         os.makedirs( outLogDir )
     out_logFile = os.path.join( outLogDir, logfile )
@@ -151,7 +153,7 @@ def moveOutFiles( logfile ):
                 print "Moving " + file + " to " + out_directory
                 shutil.move( file, out_file )
             else:
-                print "Destination path " + out_file + "already exists. Not moving or deleting. Either re-run with --forceMove, choose a different outDir and/or rm -rf it yourself."
+                print "Destination path " + out_file + " already exists. Not moving or deleting. Either re-run with --forceMove, choose a different outDir and/or rm -rf it yourself."
                 successfulMove = False
                 return
     # delete initial submission directory (assuming files successfully moved)

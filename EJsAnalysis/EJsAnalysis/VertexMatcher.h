@@ -31,7 +31,7 @@ class VertexMatcher : public xAH::Algorithm
   std::string m_inSecondaryVertexContainerName = "";
 
   // truth vertex llp decay types to process
-  std::string m_truthLLP = "DarkPion";
+  std::string m_truthLLP = "";
 
   // do llp-decay truth vertex filtering?
   bool m_filterTruthVertex_llp  = true;

@@ -17,7 +17,7 @@ namespace EJsHelperClasses {
     m_detail            = has_exact( "detail"            );
     m_outPartDetail     = has_exact( "outPartDetail"     );
     m_recoMatching      = has_exact( "recoMatching"      );
-    m_recoMatchDetail   = has_exact( "reecoMatchDetail"  );
+    m_recoMatchDetail   = has_exact( "recoMatchDetail"  );
     m_jetMatched        = has_exact( "jetMatched"        );
     m_recoJetMatched    = has_exact( "recoJetMatched"    );
     m_truthJetMatched   = has_exact( "truthJetMatched"   );
@@ -55,11 +55,25 @@ namespace EJsHelperClasses {
     m_pv                = has_exact( "pv"                );
     m_kinematics        = has_exact( "kinematics"        );
     m_kinematics_jet    = has_exact( "kinematics_jet"    );
+    m_jetTrks           = has_exact( "jetTrks"           );
+    m_jetVerts          = has_exact( "jetVerts"          );
+    m_vertices          = has_exact( "vertices"          );
+    m_bareVerts         = has_exact( "bareVerts"         );
+    m_cleanVerts        = has_exact( "cleanVerts"        );
+    m_filtVerts         = has_exact( "filtVerts"         );
+    m_vtxTruth          = has_exact( "vtxTruth"          );
+    m_vtxTrks           = has_exact( "vtxTrks"           );
+    m_llps              = has_exact( "llps"              );
+    m_darkPions         = has_exact( "darkPions"         );
+    m_kshorts           = has_exact( "kshorts"           );
 
     m_numLeadingJets = 0;
+    m_numVtxTrks     = 0;
     for ( auto configDetail : m_configDetails ) {
       if ( configDetail.compare( 0, 9, "NLeadJets" ) == 0 )
 	m_numLeadingJets = std::atoi( configDetail.substr( 9, std::string::npos ).c_str() );
+      if ( configDetail.compare( 0, 8,  "NVtxTrks" ) == 0 )
+	m_numVtxTrks     = std::atoi( configDetail.substr( 8, std::string::npos ).c_str() );
     }
   }
   

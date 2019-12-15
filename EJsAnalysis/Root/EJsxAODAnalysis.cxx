@@ -120,9 +120,6 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
   std::istringstream ss_valid_trigs( m_validTrigList );
   while ( std::getline( ss_valid_trigs, trig_token, ',' ) )
     m_validTrigs.push_back( trig_token );
-  std::istringstream ss_ctrl_trigs( m_ctrlTrigList );
-  while ( std::getline( ss_ctrl_trigs, trig_token, ',' ) )
-    m_ctrlTrigs.push_back( trig_token );
 
   // set trigger-type cutflow/decorator label
   bool signalTrig_2j = false;
@@ -168,9 +165,7 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
     m_cutflowHist  ->GetXaxis()->FindBin( ( m_name + "Signal_" + m_cutflowJets ).c_str() );
     m_cutflowHistW ->GetXaxis()->FindBin( ( m_name + "Signal_" + m_cutflowJets ).c_str() );
     m_cutflowHist  ->GetXaxis()->FindBin( ( m_name + "Valid_"  + m_cutflowJets ).c_str() );
-    m_cutflowHistW ->GetXaxis()->FindBin( ( m_name + "Valid_"  + m_cutflowJets ).c_str() );
-    // m_cutflowHist  ->GetXaxis()->FindBin( ( m_name + "Ctrl_"   + m_cutflowJets ).c_str() );
-    // m_cutflowHistW ->GetXaxis()->FindBin( ( m_name + "Ctrl_"   + m_cutflowJets ).c_str() );  
+    m_cutflowHistW ->GetXaxis()->FindBin( ( m_name + "Valid_"  + m_cutflowJets ).c_str() ); 
     m_cutflow_bin  = m_cutflowHist->GetXaxis()->FindBin( ( m_name ).c_str() );
 
     // initialize EJs cutflows
@@ -235,8 +230,6 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
   m_meta_weight_kfactor = m_meta_weightHist->GetXaxis()->FindBin( "k-factor"       );
   m_meta_weight_filteff = m_meta_weightHist->GetXaxis()->FindBin( "gen-filter eff" );
   
-  
-
   // initialize counters
   m_eventNumber         = 0;
   m_numPassEvents       = 0;
@@ -244,11 +237,9 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
   for ( size_t i = 0; i != m_inJetContainers.size(); ++i ) {
     m_numSignalEvents            .push_back(0);
     m_numValidEvents             .push_back(0);
-    m_numCtrlEvents              .push_back(0);
       
     m_numSignalWeightEvents      .push_back(0);
     m_numValidWeightEvents       .push_back(0);
-    m_numCtrlWeightEvents        .push_back(0);
   }
 
   m_isNominalCase       = true;
@@ -378,9 +369,6 @@ EL::StatusCode EJsxAODAnalysis :: finalize ()
     m_cutflowHist  ->SetBinContent( j, m_numValidEvents        .at(jet_index) );
     m_cutflowHistW ->SetBinContent( j, m_numValidWeightEvents  .at(jet_index) );
     ++j;
-    //m_cutflowHist  ->SetBinContent( j, m_numCtrlEvents         .at(jet_index) );
-    //m_cutflowHistW ->SetBinContent( j, m_numCtrlWeightEvents   .at(jet_index) );
-    //++j;
     m_cutflowHist  ->LabelsDeflate("X");
     m_cutflowHistW ->LabelsDeflate("X");
 
@@ -486,33 +474,30 @@ EL::StatusCode EJsxAODAnalysis :: executeSelection ( const xAOD::EventInfo* even
       }
       eventInfo->auxdecor<double>("NJetHt_" + decorLabel) = njet_ht / m_units;
 
-      // signal selections
-      int passSignalSel   = this->PassSignalCuts     ( eventInfo, inJets, decorLabel );
-
+      // signal / search selections
+      int passSearchMinusOneSel = 0; // signal selections up to and excluding NJetHt cut
+      int passSearchSel         = 0; // signal selections through NJetHt cut -- for now, same as signal selections
+      int passSignalSel         = this->PassSignalCuts     ( eventInfo, inJets, decorLabel, passSearchMinusOneSel, passSearchSel );
       // validation selections
-      int passValidSel    = this->PassValidationCuts ( eventInfo, inJets, decorLabel );
+      int passValidSel          = this->PassValidationCuts ( eventInfo, inJets, decorLabel );
 
-      // control selections
-      int passCtrlSel     = this->PassControlCuts    ( eventInfo, inJets, decorLabel );
-
+      passAnySelection   += passSearchMinusOneSel;
+      passAnySelection   += passSearchSel;
       passAnySelection   += passSignalSel;
       passAnySelection   += passValidSel;
-      passAnySelection   += passCtrlSel;
 
       if ( m_decorateSelectedEvents ) {
-	eventInfo->auxdecor<char>("passSignalSel_" + decorLabel) = passSignalSel;
-	eventInfo->auxdecor<char>("passValidSel_"  + decorLabel) = passValidSel;
-	eventInfo->auxdecor<char>("passCtrlSel_"   + decorLabel) = passCtrlSel;
+	eventInfo->auxdecor<char>("passSearchMinusOneSel_" + decorLabel) = passSearchMinusOneSel;
+	eventInfo->auxdecor<char>("passSearchSel_"         + decorLabel) = passSearchSel;
+	eventInfo->auxdecor<char>("passSignalSel_"         + decorLabel) = passSignalSel;
+	eventInfo->auxdecor<char>("passValidSel_"          + decorLabel) = passValidSel;
       }
 
       if ( m_isNominalCase ) { // only count for nominal cases
 	m_numSignalEvents       .at(i) += passSignalSel;
 	m_numValidEvents        .at(i) += passValidSel;
-	m_numCtrlEvents         .at(i) += passCtrlSel;
-
 	m_numSignalWeightEvents .at(i) += ( passSignalSel * m_mcEventWeight );
 	m_numValidWeightEvents  .at(i) += ( passValidSel  * m_mcEventWeight );
-	m_numCtrlWeightEvents   .at(i) += ( passCtrlSel   * m_mcEventWeight );
       }
     }
     
@@ -530,7 +515,7 @@ EL::StatusCode EJsxAODAnalysis :: executeSelection ( const xAOD::EventInfo* even
 
 
 int EJsxAODAnalysis :: PassSignalCuts ( const xAOD::EventInfo* eventInfo, const xAOD::JetContainer* jets,
-					const std::string& decor_label )
+					const std::string& decor_label, int& passSearchMinusOne, int& passSearch )
 {
   // initialize decorators
   if ( m_isNominalCase && m_isFirstJetContainer )
@@ -620,10 +605,16 @@ int EJsxAODAnalysis :: PassSignalCuts ( const xAOD::EventInfo* eventInfo, const 
   if ( m_isNominalCase && m_useCutFlow && passJetEtaSel && doCutflowJets ) // jet-eta
     m_signal_cutflowHist ->Fill( m_signal_cutflow_jeteta, 1 );
   if ( !passJetEtaSel ) return 0;
+
+  // if we've gotten this far, we have "search minus one" region event
+  passSearchMinusOne = 1;
   
   if ( m_isNominalCase && m_useCutFlow && passNJetHtSel && doCutflowJets ) // njet-ht
     m_signal_cutflowHist ->Fill( m_signal_cutflow_njetHt, 1 );
   if ( !passNJetHtSel ) return 0;
+
+  // if we've gotten this far, we have "search" region event
+  passSearch = 1;
 
   // only apply nEJs selection for truth derivations for now...
   if ( m_truthLevelOnly ) {
@@ -732,17 +723,6 @@ int EJsxAODAnalysis :: PassValidationCuts ( const xAOD::EventInfo* eventInfo, co
   if ( m_isNominalCase && m_useCutFlow && passNJetMaxSel && doCutflowJets ) // n max jets
     m_valid_cutflowHist ->Fill( m_valid_cutflow_njetmax, 1 );
   if ( !passNJetMaxSel ) return 0;
-  
-  return 1;
-}
-
-
-
-int EJsxAODAnalysis :: PassControlCuts ( const xAOD::EventInfo* eventInfo, const xAOD::JetContainer* jets,
-					 const std::string& decor_label )
-{
-  // until we fill in, fail all...
-  return 0;
   
   return 1;
 }
