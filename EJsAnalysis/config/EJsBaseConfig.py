@@ -15,9 +15,9 @@ if systName != "":
 
 
 ## --- material map --- ##
-matMapPath = "$EJ_PATH/EJsAnalysis/data/material_map/"
+matMapPath = "EJsAnalysis/material_map/"
 ## --- metadata --- ##
-metadataPath = "$EJ_PATH/EJsAnalysis/data/"
+metadataPath = "EJsAnalysis/"
 
 
 ## --- trigger lists --- ##

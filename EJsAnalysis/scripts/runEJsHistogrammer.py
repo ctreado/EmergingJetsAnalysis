@@ -30,6 +30,8 @@ parser.add_argument( "--driver", dest = "driver", default = "direct", help = "Dr
 parser.add_argument( "--treeDir", dest = "treeDir", default = "EJsMiniNtup", help = "ROOT file sub-directory containing TTrees." )
 parser.add_argument( "--treeList", dest = "treeList", default = "", help = "Comma separated list of TTrees to process. \
                          If none specified, all trees in file (sub-directory) will be processed." )
+parser.add_argument( "--doDuplicates", dest = "doDuplicates", action = "store_true", default = False,
+                         help = "Run over duplicates ntuples (if in same directory as regular ntuples)." )
 # general job running arguments
 parser.add_argument( "--outDir", dest = "outDir", default = os.getenv('EJ_PATH') + "/../output/localOutput/latest/",
                          help = "Parent output directory where histograms and logs will finally be stored." )
@@ -57,6 +59,9 @@ def main():
         tagMatch = True
         for tag in tags:
             if not tag in inFile.split("/")[-1]:
+                tagMatch = False
+        if not args.doDuplicates:
+            if "duplicates" in inFile:
                 tagMatch = False
         if tagMatch:
             files.append( inFile )

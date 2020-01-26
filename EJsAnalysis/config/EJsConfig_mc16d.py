@@ -11,11 +11,12 @@ c = xAH_config()
 
 ## --- update configurations for mc16d --- ##
 
-data_path   = "$EJ_PATH/EJsAnalysis/data/"
+data_path   = "EJsAnalysis/"
 data17_path = data_path + "data17/"
+grl17_path  = "GoodRunsLists/data17_13TeV/20180619/"
 
 GRL_files       = [
-    data17_path + "data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml",
+    grl17_path  + "data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml",
     ]
 LumiCalc_files  = [
     data17_path + "physics_25ns_Triggerno17e33prim.lumicalc.OflLumi-13TeV-010.root",

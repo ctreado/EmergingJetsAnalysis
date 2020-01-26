@@ -11,11 +11,12 @@ c = xAH_config()
 
 # --- update configurations for all data18 --- ##
 
-data_path   = "$EJ_PATH/EJsAnalysis/data/"
+data_path   = "EJsAnalysis/"
 data18_path = data_path + "data18/"
+grl18_path  = "GoodRunsLists/data18_13TeV/20190318/"
 
 GRL_files       = [
-    data18_path + "data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml",
+    grl18_path  + "data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml",
     ]
 LumiCalc_files  = [
     data18_path + "ilumicalc_histograms_None_348885-364292_OflLumi-13TeV-010.root",

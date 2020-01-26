@@ -200,7 +200,7 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
     ANA_CHECK( HelperFunctions::retrieve( eventInfo, "EventInfo", m_event, m_store, msg() ) );
     m_mcChannelNumber         = eventInfo ->mcChannelNumber();
     
-    const char* metadataPath = gSystem->ExpandPathName( m_metadataFileName.c_str() );
+    const char* metadataPath = gSystem->ExpandPathName( PathResolverFindCalibFile( m_metadataFileName ).c_str() );
     std::ifstream m_metadataFile( metadataPath );
     delete [] metadataPath;
     

@@ -169,7 +169,7 @@ EL::StatusCode SecondaryVertexSelector :: initialize ()
   m_bonsaiCfg[ VsiBonsai::Config::cleanAssociatedD0   ] = m_doCleanAssociatedD0;
 
   // initialize material map(s)
-  TFile* m_matMapInnerFile = new TFile( m_matMapInnerFileName.c_str(), "READ" );
+  TFile* m_matMapInnerFile = new TFile( PathResolverFindCalibFile( m_matMapInnerFileName ).c_str(), "READ" );
   if ( m_matMapInnerFile->IsOpen() ) {
     m_matMapInnerFile->GetObject( m_matMapInnerHistName.c_str(),   m_materialMap_Inner  );
     m_matMapInnerFile->GetObject( m_matMapInnerMatrixName.c_str(), m_materialMap_Matrix );
@@ -181,7 +181,7 @@ EL::StatusCode SecondaryVertexSelector :: initialize ()
   m_matMapInnerFile->Close();
   delete m_matMapInnerFile;
 
-  TFile* m_matMapOuterFile = new TFile( m_matMapOuterFileName.c_str(), "READ" );
+  TFile* m_matMapOuterFile = new TFile( PathResolverFindCalibFile( m_matMapOuterFileName ).c_str(), "READ" );
   if ( m_matMapOuterFile->IsOpen() ) {
     m_matMapOuterFile->GetObject( m_matMapOuterHistName.c_str(), m_materialMap_Outer );
     if ( m_materialMap_Outer ) {

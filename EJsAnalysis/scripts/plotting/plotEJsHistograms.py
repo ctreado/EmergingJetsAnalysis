@@ -68,10 +68,20 @@ parser.add_argument( "--histList", dest = "histList", default = "",
 parser.add_argument( "--histVars", dest = "histVars", default = "",
                          help = "Comma-separated list of variable histogram types to plot on top of each other. \
                          The histograms corresponding to these variables should all contain the same base name to compare \
-                         parameters for different criteria (i.e. vertex positions for truth-matched vs un-matched vertices)" )
+                         parameters for different criteria (i.e. vertex positions for truth-matched vs un-matched vertices)." )
+parser.add_argument( "--sbdVars", dest = "sbdVars", default = "",
+                         help = "Comma-separated list of variable signal, background, and data histogram types to plot against each other. \
+                         The histograms corresponding to these variables should all contain the same base name to compare \
+                         parameters for different criteria (i.e. vertex positions for truth-matched vs un-matched vertices) \
+                         across different samples. Histogram types must be entered in signal-background-data order. \
+                         To omit given sample type, leave blank space. Colons can be used to submit multiple cases. \
+                         For example: '--sbdVars 2trkDV,,3trkDV:darkPionDV,nomatchDV' will plot 2-track signal DVs \
+                         vs 3-track data DVs and dark pion signal DVs vs unmatched background DVs." )
 parser.add_argument( "--varEnum", dest = "varEnum", type = int, default = 0,
-                         help = "Enumerator for variable histogram type (i.e. DV_MATCH, DV_NTRK). Input must be integer." )
+                         help = "Enumerator for variable histogram type (i.e. DV, DV_NTRK). Input must be integer." )
 # plotting options / configurations
+parser.add_argument( "--doMultiSmpl", dest = "doMultiSmpl", action = "store_true", default = False,
+                         help = "Plot histograms from different samples against each other." )
 parser.add_argument( "--draw1D", dest = "draw1D", action = "store_true", default = False, help = "Draw 1D stack plots." )
 parser.add_argument( "--drawOpt1D", dest = "drawOpt1D", default = "nostack hist", help = "Draw option(s) for 1D stack plots." )
 parser.add_argument( "--drawMulti1D", dest = "drawMulti1D", action = "store_true", default = False,
@@ -143,15 +153,15 @@ class legSize( Enum ):
     SML = 3
 
 class varType( Enum ):
-    NONE       = 0
-    DV_MATCH   = 1
-    DV_TRKTRIM = 2
-    DV_NTRK    = 3
+    NONE    = 0
+    DV      = 1
+    DV_NTRK = 2
 
-# set line colors and palettes 
-sgnlColors = [ ROOT.kRed, ROOT.kGreen + 1, ROOT.kBlue, ROOT.kViolet, ROOT.kOrange + 1 ] # one base color per model; one line / marker style per Xdm; one color (close to base) per lifetime
-bkgdColors = [ ROOT.kGray + 1 ]
-dataColors = [ ROOT.kBlack, ROOT.kGray+3, ROOT.kGray+2, ROOT.kGray+1 ] # TEMP PLACEHOLDERS --> FIX
+# set line colors and palettes
+# --> for signal: one base color per model; one line / marker style per Xdm; one color (close to base) per lifetime
+sgnlColors = [ ROOT.kRed, ROOT.kGreen + 1, ROOT.kBlue, ROOT.kViolet, ROOT.kOrange + 1 ]
+bkgdColors = [ ROOT.kGray + 2 ]
+dataColors = [ ROOT.kBlack, ROOT.kGray+3, ROOT.kGray+1, ROOT.kGray ] # TEMP PLACEHOLDERS --> FIX
 
 sgnlPalettes = [ ROOT.kCherry, ROOT.kAvocado, ROOT.kDeepSea, ROOT.kFuchsia, ROOT.kDarkBodyRadiator ]
 bkgdPalettes = [ ROOT.kGreyScale ]
@@ -352,8 +362,7 @@ def getHistList( histFiles, inTag, exTag ):
                         if any( oet.lower() in key.GetName().lower() for oet in orExTags ):
                             passedExTags = False
             if passedInTags and passedExTags:
-                if dir.Get( key.GetName() ).GetEntries():
-                    allHists[-1].append( key.GetName() )
+                allHists[-1].append( key.GetName() )
         
         f.Close()
 
@@ -490,19 +499,25 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, histNames, hists ):
                 plotABCD( hists, nsame, sampleNames, sampleTypes, sampleDicts )
 
 
-    # --> plot different histos from same samples against each other
+    # --> plot different histos from same or different samples against each other
     for iBase, base in enumerate( baseNames ):
         hists = varHists[iBase]
 
-        # draw 1D stack plots (multiple histos, single samples per plot)
         if args.drawMulti1D:
             if isinstance( hists[0], ROOT.TH1 ) and not isinstance( hists[0], ROOT.TH2 ):
-                for iS, sample in enumerate( sampleNames ):
-                    hb = iS     * len( args.histVars.split(',') )
-                    he = (iS+1) * len( args.histVars.split(',') )
-                    plotMulti1D( hists[hb:he], base, iS, sample, sampleTypes[iS], sampleDicts[iS] )
-                    plotMulti1D( hists[hb:he], base, iS, sample, sampleTypes[iS], sampleDicts[iS], True ) # log-y
-        
+                # draw 1D stack plots (multiple histos, single samples per plot)
+                if not args.doMultiSmpl:
+                    for iS, sample in enumerate( sampleNames ):
+                        hb = iS     * len( args.histVars.split(',') )
+                        he = (iS+1) * len( args.histVars.split(',') )
+                        plotMulti1D( hists[hb:he], base, sample, sampleTypes[iS], sampleDicts[iS] )
+                        plotMulti1D( hists[hb:he], base, sample, sampleTypes[iS], sampleDicts[iS], True ) # log-y
+                # draw 1D stack plots (multiple histos, multiple samples per plot)
+                if args.doMultiSmpl:
+                    for iSbd, sbd in enumerate( args.sbdVars.split(':') ):
+                        htitle = args.histTitle.split(':')[iSbd]
+                        plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle )
+                        plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, True ) # log-y
 
 
 
@@ -515,14 +530,17 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     hs = ROOT.THStack( histName, "" )
     # set legend
     l = configLeg( len(hists), legSize.SML )
-    
+
+    hslen = 0
     for iH, hist in enumerate( hists ):
+        # skip empty histograms
+        if not hist.GetEntries():
+            continue
+        
         # set line attributes
         hist.SetLineColorAlpha( sampleDicts[iH]["lcolor"], sampleDicts[iH]["lalpha"] )
-        hist.SetLineStyle     ( sampleDicts[iH]["lstyle"] )
-        hist.SetLineWidth(2)
-        if sampleDicts[iH]["lstyle"] != 1:
-            hist.SetLineWidth(3)
+        hist.SetLineStyle( sampleDicts[iH]["lstyle"] )
+        hist.SetLineWidth( setLineWidth( sampleDicts[iH]["lstyle"] ) )
         hist.Scale( 1 / hist.Integral() )
         # set maximum --> may want to play around with scale factors...
         maxy = hist.GetMaximum()
@@ -536,7 +554,11 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
         l.AddEntry( hist, setLegStr( sampleTypes[iH], sampleDicts[iH], False ) ).SetTextColor( sampleDicts[iH]["lcolor"] )
         # add histo to stack
         hs.Add( hist )
+        hslen += 1
 
+    if hslen == 0:
+        return
+    
     # draw stack
     hs.Draw( args.drawOpt1D )
     
@@ -544,8 +566,7 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     l.Draw()
     
     # set axes
-    xtitle = hist.GetXaxis().GetTitle()
-    hs.GetXaxis().SetTitle( xtitle )
+    hs.GetXaxis().SetTitle( setXaxisTitle( hist ) )
     hs.GetXaxis().SetTitleSize( 0.03 )
     hs.GetXaxis().SetTitleOffset( 1.4 )
 
@@ -556,13 +577,17 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
 
     # print plot
     outName = args.outName
-    if args.outName:
-        outName = "." + outName
-    cname = "th1." + histName + outName + "." + args.regionDir
+    moutDir = outDir
+    if outName:
+        moutDir = os.path.join( outDir, outName )
+        outName = outName + "."
+    cname = "th1." + outName + histName + "." + args.regionDir
     if doLogy:
         ROOT.gPad.SetLogy()
         cname += "_logy"
-    c.SaveAs( os.path.join( outDir, cname + args.format ) )
+    if not os.path.exists( moutDir ):
+        os.makedirs( moutDir )
+    c.SaveAs( os.path.join( moutDir, cname + args.format ) )
 
     # close canvas
     c.Update()
@@ -573,7 +598,7 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
 
 
 ## -- DRAW 1D MULTIVARIATE STACK PLOTS -- ##
-def plotMulti1D( hists, baseName, sampleIndex, sampleName, sampleType, sampleDict, doLogy = False ):
+def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = False ):
 
     # set canvas
     c = ROOT.TCanvas( baseName )
@@ -582,19 +607,21 @@ def plotMulti1D( hists, baseName, sampleIndex, sampleName, sampleType, sampleDic
     # set legend
     l = configLeg( len(hists), legSize.SML, True )
 
+    hslen = 0
     for iH, hist in enumerate( hists ):
+        # skip empty histograms
+        if not hist.GetEntries():
+            continue
+        
         # set line attributes
         lcolor = sgnlColors[iH]
         lalpha = 1.00
         if iH:
             lalpha = 0.65
         lstyle = 1
-        lwidth = 2
-        if lstyle != 1:
-            lwidth = 3
         hist.SetLineColorAlpha( lcolor, lalpha )
-        hist.SetLineStyle     ( lstyle )
-        hist.SetLineWidth     ( lwidth )
+        hist.SetLineStyle( lstyle )
+        hist.SetLineWidth( setLineWidth( lstyle ) )
         hist.Scale( 1 / hist.Integral() )
         # set maximum --> may want to play around with scale factors...
         maxy = hist.GetMaximum()
@@ -604,9 +631,13 @@ def plotMulti1D( hists, baseName, sampleIndex, sampleName, sampleType, sampleDic
             maxy *= 1.2
         hist.SetMaximum( maxy )
         # add legend entry
-        l.AddEntry( hist, setMultiLegStr( hist.GetName().split('_')[1] ) )
+        l.AddEntry( hist, setMultiLegStr( hist.GetName().split('_')[1], sampleType, sampleDict ) ).SetTextColor( lcolor )
         # add histo to stack
         hs.Add( hist )
+        hslen += 1
+
+    if hslen == 0:
+        return
 
     # draw stack
     hs.Draw( args.drawOptMulti1D )
@@ -615,11 +646,7 @@ def plotMulti1D( hists, baseName, sampleIndex, sampleName, sampleType, sampleDic
     l.Draw()
 
     # set titles and axes
-    xtitle = hist.GetXaxis().GetTitle()
-    varEnum = varType( args.varEnum )
-    if varEnum == varType.DV_MATCH or varEnum == varType.DV_TRKTRIM or varEnum == varType.DV_NTRK:
-        xtitle = "DV" + xtitle.split('DV')[-1]
-    hs.GetXaxis().SetTitle( xtitle )
+    hs.GetXaxis().SetTitle( setXaxisTitle( hist, True ) )
     hs.GetXaxis().SetTitleSize( 0.03 )
     hs.GetXaxis().SetTitleOffset( 1.4 )
 
@@ -634,18 +661,17 @@ def plotMulti1D( hists, baseName, sampleIndex, sampleName, sampleType, sampleDic
     if outName:
         baseName = outName + "." + baseName
     bname = ""
-    if   varType( args.varEnum ) == varType.DV_MATCH:
-        bname = "matchDV"
-    elif varType( args.varEnum ) == varType.DV_TRKTRIM:
-        bname = "trkTrimDV"
+    if   varType( args.varEnum ) == varType.DV:
+        bname = "vsDV"
     elif varType( args.varEnum ) == varType.DV_NTRK:
         bname = "ntrkDV"
     if bname:
         baseName = bname + "." + baseName
+    if outName:
+        outName = bname + "." + outName
     cname = "th1.multi." + baseName + "." + sampleName + "." + args.regionDir
-
     # --> set output subdirectory
-    moutDir = os.path.join( outDir, bname, sampleName )
+    moutDir = os.path.join( outDir, outName, sampleName )
     if not os.path.exists( moutDir ):
         os.makedirs( moutDir )
     # --> set logy
@@ -661,6 +687,100 @@ def plotMulti1D( hists, baseName, sampleIndex, sampleName, sampleType, sampleDic
     c.Close()
     del c
 
+
+
+## --- DRAW 1D MULTIVARIATE / MULTI-SAMPLE STACK PLOTS --- ##
+def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle, doLogy = False ):
+
+    # set canvas
+    c  = ROOT.TCanvas( baseName )
+    # set stack
+    hs = ROOT.THStack( baseName, "" )
+    # set legend
+    l  = configLeg( len(hists)/len(args.histVars.split(',')), legSize.SML, True )
+
+    hslen = 0
+    for iH, hist in enumerate( hists ):
+        # skip empty histograms
+        if not hist.GetEntries():
+            continue
+
+        # skip histograms not corresponding to given sbdVar, sampleType
+        sampleHistMatch = False
+        for iSBD, sbd in enumerate( sbdVars.split(',') ):
+            if sampleType( iSBD+1 ) == sampleTypes[iH/len(args.histVars.split(','))]:
+                if sbd and sbd.lower() in hist.GetName().lower():
+                    sampleHistMatch = True
+        if not sampleHistMatch:
+            continue
+            
+        # set line attributes
+        hist.SetLineColorAlpha( sampleDicts[iH/len(args.histVars.split(','))]["lcolor"],
+                                sampleDicts[iH/len(args.histVars.split(','))]["lalpha"] )
+        hist.SetLineStyle( sampleDicts[iH/len(args.histVars.split(','))]["lstyle"] )
+        hist.SetLineWidth( setLineWidth( sampleDicts[iH/len(args.histVars.split(','))]["lstyle"] ) )
+        hist.Scale( 1 / hist.Integral() )
+        # set maximum --> may want to play around with scale factors...
+        maxy = hist.GetMaximum()
+        if doLogy:
+            maxy *= 4
+        else:
+            maxy *= 1.2
+        hist.SetMaximum( maxy )
+        # add legend entry
+        l.AddEntry( hist, setMultiLegStr( hist.GetName().split('_')[1],
+           sampleTypes[iH/len(args.histVars.split(','))],
+           sampleDicts[iH/len(args.histVars.split(','))] ) ).SetTextColor( sampleDicts[iH/len(args.histVars.split(','))]["lcolor"] )
+        # add histo to stack
+        hs.Add( hist )
+        hslen += 1
+
+    if hslen == 0:
+        return
+
+    # draw stack
+    hs.Draw( args.drawOptMulti1D )
+
+    # draw legend
+    l.Draw()
+
+    # set titles and axes
+    hs.GetXaxis().SetTitle( setXaxisTitle( hist, True ) )
+    hs.GetXaxis().SetTitleSize( 0.03 )
+    hs.GetXaxis().SetTitleOffset( 1.4 )
+
+    # add text
+    text = configText( htitle )
+    for txt in text:
+        txt.Draw("same")
+        
+    # print plot
+    # --> set output plot name
+    outName = args.outName
+    if outName:
+        baseName = outName + "." + baseName
+    bname = ""
+    for sbd in sbdVars.split(','):
+        if sbd:
+            bname += sbd + "."
+    baseName = bname + baseName
+    cname = "th1.multi." + baseName + "." + args.regionDir
+    # --> set output subdirectory
+    moutDir = os.path.join( outDir, bname[:-1] )
+    if not os.path.exists( moutDir ):
+        os.makedirs( moutDir )
+    # --> set logy
+    if doLogy:
+        ROOT.gPad.SetLogy()
+        cname += "_logy"
+    # --> save
+    c.SaveAs( os.path.join( moutDir, cname + args.format ) )
+
+    # close canvas
+    c.Update()
+    c.Clear()
+    c.Close()
+    del c
 
     
 
@@ -714,6 +834,8 @@ def plot2D( hist, histName, sampleName, sampleType, sampleDict ):
 ## --- MAKE ABCD PLOTS --- ##
 def plotABCD( hists, histName, sampleNames, sampleTypes, sampleDicts ):
 
+    print "in plotABCD()"
+    
     # set canvas
     c = ROOT.TCanvas( histName, histName, 1100, 800 )
 
@@ -957,6 +1079,7 @@ def getMaxBinContent( hist ):
 def configLeg( nEntries, size = legSize.BIG, doMulti = False ):
 
     # --> may need some more configuration, like for long legends when plotting many samples on same plot...
+    # --> --> need to update so legends with smaller strings are further shifted to right...
     
     if   size == legSize.BIG:
         xl   = 0.500
@@ -964,17 +1087,17 @@ def configLeg( nEntries, size = legSize.BIG, doMulti = False ):
         yt   = 0.870
         yint = 0.030
     elif size == legSize.SML:
-        xl   = 0.625
+        xl   = 0.600
         xr   = 0.900
         yt   = 0.870
         yint = 0.030
 
     if doMulti:
         varEnum = varType( args.varEnum )
-        if   varEnum == varType.DV_TRKTRIM:
+        if varEnum == varType.DV_NTRK:
             xl = xl + 0.15
-        elif varEnum == varType.DV_NTRK:
-            xl = xl + 0.10
+    if args.doMultiSmpl:
+        xl = xl - 0.10
         
     yb = yt - yint * nEntries
     
@@ -1008,40 +1131,64 @@ def setLegStr( sampleType, sampleDict, longstr = True ):
 
 
 # set strings for multivariate legend entries
-def setMultiLegStr( histName ):
+def setMultiLegStr( histName, sampleType, sampleDict ):
 
     varEnum = varType( args.varEnum )
-    if varEnum == varType.DV_MATCH:
-        if   "darkPionDV".lower() in histName.lower():
-            legend_string = "dark-pion-decay matched"
-        elif "kshortDV"  .lower() in histName.lower():
-            legend_string = "k-short-decay matched"
-        elif "nomatchDV" .lower() in histName.lower():
-            legend_string = "unmatched"
-        else:
-            legend_string = histName
-    elif varEnum == varType.DV_TRKTRIM:
-        if   "bareDV" .lower() in histName.lower():
-            legend_string = "bare DV"
-        elif "cleanDV".lower() in histName.lower():
-            legend_string = "clean DV"
-        elif "filtDV" .lower() in histName.lower():
-            legend_string = "filtered DV"
-        else:
+    if varEnum == varType.DV:
+        legend_string = ""
+        if "byJet"     .lower() in histName.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "by-jet"
+        if "byLeadJet" .lower() in histName.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "by-lead-jet"
+        if "fiducial"  .lower() in histName.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "fiducial-cut"
+        if "bareDV"    .lower() in histName.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "bare"
+        if "cleanDV"   .lower() in histName.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "clean"
+        if "filtDV"    .lower() in histName.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "filtered"
+        if "darkPionDV".lower() in histName.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "dark-pion-decay matched"
+        if "kshortDV"  .lower() in histName.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "k-short-decay matched"
+        if "nomatchDV" .lower() in histName.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "unmatched"
+        if not legend_string:
             legend_string = histName
     elif varEnum == varType.DV_NTRK:
         if histName.startswith("2trk"):
-            legend_string = "2-track DV"
+            legend_string = "2-track"
         elif histName.startswith("3trk"):
-            legend_string = "3-track DV"
+            legend_string = "3-track"
         elif histName.startswith("4trk"):
-            legend_string = "4-track DV"
+            legend_string = "4-track"
         elif histName.startswith("5trk"):
-            legend_string = "5-plus-track DV"
+            legend_string = "5-plus-track"
         else:
             legend_string = histName
     elif varEnum == varType.NONE:
         legend_string = histName
+    if args.doMultiSmpl:
+        legend_string += " " + setLegStr( sampleType, sampleDict, False )
 
     return legend_string
 
@@ -1087,6 +1234,76 @@ def configText( titleStr ):
     txtlist.append( regtxt  )
 
     return txtlist
+
+
+# set x-axis title
+def setXaxisTitle( hist, doMulti = False ):
+    xtitle = hist.GetXaxis().GetTitle()
+
+    if doMulti:
+        varEnum  = varType( args.varEnum )
+        histName = hist.GetName().split('_')[1]
+        if varEnum != varType.NONE:
+            xtitle = "DV" + xtitle.split('DV')[-1]
+            if   varEnum == varType.DV:
+                if   histName.startswith("2trk"):
+                    xtitle = "2-track " + xtitle
+                elif histName.startswith("3trk"):
+                    xtitle = "3-track " + xtitle
+                elif histName.startswith("4trk"):
+                    xtitle = "4-track " + xtitle
+                elif histName.startswith("5trk"):
+                    xtitle = "5-plus-track " + xtitle
+            elif varEnum == varType.DV_NTRK:
+                title = ""
+                if "byJet" .lower() in histName.lower():
+                    if title:
+                        title += " "
+                    title += "by-jet"
+                if "byLeadJet" .lower() in histName.lower():
+                    if title:
+                        title += " "
+                    title += "by-lead-jet"
+                if "fiducial" .lower() in histName.lower():
+                    if title:
+                        title += " "
+                    title += "fiducial-cut"
+                if "bareDV".lower() in histName.lower():
+                    if title:
+                        title += " "
+                    title += "bare"
+                if "cleanDV".lower() in histName.lower():
+                    if title:
+                        title += " "
+                    title += "clean"
+                if "filtDV".lower() in histName.lower():
+                    if title:
+                        title += " "
+                    title += "filtered"
+                if "darkPionDV".lower() in histName.lower():
+                    if title:
+                        title += " "
+                    title += "dark-pion-decay matched"
+                if "kshortDV".lower() in histName.lower():
+                    if title:
+                        title += " "
+                    title += "k-short-decay matched"
+                if "nomatchDV".lower() in histName.lower():
+                    if title:
+                        title += " "
+                    title += "unmatched"
+                xtitle = title + " " + xtitle
+
+    return xtitle
+
+
+# set line width
+def setLineWidth( lstyle ):
+    lwidth = 2
+    if lstyle != 1:
+        lwidth = 4
+
+    return lwidth
 
 
 # get lumicalc info for scaling data subset to desired lumi
@@ -1244,7 +1461,7 @@ def getSampleDict( sampleName, sampleType ):
             "lcolor"  : color,       # line color
             "palette" : palette,     # color palette
             "lstyle"  : style,       # line style
-            "lalpha"  : 0.75,        # line color alpha
+            "lalpha"  : 0.65,        # line color alpha
         }
     # data sample dictionary
     if sampleType == sampleType.DATA:

@@ -11,17 +11,21 @@ c = xAH_config()
 
 ## --- update configurations for all data years --- ##
 
-data_path   = "$EJ_PATH/EJsAnalysis/data/"
+data_path   = "EJsAnalysis/"
 data15_path = data_path + "data15/"
 data16_path = data_path + "data16/"
 data17_path = data_path + "data17/"
 data18_path = data_path + "data18/"
+grl15_path  = "GoodRunsLists/data15_13TeV/20170619/"
+grl16_path  = "GoodRunsLists/data16_13TeV/20180129/"
+grl17_path  = "GoodRunsLists/data17_13TeV/20180619/"
+grl18_path  = "GoodRunsLists/data18_13TeV/20190318/"
 
 GRL_files       = [
-    data15_path + "data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml",
-    data16_path + "data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml",
-    data17_path + "data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml",
-    data18_path + "data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml",
+    grl15_path  + "data15_13TeV.periodAllYear_DetStatus-v89-pro21-02_Unknown_PHYS_StandardGRL_All_Good_25ns.xml",
+    grl16_path  + "data16_13TeV.periodAllYear_DetStatus-v89-pro21-01_DQDefects-00-02-04_PHYS_StandardGRL_All_Good_25ns.xml",
+    grl17_path  + "data17_13TeV.periodAllYear_DetStatus-v99-pro22-01_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml",
+    grl18_path  + "data18_13TeV.periodAllYear_DetStatus-v102-pro22-04_Unknown_PHYS_StandardGRL_All_Good_25ns_Triggerno17e33prim.xml",
     ]
 LumiCalc_files  = [
     data15_path + "PHYS_StandardGRL_All_Good_25ns_276262-284484_OflLumi-13TeV-008.root",

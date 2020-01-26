@@ -98,6 +98,9 @@ namespace EJsHelperClasses {
     bool m_bareVerts;
     bool m_cleanVerts;
     bool m_filtVerts;
+    bool m_byJetVerts;
+    bool m_fiducialVerts;
+    bool m_ksmVerts;
     bool m_vtxTruth;
     bool m_vtxTrks;
     bool m_llps;
