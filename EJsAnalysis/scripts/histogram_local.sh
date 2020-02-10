@@ -6,8 +6,8 @@
 input_local="$EJ_PATH/../output/localOutput/latest/tree/"
 output_local="$EJ_PATH/../output/localOutput/latest/"
 # grid produced ntuples
-input_grid="$EJ_PATH/../output/gridOutput/latest/tree/"
-output_grid="$EJ_PATH/../output/gridOutput/latest/"
+input_grid="$EJ_PATH/../output/gridOutput/v0_2020-01_n1/tree/"
+output_grid="$EJ_PATH/../output/gridOutput/v0_2020-01_n1/"
 
 # run over ALL LATEST trees
 #runEJsHistogrammer.py --inDir ${input_local} --outDir ${output_local} --renameAndMove --mergeDatasets
@@ -22,7 +22,7 @@ intags_data="data"
 # run over SUB-SET of trees
 intags_a="mc16,ModelA"
 intags_bkgd="jetjet"
-#intags_17="data17"
+intags_17="data17"
 #runEJsHistogrammer.py --inDir ${input_local} --outDir ${output_local} --inTags ${intags_a}    --mergeDatasets --renameAndMove
 #runEJsHistogrammer.py --inDir ${input_local} --outDir ${output_local} --inTags ${intags_bkgd} --mergeDatasets --renameAndMove
 #runEJsHistogrammer.py --inDir ${input_local} --outDir ${output_local} --inTags ${intags_17}   --mergeDatasets --renameAndMove
@@ -30,11 +30,11 @@ intags_bkgd="jetjet"
 ####################### LOCAL TESTS #######################
 # run over benchmark mc / single data year trees
 input_bench="$EJ_PATH/../output/localOutput/tmp_search-minus-one/tree/"
-#output_bench="$EJ_PATH/../output/localOutput/tmp_search-minus-one/"
-output_bench="$EJ_PATH/../run/tmp_hist_test/"
-intags_mc="mc16,ModelA"
-intags_17="data17,331804"
-runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_bench} --inTags ${intags_mc}   --mergeDatasets --renameAndMove
+output_bench="$EJ_PATH/../output/localOutput/tmp_search-minus-one/"
+output_test="$EJ_PATH/../run/test.histos/"
+intags_04="312028"
+runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_04}   --mergeDatasets --renameAndMove
+#runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_bench} --inTags ${intags_mc}   --mergeDatasets --renameAndMove
 #runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_bench} --inTags ${intags_17}   --mergeDatasets --renameAndMove
 
 # run over latest TRIGGER mc trees

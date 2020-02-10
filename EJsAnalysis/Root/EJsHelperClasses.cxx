@@ -64,8 +64,11 @@ namespace EJsHelperClasses {
     m_byJetVerts        = has_exact( "byJetVerts"        );
     m_fiducialVerts     = has_exact( "fiducialVerts"     );
     m_ksmVerts          = has_exact( "ksmVerts"          );
+    m_ptVerts           = has_exact( "ptVerts"           );
     m_vtxTruth          = has_exact( "vtxTruth"          );
     m_vtxTrks           = has_exact( "vtxTrks"           );
+    m_vtxErrors         = has_exact( "vtxErrors"         );
+    m_vtx2D             = has_exact( "vtx2D"             );
     m_llps              = has_exact( "llps"              );
     m_darkPions         = has_exact( "darkPions"         );
     m_kshorts           = has_exact( "kshorts"           );

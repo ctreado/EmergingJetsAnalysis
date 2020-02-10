@@ -949,22 +949,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 
 
     // --- SECONDARY VERTICES -- //
-    // // vertices: basics / kinematics
-    // h_DV_n .push_back( book( name, "DV_n", "n secondary vertices", 15, 0, 15 ) );
-    // // vertices nearby to (lead) jets
-    // h_byJetDV_n     .push_back( book( name, "byJetDV_n",     "n DVs w/in dR=0.6 of "           + m_jetStr + " jets", 12, 0, 12 ) );
-    // h_byLeadJetDV_n .push_back( book( name, "byLeadJetDV_n", "n DVs w/in dR=0.6 of N leading " + m_jetStr + " jets", 10, 0, 10 ) );
-
     std::vector<std::string> hDV;
     std::vector<std::string> hDVstr;
 
-    // fix k-short mass window removal --> try one at a time (don't add to dark pions yet)
-    // --> make sure to initialize all new vertex types (set counters)
     // add clean+final, track trim matched (ie. clean dark pions, filtered dark pions), combined (i.e. fiducial + ksm), other cuts (i.e. mind0)
-    // add config switch to turn off all histograms but counters (to turn "doHists" on or off)
     // fix abcd plotting / calculation -- add separate calc python script for counting, estimating, scaled estimating, etc.
     // add efficiency plots / calculations (to / as supplement to python plotting script)
-    
     
     // bare vertices (at least two tracks)
     std::string bDV    = "bare";
@@ -1012,23 +1002,54 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       hDVstr .push_back( fidDVstr + "DV" );
       ++m_nTypeDVs.at(ireg);
     }
-    // // vertices w/ k-short mass window removed (loose = 2-track bare mass b/w 450-550 MeV; tight = bare mass above 550 MeV)
-    // std::string ksmlDV    = "ksmLoose";
-    // std::string ksmlDVstr = "ksm-loose-cut ";
-    // if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ksmVerts ) {
-    //   hDV    .push_back( ksmlDV    + "DV" );
-    //   hDVstr .push_back( ksmlDVstr + "DV" );
-    //   ++m_nTypeDVs.at(ireg);
-    // }
+    // vertices w/ k-short mass window removed
+    std::string ksmDV    = "ksm";
+    std::string ksmDVstr = "ksm-cut ";
+    if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ksmVerts ) {
+      hDV    .push_back( ksmDV    + "DV" );
+      hDVstr .push_back( ksmDVstr + "DV" );
+      ++m_nTypeDVs.at(ireg);
+    }
+    // vertices passing low-pt cut
+    std::string ptDV   = "pt";
+    std::string ptDVstr = "pt-cut";
+    if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ptVerts ) {
+      hDV    .push_back( ptDV    + "DV" );
+      hDVstr .push_back( ptDVstr + "DV" );
+      ++m_nTypeDVs.at(ireg);
+    }
+    // mind0, maxd0, minz0, maxz0, sumd0, sumz0, mind0err, minz0err (maxd0err, maxz0err) --> start with individual cuts, then look at combinations...
+    // --> also don't forget to add to truth matched DVs; can turn off k-shorts, unmatched for now...
     // truth-matched vertices (testing matching criteria)
     // --> matching criteria:
-    // --> --> v0 = match score > 0; no requirement on number / type of truth matches (may be matched to both multiple llps)
-    // --> add other versions of matching criteria; add clean/filtered truth-matched DVs ...
+    // --> --> v0 = match score > 0; no requirement on number / type of truth matches (may be matched to both multiple llps); ...
+    // --> --> ... matched to BARE DVs
+    // --> --> other versions of matching criteria (including clean/filtered truth-matched DVs) ...
     if ( m_mc && m_histoInfoSwitch->m_vtxTruth ) {
-      std::vector<std::string> mDV     = { "darkPionDV",   "kshortDV",    "nomatchDV"    };
-      std::vector<std::string> mDVstr  = { "dark pion DV", "k-short DV",  "unmatched DV" };
-      std::vector<std::string> miDV    = { jDV,    ljDV,    fidDV    };
-      std::vector<std::string> miDVstr = { jDVstr, ljDVstr, fidDVstr };
+      //std::vector<std::string> mDV     = { "darkPionDV",   "kshortDV",    "nomatchDV"    };
+      //std::vector<std::string> mDVstr  = { "dark pion DV", "k-short DV",  "unmatched DV" };
+      std::vector<std::string> mDV     = { "darkPionDV"   };
+      std::vector<std::string> mDVstr  = { "dark pion DV" };
+      std::vector<std::string> miDV;
+      std::vector<std::string> miDVstr;
+      if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_byJetVerts ) {
+	miDV    .push_back( jDV     );
+	miDV    .push_back( ljDV    );
+	miDVstr .push_back( jDVstr  );
+	miDVstr .push_back( ljDVstr );
+      }
+      if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_fiducialVerts ) {
+	miDV    .push_back( fidDV    );
+	miDVstr .push_back( fidDVstr );
+      }
+      if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ksmVerts ) {
+	miDV    .push_back( ksmDV    );
+	miDVstr .push_back( ksmDVstr );
+      }
+      if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ptVerts ) {
+	miDV    .push_back( ptDV    );
+	miDVstr .push_back( ptDVstr );
+      }
       for ( size_t i = 0; i != mDV.size(); ++i ) {
 	hDV    .push_back( mDV    .at(i) );
 	hDVstr .push_back( mDVstr .at(i) );
@@ -1053,6 +1074,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     std::vector<TH1F*> h_dv_r_s;
     std::vector<TH1F*> h_dv_phipos;
     std::vector<TH1F*> h_dv_pt;
+    std::vector<TH1F*> h_dv_pt_s;
+    std::vector<TH1F*> h_dv_pt_xs;
     std::vector<TH1F*> h_dv_eta;
     std::vector<TH1F*> h_dv_phi;
     std::vector<TH1F*> h_dv_mass;
@@ -1318,11 +1341,30 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     std::vector<std::vector<TH1F*>> h_ntrkdv_r_s;
     std::vector<std::vector<TH1F*>> h_ntrkdv_mass;
     std::vector<std::vector<TH1F*>> h_ntrkdv_mass_s;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_mass_xs;
     std::vector<std::vector<TH1F*>> h_ntrkdv_direction;
     std::vector<std::vector<TH1F*>> h_ntrkdv_minOpAng;
     std::vector<std::vector<TH1F*>> h_ntrkdv_maxOpAng;
     std::vector<std::vector<TH1F*>> h_ntrkdv_chi2;
     std::vector<std::vector<TH1F*>> h_ntrkdv_chi2_s;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_sumd0;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_sumz0;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_sumP;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_sumd0_sv;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_sumz0_sv;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_sumP_sv;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_mind0;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_minz0;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_minP;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_mind0_sv;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_minz0_sv;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_minP_sv;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_maxd0;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_maxz0;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_maxP;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_maxd0_sv;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_maxz0_sv;
+    std::vector<std::vector<TH1F*>> h_ntrkdv_maxP_sv;
     std::vector<std::vector<TH1F*>> h_ntrkdv_sqrterrx;
     std::vector<std::vector<TH1F*>> h_ntrkdv_sqrterry;
     std::vector<std::vector<TH1F*>> h_ntrkdv_sqrterrz;
@@ -1348,57 +1390,61 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     std::vector<std::vector<TH1F*>> h_ntrkdv_maxSqrterrP_sv;
     for ( size_t i = 0; i != hDV.size(); ++i ) {
       // vertex basics
-      h_dv_n          .push_back( book( name, hDV.at(i) + "_n",          "n " + hDVstr.at(i) + "s",                   15,    0,  15 ) );
-      h_dv_x          .push_back( book( name, hDV.at(i) + "_x",          hDVstr.at(i) + " x-pos [mm]",               100, -400,  400 ) );
-      h_dv_y          .push_back( book( name, hDV.at(i) + "_y",          hDVstr.at(i) + " y-pos [mm]",               100, -400,  400 ) );
-      h_dv_z          .push_back( book( name, hDV.at(i) + "_z",          hDVstr.at(i) + " z-pos [mm]",               100, -800,  800 ) );
-      h_dv_r          .push_back( book( name, hDV.at(i) + "_r",          hDVstr.at(i) + " r-pos [mm]",               100,    0,  400 ) );
-      h_dv_x_s        .push_back( book( name, hDV.at(i) + "_x_s",        hDVstr.at(i) + " x-pos [mm]",               100, -300,  300 ) );
-      h_dv_y_s        .push_back( book( name, hDV.at(i) + "_y_s",        hDVstr.at(i) + " y-pos [mm]",               100, -300,  300 ) );
-      h_dv_z_s        .push_back( book( name, hDV.at(i) + "_z_s",        hDVstr.at(i) + " z-pos [mm]",               100, -300,  300 ) );
-      h_dv_r_s        .push_back( book( name, hDV.at(i) + "_r_s",        hDVstr.at(i) + " r-pos [mm]",               100,    0,  300 ) );
-      h_dv_phipos     .push_back( book( name, hDV.at(i) + "_phipos",     hDVstr.at(i) + " phi-pos",                  100, -3.5,  3.5 ) );
-      h_dv_pt         .push_back( book( name, hDV.at(i) + "_pt",         hDVstr.at(i) + " p_{T} [GeV]",              100,    0,  100 ) );
-      h_dv_eta        .push_back( book( name, hDV.at(i) + "_eta",        hDVstr.at(i) + " eta",                      100,   -5,    5 ) );
-      h_dv_phi        .push_back( book( name, hDV.at(i) + "_phi",        hDVstr.at(i) + " phi",                      100, -3.5,  3.5 ) );
-      h_dv_mass       .push_back( book( name, hDV.at(i) + "_mass",       hDVstr.at(i) + " mass [GeV]",               100,    0,   50 ) );
-      h_dv_mass_l     .push_back( book( name, hDV.at(i) + "_mass_l",     hDVstr.at(i) + " mass [GeV]",               100,    0,  100 ) );
-      h_dv_mass_s     .push_back( book( name, hDV.at(i) + "_mass_s",     hDVstr.at(i) + " mass [GeV]",               100,    0,   25 ) );
-      h_dv_mass_xs    .push_back( book( name, hDV.at(i) + "_mass_xs",    hDVstr.at(i) + " mass [GeV]",               100,    0,    5 ) );
-      h_dv_massNA     .push_back( book( name, hDV.at(i) + "_massNA",     hDVstr.at(i) + " non-assoc. mass [GeV]",    100,    0,   50 ) );
-      h_dv_massNA_l   .push_back( book( name, hDV.at(i) + "_massNA_l",   hDVstr.at(i) + " non-assoc. mass [GeV]",    100,    0,  100 ) );
-      h_dv_massNA_s   .push_back( book( name, hDV.at(i) + "_massNA_s",   hDVstr.at(i) + " non-assoc. mass [GeV]",    100,    0,   25 ) );
-      h_dv_massNA_xs  .push_back( book( name, hDV.at(i) + "_massNA_xs",  hDVstr.at(i) + " non-assoc. mass [GeV]",    100,    0,    5 ) );
-      h_dv_direction  .push_back( book( name, hDV.at(i) + "_direction",  hDVstr.at(i) + " direction",                100, -1.1,  1.1 ) );
-      h_dv_minOpAng   .push_back( book( name, hDV.at(i) + "_minOpAng",   hDVstr.at(i) + " cos min opening angle",    100, -1.1,  1.1 ) );
-      h_dv_maxOpAng   .push_back( book( name, hDV.at(i) + "_maxOpAng",   hDVstr.at(i) + " cos max opening angle",    100, -1.1,  1.1 ) );
-      h_dv_chi2       .push_back( book( name, hDV.at(i) + "_chi2",       hDVstr.at(i) + " chi2 / nDoF",              100,    0,   10 ) );
-      h_dv_chi2_s     .push_back( book( name, hDV.at(i) + "_chi2_s",     hDVstr.at(i) + " chi2 / nDoF",              100,    0,    5 ) );
-      h_dv_ntrk       .push_back( book( name, hDV.at(i) + "_ntrk",       "n " + hDVstr.at(i) + " tracks",             10,    2,   12 ) );
-      h_dv_ntrk_final .push_back( book( name, hDV.at(i) + "_ntrk_final", "n " + hDVstr.at(i) + " final tracks",       10,    2,   12 ) );
-      h_dv_ntrk_sel   .push_back( book( name, hDV.at(i) + "_ntrk_sel",   "n " + hDVstr.at(i) + " selected tracks",    10,    2,   12 ) );
-      h_dv_ntrk_assoc .push_back( book( name, hDV.at(i) + "_ntrk_assoc", "n " + hDVstr.at(i) + " associated tracks",  10,    2,   12 ) );
-      h_dv_ntrk_lrt   .push_back( book( name, hDV.at(i) + "_ntrk_lrt",   "n " + hDVstr.at(i) + " large-radius tracks",10,    2,   12 ) );
-      h_dv_errx       .push_back( book( name, hDV.at(i) + "_errx",       hDVstr.at(i) + " x-pos uncert.",            100,    0,   25 ) );
-      h_dv_erry       .push_back( book( name, hDV.at(i) + "_erry",       hDVstr.at(i) + " y-pos uncert.",            100,    0,   25 ) );
-      h_dv_errz       .push_back( book( name, hDV.at(i) + "_errz",       hDVstr.at(i) + " z-pos uncert.",            100,    0,   25 ) );
-      h_dv_errr       .push_back( book( name, hDV.at(i) + "_errr",       hDVstr.at(i) + " r-pos uncert.",            100,    0,   25 ) );
-      h_dv_errphi     .push_back( book( name, hDV.at(i) + "_errphi",     hDVstr.at(i) + " phi uncert.",              100,    0, 0.15 ) );
-      h_dv_sqrterrx   .push_back( book( name, hDV.at(i) + "_sqrterrx",   hDVstr.at(i) + " x-pos sqrt-uncert.",       100,    0,    5 ) );
-      h_dv_sqrterry   .push_back( book( name, hDV.at(i) + "_sqrterry",   hDVstr.at(i) + " y-pos sqrt-uncert.",       100,    0,    5 ) );
-      h_dv_sqrterrz   .push_back( book( name, hDV.at(i) + "_sqrterrz",   hDVstr.at(i) + " z-pos sqrt-uncert.",       100,    0,    5 ) );
-      h_dv_sqrterrr   .push_back( book( name, hDV.at(i) + "_sqrterrr",   hDVstr.at(i) + " r-pos sqrt-uncert.",       100,    0,    5 ) );
-      h_dv_sqrterrphi .push_back( book( name, hDV.at(i) + "_sqrterrphi", hDVstr.at(i) + " phi sqrt-uncert.",         100,    0,  0.4 ) );
-      h_dv_fracerrx   .push_back( book( name, hDV.at(i) + "_fracerrx",   hDVstr.at(i) + " x-pos fractional uncert.", 100,    0,  0.1 ) );
-      h_dv_fracerry   .push_back( book( name, hDV.at(i) + "_fracerry",   hDVstr.at(i) + " y-pos fractional uncert.", 100,    0,  0.1 ) );
-      h_dv_fracerrz   .push_back( book( name, hDV.at(i) + "_fracerrz",   hDVstr.at(i) + " z-pos fractional uncert.", 100,    0,  0.1 ) );
-      h_dv_fracerrr   .push_back( book( name, hDV.at(i) + "_fracerrr",   hDVstr.at(i) + " r-pos fractional uncert.", 100,    0,  0.1 ) );
-      h_dv_fracerrphi .push_back( book( name, hDV.at(i) + "_fracerrphi", hDVstr.at(i) + " phi fractional uncert.",   100,    0,  0.1 ) );
-      h_dv_signifx    .push_back( book( name, hDV.at(i) + "_signifx",    hDVstr.at(i) + " x-pos significance",       100,    0, 1000 ) );
-      h_dv_signify    .push_back( book( name, hDV.at(i) + "_signify",    hDVstr.at(i) + " y-pos significance",       100,    0, 1000 ) );
-      h_dv_signifz    .push_back( book( name, hDV.at(i) + "_signifz",    hDVstr.at(i) + " z-pos significance",       100,    0, 1000 ) );
-      h_dv_signifr    .push_back( book( name, hDV.at(i) + "_signifr",    hDVstr.at(i) + " r-pos significance",       100,    0, 1000 ) );
-      h_dv_signifphi  .push_back( book( name, hDV.at(i) + "_signifphi",  hDVstr.at(i) + " phi-pos significance",     100,    0, 1000 ) );
+      h_dv_n            .push_back( book( name, hDV.at(i) + "_n",          "n " + hDVstr.at(i) + "s",                   15,    0,  15 ) );
+      h_dv_x            .push_back( book( name, hDV.at(i) + "_x",          hDVstr.at(i) + " x-pos [mm]",               100, -400,  400 ) );
+      h_dv_y            .push_back( book( name, hDV.at(i) + "_y",          hDVstr.at(i) + " y-pos [mm]",               100, -400,  400 ) );
+      h_dv_z            .push_back( book( name, hDV.at(i) + "_z",          hDVstr.at(i) + " z-pos [mm]",               100, -800,  800 ) );
+      h_dv_r            .push_back( book( name, hDV.at(i) + "_r",          hDVstr.at(i) + " r-pos [mm]",               100,    0,  400 ) );
+      h_dv_x_s          .push_back( book( name, hDV.at(i) + "_x_s",        hDVstr.at(i) + " x-pos [mm]",               100, -300,  300 ) );
+      h_dv_y_s          .push_back( book( name, hDV.at(i) + "_y_s",        hDVstr.at(i) + " y-pos [mm]",               100, -300,  300 ) );
+      h_dv_z_s          .push_back( book( name, hDV.at(i) + "_z_s",        hDVstr.at(i) + " z-pos [mm]",               100, -300,  300 ) );
+      h_dv_r_s          .push_back( book( name, hDV.at(i) + "_r_s",        hDVstr.at(i) + " r-pos [mm]",               100,    0,  300 ) );
+      h_dv_phipos       .push_back( book( name, hDV.at(i) + "_phipos",     hDVstr.at(i) + " phi-pos",                  100, -3.5,  3.5 ) );
+      h_dv_pt           .push_back( book( name, hDV.at(i) + "_pt",         hDVstr.at(i) + " p_{T} [GeV]",              100,    0,  100 ) );
+      h_dv_pt_s         .push_back( book( name, hDV.at(i) + "_pt_s",       hDVstr.at(i) + " p_{T} [GeV]",              100,    0,   50 ) );
+      h_dv_pt_xs        .push_back( book( name, hDV.at(i) + "_pt_xs",      hDVstr.at(i) + " p_{T} [GeV]",              100,    0,   10 ) );
+      h_dv_eta          .push_back( book( name, hDV.at(i) + "_eta",        hDVstr.at(i) + " eta",                      100,   -5,    5 ) );
+      h_dv_phi          .push_back( book( name, hDV.at(i) + "_phi",        hDVstr.at(i) + " phi",                      100, -3.5,  3.5 ) );
+      h_dv_mass         .push_back( book( name, hDV.at(i) + "_mass",       hDVstr.at(i) + " mass [GeV]",               100,    0,   50 ) );
+      h_dv_mass_l       .push_back( book( name, hDV.at(i) + "_mass_l",     hDVstr.at(i) + " mass [GeV]",               100,    0,  100 ) );
+      h_dv_mass_s       .push_back( book( name, hDV.at(i) + "_mass_s",     hDVstr.at(i) + " mass [GeV]",               100,    0,   25 ) );
+      h_dv_mass_xs      .push_back( book( name, hDV.at(i) + "_mass_xs",    hDVstr.at(i) + " mass [GeV]",               100,    0,    5 ) );
+      h_dv_massNA       .push_back( book( name, hDV.at(i) + "_massNA",     hDVstr.at(i) + " non-assoc. mass [GeV]",    100,    0,   50 ) );
+      h_dv_massNA_l     .push_back( book( name, hDV.at(i) + "_massNA_l",   hDVstr.at(i) + " non-assoc. mass [GeV]",    100,    0,  100 ) );
+      h_dv_massNA_s     .push_back( book( name, hDV.at(i) + "_massNA_s",   hDVstr.at(i) + " non-assoc. mass [GeV]",    100,    0,   25 ) );
+      h_dv_massNA_xs    .push_back( book( name, hDV.at(i) + "_massNA_xs",  hDVstr.at(i) + " non-assoc. mass [GeV]",    100,    0,    5 ) );
+      h_dv_direction    .push_back( book( name, hDV.at(i) + "_direction",  hDVstr.at(i) + " direction",                100, -1.1,  1.1 ) );
+      h_dv_minOpAng     .push_back( book( name, hDV.at(i) + "_minOpAng",   hDVstr.at(i) + " cos min opening angle",    100, -1.1,  1.1 ) );
+      h_dv_maxOpAng     .push_back( book( name, hDV.at(i) + "_maxOpAng",   hDVstr.at(i) + " cos max opening angle",    100, -1.1,  1.1 ) );
+      h_dv_chi2         .push_back( book( name, hDV.at(i) + "_chi2",       hDVstr.at(i) + " chi2 / nDoF",              100,    0,   10 ) );
+      h_dv_chi2_s       .push_back( book( name, hDV.at(i) + "_chi2_s",     hDVstr.at(i) + " chi2 / nDoF",              100,    0,    5 ) );
+      h_dv_ntrk         .push_back( book( name, hDV.at(i) + "_ntrk",       "n " + hDVstr.at(i) + " tracks",             10,    2,   12 ) );
+      h_dv_ntrk_final   .push_back( book( name, hDV.at(i) + "_ntrk_final", "n " + hDVstr.at(i) + " final tracks",       10,    2,   12 ) );
+      h_dv_ntrk_sel     .push_back( book( name, hDV.at(i) + "_ntrk_sel",   "n " + hDVstr.at(i) + " selected tracks",    10,    2,   12 ) );
+      h_dv_ntrk_assoc   .push_back( book( name, hDV.at(i) + "_ntrk_assoc", "n " + hDVstr.at(i) + " associated tracks",  10,    2,   12 ) );
+      h_dv_ntrk_lrt     .push_back( book( name, hDV.at(i) + "_ntrk_lrt",   "n " + hDVstr.at(i) + " large-radius tracks",10,    2,   12 ) );
+      if ( m_histoInfoSwitch->m_vtxErrors ) {
+	h_dv_errx       .push_back( book( name, hDV.at(i) + "_errx",       hDVstr.at(i) + " x-pos uncert.",            100,    0,   25 ) );
+	h_dv_erry       .push_back( book( name, hDV.at(i) + "_erry",       hDVstr.at(i) + " y-pos uncert.",            100,    0,   25 ) );
+	h_dv_errz       .push_back( book( name, hDV.at(i) + "_errz",       hDVstr.at(i) + " z-pos uncert.",            100,    0,   25 ) );
+	h_dv_errr       .push_back( book( name, hDV.at(i) + "_errr",       hDVstr.at(i) + " r-pos uncert.",            100,    0,   25 ) );
+	h_dv_errphi     .push_back( book( name, hDV.at(i) + "_errphi",     hDVstr.at(i) + " phi uncert.",              100,    0, 0.15 ) );
+	h_dv_sqrterrx   .push_back( book( name, hDV.at(i) + "_sqrterrx",   hDVstr.at(i) + " x-pos sqrt-uncert.",       100,    0,    5 ) );
+	h_dv_sqrterry   .push_back( book( name, hDV.at(i) + "_sqrterry",   hDVstr.at(i) + " y-pos sqrt-uncert.",       100,    0,    5 ) );
+	h_dv_sqrterrz   .push_back( book( name, hDV.at(i) + "_sqrterrz",   hDVstr.at(i) + " z-pos sqrt-uncert.",       100,    0,    5 ) );
+	h_dv_sqrterrr   .push_back( book( name, hDV.at(i) + "_sqrterrr",   hDVstr.at(i) + " r-pos sqrt-uncert.",       100,    0,    5 ) );
+	h_dv_sqrterrphi .push_back( book( name, hDV.at(i) + "_sqrterrphi", hDVstr.at(i) + " phi sqrt-uncert.",         100,    0,  0.4 ) );
+	h_dv_fracerrx   .push_back( book( name, hDV.at(i) + "_fracerrx",   hDVstr.at(i) + " x-pos fractional uncert.", 100,    0,  0.1 ) );
+	h_dv_fracerry   .push_back( book( name, hDV.at(i) + "_fracerry",   hDVstr.at(i) + " y-pos fractional uncert.", 100,    0,  0.1 ) );
+	h_dv_fracerrz   .push_back( book( name, hDV.at(i) + "_fracerrz",   hDVstr.at(i) + " z-pos fractional uncert.", 100,    0,  0.1 ) );
+	h_dv_fracerrr   .push_back( book( name, hDV.at(i) + "_fracerrr",   hDVstr.at(i) + " r-pos fractional uncert.", 100,    0,  0.1 ) );
+	h_dv_fracerrphi .push_back( book( name, hDV.at(i) + "_fracerrphi", hDVstr.at(i) + " phi fractional uncert.",   100,    0,  0.1 ) );
+	h_dv_signifx    .push_back( book( name, hDV.at(i) + "_signifx",    hDVstr.at(i) + " x-pos significance",       100,    0, 1000 ) );
+	h_dv_signify    .push_back( book( name, hDV.at(i) + "_signify",    hDVstr.at(i) + " y-pos significance",       100,    0, 1000 ) );
+	h_dv_signifz    .push_back( book( name, hDV.at(i) + "_signifz",    hDVstr.at(i) + " z-pos significance",       100,    0, 1000 ) );
+	h_dv_signifr    .push_back( book( name, hDV.at(i) + "_signifr",    hDVstr.at(i) + " r-pos significance",       100,    0, 1000 ) );
+	h_dv_signifphi  .push_back( book( name, hDV.at(i) + "_signifphi",  hDVstr.at(i) + " phi-pos significance",     100,    0, 1000 ) );
+      }
 
       // vertex tracks
       std::string hDVtrk    = hDV.at(i)    + "_trk";
@@ -1451,277 +1497,288 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       // sum, min, max vertex track errors
       std::string hDVsum    = hDV.at(i)    + "_sum";
       std::string hDVsumstr = hDVstr.at(i) + " sum track";
-      h_dv_sumd0           .push_back( book( name, hDVsum + "d0",           hDVsumstr + " |d0| [mm]",                     100, 0,  500 ) );
-      h_dv_sumz0           .push_back( book( name, hDVsum + "z0",           hDVsumstr + " |z0| [mm]",                     100, 0, 2000 ) );
-      h_dv_sumP            .push_back( book( name, hDVsum + "P",            hDVsumstr + " |q/|p [e/GeV]",                 100, 0,    5 ) );
-      h_dv_sumErrd0        .push_back( book( name, hDVsum + "Errd0",        hDVsumstr + " d0 uncert.",                    100, 0,    5 ) );
-      h_dv_sumErrz0        .push_back( book( name, hDVsum + "Errz0",        hDVsumstr + " z0 uncert.",                    100, 0,   25 ) );
-      h_dv_sumErrP         .push_back( book( name, hDVsum + "ErrP",         hDVsumstr + " q/p uncert.",                   100, 0,  0.1 ) );
-      h_dv_sumSqrterrd0    .push_back( book( name, hDVsum + "Sqrterrd0",    hDVsumstr + " d0 sqrt-uncert.",               100, 0,  2.5 ) );
-      h_dv_sumSqrterrz0    .push_back( book( name, hDVsum + "Sqrterrz0",    hDVsumstr + " z0 sqrt-uncert.",               100, 0,    5 ) );
-      h_dv_sumSqrterrP     .push_back( book( name, hDVsum + "SqrterrP",     hDVsumstr + " q/p sqrt-uncert.",              100, 0,  0.3 ) );
-      h_dv_sumFracerrd0    .push_back( book( name, hDVsum + "Fracerrd0",    hDVsumstr + " d0 fractional uncert.",         100, 0,    1 ) );
-      h_dv_sumFracerrz0    .push_back( book( name, hDVsum + "Fracerrz0",    hDVsumstr + " z0 fractional uncert.",         100, 0,    1 ) );
-      h_dv_sumFracerrP     .push_back( book( name, hDVsum + "FracerrP",     hDVsumstr + " q/p fractional uncert.",        100, 0, 0.25 ) );
-      h_dv_sumSignifd0     .push_back( book( name, hDVsum + "Signifd0",     hDVsumstr + " d0 significance",               100, 0, 1000 ) );
-      h_dv_sumSignifz0     .push_back( book( name, hDVsum + "Signifz0",     hDVsumstr + " z0 significance",               100, 0, 1000 ) );
-      h_dv_sumSignifP      .push_back( book( name, hDVsum + "SignifP",      hDVsumstr + " q/p significance",              100, 0,  250 ) );
-      h_dv_sumd0_sv        .push_back( book( name, hDVsum + "d0_sv",        hDVsumstr + " |d0| wrt SV [mm]",              100, 0,   50 ) );
-      h_dv_sumz0_sv        .push_back( book( name, hDVsum + "z0_sv",        hDVsumstr + " |z0| wrt SV [mm]",              100, 0,  150 ) );
-      h_dv_sumP_sv         .push_back( book( name, hDVsum + "P_sv",         hDVsumstr + " |q/p| wrt SV [e/GeV]",          100, 0,    5 ) );
-      h_dv_sumErrd0_sv     .push_back( book( name, hDVsum + "Errd0_sv",     hDVsumstr + " d0 wrt SV uncert.",             100, 0,    5 ) );
-      h_dv_sumErrz0_sv     .push_back( book( name, hDVsum + "Errz0_sv",     hDVsumstr + " z0 wrt SV uncert.",             100, 0,   25 ) );
-      h_dv_sumErrP_sv      .push_back( book( name, hDVsum + "ErrP_sv",      hDVsumstr + " q/p wrt SV uncert.",            100, 0,  0.1 ) );
-      h_dv_sumSqrterrd0_sv .push_back( book( name, hDVsum + "Sqrterrd0_sv", hDVsumstr + " d0 wrt SV sqrt-uncert.",        100, 0,  2.5 ) );
-      h_dv_sumSqrterrz0_sv .push_back( book( name, hDVsum + "Sqrterrz0_sv", hDVsumstr + " z0 wrt SV sqrt-uncert.",        100, 0,    5 ) );
-      h_dv_sumSqrterrP_sv  .push_back( book( name, hDVsum + "SqrterrP_sv",  hDVsumstr + " q/p wrt SV sqrt-uncert.",       100, 0,  0.3 ) );
-      h_dv_sumFracerrd0_sv .push_back( book( name, hDVsum + "Fracerrd0_sv", hDVsumstr + " d0 wrt SV fractional uncert.",  100, 0,  150 ) );
-      h_dv_sumFracerrz0_sv .push_back( book( name, hDVsum + "Fracerrz0_sv", hDVsumstr + " z0 wrt SV fractional uncert.",  100, 0,  150 ) );
-      h_dv_sumFracerrP_sv  .push_back( book( name, hDVsum + "FracerrP_sv",  hDVsumstr + " q/p wrt SV fractional uncert.", 100, 0, 0.25 ) );
-      h_dv_sumSignifd0_sv  .push_back( book( name, hDVsum + "Signifd0_sv",  hDVsumstr + " d0 wrt SV significance",        100, 0,   75 ) );
-      h_dv_sumSignifz0_sv  .push_back( book( name, hDVsum + "Signifz0_sv",  hDVsumstr + " z0 wrt SV significance",        100, 0,   75 ) );
-      h_dv_sumSignifP_sv   .push_back( book( name, hDVsum + "SignifP_sv",   hDVsumstr + " q/p wrt SV significance",       100, 0,  250 ) );
       std::string hDVmin    = hDV.at(i)    + "_min";
       std::string hDVminstr = hDVstr.at(i) + " min track";
-      h_dv_mind0           .push_back( book( name, hDVmin + "d0",           hDVminstr + " |d0| [mm]",               100, 0,  200 ) );
-      h_dv_minz0           .push_back( book( name, hDVmin + "z0",           hDVminstr + " |z0| [mm]",               100, 0, 1000 ) );
-      h_dv_minP            .push_back( book( name, hDVmin + "P",            hDVminstr + " |q/p| [e/GeV]",           100, 0,    1 ) );
-      h_dv_minErrd0        .push_back( book( name, hDVmin + "Errd0",        hDVminstr + " d0 uncert.",              100, 0,    2 ) );
-      h_dv_minErrz0        .push_back( book( name, hDVmin + "Errz0",        hDVminstr + " z0 uncert.",              100, 0,   10 ) );
-      h_dv_minErrP         .push_back( book( name, hDVmin + "ErrP",         hDVminstr + " q/p uncert.",             100, 0, 0.02 ) );
-      h_dv_minSqrterrd0    .push_back( book( name, hDVmin + "Sqrterrd0",    hDVminstr + " d0 sqrt-uncert.",         100, 0,  1.5 ) );
-      h_dv_minSqrterrz0    .push_back( book( name, hDVmin + "Sqrterrz0",    hDVminstr + " z0 sqrt-uncert.",         100, 0,  3.5 ) );
-      h_dv_minSqrterrP     .push_back( book( name, hDVmin + "SqrterrP",     hDVminstr + " q/p sqrt-uncert.",        100, 0, 0.15 ) );
-      h_dv_minFracerrd0    .push_back( book( name, hDVmin + "Fracerrd0",    hDVminstr + " d0 fractional uncert.",   100, 0, 0.15 ) );
-      h_dv_minFracerrz0    .push_back( book( name, hDVmin + "Fracerrz0",    hDVminstr + " z0 fractional uncert.",   100, 0, 0.15 ) );
-      h_dv_minFracerrP     .push_back( book( name, hDVmin + "FracerrP",     hDVminstr + " q/p fractional uncert.",  100, 0, 0.05 ) );
-      h_dv_minSignifd0     .push_back( book( name, hDVmin + "Signifd0",     hDVminstr + " d0 significance",         100, 0,  350 ) );
-      h_dv_minSignifz0     .push_back( book( name, hDVmin + "Signifz0",     hDVminstr + " z0 significance",         100, 0,  350 ) );
-      h_dv_minSignifP      .push_back( book( name, hDVmin + "SignifP",      hDVminstr + " q/p significance",        100, 0,  100 ) );
-      h_dv_mind0_sv        .push_back( book( name, hDVmin + "d0_sv",        hDVminstr + " |d0| wrt SV [mm]",        100, 0,   15 ) );
-      h_dv_minz0_sv        .push_back( book( name, hDVmin + "z0_sv",        hDVminstr + " |z0| wrt SV [mm]",        100, 0,   50 ) );
-      h_dv_minP_sv         .push_back( book( name, hDVmin + "P_sv",         hDVminstr + " |q/p| wrt SV [e/GeV]",    100, 0,    1 ) );
-      h_dv_minErrd0_sv     .push_back( book( name, hDVmin + "Errd0_sv",     hDVminstr + " d0 wrt SV uncert.",       100, 0,    2 ) );
-      h_dv_minErrz0_sv     .push_back( book( name, hDVmin + "Errz0_sv",     hDVminstr + " z0 wrt SV uncert.",       100, 0,   10 ) );
-      h_dv_minErrP_sv      .push_back( book( name, hDVmin + "ErrP_sv",      hDVminstr + " q/p wrt SV uncert.",      100, 0, 0.02 ) );
-      h_dv_minSqrterrd0_sv .push_back( book( name, hDVmin + "Sqrterrd0_sv", hDVminstr + " d0 wrt SV sqrt-uncert.",  100, 0,  1.5 ) );
-      h_dv_minSqrterrz0_sv .push_back( book( name, hDVmin + "Sqrterrz0_sv", hDVminstr + " z0 wrt SV sqrt-uncert.",  100, 0,  3.5 ) );
-      h_dv_minSqrterrP_sv  .push_back( book( name, hDVmin + "SqrterrP_sv",  hDVminstr + " q/p wrt SV sqrt-uncert.", 100, 0, 0.15 ) );
-      h_dv_minFracerrd0_sv .push_back( book( name, hDVmin + "Fracerrd0_sv", hDVminstr + " d0 wrt SV fractional uncert.",  100, 0,  50 ) );
-      h_dv_minFracerrz0_sv .push_back( book( name, hDVmin + "Fracerrz0_sv", hDVminstr + " z0 wrt SV fractional uncert.",  100, 0,  50 ) );
-      h_dv_minFracerrP_sv  .push_back( book( name, hDVmin + "FracerrP_sv",  hDVminstr + " q/p wrt SV fractional uncert.", 100, 0, 0.1 ) );
-      h_dv_minSignifd0_sv  .push_back( book( name, hDVmin + "Signifd0_sv",  hDVminstr + " d0 wrt SV significance",  100, 0,   25 ) );
-      h_dv_minSignifz0_sv  .push_back( book( name, hDVmin + "Signifz0_sv",  hDVminstr + " z0 wrt SV significance",  100, 0,   25 ) );
-      h_dv_minSignifP_sv   .push_back( book( name, hDVmin + "SignifP_sv",   hDVminstr + " q/p wrt SV significance", 100, 0,  100 ) );
       std::string hDVmax    = hDV.at(i)    + "_max";
       std::string hDVmaxstr = hDVstr.at(i) + " max track";
-      h_dv_maxd0           .push_back( book( name, hDVmax + "d0",           hDVmaxstr + " |d0| [mm]",               100, 0,  300 ) );
-      h_dv_maxz0           .push_back( book( name, hDVmax + "z0",           hDVmaxstr + " |z0| [mm]",               100, 0, 1500 ) );
-      h_dv_maxP            .push_back( book( name, hDVmax + "P",            hDVmaxstr + " |q/p| [e/GeV]",           100, 0,  1.1 ) );
-      h_dv_maxErrd0        .push_back( book( name, hDVmax + "Errd0",        hDVmaxstr + " d0 uncert.",              100, 0,    3 ) );
-      h_dv_maxErrz0        .push_back( book( name, hDVmax + "Errz0",        hDVmaxstr + " z0 uncert.",              100, 0,   15 ) );
-      h_dv_maxErrP         .push_back( book( name, hDVmax + "ErrP",         hDVmaxstr + " q/p uncert.",             100, 0, 0.05 ) );
-      h_dv_maxSqrterrd0    .push_back( book( name, hDVmax + "Sqrterrd0",    hDVmaxstr + " d0 sqrt-uncert.",         100, 0,    2 ) );
-      h_dv_maxSqrterrz0    .push_back( book( name, hDVmax + "Sqrterrz0",    hDVmaxstr + " z0 sqrt-uncert.",         100, 0,    4 ) );
-      h_dv_maxSqrterrP     .push_back( book( name, hDVmax + "SqrterrP",     hDVmaxstr + " q/p sqrt-uncert.",        100, 0, 0.25 ) );
-      h_dv_maxFracerrd0    .push_back( book( name, hDVmax + "Fracerrd0",    hDVmaxstr + " d0 fractional uncert.",   100, 0, 0.25 ) );
-      h_dv_maxFracerrz0    .push_back( book( name, hDVmax + "Fracerrz0",    hDVmaxstr + " z0 fractional uncert.",   100, 0, 0.25 ) );
-      h_dv_maxFracerrP     .push_back( book( name, hDVmax + "FracerrP",     hDVmaxstr + " q/p fractional uncert.",  100, 0,  0.1 ) );
-      h_dv_maxSignifd0     .push_back( book( name, hDVmax + "Signifd0",     hDVmaxstr + " d0 significance",         100, 0,  500 ) );
-      h_dv_maxSignifz0     .push_back( book( name, hDVmax + "Signifz0",     hDVmaxstr + " z0 significance",         100, 0,  500 ) );
-      h_dv_maxSignifP      .push_back( book( name, hDVmax + "SignifP",      hDVmaxstr + " q/p significance",        100, 0,  150 ) );
-      h_dv_maxd0_sv        .push_back( book( name, hDVmax + "d0_sv",        hDVmaxstr + " |d0| wrt SV [mm]",        100, 0,   30 ) );
-      h_dv_maxz0_sv        .push_back( book( name, hDVmax + "z0_sv",        hDVmaxstr + " |z0| wrt SV [mm]",        100, 0,  100 ) );
-      h_dv_maxP_sv         .push_back( book( name, hDVmax + "P_sv",         hDVmaxstr + " |q/p| wrt SV [e/GeV]",    100, 0,  1.1 ) );
-      h_dv_maxErrd0_sv     .push_back( book( name, hDVmax + "Errd0_sv",     hDVmaxstr + " d0 wrt SV uncert.",       100, 0,    3 ) );
-      h_dv_maxErrz0_sv     .push_back( book( name, hDVmax + "Errz0_sv",     hDVmaxstr + " z0 wrt SV uncert.",       100, 0,   15 ) );
-      h_dv_maxErrP_sv      .push_back( book( name, hDVmax + "ErrP_sv",      hDVmaxstr + " q/p wrt SV uncert.",      100, 0, 0.05 ) );
-      h_dv_maxSqrterrd0_sv .push_back( book( name, hDVmax + "Sqrterrd0_sv", hDVmaxstr + " d0 wrt SV sqrt-uncert.",  100, 0,    2 ) );
-      h_dv_maxSqrterrz0_sv .push_back( book( name, hDVmax + "Sqrterrz0_sv", hDVmaxstr + " z0 wrt SV sqrt-uncert.",  100, 0,    4 ) );
-      h_dv_maxSqrterrP_sv  .push_back( book( name, hDVmax + "SqrterrP_sv",  hDVmaxstr + " q/p wrt SV sqrt-uncert.", 100, 0, 0.25 ) );
-      h_dv_maxFracerrd0_sv .push_back( book( name, hDVmax + "Fracerrd0_sv", hDVmaxstr + " d0 wrt SV fractional uncert.",  100, 0,  75 ) );
-      h_dv_maxFracerrz0_sv .push_back( book( name, hDVmax + "Fracerrz0_sv", hDVmaxstr + " z0 wrt SV fractional uncert.",  100, 0,  75 ) );
-      h_dv_maxFracerrP_sv  .push_back( book( name, hDVmax + "FracerrP_sv",  hDVmaxstr + " q/p wrt SV fractional uncert.", 100, 0, 0.2 ) );
-      h_dv_maxSignifd0_sv  .push_back( book( name, hDVmax + "Signifd0_sv",  hDVmaxstr + " d0 wrt SV significance",  100, 0,   50 ) );
-      h_dv_maxSignifz0_sv  .push_back( book( name, hDVmax + "Signifz0_sv",  hDVmaxstr + " z0 wrt SV significance",  100, 0,   50 ) );
-      h_dv_maxSignifP_sv   .push_back( book( name, hDVmax + "SignifP_sv",   hDVmaxstr + " q/p wrt SV significance", 100, 0,  150 ) );
-      // --> look at sum, min, max for final, selected, associated tracks
-      // --> look at min, max track chi2 ?
+      h_dv_sumd0             .push_back( book( name, hDVsum + "d0",           hDVsumstr + " |d0| [mm]",               100, 0,  500 ) );
+      h_dv_sumz0             .push_back( book( name, hDVsum + "z0",           hDVsumstr + " |z0| [mm]",               100, 0, 2000 ) );
+      h_dv_sumP              .push_back( book( name, hDVsum + "P",            hDVsumstr + " |q/p| [e/GeV]",           100, 0,    5 ) );
+      h_dv_sumd0_sv          .push_back( book( name, hDVsum + "d0_sv",        hDVsumstr + " |d0| wrt SV [mm]",        100, 0,   50 ) );
+      h_dv_sumz0_sv          .push_back( book( name, hDVsum + "z0_sv",        hDVsumstr + " |z0| wrt SV [mm]",        100, 0,  150 ) );
+      h_dv_sumP_sv           .push_back( book( name, hDVsum + "P_sv",         hDVsumstr + " |q/p| wrt SV [e/GeV]",    100, 0,    5 ) );
+      h_dv_mind0             .push_back( book( name, hDVmin + "d0",           hDVminstr + " |d0| [mm]",               100, 0,  200 ) );
+      h_dv_minz0             .push_back( book( name, hDVmin + "z0",           hDVminstr + " |z0| [mm]",               100, 0, 1000 ) );
+      h_dv_minP              .push_back( book( name, hDVmin + "P",            hDVminstr + " |q/p| [e/GeV]",           100, 0,    1 ) );
+      h_dv_mind0_sv          .push_back( book( name, hDVmin + "d0_sv",        hDVminstr + " |d0| wrt SV [mm]",        100, 0,   15 ) );
+      h_dv_minz0_sv          .push_back( book( name, hDVmin + "z0_sv",        hDVminstr + " |z0| wrt SV [mm]",        100, 0,   50 ) );
+      h_dv_minP_sv           .push_back( book( name, hDVmin + "P_sv",         hDVminstr + " |q/p| wrt SV [e/GeV]",    100, 0,    1 ) );
+      h_dv_maxd0             .push_back( book( name, hDVmax + "d0",           hDVmaxstr + " |d0| [mm]",               100, 0,  300 ) );
+      h_dv_maxz0             .push_back( book( name, hDVmax + "z0",           hDVmaxstr + " |z0| [mm]",               100, 0, 1500 ) );
+      h_dv_maxP              .push_back( book( name, hDVmax + "P",            hDVmaxstr + " |q/p| [e/GeV]",           100, 0,  1.1 ) );
+      h_dv_maxd0_sv          .push_back( book( name, hDVmax + "d0_sv",        hDVmaxstr + " |d0| wrt SV [mm]",        100, 0,   30 ) );
+      h_dv_maxz0_sv          .push_back( book( name, hDVmax + "z0_sv",        hDVmaxstr + " |z0| wrt SV [mm]",        100, 0,  100 ) );
+      h_dv_maxP_sv           .push_back( book( name, hDVmax + "P_sv",         hDVmaxstr + " |q/p| wrt SV [e/GeV]",    100, 0,  1.1 ) );
+      if ( m_histoInfoSwitch->m_vtxErrors ) {
+	// --> sum
+	h_dv_sumErrd0        .push_back( book( name, hDVsum + "Errd0",        hDVsumstr + " d0 uncert.",              100, 0,    5 ) );
+	h_dv_sumErrz0        .push_back( book( name, hDVsum + "Errz0",        hDVsumstr + " z0 uncert.",              100, 0,   25 ) );
+	h_dv_sumErrP         .push_back( book( name, hDVsum + "ErrP",         hDVsumstr + " q/p uncert.",             100, 0,  0.1 ) );
+	h_dv_sumSqrterrd0    .push_back( book( name, hDVsum + "Sqrterrd0",    hDVsumstr + " d0 sqrt-uncert.",         100, 0,  2.5 ) );
+	h_dv_sumSqrterrz0    .push_back( book( name, hDVsum + "Sqrterrz0",    hDVsumstr + " z0 sqrt-uncert.",         100, 0,    5 ) );
+	h_dv_sumSqrterrP     .push_back( book( name, hDVsum + "SqrterrP",     hDVsumstr + " q/p sqrt-uncert.",        100, 0,  0.3 ) );
+	h_dv_sumFracerrd0    .push_back( book( name, hDVsum + "Fracerrd0",    hDVsumstr + " d0 fractional uncert.",   100, 0,    1 ) );
+	h_dv_sumFracerrz0    .push_back( book( name, hDVsum + "Fracerrz0",    hDVsumstr + " z0 fractional uncert.",   100, 0,    1 ) );
+	h_dv_sumFracerrP     .push_back( book( name, hDVsum + "FracerrP",     hDVsumstr + " q/p fractional uncert.",  100, 0, 0.25 ) );
+	h_dv_sumSignifd0     .push_back( book( name, hDVsum + "Signifd0",     hDVsumstr + " d0 significance",         100, 0, 1000 ) );
+	h_dv_sumSignifz0     .push_back( book( name, hDVsum + "Signifz0",     hDVsumstr + " z0 significance",         100, 0, 1000 ) );
+	h_dv_sumSignifP      .push_back( book( name, hDVsum + "SignifP",      hDVsumstr + " q/p significance",        100, 0,  250 ) );
+	h_dv_sumErrd0_sv     .push_back( book( name, hDVsum + "Errd0_sv",     hDVsumstr + " d0 wrt SV uncert.",       100, 0,    5 ) );
+	h_dv_sumErrz0_sv     .push_back( book( name, hDVsum + "Errz0_sv",     hDVsumstr + " z0 wrt SV uncert.",       100, 0,   25 ) );
+	h_dv_sumErrP_sv      .push_back( book( name, hDVsum + "ErrP_sv",      hDVsumstr + " q/p wrt SV uncert.",      100, 0,  0.1 ) );
+	h_dv_sumSqrterrd0_sv .push_back( book( name, hDVsum + "Sqrterrd0_sv", hDVsumstr + " d0 wrt SV sqrt-uncert.",  100, 0,  2.5 ) );
+	h_dv_sumSqrterrz0_sv .push_back( book( name, hDVsum + "Sqrterrz0_sv", hDVsumstr + " z0 wrt SV sqrt-uncert.",  100, 0,    5 ) );
+	h_dv_sumSqrterrP_sv  .push_back( book( name, hDVsum + "SqrterrP_sv",  hDVsumstr + " q/p wrt SV sqrt-uncert.", 100, 0,  0.3 ) );
+	h_dv_sumFracerrd0_sv .push_back( book( name, hDVsum + "Fracerrd0_sv", hDVsumstr + " d0 wrt SV fractional uncert.",  100, 0,  150 ) );
+	h_dv_sumFracerrz0_sv .push_back( book( name, hDVsum + "Fracerrz0_sv", hDVsumstr + " z0 wrt SV fractional uncert.",  100, 0,  150 ) );
+	h_dv_sumFracerrP_sv  .push_back( book( name, hDVsum + "FracerrP_sv",  hDVsumstr + " q/p wrt SV fractional uncert.", 100, 0, 0.25 ) );
+	h_dv_sumSignifd0_sv  .push_back( book( name, hDVsum + "Signifd0_sv",  hDVsumstr + " d0 wrt SV significance",  100, 0,   75 ) );
+	h_dv_sumSignifz0_sv  .push_back( book( name, hDVsum + "Signifz0_sv",  hDVsumstr + " z0 wrt SV significance",  100, 0,   75 ) );
+	h_dv_sumSignifP_sv   .push_back( book( name, hDVsum + "SignifP_sv",   hDVsumstr + " q/p wrt SV significance", 100, 0,  250 ) );
+	// --> min
+	h_dv_minErrd0        .push_back( book( name, hDVmin + "Errd0",        hDVminstr + " d0 uncert.",              100, 0,    2 ) );
+	h_dv_minErrz0        .push_back( book( name, hDVmin + "Errz0",        hDVminstr + " z0 uncert.",              100, 0,   10 ) );
+	h_dv_minErrP         .push_back( book( name, hDVmin + "ErrP",         hDVminstr + " q/p uncert.",             100, 0, 0.02 ) );
+	h_dv_minSqrterrd0    .push_back( book( name, hDVmin + "Sqrterrd0",    hDVminstr + " d0 sqrt-uncert.",         100, 0,  1.5 ) );
+	h_dv_minSqrterrz0    .push_back( book( name, hDVmin + "Sqrterrz0",    hDVminstr + " z0 sqrt-uncert.",         100, 0,  3.5 ) );
+	h_dv_minSqrterrP     .push_back( book( name, hDVmin + "SqrterrP",     hDVminstr + " q/p sqrt-uncert.",        100, 0, 0.15 ) );
+	h_dv_minFracerrd0    .push_back( book( name, hDVmin + "Fracerrd0",    hDVminstr + " d0 fractional uncert.",   100, 0, 0.15 ) );
+	h_dv_minFracerrz0    .push_back( book( name, hDVmin + "Fracerrz0",    hDVminstr + " z0 fractional uncert.",   100, 0, 0.15 ) );
+	h_dv_minFracerrP     .push_back( book( name, hDVmin + "FracerrP",     hDVminstr + " q/p fractional uncert.",  100, 0, 0.05 ) );
+	h_dv_minSignifd0     .push_back( book( name, hDVmin + "Signifd0",     hDVminstr + " d0 significance",         100, 0,  350 ) );
+	h_dv_minSignifz0     .push_back( book( name, hDVmin + "Signifz0",     hDVminstr + " z0 significance",         100, 0,  350 ) );
+	h_dv_minSignifP      .push_back( book( name, hDVmin + "SignifP",      hDVminstr + " q/p significance",        100, 0,  100 ) );
+	h_dv_minErrd0_sv     .push_back( book( name, hDVmin + "Errd0_sv",     hDVminstr + " d0 wrt SV uncert.",       100, 0,    2 ) );
+	h_dv_minErrz0_sv     .push_back( book( name, hDVmin + "Errz0_sv",     hDVminstr + " z0 wrt SV uncert.",       100, 0,   10 ) );
+	h_dv_minErrP_sv      .push_back( book( name, hDVmin + "ErrP_sv",      hDVminstr + " q/p wrt SV uncert.",      100, 0, 0.02 ) );
+	h_dv_minSqrterrd0_sv .push_back( book( name, hDVmin + "Sqrterrd0_sv", hDVminstr + " d0 wrt SV sqrt-uncert.",  100, 0,  1.5 ) );
+	h_dv_minSqrterrz0_sv .push_back( book( name, hDVmin + "Sqrterrz0_sv", hDVminstr + " z0 wrt SV sqrt-uncert.",  100, 0,  3.5 ) );
+	h_dv_minSqrterrP_sv  .push_back( book( name, hDVmin + "SqrterrP_sv",  hDVminstr + " q/p wrt SV sqrt-uncert.", 100, 0, 0.15 ) );
+	h_dv_minFracerrd0_sv .push_back( book( name, hDVmin + "Fracerrd0_sv", hDVminstr + " d0 wrt SV fractional uncert.",  100, 0,  50 ) );
+	h_dv_minFracerrz0_sv .push_back( book( name, hDVmin + "Fracerrz0_sv", hDVminstr + " z0 wrt SV fractional uncert.",  100, 0,  50 ) );
+	h_dv_minFracerrP_sv  .push_back( book( name, hDVmin + "FracerrP_sv",  hDVminstr + " q/p wrt SV fractional uncert.", 100, 0, 0.1 ) );
+	h_dv_minSignifd0_sv  .push_back( book( name, hDVmin + "Signifd0_sv",  hDVminstr + " d0 wrt SV significance",  100, 0,   25 ) );
+	h_dv_minSignifz0_sv  .push_back( book( name, hDVmin + "Signifz0_sv",  hDVminstr + " z0 wrt SV significance",  100, 0,   25 ) );
+	h_dv_minSignifP_sv   .push_back( book( name, hDVmin + "SignifP_sv",   hDVminstr + " q/p wrt SV significance", 100, 0,  100 ) );
+	// --> max
+	h_dv_maxErrd0        .push_back( book( name, hDVmax + "Errd0",        hDVmaxstr + " d0 uncert.",              100, 0,    3 ) );
+	h_dv_maxErrz0        .push_back( book( name, hDVmax + "Errz0",        hDVmaxstr + " z0 uncert.",              100, 0,   15 ) );
+	h_dv_maxErrP         .push_back( book( name, hDVmax + "ErrP",         hDVmaxstr + " q/p uncert.",             100, 0, 0.05 ) );
+	h_dv_maxSqrterrd0    .push_back( book( name, hDVmax + "Sqrterrd0",    hDVmaxstr + " d0 sqrt-uncert.",         100, 0,    2 ) );
+	h_dv_maxSqrterrz0    .push_back( book( name, hDVmax + "Sqrterrz0",    hDVmaxstr + " z0 sqrt-uncert.",         100, 0,    4 ) );
+	h_dv_maxSqrterrP     .push_back( book( name, hDVmax + "SqrterrP",     hDVmaxstr + " q/p sqrt-uncert.",        100, 0, 0.25 ) );
+	h_dv_maxFracerrd0    .push_back( book( name, hDVmax + "Fracerrd0",    hDVmaxstr + " d0 fractional uncert.",   100, 0, 0.25 ) );
+	h_dv_maxFracerrz0    .push_back( book( name, hDVmax + "Fracerrz0",    hDVmaxstr + " z0 fractional uncert.",   100, 0, 0.25 ) );
+	h_dv_maxFracerrP     .push_back( book( name, hDVmax + "FracerrP",     hDVmaxstr + " q/p fractional uncert.",  100, 0,  0.1 ) );
+	h_dv_maxSignifd0     .push_back( book( name, hDVmax + "Signifd0",     hDVmaxstr + " d0 significance",         100, 0,  500 ) );
+	h_dv_maxSignifz0     .push_back( book( name, hDVmax + "Signifz0",     hDVmaxstr + " z0 significance",         100, 0,  500 ) );
+	h_dv_maxSignifP      .push_back( book( name, hDVmax + "SignifP",      hDVmaxstr + " q/p significance",        100, 0,  150 ) );
+	h_dv_maxErrd0_sv     .push_back( book( name, hDVmax + "Errd0_sv",     hDVmaxstr + " d0 wrt SV uncert.",       100, 0,    3 ) );
+	h_dv_maxErrz0_sv     .push_back( book( name, hDVmax + "Errz0_sv",     hDVmaxstr + " z0 wrt SV uncert.",       100, 0,   15 ) );
+	h_dv_maxErrP_sv      .push_back( book( name, hDVmax + "ErrP_sv",      hDVmaxstr + " q/p wrt SV uncert.",      100, 0, 0.05 ) );
+	h_dv_maxSqrterrd0_sv .push_back( book( name, hDVmax + "Sqrterrd0_sv", hDVmaxstr + " d0 wrt SV sqrt-uncert.",  100, 0,    2 ) );
+	h_dv_maxSqrterrz0_sv .push_back( book( name, hDVmax + "Sqrterrz0_sv", hDVmaxstr + " z0 wrt SV sqrt-uncert.",  100, 0,    4 ) );
+	h_dv_maxSqrterrP_sv  .push_back( book( name, hDVmax + "SqrterrP_sv",  hDVmaxstr + " q/p wrt SV sqrt-uncert.", 100, 0, 0.25 ) );
+	h_dv_maxFracerrd0_sv .push_back( book( name, hDVmax + "Fracerrd0_sv", hDVmaxstr + " d0 wrt SV fractional uncert.",  100, 0,  75 ) );
+	h_dv_maxFracerrz0_sv .push_back( book( name, hDVmax + "Fracerrz0_sv", hDVmaxstr + " z0 wrt SV fractional uncert.",  100, 0,  75 ) );
+	h_dv_maxFracerrP_sv  .push_back( book( name, hDVmax + "FracerrP_sv",  hDVmaxstr + " q/p wrt SV fractional uncert.", 100, 0, 0.2 ) );
+	h_dv_maxSignifd0_sv  .push_back( book( name, hDVmax + "Signifd0_sv",  hDVmaxstr + " d0 wrt SV significance",  100, 0,   50 ) );
+	h_dv_maxSignifz0_sv  .push_back( book( name, hDVmax + "Signifz0_sv",  hDVmaxstr + " z0 wrt SV significance",  100, 0,   50 ) );
+	h_dv_maxSignifP_sv   .push_back( book( name, hDVmax + "SignifP_sv",   hDVmaxstr + " q/p wrt SV significance", 100, 0,  150 ) );
+	// --> look at sum, min, max for final, selected, associated tracks
+	// --> look at min, max track chi2 ?
+      }
 
       // 2d vertex / track histos
-      h_dv_z_r                    .push_back( book( name, hDV.at(i) + "_z_r",             hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-      						    hDVstr.at(i) + " z-pos [mm]",           100,  -800,  800 ) );
-      h_dv_mass_r                 .push_back( book( name, hDV.at(i) + "_mass_r",          hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVstr.at(i) + " mass [GeV]",           100,     0,   50 ) );
-      h_dv_z_chi2                 .push_back( book( name, hDV.at(i) + "_z_chi2",          hDVstr.at(i) + " chi2 / nDoF",     100,     0,   10,
-						    hDVstr.at(i) + " z-pos [mm]",           100,  -800,  800 ) );
-      h_dv_r_chi2                 .push_back( book( name, hDV.at(i) + "_r_chi2",          hDVstr.at(i) + " chi2 / nDoF",     100,     0,   10,
-						    hDVstr.at(i) + " r-pos [mm]",           100,     0,  400 ) );
-      h_dv_mass_chi2              .push_back( book( name, hDV.at(i) + "_mass_chi2",       hDVstr.at(i) + " chi2 / nDoF",     100,     0,   10,
-						    hDVstr.at(i) + " mass [GeV]",           100,     0,   50 ) );
-      h_dv_z_r_s                  .push_back( book( name, hDV.at(i) + "_z_r_s",           hDVstr.at(i) + " r-pos [mm]",      100,     0,  300,
-      						    hDVstr.at(i) + " z-pos [mm]",           100,  -300,  300 ) );
-      h_dv_mass_r_s               .push_back( book( name, hDV.at(i) + "_mass_r_s",        hDVstr.at(i) + " r-pos [mm]",      100,     0,  300,
-						    hDVstr.at(i) + " mass [GeV]",           100,     0,   25 ) );
-      h_dv_z_chi2_s               .push_back( book( name, hDV.at(i) + "_z_chi2_s",        hDVstr.at(i) + " chi2 / nDoF",     100,     0,    5,
-						    hDVstr.at(i) + " z-pos [mm]",           100,  -300,  300 ) );
-      h_dv_r_chi2_s               .push_back( book( name, hDV.at(i) + "_r_chi2_s",        hDVstr.at(i) + " chi2 / nDoF",     100,     0,    5,
-						    hDVstr.at(i) + " r-pos [mm]",           100,     0,  300 ) );
-      h_dv_mass_chi2_s            .push_back( book( name, hDV.at(i) + "_mass_chi2_s",     hDVstr.at(i) + " chi2 / nDoF",     100,     0,    5,
-						    hDVstr.at(i) + " mass [GeV]",           100,     0,   25 ) );
-      h_dv_errx_x                 .push_back( book( name, hDV.at(i) + "_errx_x",          hDVstr.at(i) + " x-pos [mm]",      100,  -400,  400,
-						    hDVstr.at(i) + " x-pos uncert.",        100,     0,   25 ) );
-      h_dv_erry_y                 .push_back( book( name, hDV.at(i) + "_errr_y",          hDVstr.at(i) + " y-pos [mm]",      100,  -400,  400,
-						    hDVstr.at(i) + " y-pos uncert.",        100,     0,   25 ) );
-      h_dv_errz_z                 .push_back( book( name, hDV.at(i) + "_errz_z",          hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVstr.at(i) + " z-pos uncert.",        100,     0,   25 ) );
-      h_dv_errr_r                 .push_back( book( name, hDV.at(i) + "_errr_r",          hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVstr.at(i) + " r-pos uncert.",        100,     0,   25 ) );
-      h_dv_errphi_phi             .push_back( book( name, hDV.at(i) + "_errphi_phi",      hDVstr.at(i) + " phi-pos [mm]",    100,  -3.5,  3.5,
-						    hDVstr.at(i) + " phi-pos uncert.",      100,     0, 0.15 ) );
-      h_dv_sqrterrx_x             .push_back( book( name, hDV.at(i) + "_sqrterrx_x",      hDVstr.at(i) + " x-pos [mm]",      100,  -400,  400,
-						    hDVstr.at(i) + " x-pos sqrt-uncert.",   100,     0,    5 ) );
-      h_dv_sqrterry_y             .push_back( book( name, hDV.at(i) + "_sqrterry_y",      hDVstr.at(i) + " y-pos [mm]",      100,  -400,  400,
-						    hDVstr.at(i) + " y-pos sqrt-uncert.",   100,     0,    5 ) );
-      h_dv_sqrterrz_z             .push_back( book( name, hDV.at(i) + "_sqrterrz_z",      hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVstr.at(i) + " z-pos sqrt-uncert.",   100,     0,    5 ) );
-      h_dv_sqrterrr_r             .push_back( book( name, hDV.at(i) + "_sqrterrr_r",      hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVstr.at(i) + " r-pos sqrt-uncert.",   100,     0,    5 ) );
-      h_dv_sqrterrphi_phi         .push_back( book( name, hDV.at(i) + "_sqrterrphi_phi",  hDVstr.at(i) + " phi-pos [mm]",    100,  -3.5,  3.5,
-						    hDVstr.at(i) + " phi-pos sqrt-uncert.", 100,     0,  0.4 ) );
-      h_dv_sumErrd0_r             .push_back( book( name, hDVsum + "Errd0_r",             hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVsumstr + " d0 uncert.",              100,     0,    5 ) );
-      h_dv_sumErrz0_z             .push_back( book( name, hDVsum + "Errz0_z",             hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVsumstr + " z0 uncert.",              100,     0,   25 ) );
-      h_dv_sumErrP_pt             .push_back( book( name, hDVsum + "ErrP_pt",             hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVsumstr + " q/p uncert.",             100,     0,  0.1 ) );
-      h_dv_sumSqrterrd0_r         .push_back( book( name, hDVsum + "Sqrterrd0_r",         hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVsumstr + " d0 sqrt-uncert.",         100,     0,  2.5 ) );
-      h_dv_sumSqrterrz0_z         .push_back( book( name, hDVsum + "Sqrterrz0_z",         hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVsumstr + " z0 sqrt-uncert.",         100,     0,    5 ) );
-      h_dv_sumSqrterrP_pt         .push_back( book( name, hDVsum + "SqrterrP_pt",         hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVsumstr + " q/p sqrt-uncert.",        100,     0,  0.3 ) );
-      h_dv_sumErrd0sv_r           .push_back( book( name, hDVsum + "Errd0sv_r",           hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVsumstr + " d0 wrt SV uncert.",       100,     0,    5 ) );
-      h_dv_sumErrz0sv_z           .push_back( book( name, hDVsum + "Errz0sv_z",           hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVsumstr + " z0 wrt SV uncert.",       100,     0,   25 ) );
-      h_dv_sumErrPsv_pt           .push_back( book( name, hDVsum + "ErrPsv_pt",           hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVsumstr + " q/p wrt SV uncert.",      100,     0,  0.1 ) );
-      h_dv_sumSqrterrd0sv_r       .push_back( book( name, hDVsum + "Sqrterrd0sv_r",       hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVsumstr + " d0 wrt SV sqrt-uncert.",  100,     0,  2.5 ) );
-      h_dv_sumSqrterrz0sv_z       .push_back( book( name, hDVsum + "Sqrterrz0sv_z",       hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVsumstr + " z0 wrt SV sqrt-uncert.",  100,     0,    5 ) );
-      h_dv_sumSqrterrPsv_pt       .push_back( book( name, hDVsum + "SqrterrPsv_pt",       hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVsumstr + " q/p wrt SV sqrt-uncert.", 100,     0,  0.3 ) );
-      h_dv_minErrd0_r             .push_back( book( name, hDVmin + "Errd0_r",             hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVminstr + " d0 uncert.",              100,     0,    2 ) );
-      h_dv_minErrz0_z             .push_back( book( name, hDVmin + "Errz0_z",             hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVminstr + " z0 uncert.",              100,     0,   10 ) );
-      h_dv_minErrP_pt             .push_back( book( name, hDVmin + "ErrP_pt",             hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVminstr + " q/p uncert.",             100,     0, 0.02 ) );
-      h_dv_minSqrterrd0_r         .push_back( book( name, hDVmin + "Sqrterrd0_r",         hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVminstr + " d0 sqrt-uncert.",         100,     0,  1.5 ) );
-      h_dv_minSqrterrz0_z         .push_back( book( name, hDVmin + "Sqrterrz0_z",         hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVminstr + " z0 sqrt-uncert.",         100,     0,  3.5 ) );
-      h_dv_minSqrterrP_pt         .push_back( book( name, hDVmin + "SqrterrP_pt",         hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVminstr + " q/p sqrt-uncert.",        100,     0, 0.15 ) );
-      h_dv_minErrd0sv_r           .push_back( book( name, hDVmin + "Errd0sv_r",           hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVminstr + " d0 wrt SV uncert.",       100,     0,    2 ) );
-      h_dv_minErrz0sv_z           .push_back( book( name, hDVmin + "Errz0sv_z",           hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVminstr + " z0 wrt SV uncert.",       100,     0,   10 ) );
-      h_dv_minErrPsv_pt           .push_back( book( name, hDVmin + "ErrPsv_pt",           hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVminstr + " q/p wrt SV uncert.",      100,     0, 0.02 ) );
-      h_dv_minSqrterrd0sv_r       .push_back( book( name, hDVmin + "Sqrterrd0sv_r",       hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVminstr + " d0 wrt SV sqrt-uncert.",  100,     0,  1.5 ) );
-      h_dv_minSqrterrz0sv_z       .push_back( book( name, hDVmin + "Sqrterrz0sv_z",       hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVminstr + " z0 wrt SV sqrt-uncert.",  100,     0,  3.5 ) );
-      h_dv_minSqrterrPsv_pt       .push_back( book( name, hDVmin + "SqrterrPsv_pt",       hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVminstr + " q/p wrt SV sqrt-uncert.", 100,     0, 0.15 ) );
-      h_dv_maxErrd0_r             .push_back( book( name, hDVmax + "Errd0_r",             hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVmaxstr + " d0 uncert.",              100,     0,    3 ) );
-      h_dv_maxErrz0_z             .push_back( book( name, hDVmax + "Errz0_z",             hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVmaxstr + " z0 uncert.",              100,     0,   15 ) );
-      h_dv_maxErrP_pt             .push_back( book( name, hDVmax + "ErrP_pt",             hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVmaxstr + " q/p uncert.",             100,     0, 0.05 ) );
-      h_dv_maxSqrterrd0_r         .push_back( book( name, hDVmax + "Sqrterrd0_r",         hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVmaxstr + " d0 sqrt-uncert.",         100,     0,    2 ) );
-      h_dv_maxSqrterrz0_z         .push_back( book( name, hDVmax + "Sqrterrz0_z",         hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVmaxstr + " z0 sqrt-uncert.",         100,     0,    4 ) );
-      h_dv_maxSqrterrP_pt         .push_back( book( name, hDVmax + "SqrterrP_pt",         hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVmaxstr + " q/p sqrt-uncert.",        100,     0, 0.25 ) );
-      h_dv_maxErrd0sv_r           .push_back( book( name, hDVmax + "Errd0sv_r",           hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVmaxstr + " d0 wrt SV uncert.",       100,     0,    3 ) );
-      h_dv_maxErrz0sv_z           .push_back( book( name, hDVmax + "Errz0sv_z",           hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVmaxstr + " z0 wrt SV uncert.",       100,     0,   15 ) );
-      h_dv_maxErrPsv_pt           .push_back( book( name, hDVmax + "ErrPsv_pt",           hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVmaxstr + " q/p wrt SV uncert.",      100,     0, 0.05 ) );
-      h_dv_maxSqrterrd0sv_r       .push_back( book( name, hDVmax + "Sqrterrd0sv_r",       hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVmaxstr + " d0 wrt SV sqrt-uncert.",  100,     0,    2 ) );
-      h_dv_maxSqrterrz0sv_z       .push_back( book( name, hDVmax + "Sqrterrz0sv_z",       hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVmaxstr + " z0 wrt SV sqrt-uncert.",  100,     0,    4 ) );
-      h_dv_maxSqrterrPsv_pt       .push_back( book( name, hDVmax + "SqrterrPsv_pt",       hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVmaxstr + " q/p wrt SV sqrt-uncert.", 100,     0, 0.25 ) );
-      h_dv_trkd0_r                .push_back( book( name, hDVtrk + "d0_r",                hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVtrkstr + " d0 [mm]",                 100,  -300,  300 ) );
-      h_dv_trkz0_z                .push_back( book( name, hDVtrk + "z0_z",                hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVtrkstr + " z0 [mm]",                 100, -1500, 1500 ) );
-      h_dv_trkP_pt                .push_back( book( name, hDVtrk + "P_pt",                hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVtrkstr + " q/p [e/GeV]",             100,  -1.1,  1.1 ) );
-      h_dv_trkErrd0_r             .push_back( book( name, hDVtrk + "Errd0_r",             hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVtrkstr + " d0 uncert.",              100,     0,    5 ) );
-      h_dv_trkErrz0_z             .push_back( book( name, hDVtrk + "Errz0_z",             hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVtrkstr + " z0 uncert.",              100,     0,   25 ) );
-      h_dv_trkErrP_pt             .push_back( book( name, hDVtrk + "ErrP_pt",             hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVtrkstr + " q/p uncert.",             100,     0, 0.05 ) );
-      h_dv_trkSqrterrd0_r         .push_back( book( name, hDVtrk + "Sqrterrd0_r",         hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVtrkstr + " d0 sqrt-uncert.",         100,     0,  2.5 ) );
-      h_dv_trkSqrterrz0_z         .push_back( book( name, hDVtrk + "Sqrterrz0_z",         hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVtrkstr + " z0 sqrt-uncert.",         100,     0,    5 ) );
-      h_dv_trkSqrterrP_pt         .push_back( book( name, hDVtrk + "SqrterrP_pt",         hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVtrkstr + " q/p sqrt-uncert.",        100,     0, 0.25 ) );
-      h_dv_trkd0sv_r              .push_back( book( name, hDVtrk + "d0sv_r",              hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVtrkstr + " d0 wrt SV [mm]",          100,   -60,   60 ) );
-      h_dv_trkz0sv_z              .push_back( book( name, hDVtrk + "z0sv_z",              hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVtrkstr + " z0 wrt SV [mm]",          100,  -300,  300 ) );
-      h_dv_trkPsv_pt              .push_back( book( name, hDVtrk + "Psv_pt",              hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVtrkstr + " q/P wrt SV [e/GeV]",      100,  -1.1,  1.1 ) );
-      h_dv_trkErrd0sv_r           .push_back( book( name, hDVtrk + "Errd0sv_r",           hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVtrkstr + " d0 wrt SV uncert.",       100,     0,    5 ) );
-      h_dv_trkErrz0sv_z           .push_back( book( name, hDVtrk + "Errz0sv_z",           hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVtrkstr + " z0 wrt SV uncert.",       100,     0,   25 ) );
-      h_dv_trkErrPsv_pt           .push_back( book( name, hDVtrk + "ErrPsv_pt",           hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVtrkstr + " q/p wrt SV uncert.",      100,     0, 0.05 ) );
-      h_dv_trkSqrterrd0sv_r       .push_back( book( name, hDVtrk + "Sqrterrd0sv_r",       hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
-						    hDVtrkstr + " d0 wrt SV sqrt-uncert.",  100,     0,  2.5 ) );
-      h_dv_trkSqrterrz0sv_z       .push_back( book( name, hDVtrk + "Sqrterrz0sv_z",       hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
-						    hDVtrkstr + " z0 wrt SV sqrt-uncert.",  100,     0,    5 ) );
-      h_dv_trkSqrterrPsv_pt       .push_back( book( name, hDVtrk + "SqrterrPsv_pt",       hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
-						    hDVtrkstr + " q/p wrt SV sqrt-uncert.", 100,     0, 0.25 ) );
-      h_dv_trkErrd0_trkd0         .push_back( book( name, hDVtrk + "Errd0_trkd0",         hDVtrkstr + " d0 [mm]",            100,  -300,  300,
-						    hDVtrkstr + " d0 uncert.",              100,     0,    5 ) );
-      h_dv_trkErrz0_trkz0         .push_back( book( name, hDVtrk + "Errz0sv_trkz0",       hDVtrkstr + " z0 [mm]",            100, -1500, 1500,
-						    hDVtrkstr + " z0 uncert.",              100,     0,   25 ) );
-      h_dv_trkErrP_trkP           .push_back( book( name, hDVtrk + "ErrP_trkP",           hDVtrkstr + " q/p [e/GeV]",        100,  -1.1,  1.1,
-						    hDVtrkstr + " q/p uncert.",             100,     0, 0.05 ) );
-      h_dv_trkSqrterrd0_trkd0     .push_back( book( name, hDVtrk + "Sqrterrd0_trkd0",     hDVtrkstr + " d0 [mm]",            100,  -300,  300,
-						    hDVtrkstr + " d0 sqrt-uncert.",         100,     0,  2.5 ) );
-      h_dv_trkSqrterrz0_trkz0     .push_back( book( name, hDVtrk + "Sqrterrz0_trkz0",     hDVtrkstr + " z0 [mm]",            100, -1500, 1500,
-						    hDVtrkstr + " z0 sqrt-uncert.",         100,     0,    5 ) );
-      h_dv_trkSqrterrP_trkP       .push_back( book( name, hDVtrk + "SqrterrP_trkP",       hDVtrkstr + " q/p [e/GeV]",        100,  -1.1,  1.1,
-						    hDVtrkstr + " q/p sqrt-uncert.",        100,     0, 0.25 ) );
-      h_dv_trkErrd0sv_trkd0sv     .push_back( book( name, hDVtrk + "Errd0sv_trkd0sv",     hDVtrkstr + " d0 wrt SV [mm]",     100,   -60,   60,
-						    hDVtrkstr + " d0 wrt SV uncert.",       100,     0,    5 ) );
-      h_dv_trkErrz0sv_trkz0sv     .push_back( book( name, hDVtrk + "Errz0sv_trkz0sv",     hDVtrkstr + " z0 wrt SV [mm]",     100,  -300,  300,
-						    hDVtrkstr + " z0 wrt SV uncert.",       100,     0,   25 ) );
-      h_dv_trkErrPsv_trkPsv       .push_back( book( name, hDVtrk + "ErrPsv_trkPsv",       hDVtrkstr + " q/p wrt SV [e/GeV]", 100,  -1.1,  1.1,
-						    hDVtrkstr + " q/p wrt SV uncert.",      100,     0, 0.05 ) );
-      h_dv_trkSqrterrd0sv_trkd0sv .push_back( book( name, hDVtrk + "Sqrterrd0sv_trkd0sv", hDVtrkstr + " d0 wrt SV [mm]",     100,   -60,   60,
-						    hDVtrkstr + " d0 wrt SV sqrt-uncert.",  100,     0,  2.5 ) );
-      h_dv_trkSqrterrz0sv_trkz0sv .push_back( book( name, hDVtrk + "Sqrterrz0sv_trkz0sv", hDVtrkstr + " z0 wrt SV [mm]",     100,  -300,  300,
-						    hDVtrkstr + " z0 wrt SV sqrt-uncert.",  100,     0,    5 ) );
-      h_dv_trkSqrterrPsv_trkPsv   .push_back( book( name, hDVtrk + "SqrterrPsv_trkPsv",   hDVtrkstr + " q/p wrt SV [e/GeV]", 100,  -1.1,  1.1,
-						    hDVtrkstr + " q/p wrt SV sqrt-uncert.", 100,     0, 0.25 ) );
-      
+      if ( m_histoInfoSwitch->m_vtx2D ) {
+	h_dv_z_r                    .push_back( book( name, hDV.at(i) + "_z_r",             hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVstr.at(i) + " z-pos [mm]",           100,  -800,  800 ) );
+	h_dv_mass_r                 .push_back( book( name, hDV.at(i) + "_mass_r",          hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVstr.at(i) + " mass [GeV]",           100,     0,   50 ) );
+	h_dv_z_chi2                 .push_back( book( name, hDV.at(i) + "_z_chi2",          hDVstr.at(i) + " chi2 / nDoF",     100,     0,   10,
+						      hDVstr.at(i) + " z-pos [mm]",           100,  -800,  800 ) );
+	h_dv_r_chi2                 .push_back( book( name, hDV.at(i) + "_r_chi2",          hDVstr.at(i) + " chi2 / nDoF",     100,     0,   10,
+						      hDVstr.at(i) + " r-pos [mm]",           100,     0,  400 ) );
+	h_dv_mass_chi2              .push_back( book( name, hDV.at(i) + "_mass_chi2",       hDVstr.at(i) + " chi2 / nDoF",     100,     0,   10,
+						      hDVstr.at(i) + " mass [GeV]",           100,     0,   50 ) );
+	h_dv_z_r_s                  .push_back( book( name, hDV.at(i) + "_z_r_s",           hDVstr.at(i) + " r-pos [mm]",      100,     0,  300,
+						      hDVstr.at(i) + " z-pos [mm]",           100,  -300,  300 ) );
+	h_dv_mass_r_s               .push_back( book( name, hDV.at(i) + "_mass_r_s",        hDVstr.at(i) + " r-pos [mm]",      100,     0,  300,
+						      hDVstr.at(i) + " mass [GeV]",           100,     0,   25 ) );
+	h_dv_z_chi2_s               .push_back( book( name, hDV.at(i) + "_z_chi2_s",        hDVstr.at(i) + " chi2 / nDoF",     100,     0,    5,
+						      hDVstr.at(i) + " z-pos [mm]",           100,  -300,  300 ) );
+	h_dv_r_chi2_s               .push_back( book( name, hDV.at(i) + "_r_chi2_s",        hDVstr.at(i) + " chi2 / nDoF",     100,     0,    5,
+						      hDVstr.at(i) + " r-pos [mm]",           100,     0,  300 ) );
+	h_dv_mass_chi2_s            .push_back( book( name, hDV.at(i) + "_mass_chi2_s",     hDVstr.at(i) + " chi2 / nDoF",     100,     0,    5,
+						      hDVstr.at(i) + " mass [GeV]",           100,     0,   25 ) );
+      }
+      if ( m_histoInfoSwitch->m_vtx2D && m_histoInfoSwitch->m_vtxErrors ) {
+	h_dv_errx_x                 .push_back( book( name, hDV.at(i) + "_errx_x",          hDVstr.at(i) + " x-pos [mm]",      100,  -400,  400,
+						      hDVstr.at(i) + " x-pos uncert.",        100,     0,   25 ) );
+	h_dv_erry_y                 .push_back( book( name, hDV.at(i) + "_errr_y",          hDVstr.at(i) + " y-pos [mm]",      100,  -400,  400,
+						      hDVstr.at(i) + " y-pos uncert.",        100,     0,   25 ) );
+	h_dv_errz_z                 .push_back( book( name, hDV.at(i) + "_errz_z",          hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVstr.at(i) + " z-pos uncert.",        100,     0,   25 ) );
+	h_dv_errr_r                 .push_back( book( name, hDV.at(i) + "_errr_r",          hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVstr.at(i) + " r-pos uncert.",        100,     0,   25 ) );
+	h_dv_errphi_phi             .push_back( book( name, hDV.at(i) + "_errphi_phi",      hDVstr.at(i) + " phi-pos [mm]",    100,  -3.5,  3.5,
+						      hDVstr.at(i) + " phi-pos uncert.",      100,     0, 0.15 ) );
+	h_dv_sqrterrx_x             .push_back( book( name, hDV.at(i) + "_sqrterrx_x",      hDVstr.at(i) + " x-pos [mm]",      100,  -400,  400,
+						      hDVstr.at(i) + " x-pos sqrt-uncert.",   100,     0,    5 ) );
+	h_dv_sqrterry_y             .push_back( book( name, hDV.at(i) + "_sqrterry_y",      hDVstr.at(i) + " y-pos [mm]",      100,  -400,  400,
+						      hDVstr.at(i) + " y-pos sqrt-uncert.",   100,     0,    5 ) );
+	h_dv_sqrterrz_z             .push_back( book( name, hDV.at(i) + "_sqrterrz_z",      hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVstr.at(i) + " z-pos sqrt-uncert.",   100,     0,    5 ) );
+	h_dv_sqrterrr_r             .push_back( book( name, hDV.at(i) + "_sqrterrr_r",      hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVstr.at(i) + " r-pos sqrt-uncert.",   100,     0,    5 ) );
+	h_dv_sqrterrphi_phi         .push_back( book( name, hDV.at(i) + "_sqrterrphi_phi",  hDVstr.at(i) + " phi-pos [mm]",    100,  -3.5,  3.5,
+						      hDVstr.at(i) + " phi-pos sqrt-uncert.", 100,     0,  0.4 ) );
+	h_dv_sumErrd0_r             .push_back( book( name, hDVsum + "Errd0_r",             hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVsumstr + " d0 uncert.",              100,     0,    5 ) );
+	h_dv_sumErrz0_z             .push_back( book( name, hDVsum + "Errz0_z",             hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVsumstr + " z0 uncert.",              100,     0,   25 ) );
+	h_dv_sumErrP_pt             .push_back( book( name, hDVsum + "ErrP_pt",             hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVsumstr + " q/p uncert.",             100,     0,  0.1 ) );
+	h_dv_sumSqrterrd0_r         .push_back( book( name, hDVsum + "Sqrterrd0_r",         hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVsumstr + " d0 sqrt-uncert.",         100,     0,  2.5 ) );
+	h_dv_sumSqrterrz0_z         .push_back( book( name, hDVsum + "Sqrterrz0_z",         hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVsumstr + " z0 sqrt-uncert.",         100,     0,    5 ) );
+	h_dv_sumSqrterrP_pt         .push_back( book( name, hDVsum + "SqrterrP_pt",         hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVsumstr + " q/p sqrt-uncert.",        100,     0,  0.3 ) );
+	h_dv_sumErrd0sv_r           .push_back( book( name, hDVsum + "Errd0sv_r",           hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVsumstr + " d0 wrt SV uncert.",       100,     0,    5 ) );
+	h_dv_sumErrz0sv_z           .push_back( book( name, hDVsum + "Errz0sv_z",           hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVsumstr + " z0 wrt SV uncert.",       100,     0,   25 ) );
+	h_dv_sumErrPsv_pt           .push_back( book( name, hDVsum + "ErrPsv_pt",           hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVsumstr + " q/p wrt SV uncert.",      100,     0,  0.1 ) );
+	h_dv_sumSqrterrd0sv_r       .push_back( book( name, hDVsum + "Sqrterrd0sv_r",       hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVsumstr + " d0 wrt SV sqrt-uncert.",  100,     0,  2.5 ) );
+	h_dv_sumSqrterrz0sv_z       .push_back( book( name, hDVsum + "Sqrterrz0sv_z",       hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVsumstr + " z0 wrt SV sqrt-uncert.",  100,     0,    5 ) );
+	h_dv_sumSqrterrPsv_pt       .push_back( book( name, hDVsum + "SqrterrPsv_pt",       hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVsumstr + " q/p wrt SV sqrt-uncert.", 100,     0,  0.3 ) );
+	h_dv_minErrd0_r             .push_back( book( name, hDVmin + "Errd0_r",             hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVminstr + " d0 uncert.",              100,     0,    2 ) );
+	h_dv_minErrz0_z             .push_back( book( name, hDVmin + "Errz0_z",             hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVminstr + " z0 uncert.",              100,     0,   10 ) );
+	h_dv_minErrP_pt             .push_back( book( name, hDVmin + "ErrP_pt",             hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVminstr + " q/p uncert.",             100,     0, 0.02 ) );
+	h_dv_minSqrterrd0_r         .push_back( book( name, hDVmin + "Sqrterrd0_r",         hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVminstr + " d0 sqrt-uncert.",         100,     0,  1.5 ) );
+	h_dv_minSqrterrz0_z         .push_back( book( name, hDVmin + "Sqrterrz0_z",         hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVminstr + " z0 sqrt-uncert.",         100,     0,  3.5 ) );
+	h_dv_minSqrterrP_pt         .push_back( book( name, hDVmin + "SqrterrP_pt",         hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVminstr + " q/p sqrt-uncert.",        100,     0, 0.15 ) );
+	h_dv_minErrd0sv_r           .push_back( book( name, hDVmin + "Errd0sv_r",           hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVminstr + " d0 wrt SV uncert.",       100,     0,    2 ) );
+	h_dv_minErrz0sv_z           .push_back( book( name, hDVmin + "Errz0sv_z",           hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVminstr + " z0 wrt SV uncert.",       100,     0,   10 ) );
+	h_dv_minErrPsv_pt           .push_back( book( name, hDVmin + "ErrPsv_pt",           hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVminstr + " q/p wrt SV uncert.",      100,     0, 0.02 ) );
+	h_dv_minSqrterrd0sv_r       .push_back( book( name, hDVmin + "Sqrterrd0sv_r",       hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVminstr + " d0 wrt SV sqrt-uncert.",  100,     0,  1.5 ) );
+	h_dv_minSqrterrz0sv_z       .push_back( book( name, hDVmin + "Sqrterrz0sv_z",       hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVminstr + " z0 wrt SV sqrt-uncert.",  100,     0,  3.5 ) );
+	h_dv_minSqrterrPsv_pt       .push_back( book( name, hDVmin + "SqrterrPsv_pt",       hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVminstr + " q/p wrt SV sqrt-uncert.", 100,     0, 0.15 ) );
+	h_dv_maxErrd0_r             .push_back( book( name, hDVmax + "Errd0_r",             hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVmaxstr + " d0 uncert.",              100,     0,    3 ) );
+	h_dv_maxErrz0_z             .push_back( book( name, hDVmax + "Errz0_z",             hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVmaxstr + " z0 uncert.",              100,     0,   15 ) );
+	h_dv_maxErrP_pt             .push_back( book( name, hDVmax + "ErrP_pt",             hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVmaxstr + " q/p uncert.",             100,     0, 0.05 ) );
+	h_dv_maxSqrterrd0_r         .push_back( book( name, hDVmax + "Sqrterrd0_r",         hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVmaxstr + " d0 sqrt-uncert.",         100,     0,    2 ) );
+	h_dv_maxSqrterrz0_z         .push_back( book( name, hDVmax + "Sqrterrz0_z",         hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVmaxstr + " z0 sqrt-uncert.",         100,     0,    4 ) );
+	h_dv_maxSqrterrP_pt         .push_back( book( name, hDVmax + "SqrterrP_pt",         hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVmaxstr + " q/p sqrt-uncert.",        100,     0, 0.25 ) );
+	h_dv_maxErrd0sv_r           .push_back( book( name, hDVmax + "Errd0sv_r",           hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVmaxstr + " d0 wrt SV uncert.",       100,     0,    3 ) );
+	h_dv_maxErrz0sv_z           .push_back( book( name, hDVmax + "Errz0sv_z",           hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVmaxstr + " z0 wrt SV uncert.",       100,     0,   15 ) );
+	h_dv_maxErrPsv_pt           .push_back( book( name, hDVmax + "ErrPsv_pt",           hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVmaxstr + " q/p wrt SV uncert.",      100,     0, 0.05 ) );
+	h_dv_maxSqrterrd0sv_r       .push_back( book( name, hDVmax + "Sqrterrd0sv_r",       hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVmaxstr + " d0 wrt SV sqrt-uncert.",  100,     0,    2 ) );
+	h_dv_maxSqrterrz0sv_z       .push_back( book( name, hDVmax + "Sqrterrz0sv_z",       hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVmaxstr + " z0 wrt SV sqrt-uncert.",  100,     0,    4 ) );
+	h_dv_maxSqrterrPsv_pt       .push_back( book( name, hDVmax + "SqrterrPsv_pt",       hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVmaxstr + " q/p wrt SV sqrt-uncert.", 100,     0, 0.25 ) );
+      }
+      if ( m_histoInfoSwitch->m_vtx2D && m_histoInfoSwitch->m_vtxTrks ) {
+	h_dv_trkd0_r                .push_back( book( name, hDVtrk + "d0_r",                hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVtrkstr + " d0 [mm]",                 100,  -300,  300 ) );
+	h_dv_trkz0_z                .push_back( book( name, hDVtrk + "z0_z",                hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVtrkstr + " z0 [mm]",                 100, -1500, 1500 ) );
+	h_dv_trkP_pt                .push_back( book( name, hDVtrk + "P_pt",                hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVtrkstr + " q/p [e/GeV]",             100,  -1.1,  1.1 ) );
+	h_dv_trkErrd0_r             .push_back( book( name, hDVtrk + "Errd0_r",             hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVtrkstr + " d0 uncert.",              100,     0,    5 ) );
+	h_dv_trkErrz0_z             .push_back( book( name, hDVtrk + "Errz0_z",             hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVtrkstr + " z0 uncert.",              100,     0,   25 ) );
+	h_dv_trkErrP_pt             .push_back( book( name, hDVtrk + "ErrP_pt",             hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVtrkstr + " q/p uncert.",             100,     0, 0.05 ) );
+	h_dv_trkSqrterrd0_r         .push_back( book( name, hDVtrk + "Sqrterrd0_r",         hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVtrkstr + " d0 sqrt-uncert.",         100,     0,  2.5 ) );
+	h_dv_trkSqrterrz0_z         .push_back( book( name, hDVtrk + "Sqrterrz0_z",         hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVtrkstr + " z0 sqrt-uncert.",         100,     0,    5 ) );
+	h_dv_trkSqrterrP_pt         .push_back( book( name, hDVtrk + "SqrterrP_pt",         hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVtrkstr + " q/p sqrt-uncert.",        100,     0, 0.25 ) );
+	h_dv_trkd0sv_r              .push_back( book( name, hDVtrk + "d0sv_r",              hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVtrkstr + " d0 wrt SV [mm]",          100,   -60,   60 ) );
+	h_dv_trkz0sv_z              .push_back( book( name, hDVtrk + "z0sv_z",              hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVtrkstr + " z0 wrt SV [mm]",          100,  -300,  300 ) );
+	h_dv_trkPsv_pt              .push_back( book( name, hDVtrk + "Psv_pt",              hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVtrkstr + " q/P wrt SV [e/GeV]",      100,  -1.1,  1.1 ) );
+	h_dv_trkErrd0sv_r           .push_back( book( name, hDVtrk + "Errd0sv_r",           hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVtrkstr + " d0 wrt SV uncert.",       100,     0,    5 ) );
+	h_dv_trkErrz0sv_z           .push_back( book( name, hDVtrk + "Errz0sv_z",           hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVtrkstr + " z0 wrt SV uncert.",       100,     0,   25 ) );
+	h_dv_trkErrPsv_pt           .push_back( book( name, hDVtrk + "ErrPsv_pt",           hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVtrkstr + " q/p wrt SV uncert.",      100,     0, 0.05 ) );
+	h_dv_trkSqrterrd0sv_r       .push_back( book( name, hDVtrk + "Sqrterrd0sv_r",       hDVstr.at(i) + " r-pos [mm]",      100,     0,  400,
+						      hDVtrkstr + " d0 wrt SV sqrt-uncert.",  100,     0,  2.5 ) );
+	h_dv_trkSqrterrz0sv_z       .push_back( book( name, hDVtrk + "Sqrterrz0sv_z",       hDVstr.at(i) + " z-pos [mm]",      100,  -800,  800,
+						      hDVtrkstr + " z0 wrt SV sqrt-uncert.",  100,     0,    5 ) );
+	h_dv_trkSqrterrPsv_pt       .push_back( book( name, hDVtrk + "SqrterrPsv_pt",       hDVstr.at(i) + " p_{T} [GeV]",     100,     0,  100,
+						      hDVtrkstr + " q/p wrt SV sqrt-uncert.", 100,     0, 0.25 ) );
+	h_dv_trkErrd0_trkd0         .push_back( book( name, hDVtrk + "Errd0_trkd0",         hDVtrkstr + " d0 [mm]",            100,  -300,  300,
+						      hDVtrkstr + " d0 uncert.",              100,     0,    5 ) );
+	h_dv_trkErrz0_trkz0         .push_back( book( name, hDVtrk + "Errz0sv_trkz0",       hDVtrkstr + " z0 [mm]",            100, -1500, 1500,
+						      hDVtrkstr + " z0 uncert.",              100,     0,   25 ) );
+	h_dv_trkErrP_trkP           .push_back( book( name, hDVtrk + "ErrP_trkP",           hDVtrkstr + " q/p [e/GeV]",        100,  -1.1,  1.1,
+						      hDVtrkstr + " q/p uncert.",             100,     0, 0.05 ) );
+	h_dv_trkSqrterrd0_trkd0     .push_back( book( name, hDVtrk + "Sqrterrd0_trkd0",     hDVtrkstr + " d0 [mm]",            100,  -300,  300,
+						      hDVtrkstr + " d0 sqrt-uncert.",         100,     0,  2.5 ) );
+	h_dv_trkSqrterrz0_trkz0     .push_back( book( name, hDVtrk + "Sqrterrz0_trkz0",     hDVtrkstr + " z0 [mm]",            100, -1500, 1500,
+						      hDVtrkstr + " z0 sqrt-uncert.",         100,     0,    5 ) );
+	h_dv_trkSqrterrP_trkP       .push_back( book( name, hDVtrk + "SqrterrP_trkP",       hDVtrkstr + " q/p [e/GeV]",        100,  -1.1,  1.1,
+						      hDVtrkstr + " q/p sqrt-uncert.",        100,     0, 0.25 ) );
+	h_dv_trkErrd0sv_trkd0sv     .push_back( book( name, hDVtrk + "Errd0sv_trkd0sv",     hDVtrkstr + " d0 wrt SV [mm]",     100,   -60,   60,
+						      hDVtrkstr + " d0 wrt SV uncert.",       100,     0,    5 ) );
+	h_dv_trkErrz0sv_trkz0sv     .push_back( book( name, hDVtrk + "Errz0sv_trkz0sv",     hDVtrkstr + " z0 wrt SV [mm]",     100,  -300,  300,
+						      hDVtrkstr + " z0 wrt SV uncert.",       100,     0,   25 ) );
+	h_dv_trkErrPsv_trkPsv       .push_back( book( name, hDVtrk + "ErrPsv_trkPsv",       hDVtrkstr + " q/p wrt SV [e/GeV]", 100,  -1.1,  1.1,
+						      hDVtrkstr + " q/p wrt SV uncert.",      100,     0, 0.05 ) );
+	h_dv_trkSqrterrd0sv_trkd0sv .push_back( book( name, hDVtrk + "Sqrterrd0sv_trkd0sv", hDVtrkstr + " d0 wrt SV [mm]",     100,   -60,   60,
+						      hDVtrkstr + " d0 wrt SV sqrt-uncert.",  100,     0,  2.5 ) );
+	h_dv_trkSqrterrz0sv_trkz0sv .push_back( book( name, hDVtrk + "Sqrterrz0sv_trkz0sv", hDVtrkstr + " z0 wrt SV [mm]",     100,  -300,  300,
+						      hDVtrkstr + " z0 wrt SV sqrt-uncert.",  100,     0,    5 ) );
+	h_dv_trkSqrterrPsv_trkPsv   .push_back( book( name, hDVtrk + "SqrterrPsv_trkPsv",   hDVtrkstr + " q/p wrt SV [e/GeV]", 100,  -1.1,  1.1,
+						      hDVtrkstr + " q/p wrt SV sqrt-uncert.", 100,     0, 0.25 ) );
+      }
+	
       // n-track vertices
       if ( m_numVtxTrks ) {
 	std::vector<TH1F*> h_njtrkdv_n;
@@ -1731,11 +1788,30 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	std::vector<TH1F*> h_njtrkdv_r_s;
 	std::vector<TH1F*> h_njtrkdv_mass;
 	std::vector<TH1F*> h_njtrkdv_mass_s;
+	std::vector<TH1F*> h_njtrkdv_mass_xs;
 	std::vector<TH1F*> h_njtrkdv_direction;
 	std::vector<TH1F*> h_njtrkdv_minOpAng;
 	std::vector<TH1F*> h_njtrkdv_maxOpAng;
 	std::vector<TH1F*> h_njtrkdv_chi2;
 	std::vector<TH1F*> h_njtrkdv_chi2_s;
+	std::vector<TH1F*> h_njtrkdv_sumd0;
+	std::vector<TH1F*> h_njtrkdv_sumz0;
+	std::vector<TH1F*> h_njtrkdv_sumP;
+	std::vector<TH1F*> h_njtrkdv_sumd0_sv;
+	std::vector<TH1F*> h_njtrkdv_sumz0_sv;
+	std::vector<TH1F*> h_njtrkdv_sumP_sv;
+	std::vector<TH1F*> h_njtrkdv_mind0;
+	std::vector<TH1F*> h_njtrkdv_minz0;
+	std::vector<TH1F*> h_njtrkdv_minP;
+	std::vector<TH1F*> h_njtrkdv_mind0_sv;
+	std::vector<TH1F*> h_njtrkdv_minz0_sv;
+	std::vector<TH1F*> h_njtrkdv_minP_sv;
+	std::vector<TH1F*> h_njtrkdv_maxd0;
+	std::vector<TH1F*> h_njtrkdv_maxz0;
+	std::vector<TH1F*> h_njtrkdv_maxP;
+	std::vector<TH1F*> h_njtrkdv_maxd0_sv;
+	std::vector<TH1F*> h_njtrkdv_maxz0_sv;
+	std::vector<TH1F*> h_njtrkdv_maxP_sv;
 	std::vector<TH1F*> h_njtrkdv_sqrterrx;
 	std::vector<TH1F*> h_njtrkdv_sqrterry;
 	std::vector<TH1F*> h_njtrkdv_sqrterrz;
@@ -1765,47 +1841,68 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  std::string ntrkDV = ntrk + "trk" + iDV;
 	  std::string ntrkDVstr = ntrk + "-track " + hDVstr.at(i);
 	  if ( j+1 == m_numVtxTrks ) ntrkDVstr = ntrk + "-plus-track " + hDVstr.at(i);
-	  h_njtrkdv_n          .push_back( book( name, ntrkDV + "_n",          "n " + ntrkDVstr + "s",                15,    0,  15 ) );
-	  h_njtrkdv_z          .push_back( book( name, ntrkDV + "_z",          ntrkDVstr + " z-pos [mm]",            100, -800, 800 ) );
-	  h_njtrkdv_z_s        .push_back( book( name, ntrkDV + "_z_s",        ntrkDVstr + " z-pos [mm]",            100, -300, 300 ) );
-	  h_njtrkdv_r          .push_back( book( name, ntrkDV + "_r",          ntrkDVstr + " r-pos [mm]",            100,    0, 400 ) );
-	  h_njtrkdv_r_s        .push_back( book( name, ntrkDV + "_r_s",        ntrkDVstr + " r-pos [mm]",            100,    0, 300 ) );
-	  h_njtrkdv_mass       .push_back( book( name, ntrkDV + "_mass",       ntrkDVstr + " mass [GeV]",            100,    0,  50 ) );
-	  h_njtrkdv_mass_s     .push_back( book( name, ntrkDV + "_mass_s",     ntrkDVstr + " mass [GeV]",            100,    0,  25 ) );
-	  h_njtrkdv_direction  .push_back( book( name, ntrkDV + "_direction",  ntrkDVstr + " direction",             100, -1.1, 1.1 ) );
-	  h_njtrkdv_minOpAng   .push_back( book( name, ntrkDV + "_minOpAng",   ntrkDVstr + " cos min opening angle", 100, -1.1, 1.1 ) );
-	  h_njtrkdv_maxOpAng   .push_back( book( name, ntrkDV + "_maxOpAng",   ntrkDVstr + " mos max opening angle", 100, -1.1, 1.1 ) );
-	  h_njtrkdv_chi2       .push_back( book( name, ntrkDV + "_chi2",       ntrkDVstr + " chi2 / ndof",           100,    0,  10 ) );
-	  h_njtrkdv_chi2_s     .push_back( book( name, ntrkDV + "_chi2_s",     ntrkDVstr + " chi2 / ndof",           100,    0,   5 ) );
-	  h_njtrkdv_sqrterrx   .push_back( book( name, ntrkDV + "_sqrterrx",   ntrkDVstr + " x-pos sqrt-uncert.",    100,    0,   5 ) );
-	  h_njtrkdv_sqrterry   .push_back( book( name, ntrkDV + "_sqrterry",   ntrkDVstr + " y-pos sqrt-uncert.",    100,    0,   5 ) );
-	  h_njtrkdv_sqrterrz   .push_back( book( name, ntrkDV + "_sqrterrz",   ntrkDVstr + " z-pos sqrt-uncert.",    100,    0,   5 ) );
-	  h_njtrkdv_sqrterrr   .push_back( book( name, ntrkDV + "_sqrterrr",   ntrkDVstr + " r-pos sqrt-uncert.",    100,    0,   5 ) );
-	  h_njtrkdv_sqrterrphi .push_back( book( name, ntrkDV + "_sqrterrphi", ntrkDVstr + " phi-pos sqrt-uncert.",  100,    0, 0.4 ) );
 	  std::string ntrkDVsum    = ntrkDV    + "_sum";
 	  std::string ntrkDVsumstr = ntrkDVstr + " sum track";
 	  std::string ntrkDVmin    = ntrkDV    + "_min";
 	  std::string ntrkDVminstr = ntrkDVstr + " min track";
 	  std::string ntrkDVmax    = ntrkDV    + "_max";
 	  std::string ntrkDVmaxstr = ntrkDVstr + " max track";
-	  h_njtrkdv_sumSqrterrd0    .push_back( book( name, ntrkDVsum + "Sqrterrd0",    ntrkDVsumstr + " d0 sqrt-uncert.",        100, 0, 2.5 ) );
-	  h_njtrkdv_sumSqrterrz0    .push_back( book( name, ntrkDVsum + "Sqrterrz0",    ntrkDVsumstr + " z0 sqrt-uncert.",        100, 0,   5 ) );
-	  h_njtrkdv_sumSqrterrP     .push_back( book( name, ntrkDVsum + "SqrterrP",     ntrkDVsumstr + " q/p sqrt-uncert.",       100, 0, 0.3 ) );
-	  h_njtrkdv_sumSqrterrd0_sv .push_back( book( name, ntrkDVsum + "Sqrterrd0_sv", ntrkDVsumstr + " d0 wrt SV sqrt-uncert.", 100, 0, 2.5 ) );
-	  h_njtrkdv_sumSqrterrz0_sv .push_back( book( name, ntrkDVsum + "Sqrterrz0_sv", ntrkDVsumstr + " z0 wrt SV sqrt-uncert.", 100, 0,   5 ) );
-	  h_njtrkdv_sumSqrterrP_sv  .push_back( book( name, ntrkDVsum + "SqrterrP_sv",  ntrkDVsumstr + " q/p wrt SV sqrt-uncert.",100, 0, 0.3 ) );
-	  h_njtrkdv_minSqrterrd0    .push_back( book( name, ntrkDVmin + "Sqrterrd0",    ntrkDVminstr + " d0 sqrt-uncert.",        100, 0, 1.5 ) );
-	  h_njtrkdv_minSqrterrz0    .push_back( book( name, ntrkDVmin + "Sqrterrz0",    ntrkDVminstr + " z0 sqrt-uncert.",        100, 0, 3.5 ) );
-	  h_njtrkdv_minSqrterrP     .push_back( book( name, ntrkDVmin + "SqrterrP",     ntrkDVminstr + " q/p sqrt-uncert.",       100, 0,0.15 ) );
-	  h_njtrkdv_minSqrterrd0_sv .push_back( book( name, ntrkDVmin + "Sqrterrd0_sv", ntrkDVminstr + " d0 wrt SV sqrt-uncert.", 100, 0, 1.5 ) );
-	  h_njtrkdv_minSqrterrz0_sv .push_back( book( name, ntrkDVmin + "Sqrterrz0_sv", ntrkDVminstr + " z0 wrt SV sqrt-uncert.", 100, 0, 3.5 ) );
-	  h_njtrkdv_minSqrterrP_sv  .push_back( book( name, ntrkDVmin + "SqrterrP_sv",  ntrkDVminstr + " q/p wrt SV sqrt-uncert.",100, 0,0.15 ) );
-	  h_njtrkdv_maxSqrterrd0    .push_back( book( name, ntrkDVmax + "Sqrterrd0",    ntrkDVmaxstr + " d0 sqrt-uncert.",        100, 0,   2 ) );
-	  h_njtrkdv_maxSqrterrz0    .push_back( book( name, ntrkDVmax + "Sqrterrz0",    ntrkDVmaxstr + " z0 sqrt-uncert.",        100, 0,   4 ) );
-	  h_njtrkdv_maxSqrterrP     .push_back( book( name, ntrkDVmax + "SqrterrP",     ntrkDVmaxstr + " q/p sqrt-uncert.",       100, 0,0.25 ) );
-	  h_njtrkdv_maxSqrterrd0_sv .push_back( book( name, ntrkDVmax + "Sqrterrd0_sv", ntrkDVmaxstr + " d0 wrt SV sqrt-uncert.", 100, 0,   2 ) );
-	  h_njtrkdv_maxSqrterrz0_sv .push_back( book( name, ntrkDVmax + "Sqrterrz0_sv", ntrkDVmaxstr + " z0 wrt SV sqrt-uncert.", 100, 0,   4 ) );
-	  h_njtrkdv_maxSqrterrP_sv  .push_back( book( name, ntrkDVmax + "SqrterrP_sv",  ntrkDVmaxstr + " q/p wrt SV sqrt-uncert.",100, 0,0.25 ) );
+	  h_njtrkdv_n                 .push_back( book( name, ntrkDV    + "_n",           "n " + ntrkDVstr + "s",                    15, 0,  15 ) );
+	  h_njtrkdv_z                 .push_back( book( name, ntrkDV    + "_z",           ntrkDVstr    + " z-pos [mm]",            100,-800,800 ) );
+	  h_njtrkdv_z_s               .push_back( book( name, ntrkDV    + "_z_s",         ntrkDVstr    + " z-pos [mm]",            100,-300,300 ) );
+	  h_njtrkdv_r                 .push_back( book( name, ntrkDV    + "_r",           ntrkDVstr    + " r-pos [mm]",             100, 0, 400 ) );
+	  h_njtrkdv_r_s               .push_back( book( name, ntrkDV    + "_r_s",         ntrkDVstr    + " r-pos [mm]",             100, 0, 300 ) );
+	  h_njtrkdv_mass              .push_back( book( name, ntrkDV    + "_mass",        ntrkDVstr    + " mass [GeV]",             100, 0,  50 ) );
+	  h_njtrkdv_mass_s            .push_back( book( name, ntrkDV    + "_mass_s",      ntrkDVstr    + " mass [GeV]",             100, 0,  25 ) );
+	  h_njtrkdv_mass_xs           .push_back( book( name, ntrkDV    + "_mass_xs",     ntrkDVstr    + " mass [GeV]",             100, 0,   5 ) );
+	  h_njtrkdv_direction         .push_back( book( name, ntrkDV    + "_direction",   ntrkDVstr    + " direction",             100,-1.1,1.1 ) );
+	  h_njtrkdv_minOpAng          .push_back( book( name, ntrkDV    + "_minOpAng",    ntrkDVstr    + " cos min opening angle", 100,-1.1,1.1 ) );
+	  h_njtrkdv_maxOpAng          .push_back( book( name, ntrkDV    + "_maxOpAng",    ntrkDVstr    + " mos max opening angle", 100,-1.1,1.1 ) );
+	  h_njtrkdv_chi2              .push_back( book( name, ntrkDV    + "_chi2",        ntrkDVstr    + " chi2 / ndof",            100, 0,  10 ) );
+	  h_njtrkdv_chi2_s            .push_back( book( name, ntrkDV    + "_chi2_s",      ntrkDVstr    + " chi2 / ndof",            100, 0,   5 ) );
+	  h_njtrkdv_sumd0             .push_back( book( name, ntrkDVsum + "d0",           ntrkDVsumstr + " |d0| [mm]",              100, 0, 500 ) );
+	  h_njtrkdv_sumz0             .push_back( book( name, ntrkDVsum + "z0",           ntrkDVsumstr + " |z0| [mm]",              100, 0,2000 ) );
+	  h_njtrkdv_sumP              .push_back( book( name, ntrkDVsum + "P",            ntrkDVsumstr + " |q/p| [e/GeV]",          100, 0,   5 ) );
+	  h_njtrkdv_sumd0_sv          .push_back( book( name, ntrkDVsum + "d0_sv",        ntrkDVsumstr + " |d0| wrt SV [mm]",       100, 0,  50 ) );
+	  h_njtrkdv_sumz0_sv          .push_back( book( name, ntrkDVsum + "z0_sv",        ntrkDVsumstr + " |z0| wrt SV [mm]",       100, 0, 150 ) );
+	  h_njtrkdv_sumP_sv           .push_back( book( name, ntrkDVsum + "P_sv",         ntrkDVsumstr + " |q/p| wrt SV [e/GeV]",   100, 0,   5 ) );
+	  h_njtrkdv_mind0             .push_back( book( name, ntrkDVmin + "d0",           ntrkDVminstr + " |d0| [mm]",              100, 0, 200 ) );
+	  h_njtrkdv_minz0             .push_back( book( name, ntrkDVmin + "z0",           ntrkDVminstr + " |z0| [mm]",              100, 0,1000 ) );
+	  h_njtrkdv_minP              .push_back( book( name, ntrkDVmin + "P",            ntrkDVminstr + " |q/p| [e/GeV]",          100, 0,   1 ) );
+	  h_njtrkdv_mind0_sv          .push_back( book( name, ntrkDVmin + "d0_sv",        ntrkDVminstr + " |d0| wrt SV [mm]",       100, 0,  15 ) );
+	  h_njtrkdv_minz0_sv          .push_back( book( name, ntrkDVmin + "z0_sv",        ntrkDVminstr + " |z0| wrt SV [mm]",       100, 0,  50 ) );
+	  h_njtrkdv_minP_sv           .push_back( book( name, ntrkDVmin + "P_sv",         ntrkDVminstr + " |q/p| wrt SV [e/GeV]",   100, 0,   1 ) );
+	  h_njtrkdv_maxd0             .push_back( book( name, ntrkDVmax + "d0",           ntrkDVmaxstr + " |d0| [mm]",              100, 0, 300 ) );
+	  h_njtrkdv_maxz0             .push_back( book( name, ntrkDVmax + "z0",           ntrkDVmaxstr + " |z0| [mm]",              100, 0,1500 ) );
+	  h_njtrkdv_maxP              .push_back( book( name, ntrkDVmax + "P",            ntrkDVmaxstr + " |q/p| [e/GeV]",          100, 0, 1.1 ) );
+	  h_njtrkdv_maxd0_sv          .push_back( book( name, ntrkDVmax + "d0_sv",        ntrkDVmaxstr + " |d0| wrt SV [mm]",       100, 0,  30 ) );
+	  h_njtrkdv_maxz0_sv          .push_back( book( name, ntrkDVmax + "z0_sv",        ntrkDVmaxstr + " |z0| wrt SV [mm]",       100, 0, 100 ) );
+	  h_njtrkdv_maxP_sv           .push_back( book( name, ntrkDVmax + "P_sv",         ntrkDVmaxstr + " |q/p| wrt SV [e/GeV]",   100, 0, 1.1 ) );
+	  if ( m_histoInfoSwitch->m_vtxErrors ) {
+	    h_njtrkdv_sqrterrx        .push_back( book( name, ntrkDV    + "_sqrterrx",    ntrkDVstr    + " x-pos sqrt-uncert.",     100, 0,   5 ) );
+	    h_njtrkdv_sqrterry        .push_back( book( name, ntrkDV    + "_sqrterry",    ntrkDVstr    + " y-pos sqrt-uncert.",     100, 0,   5 ) );
+	    h_njtrkdv_sqrterrz        .push_back( book( name, ntrkDV    + "_sqrterrz",    ntrkDVstr    + " z-pos sqrt-uncert.",     100, 0,   5 ) );
+	    h_njtrkdv_sqrterrr        .push_back( book( name, ntrkDV    + "_sqrterrr",    ntrkDVstr    + " r-pos sqrt-uncert.",     100, 0,   5 ) );
+	    h_njtrkdv_sqrterrphi      .push_back( book( name, ntrkDV    + "_sqrterrphi",  ntrkDVstr    + " phi-pos sqrt-uncert.",   100, 0, 0.4 ) );
+	    h_njtrkdv_sumSqrterrd0    .push_back( book( name, ntrkDVsum + "Sqrterrd0",    ntrkDVsumstr + " d0 sqrt-uncert.",        100, 0, 2.5 ) );
+	    h_njtrkdv_sumSqrterrz0    .push_back( book( name, ntrkDVsum + "Sqrterrz0",    ntrkDVsumstr + " z0 sqrt-uncert.",        100, 0,   5 ) );
+	    h_njtrkdv_sumSqrterrP     .push_back( book( name, ntrkDVsum + "SqrterrP",     ntrkDVsumstr + " q/p sqrt-uncert.",       100, 0, 0.3 ) );
+	    h_njtrkdv_sumSqrterrd0_sv .push_back( book( name, ntrkDVsum + "Sqrterrd0_sv", ntrkDVsumstr + " d0 wrt SV sqrt-uncert.", 100, 0, 2.5 ) );
+	    h_njtrkdv_sumSqrterrz0_sv .push_back( book( name, ntrkDVsum + "Sqrterrz0_sv", ntrkDVsumstr + " z0 wrt SV sqrt-uncert.", 100, 0,   5 ) );
+	    h_njtrkdv_sumSqrterrP_sv  .push_back( book( name, ntrkDVsum + "SqrterrP_sv",  ntrkDVsumstr + " q/p wrt SV sqrt-uncert.",100, 0, 0.3 ) );
+	    h_njtrkdv_minSqrterrd0    .push_back( book( name, ntrkDVmin + "Sqrterrd0",    ntrkDVminstr + " d0 sqrt-uncert.",        100, 0, 1.5 ) );
+	    h_njtrkdv_minSqrterrz0    .push_back( book( name, ntrkDVmin + "Sqrterrz0",    ntrkDVminstr + " z0 sqrt-uncert.",        100, 0, 3.5 ) );
+	    h_njtrkdv_minSqrterrP     .push_back( book( name, ntrkDVmin + "SqrterrP",     ntrkDVminstr + " q/p sqrt-uncert.",       100, 0,0.15 ) );
+	    h_njtrkdv_minSqrterrd0_sv .push_back( book( name, ntrkDVmin + "Sqrterrd0_sv", ntrkDVminstr + " d0 wrt SV sqrt-uncert.", 100, 0, 1.5 ) );
+	    h_njtrkdv_minSqrterrz0_sv .push_back( book( name, ntrkDVmin + "Sqrterrz0_sv", ntrkDVminstr + " z0 wrt SV sqrt-uncert.", 100, 0, 3.5 ) );
+	    h_njtrkdv_minSqrterrP_sv  .push_back( book( name, ntrkDVmin + "SqrterrP_sv",  ntrkDVminstr + " q/p wrt SV sqrt-uncert.",100, 0,0.15 ) );
+	    h_njtrkdv_maxSqrterrd0    .push_back( book( name, ntrkDVmax + "Sqrterrd0",    ntrkDVmaxstr + " d0 sqrt-uncert.",        100, 0,   2 ) );
+	    h_njtrkdv_maxSqrterrz0    .push_back( book( name, ntrkDVmax + "Sqrterrz0",    ntrkDVmaxstr + " z0 sqrt-uncert.",        100, 0,   4 ) );
+	    h_njtrkdv_maxSqrterrP     .push_back( book( name, ntrkDVmax + "SqrterrP",     ntrkDVmaxstr + " q/p sqrt-uncert.",       100, 0,0.25 ) );
+	    h_njtrkdv_maxSqrterrd0_sv .push_back( book( name, ntrkDVmax + "Sqrterrd0_sv", ntrkDVmaxstr + " d0 wrt SV sqrt-uncert.", 100, 0,   2 ) );
+	    h_njtrkdv_maxSqrterrz0_sv .push_back( book( name, ntrkDVmax + "Sqrterrz0_sv", ntrkDVmaxstr + " z0 wrt SV sqrt-uncert.", 100, 0,   4 ) );
+	    h_njtrkdv_maxSqrterrP_sv  .push_back( book( name, ntrkDVmax + "SqrterrP_sv",  ntrkDVmaxstr + " q/p wrt SV sqrt-uncert.",100, 0,0.25 ) );
+	  }
 	}
 	h_ntrkdv_n               .push_back( h_njtrkdv_n               );
 	h_ntrkdv_z               .push_back( h_njtrkdv_z               );
@@ -1814,343 +1911,397 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	h_ntrkdv_r_s             .push_back( h_njtrkdv_r_s             );
 	h_ntrkdv_mass            .push_back( h_njtrkdv_mass            );
 	h_ntrkdv_mass_s          .push_back( h_njtrkdv_mass_s          );
+	h_ntrkdv_mass_xs         .push_back( h_njtrkdv_mass_xs         );
 	h_ntrkdv_direction       .push_back( h_njtrkdv_direction       );
 	h_ntrkdv_minOpAng        .push_back( h_njtrkdv_minOpAng        );
 	h_ntrkdv_maxOpAng        .push_back( h_njtrkdv_maxOpAng        );
 	h_ntrkdv_chi2            .push_back( h_njtrkdv_chi2            );
 	h_ntrkdv_chi2_s          .push_back( h_njtrkdv_chi2_s          );
-	h_ntrkdv_sqrterrx        .push_back( h_njtrkdv_sqrterrx        );
-	h_ntrkdv_sqrterry        .push_back( h_njtrkdv_sqrterry        );
-	h_ntrkdv_sqrterrz        .push_back( h_njtrkdv_sqrterrz        );
-	h_ntrkdv_sqrterrr        .push_back( h_njtrkdv_sqrterrr        );
-	h_ntrkdv_sqrterrphi      .push_back( h_njtrkdv_sqrterrphi      );
-	h_ntrkdv_sumSqrterrd0    .push_back( h_njtrkdv_sumSqrterrd0    );
-	h_ntrkdv_sumSqrterrz0    .push_back( h_njtrkdv_sumSqrterrz0    );
-	h_ntrkdv_sumSqrterrP     .push_back( h_njtrkdv_sumSqrterrP     );
-	h_ntrkdv_sumSqrterrd0_sv .push_back( h_njtrkdv_sumSqrterrd0_sv );
-	h_ntrkdv_sumSqrterrz0_sv .push_back( h_njtrkdv_sumSqrterrz0_sv );
-	h_ntrkdv_sumSqrterrP_sv  .push_back( h_njtrkdv_sumSqrterrP_sv  );
-	h_ntrkdv_minSqrterrd0    .push_back( h_njtrkdv_minSqrterrd0    );
-	h_ntrkdv_minSqrterrz0    .push_back( h_njtrkdv_minSqrterrz0    );
-	h_ntrkdv_minSqrterrP     .push_back( h_njtrkdv_minSqrterrP     );
-	h_ntrkdv_minSqrterrd0_sv .push_back( h_njtrkdv_minSqrterrd0_sv );
-	h_ntrkdv_minSqrterrz0_sv .push_back( h_njtrkdv_minSqrterrz0_sv );
-	h_ntrkdv_minSqrterrP_sv  .push_back( h_njtrkdv_minSqrterrP_sv  );
-	h_ntrkdv_maxSqrterrd0    .push_back( h_njtrkdv_maxSqrterrd0    );
-	h_ntrkdv_maxSqrterrz0    .push_back( h_njtrkdv_maxSqrterrz0    );
-	h_ntrkdv_maxSqrterrP     .push_back( h_njtrkdv_maxSqrterrP     );
-	h_ntrkdv_maxSqrterrd0_sv .push_back( h_njtrkdv_maxSqrterrd0_sv );
-	h_ntrkdv_maxSqrterrz0_sv .push_back( h_njtrkdv_maxSqrterrz0_sv );
-	h_ntrkdv_maxSqrterrP_sv  .push_back( h_njtrkdv_maxSqrterrP_sv  );
-      }
+	h_ntrkdv_sumd0           .push_back( h_njtrkdv_sumd0           );
+	h_ntrkdv_sumz0           .push_back( h_njtrkdv_sumz0           );
+	h_ntrkdv_sumP            .push_back( h_njtrkdv_sumP            );
+	h_ntrkdv_sumd0_sv        .push_back( h_njtrkdv_sumd0_sv        );
+	h_ntrkdv_sumz0_sv        .push_back( h_njtrkdv_sumz0_sv        );
+	h_ntrkdv_sumP_sv         .push_back( h_njtrkdv_sumP_sv         );
+	h_ntrkdv_mind0           .push_back( h_njtrkdv_mind0           );
+	h_ntrkdv_minz0           .push_back( h_njtrkdv_minz0           );
+	h_ntrkdv_minP            .push_back( h_njtrkdv_minP            );
+	h_ntrkdv_mind0_sv        .push_back( h_njtrkdv_mind0_sv        );
+	h_ntrkdv_minz0_sv        .push_back( h_njtrkdv_minz0_sv        );
+	h_ntrkdv_minP_sv         .push_back( h_njtrkdv_minP_sv         );
+	h_ntrkdv_maxd0           .push_back( h_njtrkdv_maxd0           );
+	h_ntrkdv_maxz0           .push_back( h_njtrkdv_maxz0           );
+	h_ntrkdv_maxP            .push_back( h_njtrkdv_maxP            );
+	h_ntrkdv_maxd0_sv        .push_back( h_njtrkdv_maxd0_sv        );
+	h_ntrkdv_maxz0_sv        .push_back( h_njtrkdv_maxz0_sv        );
+	h_ntrkdv_maxP_sv         .push_back( h_njtrkdv_maxP_sv         );
+	if ( m_histoInfoSwitch->m_vtxErrors ) {
+	  h_ntrkdv_sqrterrx        .push_back( h_njtrkdv_sqrterrx        );
+	  h_ntrkdv_sqrterry        .push_back( h_njtrkdv_sqrterry        );
+	  h_ntrkdv_sqrterrz        .push_back( h_njtrkdv_sqrterrz        );
+	  h_ntrkdv_sqrterrr        .push_back( h_njtrkdv_sqrterrr        );
+	  h_ntrkdv_sqrterrphi      .push_back( h_njtrkdv_sqrterrphi      );
+	  h_ntrkdv_sumSqrterrd0    .push_back( h_njtrkdv_sumSqrterrd0    );
+	  h_ntrkdv_sumSqrterrz0    .push_back( h_njtrkdv_sumSqrterrz0    );
+	  h_ntrkdv_sumSqrterrP     .push_back( h_njtrkdv_sumSqrterrP     );
+	  h_ntrkdv_sumSqrterrd0_sv .push_back( h_njtrkdv_sumSqrterrd0_sv );
+	  h_ntrkdv_sumSqrterrz0_sv .push_back( h_njtrkdv_sumSqrterrz0_sv );
+	  h_ntrkdv_sumSqrterrP_sv  .push_back( h_njtrkdv_sumSqrterrP_sv  );
+	  h_ntrkdv_minSqrterrd0    .push_back( h_njtrkdv_minSqrterrd0    );
+	  h_ntrkdv_minSqrterrz0    .push_back( h_njtrkdv_minSqrterrz0    );
+	  h_ntrkdv_minSqrterrP     .push_back( h_njtrkdv_minSqrterrP     );
+	  h_ntrkdv_minSqrterrd0_sv .push_back( h_njtrkdv_minSqrterrd0_sv );
+	  h_ntrkdv_minSqrterrz0_sv .push_back( h_njtrkdv_minSqrterrz0_sv );
+	  h_ntrkdv_minSqrterrP_sv  .push_back( h_njtrkdv_minSqrterrP_sv  );
+	  h_ntrkdv_maxSqrterrd0    .push_back( h_njtrkdv_maxSqrterrd0    );
+	  h_ntrkdv_maxSqrterrz0    .push_back( h_njtrkdv_maxSqrterrz0    );
+	  h_ntrkdv_maxSqrterrP     .push_back( h_njtrkdv_maxSqrterrP     );
+	  h_ntrkdv_maxSqrterrd0_sv .push_back( h_njtrkdv_maxSqrterrd0_sv );
+	  h_ntrkdv_maxSqrterrz0_sv .push_back( h_njtrkdv_maxSqrterrz0_sv );
+	  h_ntrkdv_maxSqrterrP_sv  .push_back( h_njtrkdv_maxSqrterrP_sv  );
+	}
+      }	
     }
-    h_DV_n                      .push_back( h_dv_n                      );
-    h_DV_x                      .push_back( h_dv_x                      );
-    h_DV_y                      .push_back( h_dv_y                      );
-    h_DV_z                      .push_back( h_dv_z                      );
-    h_DV_r                      .push_back( h_dv_r                      );
-    h_DV_x_s                    .push_back( h_dv_x_s                    );
-    h_DV_y_s                    .push_back( h_dv_y_s                    );
-    h_DV_z_s                    .push_back( h_dv_z_s                    );
-    h_DV_r_s                    .push_back( h_dv_r_s                    );
-    h_DV_phipos                 .push_back( h_dv_phipos                 );
-    h_DV_pt                     .push_back( h_dv_pt                     );
-    h_DV_eta                    .push_back( h_dv_eta                    );
-    h_DV_phi                    .push_back( h_dv_phi                    );
-    h_DV_mass                   .push_back( h_dv_mass                   );
-    h_DV_mass_l                 .push_back( h_dv_mass_l                 );
-    h_DV_mass_s                 .push_back( h_dv_mass_s                 );
-    h_DV_mass_xs                .push_back( h_dv_mass_xs                );
-    h_DV_massNA                 .push_back( h_dv_massNA                 );
-    h_DV_massNA_l               .push_back( h_dv_massNA_l               );
-    h_DV_massNA_s               .push_back( h_dv_massNA_s               );
-    h_DV_massNA_xs              .push_back( h_dv_massNA_xs              );
-    h_DV_direction              .push_back( h_dv_direction              );
-    h_DV_minOpAng               .push_back( h_dv_minOpAng               );
-    h_DV_maxOpAng               .push_back( h_dv_maxOpAng               );
-    h_DV_chi2                   .push_back( h_dv_chi2                   );
-    h_DV_chi2_s                 .push_back( h_dv_chi2_s                 );
-    h_DV_ntrk                   .push_back( h_dv_ntrk                   );
-    h_DV_ntrk_final             .push_back( h_dv_ntrk_final             );
-    h_DV_ntrk_sel               .push_back( h_dv_ntrk_sel               );
-    h_DV_ntrk_assoc             .push_back( h_dv_ntrk_assoc             );
-    h_DV_ntrk_lrt               .push_back( h_dv_ntrk_lrt               );
-    h_DV_errx                   .push_back( h_dv_errx                   );
-    h_DV_erry                   .push_back( h_dv_erry                   );
-    h_DV_errz                   .push_back( h_dv_errz                   );
-    h_DV_errr                   .push_back( h_dv_errr                   );
-    h_DV_errphi                 .push_back( h_dv_errphi                 );
-    h_DV_sqrterrx               .push_back( h_dv_sqrterrx               );
-    h_DV_sqrterry               .push_back( h_dv_sqrterry               );
-    h_DV_sqrterrz               .push_back( h_dv_sqrterrz               );
-    h_DV_sqrterrr               .push_back( h_dv_sqrterrr               );
-    h_DV_sqrterrphi             .push_back( h_dv_sqrterrphi             );
-    h_DV_fracerrx               .push_back( h_dv_fracerrx               );
-    h_DV_fracerry               .push_back( h_dv_fracerry               );
-    h_DV_fracerrz               .push_back( h_dv_fracerrz               );
-    h_DV_fracerrr               .push_back( h_dv_fracerrr               );
-    h_DV_fracerrphi             .push_back( h_dv_fracerrphi             );
-    h_DV_signifx                .push_back( h_dv_signifx                );
-    h_DV_signify                .push_back( h_dv_signify                );
-    h_DV_signifz                .push_back( h_dv_signifz                );
-    h_DV_signifr                .push_back( h_dv_signifr                );
-    h_DV_signifphi              .push_back( h_dv_signifphi              );
+    h_DV_n                        .push_back( h_dv_n                      );
+    h_DV_x                        .push_back( h_dv_x                      );
+    h_DV_y                        .push_back( h_dv_y                      );
+    h_DV_z                        .push_back( h_dv_z                      );
+    h_DV_r                        .push_back( h_dv_r                      );
+    h_DV_x_s                      .push_back( h_dv_x_s                    );
+    h_DV_y_s                      .push_back( h_dv_y_s                    );
+    h_DV_z_s                      .push_back( h_dv_z_s                    );
+    h_DV_r_s                      .push_back( h_dv_r_s                    );
+    h_DV_phipos                   .push_back( h_dv_phipos                 );
+    h_DV_pt                       .push_back( h_dv_pt                     );
+    h_DV_pt_s                     .push_back( h_dv_pt_s                   );
+    h_DV_pt_xs                    .push_back( h_dv_pt_xs                  );
+    h_DV_eta                      .push_back( h_dv_eta                    );
+    h_DV_phi                      .push_back( h_dv_phi                    );
+    h_DV_mass                     .push_back( h_dv_mass                   );
+    h_DV_mass_l                   .push_back( h_dv_mass_l                 );
+    h_DV_mass_s                   .push_back( h_dv_mass_s                 );
+    h_DV_mass_xs                  .push_back( h_dv_mass_xs                );
+    h_DV_massNA                   .push_back( h_dv_massNA                 );
+    h_DV_massNA_l                 .push_back( h_dv_massNA_l               );
+    h_DV_massNA_s                 .push_back( h_dv_massNA_s               );
+    h_DV_massNA_xs                .push_back( h_dv_massNA_xs              );
+    h_DV_direction                .push_back( h_dv_direction              );
+    h_DV_minOpAng                 .push_back( h_dv_minOpAng               );
+    h_DV_maxOpAng                 .push_back( h_dv_maxOpAng               );
+    h_DV_chi2                     .push_back( h_dv_chi2                   );
+    h_DV_chi2_s                   .push_back( h_dv_chi2_s                 );
+    h_DV_ntrk                     .push_back( h_dv_ntrk                   );
+    h_DV_ntrk_final               .push_back( h_dv_ntrk_final             );
+    h_DV_ntrk_sel                 .push_back( h_dv_ntrk_sel               );
+    h_DV_ntrk_assoc               .push_back( h_dv_ntrk_assoc             );
+    h_DV_ntrk_lrt                 .push_back( h_dv_ntrk_lrt               );
+    if ( m_histoInfoSwitch->m_vtxErrors ) {
+      h_DV_errx                   .push_back( h_dv_errx                   );
+      h_DV_erry                   .push_back( h_dv_erry                   );
+      h_DV_errz                   .push_back( h_dv_errz                   );
+      h_DV_errr                   .push_back( h_dv_errr                   );
+      h_DV_errphi                 .push_back( h_dv_errphi                 );
+      h_DV_sqrterrx               .push_back( h_dv_sqrterrx               );
+      h_DV_sqrterry               .push_back( h_dv_sqrterry               );
+      h_DV_sqrterrz               .push_back( h_dv_sqrterrz               );
+      h_DV_sqrterrr               .push_back( h_dv_sqrterrr               );
+      h_DV_sqrterrphi             .push_back( h_dv_sqrterrphi             );
+      h_DV_fracerrx               .push_back( h_dv_fracerrx               );
+      h_DV_fracerry               .push_back( h_dv_fracerry               );
+      h_DV_fracerrz               .push_back( h_dv_fracerrz               );
+      h_DV_fracerrr               .push_back( h_dv_fracerrr               );
+      h_DV_fracerrphi             .push_back( h_dv_fracerrphi             );
+      h_DV_signifx                .push_back( h_dv_signifx                );
+      h_DV_signify                .push_back( h_dv_signify                );
+      h_DV_signifz                .push_back( h_dv_signifz                );
+      h_DV_signifr                .push_back( h_dv_signifr                );
+      h_DV_signifphi              .push_back( h_dv_signifphi              );
+    }
     if ( m_histoInfoSwitch->m_vtxTrks ) {
-      h_DV_trk_qOverP           .push_back( h_dv_trk_qOverP             );
-      h_DV_trk_theta            .push_back( h_dv_trk_theta              );
-      h_DV_trk_pt               .push_back( h_dv_trk_pt                 );
-      h_DV_trk_eta              .push_back( h_dv_trk_eta                );
-      h_DV_trk_phi              .push_back( h_dv_trk_phi                );
-      h_DV_trk_d0               .push_back( h_dv_trk_d0                 );
-      h_DV_trk_z0               .push_back( h_dv_trk_z0                 );
-      h_DV_trk_errd0            .push_back( h_dv_trk_errd0              );
-      h_DV_trk_errz0            .push_back( h_dv_trk_errz0              );
-      h_DV_trk_sqrterrd0        .push_back( h_dv_trk_sqrterrd0          );
-      h_DV_trk_sqrterrz0        .push_back( h_dv_trk_sqrterrz0          );
-      h_DV_trk_fracerrd0        .push_back( h_dv_trk_fracerrd0          );
-      h_DV_trk_fracerrz0        .push_back( h_dv_trk_fracerrz0          );
-      h_DV_trk_signifd0         .push_back( h_dv_trk_signifd0           );
-      h_DV_trk_signifz0         .push_back( h_dv_trk_signifz0           );
-      h_DV_trk_errP             .push_back( h_dv_trk_errP               );
-      h_DV_trk_sqrterrP         .push_back( h_dv_trk_sqrterrP           );
-      h_DV_trk_fracerrP         .push_back( h_dv_trk_fracerrP           );
-      h_DV_trk_signifP          .push_back( h_dv_trk_signifP            );
-      h_DV_trk_chi2             .push_back( h_dv_trk_chi2               );
-      h_DV_trk_chiSq            .push_back( h_dv_trk_chiSq              );
-      h_DV_trk_qOverP_sv        .push_back( h_dv_trk_qOverP_sv          );
-      h_DV_trk_theta_sv         .push_back( h_dv_trk_theta_sv           );
-      h_DV_trk_pt_sv            .push_back( h_dv_trk_pt_sv              );
-      h_DV_trk_eta_sv           .push_back( h_dv_trk_eta_sv             );
-      h_DV_trk_phi_sv           .push_back( h_dv_trk_phi_sv             );
-      h_DV_trk_d0_sv            .push_back( h_dv_trk_d0_sv              );
-      h_DV_trk_z0_sv            .push_back( h_dv_trk_z0_sv              );
-      h_DV_trk_errd0_sv         .push_back( h_dv_trk_errd0_sv           );
-      h_DV_trk_errz0_sv         .push_back( h_dv_trk_errz0_sv           );
-      h_DV_trk_sqrterrd0_sv     .push_back( h_dv_trk_sqrterrd0_sv       );
-      h_DV_trk_sqrterrz0_sv     .push_back( h_dv_trk_sqrterrz0_sv       );
-      h_DV_trk_fracerrd0_sv     .push_back( h_dv_trk_fracerrd0_sv       );
-      h_DV_trk_fracerrz0_sv     .push_back( h_dv_trk_fracerrz0_sv       );
-      h_DV_trk_signifd0_sv      .push_back( h_dv_trk_signifd0_sv        );
-      h_DV_trk_signifz0_sv      .push_back( h_dv_trk_signifz0_sv        );
-      h_DV_trk_errP_sv          .push_back( h_dv_trk_errP_sv            );
-      h_DV_trk_sqrterrP_sv      .push_back( h_dv_trk_sqrterrP_sv        );
-      h_DV_trk_fracerrP_sv      .push_back( h_dv_trk_fracerrP_sv        );
-      h_DV_trk_signifP_sv       .push_back( h_dv_trk_signifP_sv         );
-      h_DV_trk_chi2_sv          .push_back( h_dv_trk_chi2_sv            );
-      h_DV_trk_chiSq_sv         .push_back( h_dv_trk_chiSq_sv           );
+      h_DV_trk_qOverP             .push_back( h_dv_trk_qOverP             );
+      h_DV_trk_theta              .push_back( h_dv_trk_theta              );
+      h_DV_trk_pt                 .push_back( h_dv_trk_pt                 );
+      h_DV_trk_eta                .push_back( h_dv_trk_eta                );
+      h_DV_trk_phi                .push_back( h_dv_trk_phi                );
+      h_DV_trk_d0                 .push_back( h_dv_trk_d0                 );
+      h_DV_trk_z0                 .push_back( h_dv_trk_z0                 );
+      h_DV_trk_errd0              .push_back( h_dv_trk_errd0              );
+      h_DV_trk_errz0              .push_back( h_dv_trk_errz0              );
+      h_DV_trk_sqrterrd0          .push_back( h_dv_trk_sqrterrd0          );
+      h_DV_trk_sqrterrz0          .push_back( h_dv_trk_sqrterrz0          );
+      h_DV_trk_fracerrd0          .push_back( h_dv_trk_fracerrd0          );
+      h_DV_trk_fracerrz0          .push_back( h_dv_trk_fracerrz0          );
+      h_DV_trk_signifd0           .push_back( h_dv_trk_signifd0           );
+      h_DV_trk_signifz0           .push_back( h_dv_trk_signifz0           );
+      h_DV_trk_errP               .push_back( h_dv_trk_errP               );
+      h_DV_trk_sqrterrP           .push_back( h_dv_trk_sqrterrP           );
+      h_DV_trk_fracerrP           .push_back( h_dv_trk_fracerrP           );
+      h_DV_trk_signifP            .push_back( h_dv_trk_signifP            );
+      h_DV_trk_chi2               .push_back( h_dv_trk_chi2               );
+      h_DV_trk_chiSq              .push_back( h_dv_trk_chiSq              );
+      h_DV_trk_qOverP_sv          .push_back( h_dv_trk_qOverP_sv          );
+      h_DV_trk_theta_sv           .push_back( h_dv_trk_theta_sv           );
+      h_DV_trk_pt_sv              .push_back( h_dv_trk_pt_sv              );
+      h_DV_trk_eta_sv             .push_back( h_dv_trk_eta_sv             );
+      h_DV_trk_phi_sv             .push_back( h_dv_trk_phi_sv             );
+      h_DV_trk_d0_sv              .push_back( h_dv_trk_d0_sv              );
+      h_DV_trk_z0_sv              .push_back( h_dv_trk_z0_sv              );
+      h_DV_trk_errd0_sv           .push_back( h_dv_trk_errd0_sv           );
+      h_DV_trk_errz0_sv           .push_back( h_dv_trk_errz0_sv           );
+      h_DV_trk_sqrterrd0_sv       .push_back( h_dv_trk_sqrterrd0_sv       );
+      h_DV_trk_sqrterrz0_sv       .push_back( h_dv_trk_sqrterrz0_sv       );
+      h_DV_trk_fracerrd0_sv       .push_back( h_dv_trk_fracerrd0_sv       );
+      h_DV_trk_fracerrz0_sv       .push_back( h_dv_trk_fracerrz0_sv       );
+      h_DV_trk_signifd0_sv        .push_back( h_dv_trk_signifd0_sv        );
+      h_DV_trk_signifz0_sv        .push_back( h_dv_trk_signifz0_sv        );
+      h_DV_trk_errP_sv            .push_back( h_dv_trk_errP_sv            );
+      h_DV_trk_sqrterrP_sv        .push_back( h_dv_trk_sqrterrP_sv        );
+      h_DV_trk_fracerrP_sv        .push_back( h_dv_trk_fracerrP_sv        );
+      h_DV_trk_signifP_sv         .push_back( h_dv_trk_signifP_sv         );
+      h_DV_trk_chi2_sv            .push_back( h_dv_trk_chi2_sv            );
+      h_DV_trk_chiSq_sv           .push_back( h_dv_trk_chiSq_sv           );
     }
-    h_DV_sumd0                  .push_back( h_dv_sumd0                  );
-    h_DV_sumz0                  .push_back( h_dv_sumz0                  );
-    h_DV_sumP                   .push_back( h_dv_sumP                   );
-    h_DV_sumErrd0               .push_back( h_dv_sumErrd0               );
-    h_DV_sumErrz0               .push_back( h_dv_sumErrz0               );
-    h_DV_sumErrP                .push_back( h_dv_sumErrP                );
-    h_DV_sumSqrterrd0           .push_back( h_dv_sumSqrterrd0           );
-    h_DV_sumSqrterrz0           .push_back( h_dv_sumSqrterrz0           );
-    h_DV_sumSqrterrP            .push_back( h_dv_sumSqrterrP            );
-    h_DV_sumFracerrd0           .push_back( h_dv_sumFracerrd0           );
-    h_DV_sumFracerrz0           .push_back( h_dv_sumFracerrz0           );
-    h_DV_sumFracerrP            .push_back( h_dv_sumFracerrP            );
-    h_DV_sumSignifd0            .push_back( h_dv_sumSignifd0            );
-    h_DV_sumSignifz0            .push_back( h_dv_sumSignifz0            );
-    h_DV_sumSignifP             .push_back( h_dv_sumSignifP             );
-    h_DV_sumd0_sv               .push_back( h_dv_sumd0_sv               );
-    h_DV_sumz0_sv               .push_back( h_dv_sumz0_sv               );
-    h_DV_sumP_sv                .push_back( h_dv_sumP_sv                );
-    h_DV_sumErrd0_sv            .push_back( h_dv_sumErrd0_sv            );
-    h_DV_sumErrz0_sv            .push_back( h_dv_sumErrz0_sv            );
-    h_DV_sumErrP_sv             .push_back( h_dv_sumErrP_sv             );
-    h_DV_sumSqrterrd0_sv        .push_back( h_dv_sumSqrterrd0_sv        );
-    h_DV_sumSqrterrz0_sv        .push_back( h_dv_sumSqrterrz0_sv        );
-    h_DV_sumSqrterrP_sv         .push_back( h_dv_sumSqrterrP_sv         );
-    h_DV_sumFracerrd0_sv        .push_back( h_dv_sumFracerrd0_sv        );
-    h_DV_sumFracerrz0_sv        .push_back( h_dv_sumFracerrz0_sv        );
-    h_DV_sumFracerrP_sv         .push_back( h_dv_sumFracerrP_sv         );
-    h_DV_sumSignifd0_sv         .push_back( h_dv_sumSignifd0_sv         );
-    h_DV_sumSignifz0_sv         .push_back( h_dv_sumSignifz0_sv         );
-    h_DV_sumSignifP_sv          .push_back( h_dv_sumSignifP_sv          );
-    h_DV_mind0                  .push_back( h_dv_mind0                  );
-    h_DV_minz0                  .push_back( h_dv_minz0                  );
-    h_DV_minP                   .push_back( h_dv_minP                   );
-    h_DV_minErrd0               .push_back( h_dv_minErrd0               );
-    h_DV_minErrz0               .push_back( h_dv_minErrz0               );
-    h_DV_minErrP                .push_back( h_dv_minErrP                );
-    h_DV_minSqrterrd0           .push_back( h_dv_minSqrterrd0           );
-    h_DV_minSqrterrz0           .push_back( h_dv_minSqrterrz0           );
-    h_DV_minSqrterrP            .push_back( h_dv_minSqrterrP            );
-    h_DV_minFracerrd0           .push_back( h_dv_minFracerrd0           );
-    h_DV_minFracerrz0           .push_back( h_dv_minFracerrz0           );
-    h_DV_minFracerrP            .push_back( h_dv_minFracerrP            );
-    h_DV_minSignifd0            .push_back( h_dv_minSignifd0            );
-    h_DV_minSignifz0            .push_back( h_dv_minSignifz0            );
-    h_DV_minSignifP             .push_back( h_dv_minSignifP             );
-    h_DV_mind0_sv               .push_back( h_dv_mind0_sv               );
-    h_DV_minz0_sv               .push_back( h_dv_minz0_sv               );
-    h_DV_minP_sv                .push_back( h_dv_minP_sv                );
-    h_DV_minErrd0_sv            .push_back( h_dv_minErrd0_sv            );
-    h_DV_minErrz0_sv            .push_back( h_dv_minErrz0_sv            );
-    h_DV_minErrP_sv             .push_back( h_dv_minErrP_sv             );
-    h_DV_minSqrterrd0_sv        .push_back( h_dv_minSqrterrd0_sv        );
-    h_DV_minSqrterrz0_sv        .push_back( h_dv_minSqrterrz0_sv        );
-    h_DV_minSqrterrP_sv         .push_back( h_dv_minSqrterrP_sv         );
-    h_DV_minFracerrd0_sv        .push_back( h_dv_minFracerrd0_sv        );
-    h_DV_minFracerrz0_sv        .push_back( h_dv_minFracerrz0_sv        );
-    h_DV_minFracerrP_sv         .push_back( h_dv_minFracerrP_sv         );
-    h_DV_minSignifd0_sv         .push_back( h_dv_minSignifd0_sv         );
-    h_DV_minSignifz0_sv         .push_back( h_dv_minSignifz0_sv         );
-    h_DV_minSignifP_sv          .push_back( h_dv_minSignifP_sv          );
-    h_DV_maxd0                  .push_back( h_dv_maxd0                  );
-    h_DV_maxz0                  .push_back( h_dv_maxz0                  );
-    h_DV_maxP                   .push_back( h_dv_maxP                   );
-    h_DV_maxErrd0               .push_back( h_dv_maxErrd0               );
-    h_DV_maxErrz0               .push_back( h_dv_maxErrz0               );
-    h_DV_maxErrP                .push_back( h_dv_maxErrP                );
-    h_DV_maxSqrterrd0           .push_back( h_dv_maxSqrterrd0           );
-    h_DV_maxSqrterrz0           .push_back( h_dv_maxSqrterrz0           );
-    h_DV_maxSqrterrP            .push_back( h_dv_maxSqrterrP            );
-    h_DV_maxFracerrd0           .push_back( h_dv_maxFracerrd0           );
-    h_DV_maxFracerrz0           .push_back( h_dv_maxFracerrz0           );
-    h_DV_maxFracerrP            .push_back( h_dv_maxFracerrP            );
-    h_DV_maxSignifd0            .push_back( h_dv_maxSignifd0            );
-    h_DV_maxSignifz0            .push_back( h_dv_maxSignifz0            );
-    h_DV_maxSignifP             .push_back( h_dv_maxSignifP             );
-    h_DV_maxd0_sv               .push_back( h_dv_maxd0_sv               );
-    h_DV_maxz0_sv               .push_back( h_dv_maxz0_sv               );
-    h_DV_maxP_sv                .push_back( h_dv_maxP_sv                );
-    h_DV_maxErrd0_sv            .push_back( h_dv_maxErrd0_sv            );
-    h_DV_maxErrz0_sv            .push_back( h_dv_maxErrz0_sv            );
-    h_DV_maxErrP_sv             .push_back( h_dv_maxErrP_sv             );
-    h_DV_maxSqrterrd0_sv        .push_back( h_dv_maxSqrterrd0_sv        );
-    h_DV_maxSqrterrz0_sv        .push_back( h_dv_maxSqrterrz0_sv        );
-    h_DV_maxSqrterrP_sv         .push_back( h_dv_maxSqrterrP_sv         );
-    h_DV_maxFracerrd0_sv        .push_back( h_dv_maxFracerrd0_sv        );
-    h_DV_maxFracerrz0_sv        .push_back( h_dv_maxFracerrz0_sv        );
-    h_DV_maxFracerrP_sv         .push_back( h_dv_maxFracerrP_sv         );
-    h_DV_maxSignifd0_sv         .push_back( h_dv_maxSignifd0_sv         );
-    h_DV_maxSignifz0_sv         .push_back( h_dv_maxSignifz0_sv         );
-    h_DV_maxSignifP_sv          .push_back( h_dv_maxSignifP_sv          );
-    h_DV_z_r                    .push_back( h_dv_z_r                    );
-    h_DV_mass_r                 .push_back( h_dv_mass_r                 );
-    h_DV_z_chi2                 .push_back( h_dv_z_chi2                 );
-    h_DV_r_chi2                 .push_back( h_dv_r_chi2                 );
-    h_DV_mass_chi2              .push_back( h_dv_mass_chi2              );
-    h_DV_z_r_s                  .push_back( h_dv_z_r_s                  );
-    h_DV_mass_r_s               .push_back( h_dv_mass_r_s               );
-    h_DV_z_chi2_s               .push_back( h_dv_z_chi2_s               );
-    h_DV_r_chi2_s               .push_back( h_dv_r_chi2_s               );
-    h_DV_mass_chi2_s            .push_back( h_dv_mass_chi2_s            );
-    h_DV_errx_x                 .push_back( h_dv_errx_x                 );
-    h_DV_erry_y                 .push_back( h_dv_erry_y                 );
-    h_DV_errz_z                 .push_back( h_dv_errz_z                 );
-    h_DV_errr_r                 .push_back( h_dv_errr_r                 );
-    h_DV_errphi_phi             .push_back( h_dv_errphi_phi             );
-    h_DV_sqrterrx_x             .push_back( h_dv_sqrterrx_x             );
-    h_DV_sqrterry_y             .push_back( h_dv_sqrterry_y             );
-    h_DV_sqrterrz_z             .push_back( h_dv_sqrterrz_z             );
-    h_DV_sqrterrr_r             .push_back( h_dv_sqrterrr_r             );
-    h_DV_sqrterrphi_phi         .push_back( h_dv_sqrterrphi_phi         );
-    h_DV_sumErrd0_r             .push_back( h_dv_sumErrd0_r             );
-    h_DV_sumErrz0_z             .push_back( h_dv_sumErrz0_z             );
-    h_DV_sumErrP_pt             .push_back( h_dv_sumErrP_pt             );
-    h_DV_sumSqrterrd0_r         .push_back( h_dv_sumSqrterrd0_r         );
-    h_DV_sumSqrterrz0_z         .push_back( h_dv_sumSqrterrz0_z         );
-    h_DV_sumSqrterrP_pt         .push_back( h_dv_sumSqrterrP_pt         );
-    h_DV_sumErrd0sv_r           .push_back( h_dv_sumErrd0sv_r           );
-    h_DV_sumErrz0sv_z           .push_back( h_dv_sumErrz0sv_z           );
-    h_DV_sumErrPsv_pt           .push_back( h_dv_sumErrPsv_pt           );
-    h_DV_sumSqrterrd0sv_r       .push_back( h_dv_sumSqrterrd0sv_r       );
-    h_DV_sumSqrterrz0sv_z       .push_back( h_dv_sumSqrterrz0sv_z       );
-    h_DV_sumSqrterrPsv_pt       .push_back( h_dv_sumSqrterrPsv_pt       );
-    h_DV_minErrd0_r             .push_back( h_dv_minErrd0_r             );
-    h_DV_minErrz0_z             .push_back( h_dv_minErrz0_z             );
-    h_DV_minErrP_pt             .push_back( h_dv_minErrP_pt             );
-    h_DV_minSqrterrd0_r         .push_back( h_dv_minSqrterrd0_r         );
-    h_DV_minSqrterrz0_z         .push_back( h_dv_minSqrterrz0_z         );
-    h_DV_minSqrterrP_pt         .push_back( h_dv_minSqrterrP_pt         );
-    h_DV_minErrd0sv_r           .push_back( h_dv_minErrd0sv_r           );
-    h_DV_minErrz0sv_z           .push_back( h_dv_minErrz0sv_z           );
-    h_DV_minErrPsv_pt           .push_back( h_dv_minErrPsv_pt           );
-    h_DV_minSqrterrd0sv_r       .push_back( h_dv_minSqrterrd0sv_r       );
-    h_DV_minSqrterrz0sv_z       .push_back( h_dv_minSqrterrz0sv_z       );
-    h_DV_minSqrterrPsv_pt       .push_back( h_dv_minSqrterrPsv_pt       );
-    h_DV_maxErrd0_r             .push_back( h_dv_maxErrd0_r             );
-    h_DV_maxErrz0_z             .push_back( h_dv_maxErrz0_z             );
-    h_DV_maxErrP_pt             .push_back( h_dv_maxErrP_pt             );
-    h_DV_maxSqrterrd0_r         .push_back( h_dv_maxSqrterrd0_r         );
-    h_DV_maxSqrterrz0_z         .push_back( h_dv_maxSqrterrz0_z         );
-    h_DV_maxSqrterrP_pt         .push_back( h_dv_maxSqrterrP_pt         );
-    h_DV_maxErrd0sv_r           .push_back( h_dv_maxErrd0sv_r           );
-    h_DV_maxErrz0sv_z           .push_back( h_dv_maxErrz0sv_z           );
-    h_DV_maxErrPsv_pt           .push_back( h_dv_maxErrPsv_pt           );
-    h_DV_maxSqrterrd0sv_r       .push_back( h_dv_maxSqrterrd0sv_r       );
-    h_DV_maxSqrterrz0sv_z       .push_back( h_dv_maxSqrterrz0sv_z       );
-    h_DV_maxSqrterrPsv_pt       .push_back( h_dv_maxSqrterrPsv_pt       );
-    h_DV_trkd0_r                .push_back( h_dv_trkd0_r                );
-    h_DV_trkz0_z                .push_back( h_dv_trkz0_z                );
-    h_DV_trkP_pt                .push_back( h_dv_trkP_pt                );
-    h_DV_trkErrd0_r             .push_back( h_dv_trkErrd0_r             );
-    h_DV_trkErrz0_z             .push_back( h_dv_trkErrz0_z             );
-    h_DV_trkErrP_pt             .push_back( h_dv_trkErrP_pt             );
-    h_DV_trkSqrterrd0_r         .push_back( h_dv_trkSqrterrd0_r         );
-    h_DV_trkSqrterrz0_z         .push_back( h_dv_trkSqrterrz0_z         );
-    h_DV_trkSqrterrP_pt         .push_back( h_dv_trkSqrterrP_pt         );
-    h_DV_trkd0sv_r              .push_back( h_dv_trkd0sv_r              );
-    h_DV_trkz0sv_z              .push_back( h_dv_trkz0sv_z              );
-    h_DV_trkPsv_pt              .push_back( h_dv_trkPsv_pt              );
-    h_DV_trkErrd0sv_r           .push_back( h_dv_trkErrd0sv_r           );
-    h_DV_trkErrz0sv_z           .push_back( h_dv_trkErrz0sv_z           );
-    h_DV_trkErrPsv_pt           .push_back( h_dv_trkErrPsv_pt           );
-    h_DV_trkSqrterrd0sv_r       .push_back( h_dv_trkSqrterrd0sv_r       );
-    h_DV_trkSqrterrz0sv_z       .push_back( h_dv_trkSqrterrz0sv_z       );
-    h_DV_trkSqrterrPsv_pt       .push_back( h_dv_trkSqrterrPsv_pt       );
-    h_DV_trkErrd0_trkd0         .push_back( h_dv_trkErrd0_trkd0         );
-    h_DV_trkErrz0_trkz0         .push_back( h_dv_trkErrz0_trkz0         );
-    h_DV_trkErrP_trkP           .push_back( h_dv_trkErrP_trkP           );
-    h_DV_trkSqrterrd0_trkd0     .push_back( h_dv_trkSqrterrd0_trkd0     );
-    h_DV_trkSqrterrz0_trkz0     .push_back( h_dv_trkSqrterrz0_trkz0     );
-    h_DV_trkSqrterrP_trkP       .push_back( h_dv_trkSqrterrP_trkP       );
-    h_DV_trkErrd0sv_trkd0sv     .push_back( h_dv_trkErrd0sv_trkd0sv     );
-    h_DV_trkErrz0sv_trkz0sv     .push_back( h_dv_trkErrz0sv_trkz0sv     );
-    h_DV_trkErrPsv_trkPsv       .push_back( h_dv_trkErrPsv_trkPsv       );
-    h_DV_trkSqrterrd0sv_trkd0sv .push_back( h_dv_trkSqrterrd0sv_trkd0sv );
-    h_DV_trkSqrterrz0sv_trkz0sv .push_back( h_dv_trkSqrterrz0sv_trkz0sv );
-    h_DV_trkSqrterrPsv_trkPsv   .push_back( h_dv_trkSqrterrPsv_trkPsv   );
+    h_DV_sumd0                    .push_back( h_dv_sumd0                  );
+    h_DV_sumz0                    .push_back( h_dv_sumz0                  );
+    h_DV_sumP                     .push_back( h_dv_sumP                   );
+    h_DV_sumd0_sv                 .push_back( h_dv_sumd0_sv               );
+    h_DV_sumz0_sv                 .push_back( h_dv_sumz0_sv               );
+    h_DV_sumP_sv                  .push_back( h_dv_sumP_sv                );
+    h_DV_mind0                    .push_back( h_dv_mind0                  );
+    h_DV_minz0                    .push_back( h_dv_minz0                  );
+    h_DV_minP                     .push_back( h_dv_minP                   );
+    h_DV_mind0_sv                 .push_back( h_dv_mind0_sv               );
+    h_DV_minz0_sv                 .push_back( h_dv_minz0_sv               );
+    h_DV_minP_sv                  .push_back( h_dv_minP_sv                );
+    h_DV_maxd0                    .push_back( h_dv_maxd0                  );
+    h_DV_maxz0                    .push_back( h_dv_maxz0                  );
+    h_DV_maxP                     .push_back( h_dv_maxP                   );
+    h_DV_maxd0_sv                 .push_back( h_dv_maxd0_sv               );
+    h_DV_maxz0_sv                 .push_back( h_dv_maxz0_sv               );
+    h_DV_maxP_sv                  .push_back( h_dv_maxP_sv                );
+    if ( m_histoInfoSwitch->m_vtxErrors ) {
+      h_DV_sumErrd0               .push_back( h_dv_sumErrd0               );
+      h_DV_sumErrz0               .push_back( h_dv_sumErrz0               );
+      h_DV_sumErrP                .push_back( h_dv_sumErrP                );
+      h_DV_sumSqrterrd0           .push_back( h_dv_sumSqrterrd0           );
+      h_DV_sumSqrterrz0           .push_back( h_dv_sumSqrterrz0           );
+      h_DV_sumSqrterrP            .push_back( h_dv_sumSqrterrP            );
+      h_DV_sumFracerrd0           .push_back( h_dv_sumFracerrd0           );
+      h_DV_sumFracerrz0           .push_back( h_dv_sumFracerrz0           );
+      h_DV_sumFracerrP            .push_back( h_dv_sumFracerrP            );
+      h_DV_sumSignifd0            .push_back( h_dv_sumSignifd0            );
+      h_DV_sumSignifz0            .push_back( h_dv_sumSignifz0            );
+      h_DV_sumSignifP             .push_back( h_dv_sumSignifP             );
+      h_DV_sumErrd0_sv            .push_back( h_dv_sumErrd0_sv            );
+      h_DV_sumErrz0_sv            .push_back( h_dv_sumErrz0_sv            );
+      h_DV_sumErrP_sv             .push_back( h_dv_sumErrP_sv             );
+      h_DV_sumSqrterrd0_sv        .push_back( h_dv_sumSqrterrd0_sv        );
+      h_DV_sumSqrterrz0_sv        .push_back( h_dv_sumSqrterrz0_sv        );
+      h_DV_sumSqrterrP_sv         .push_back( h_dv_sumSqrterrP_sv         );
+      h_DV_sumFracerrd0_sv        .push_back( h_dv_sumFracerrd0_sv        );
+      h_DV_sumFracerrz0_sv        .push_back( h_dv_sumFracerrz0_sv        );
+      h_DV_sumFracerrP_sv         .push_back( h_dv_sumFracerrP_sv         );
+      h_DV_sumSignifd0_sv         .push_back( h_dv_sumSignifd0_sv         );
+      h_DV_sumSignifz0_sv         .push_back( h_dv_sumSignifz0_sv         );
+      h_DV_sumSignifP_sv          .push_back( h_dv_sumSignifP_sv          );
+      h_DV_minErrd0               .push_back( h_dv_minErrd0               );
+      h_DV_minErrz0               .push_back( h_dv_minErrz0               );
+      h_DV_minErrP                .push_back( h_dv_minErrP                );
+      h_DV_minSqrterrd0           .push_back( h_dv_minSqrterrd0           );
+      h_DV_minSqrterrz0           .push_back( h_dv_minSqrterrz0           );
+      h_DV_minSqrterrP            .push_back( h_dv_minSqrterrP            );
+      h_DV_minFracerrd0           .push_back( h_dv_minFracerrd0           );
+      h_DV_minFracerrz0           .push_back( h_dv_minFracerrz0           );
+      h_DV_minFracerrP            .push_back( h_dv_minFracerrP            );
+      h_DV_minSignifd0            .push_back( h_dv_minSignifd0            );
+      h_DV_minSignifz0            .push_back( h_dv_minSignifz0            );
+      h_DV_minSignifP             .push_back( h_dv_minSignifP             );
+      h_DV_minErrd0_sv            .push_back( h_dv_minErrd0_sv            );
+      h_DV_minErrz0_sv            .push_back( h_dv_minErrz0_sv            );
+      h_DV_minErrP_sv             .push_back( h_dv_minErrP_sv             );
+      h_DV_minSqrterrd0_sv        .push_back( h_dv_minSqrterrd0_sv        );
+      h_DV_minSqrterrz0_sv        .push_back( h_dv_minSqrterrz0_sv        );
+      h_DV_minSqrterrP_sv         .push_back( h_dv_minSqrterrP_sv         );
+      h_DV_minFracerrd0_sv        .push_back( h_dv_minFracerrd0_sv        );
+      h_DV_minFracerrz0_sv        .push_back( h_dv_minFracerrz0_sv        );
+      h_DV_minFracerrP_sv         .push_back( h_dv_minFracerrP_sv         );
+      h_DV_minSignifd0_sv         .push_back( h_dv_minSignifd0_sv         );
+      h_DV_minSignifz0_sv         .push_back( h_dv_minSignifz0_sv         );
+      h_DV_minSignifP_sv          .push_back( h_dv_minSignifP_sv          );
+      h_DV_maxErrd0               .push_back( h_dv_maxErrd0               );
+      h_DV_maxErrz0               .push_back( h_dv_maxErrz0               );
+      h_DV_maxErrP                .push_back( h_dv_maxErrP                );
+      h_DV_maxSqrterrd0           .push_back( h_dv_maxSqrterrd0           );
+      h_DV_maxSqrterrz0           .push_back( h_dv_maxSqrterrz0           );
+      h_DV_maxSqrterrP            .push_back( h_dv_maxSqrterrP            );
+      h_DV_maxFracerrd0           .push_back( h_dv_maxFracerrd0           );
+      h_DV_maxFracerrz0           .push_back( h_dv_maxFracerrz0           );
+      h_DV_maxFracerrP            .push_back( h_dv_maxFracerrP            );
+      h_DV_maxSignifd0            .push_back( h_dv_maxSignifd0            );
+      h_DV_maxSignifz0            .push_back( h_dv_maxSignifz0            );
+      h_DV_maxSignifP             .push_back( h_dv_maxSignifP             );
+      h_DV_maxErrd0_sv            .push_back( h_dv_maxErrd0_sv            );
+      h_DV_maxErrz0_sv            .push_back( h_dv_maxErrz0_sv            );
+      h_DV_maxErrP_sv             .push_back( h_dv_maxErrP_sv             );
+      h_DV_maxSqrterrd0_sv        .push_back( h_dv_maxSqrterrd0_sv        );
+      h_DV_maxSqrterrz0_sv        .push_back( h_dv_maxSqrterrz0_sv        );
+      h_DV_maxSqrterrP_sv         .push_back( h_dv_maxSqrterrP_sv         );
+      h_DV_maxFracerrd0_sv        .push_back( h_dv_maxFracerrd0_sv        );
+      h_DV_maxFracerrz0_sv        .push_back( h_dv_maxFracerrz0_sv        );
+      h_DV_maxFracerrP_sv         .push_back( h_dv_maxFracerrP_sv         );
+      h_DV_maxSignifd0_sv         .push_back( h_dv_maxSignifd0_sv         );
+      h_DV_maxSignifz0_sv         .push_back( h_dv_maxSignifz0_sv         );
+      h_DV_maxSignifP_sv          .push_back( h_dv_maxSignifP_sv          );
+    }
+    if ( m_histoInfoSwitch->m_vtx2D ) {
+      h_DV_z_r                    .push_back( h_dv_z_r                    );
+      h_DV_mass_r                 .push_back( h_dv_mass_r                 );
+      h_DV_z_chi2                 .push_back( h_dv_z_chi2                 );
+      h_DV_r_chi2                 .push_back( h_dv_r_chi2                 );
+      h_DV_mass_chi2              .push_back( h_dv_mass_chi2              );
+      h_DV_z_r_s                  .push_back( h_dv_z_r_s                  );
+      h_DV_mass_r_s               .push_back( h_dv_mass_r_s               );
+      h_DV_z_chi2_s               .push_back( h_dv_z_chi2_s               );
+      h_DV_r_chi2_s               .push_back( h_dv_r_chi2_s               );
+      h_DV_mass_chi2_s            .push_back( h_dv_mass_chi2_s            );
+    }
+    if ( m_histoInfoSwitch->m_vtx2D && m_histoInfoSwitch->m_vtxErrors ) {
+      h_DV_errx_x                 .push_back( h_dv_errx_x                 );
+      h_DV_erry_y                 .push_back( h_dv_erry_y                 );
+      h_DV_errz_z                 .push_back( h_dv_errz_z                 );
+      h_DV_errr_r                 .push_back( h_dv_errr_r                 );
+      h_DV_errphi_phi             .push_back( h_dv_errphi_phi             );
+      h_DV_sqrterrx_x             .push_back( h_dv_sqrterrx_x             );
+      h_DV_sqrterry_y             .push_back( h_dv_sqrterry_y             );
+      h_DV_sqrterrz_z             .push_back( h_dv_sqrterrz_z             );
+      h_DV_sqrterrr_r             .push_back( h_dv_sqrterrr_r             );
+      h_DV_sqrterrphi_phi         .push_back( h_dv_sqrterrphi_phi         );
+      h_DV_sumErrd0_r             .push_back( h_dv_sumErrd0_r             );
+      h_DV_sumErrz0_z             .push_back( h_dv_sumErrz0_z             );
+      h_DV_sumErrP_pt             .push_back( h_dv_sumErrP_pt             );
+      h_DV_sumSqrterrd0_r         .push_back( h_dv_sumSqrterrd0_r         );
+      h_DV_sumSqrterrz0_z         .push_back( h_dv_sumSqrterrz0_z         );
+      h_DV_sumSqrterrP_pt         .push_back( h_dv_sumSqrterrP_pt         );
+      h_DV_sumErrd0sv_r           .push_back( h_dv_sumErrd0sv_r           );
+      h_DV_sumErrz0sv_z           .push_back( h_dv_sumErrz0sv_z           );
+      h_DV_sumErrPsv_pt           .push_back( h_dv_sumErrPsv_pt           );
+      h_DV_sumSqrterrd0sv_r       .push_back( h_dv_sumSqrterrd0sv_r       );
+      h_DV_sumSqrterrz0sv_z       .push_back( h_dv_sumSqrterrz0sv_z       );
+      h_DV_sumSqrterrPsv_pt       .push_back( h_dv_sumSqrterrPsv_pt       );
+      h_DV_minErrd0_r             .push_back( h_dv_minErrd0_r             );
+      h_DV_minErrz0_z             .push_back( h_dv_minErrz0_z             );
+      h_DV_minErrP_pt             .push_back( h_dv_minErrP_pt             );
+      h_DV_minSqrterrd0_r         .push_back( h_dv_minSqrterrd0_r         );
+      h_DV_minSqrterrz0_z         .push_back( h_dv_minSqrterrz0_z         );
+      h_DV_minSqrterrP_pt         .push_back( h_dv_minSqrterrP_pt         );
+      h_DV_minErrd0sv_r           .push_back( h_dv_minErrd0sv_r           );
+      h_DV_minErrz0sv_z           .push_back( h_dv_minErrz0sv_z           );
+      h_DV_minErrPsv_pt           .push_back( h_dv_minErrPsv_pt           );
+      h_DV_minSqrterrd0sv_r       .push_back( h_dv_minSqrterrd0sv_r       );
+      h_DV_minSqrterrz0sv_z       .push_back( h_dv_minSqrterrz0sv_z       );
+      h_DV_minSqrterrPsv_pt       .push_back( h_dv_minSqrterrPsv_pt       );
+      h_DV_maxErrd0_r             .push_back( h_dv_maxErrd0_r             );
+      h_DV_maxErrz0_z             .push_back( h_dv_maxErrz0_z             );
+      h_DV_maxErrP_pt             .push_back( h_dv_maxErrP_pt             );
+      h_DV_maxSqrterrd0_r         .push_back( h_dv_maxSqrterrd0_r         );
+      h_DV_maxSqrterrz0_z         .push_back( h_dv_maxSqrterrz0_z         );
+      h_DV_maxSqrterrP_pt         .push_back( h_dv_maxSqrterrP_pt         );
+      h_DV_maxErrd0sv_r           .push_back( h_dv_maxErrd0sv_r           );
+      h_DV_maxErrz0sv_z           .push_back( h_dv_maxErrz0sv_z           );
+      h_DV_maxErrPsv_pt           .push_back( h_dv_maxErrPsv_pt           );
+      h_DV_maxSqrterrd0sv_r       .push_back( h_dv_maxSqrterrd0sv_r       );
+      h_DV_maxSqrterrz0sv_z       .push_back( h_dv_maxSqrterrz0sv_z       );
+      h_DV_maxSqrterrPsv_pt       .push_back( h_dv_maxSqrterrPsv_pt       );
+    }
+    if ( m_histoInfoSwitch->m_vtx2D && m_histoInfoSwitch->m_vtxTrks ) {
+      h_DV_trkd0_r                .push_back( h_dv_trkd0_r                );
+      h_DV_trkz0_z                .push_back( h_dv_trkz0_z                );
+      h_DV_trkP_pt                .push_back( h_dv_trkP_pt                );
+      h_DV_trkErrd0_r             .push_back( h_dv_trkErrd0_r             );
+      h_DV_trkErrz0_z             .push_back( h_dv_trkErrz0_z             );
+      h_DV_trkErrP_pt             .push_back( h_dv_trkErrP_pt             );
+      h_DV_trkSqrterrd0_r         .push_back( h_dv_trkSqrterrd0_r         );
+      h_DV_trkSqrterrz0_z         .push_back( h_dv_trkSqrterrz0_z         );
+      h_DV_trkSqrterrP_pt         .push_back( h_dv_trkSqrterrP_pt         );
+      h_DV_trkd0sv_r              .push_back( h_dv_trkd0sv_r              );
+      h_DV_trkz0sv_z              .push_back( h_dv_trkz0sv_z              );
+      h_DV_trkPsv_pt              .push_back( h_dv_trkPsv_pt              );
+      h_DV_trkErrd0sv_r           .push_back( h_dv_trkErrd0sv_r           );
+      h_DV_trkErrz0sv_z           .push_back( h_dv_trkErrz0sv_z           );
+      h_DV_trkErrPsv_pt           .push_back( h_dv_trkErrPsv_pt           );
+      h_DV_trkSqrterrd0sv_r       .push_back( h_dv_trkSqrterrd0sv_r       );
+      h_DV_trkSqrterrz0sv_z       .push_back( h_dv_trkSqrterrz0sv_z       );
+      h_DV_trkSqrterrPsv_pt       .push_back( h_dv_trkSqrterrPsv_pt       );
+      h_DV_trkErrd0_trkd0         .push_back( h_dv_trkErrd0_trkd0         );
+      h_DV_trkErrz0_trkz0         .push_back( h_dv_trkErrz0_trkz0         );
+      h_DV_trkErrP_trkP           .push_back( h_dv_trkErrP_trkP           );
+      h_DV_trkSqrterrd0_trkd0     .push_back( h_dv_trkSqrterrd0_trkd0     );
+      h_DV_trkSqrterrz0_trkz0     .push_back( h_dv_trkSqrterrz0_trkz0     );
+      h_DV_trkSqrterrP_trkP       .push_back( h_dv_trkSqrterrP_trkP       );
+      h_DV_trkErrd0sv_trkd0sv     .push_back( h_dv_trkErrd0sv_trkd0sv     );
+      h_DV_trkErrz0sv_trkz0sv     .push_back( h_dv_trkErrz0sv_trkz0sv     );
+      h_DV_trkErrPsv_trkPsv       .push_back( h_dv_trkErrPsv_trkPsv       );
+      h_DV_trkSqrterrd0sv_trkd0sv .push_back( h_dv_trkSqrterrd0sv_trkd0sv );
+      h_DV_trkSqrterrz0sv_trkz0sv .push_back( h_dv_trkSqrterrz0sv_trkz0sv );
+      h_DV_trkSqrterrPsv_trkPsv   .push_back( h_dv_trkSqrterrPsv_trkPsv   );
+    }
     if ( m_numVtxTrks ) {
-      h_ntrkDV_n                .push_back( h_ntrkdv_n                  );
-      h_ntrkDV_z                .push_back( h_ntrkdv_z                  );
-      h_ntrkDV_z_s              .push_back( h_ntrkdv_z_s                );
-      h_ntrkDV_r                .push_back( h_ntrkdv_r                  );
-      h_ntrkDV_r_s              .push_back( h_ntrkdv_r_s                );
-      h_ntrkDV_mass             .push_back( h_ntrkdv_mass               );
-      h_ntrkDV_mass_s           .push_back( h_ntrkdv_mass_s             );
-      h_ntrkDV_direction        .push_back( h_ntrkdv_direction          );
-      h_ntrkDV_minOpAng         .push_back( h_ntrkdv_minOpAng           );
-      h_ntrkDV_maxOpAng         .push_back( h_ntrkdv_maxOpAng           );
-      h_ntrkDV_chi2             .push_back( h_ntrkdv_chi2               );
-      h_ntrkDV_chi2_s           .push_back( h_ntrkdv_chi2_s             );
-      h_ntrkDV_sqrterrx         .push_back( h_ntrkdv_sqrterrx           );
-      h_ntrkDV_sqrterry         .push_back( h_ntrkdv_sqrterry           );
-      h_ntrkDV_sqrterrz         .push_back( h_ntrkdv_sqrterrz           );
-      h_ntrkDV_sqrterrr         .push_back( h_ntrkdv_sqrterrr           );
-      h_ntrkDV_sqrterrphi       .push_back( h_ntrkdv_sqrterrphi         );
-      h_ntrkDV_sumSqrterrd0     .push_back( h_ntrkdv_sumSqrterrd0       );
-      h_ntrkDV_sumSqrterrz0     .push_back( h_ntrkdv_sumSqrterrz0       );
-      h_ntrkDV_sumSqrterrP      .push_back( h_ntrkdv_sumSqrterrP        );
-      h_ntrkDV_sumSqrterrd0_sv  .push_back( h_ntrkdv_sumSqrterrd0_sv    );
-      h_ntrkDV_sumSqrterrz0_sv  .push_back( h_ntrkdv_sumSqrterrz0_sv    );
-      h_ntrkDV_sumSqrterrP_sv   .push_back( h_ntrkdv_sumSqrterrP_sv     );
-      h_ntrkDV_minSqrterrd0     .push_back( h_ntrkdv_minSqrterrd0       );
-      h_ntrkDV_minSqrterrz0     .push_back( h_ntrkdv_minSqrterrz0       );
-      h_ntrkDV_minSqrterrP      .push_back( h_ntrkdv_minSqrterrP        );
-      h_ntrkDV_minSqrterrd0_sv  .push_back( h_ntrkdv_minSqrterrd0_sv    );
-      h_ntrkDV_minSqrterrz0_sv  .push_back( h_ntrkdv_minSqrterrz0_sv    );
-      h_ntrkDV_minSqrterrP_sv   .push_back( h_ntrkdv_minSqrterrP_sv     );
-      h_ntrkDV_maxSqrterrd0     .push_back( h_ntrkdv_maxSqrterrd0       );
-      h_ntrkDV_maxSqrterrz0     .push_back( h_ntrkdv_maxSqrterrz0       );
-      h_ntrkDV_maxSqrterrP      .push_back( h_ntrkdv_maxSqrterrP        );
-      h_ntrkDV_maxSqrterrd0_sv  .push_back( h_ntrkdv_maxSqrterrd0_sv    );
-      h_ntrkDV_maxSqrterrz0_sv  .push_back( h_ntrkdv_maxSqrterrz0_sv    );
-      h_ntrkDV_maxSqrterrP_sv   .push_back( h_ntrkdv_maxSqrterrP_sv     );
+      h_ntrkDV_n                  .push_back( h_ntrkdv_n                  );
+      h_ntrkDV_z                  .push_back( h_ntrkdv_z                  );
+      h_ntrkDV_z_s                .push_back( h_ntrkdv_z_s                );
+      h_ntrkDV_r                  .push_back( h_ntrkdv_r                  );
+      h_ntrkDV_r_s                .push_back( h_ntrkdv_r_s                );
+      h_ntrkDV_mass               .push_back( h_ntrkdv_mass               );
+      h_ntrkDV_mass_s             .push_back( h_ntrkdv_mass_s             );
+      h_ntrkDV_mass_xs            .push_back( h_ntrkdv_mass_xs            );
+      h_ntrkDV_direction          .push_back( h_ntrkdv_direction          );
+      h_ntrkDV_minOpAng           .push_back( h_ntrkdv_minOpAng           );
+      h_ntrkDV_maxOpAng           .push_back( h_ntrkdv_maxOpAng           );
+      h_ntrkDV_chi2               .push_back( h_ntrkdv_chi2               );
+      h_ntrkDV_chi2_s             .push_back( h_ntrkdv_chi2_s             );
+      h_ntrkDV_sumd0              .push_back( h_ntrkdv_sumd0              );
+      h_ntrkDV_sumz0              .push_back( h_ntrkdv_sumz0              );
+      h_ntrkDV_sumP               .push_back( h_ntrkdv_sumP               );
+      h_ntrkDV_sumd0_sv           .push_back( h_ntrkdv_sumd0_sv           );
+      h_ntrkDV_sumz0_sv           .push_back( h_ntrkdv_sumz0_sv           );
+      h_ntrkDV_sumP_sv            .push_back( h_ntrkdv_sumP_sv            );
+      h_ntrkDV_mind0              .push_back( h_ntrkdv_mind0              );
+      h_ntrkDV_minz0              .push_back( h_ntrkdv_minz0              );
+      h_ntrkDV_minP               .push_back( h_ntrkdv_minP               );
+      h_ntrkDV_mind0_sv           .push_back( h_ntrkdv_mind0_sv           );
+      h_ntrkDV_minz0_sv           .push_back( h_ntrkdv_minz0_sv           );
+      h_ntrkDV_minP_sv            .push_back( h_ntrkdv_minP_sv            );
+      h_ntrkDV_maxd0              .push_back( h_ntrkdv_maxd0              );
+      h_ntrkDV_maxz0              .push_back( h_ntrkdv_maxz0              );
+      h_ntrkDV_maxP               .push_back( h_ntrkdv_maxP               );
+      h_ntrkDV_maxd0_sv           .push_back( h_ntrkdv_maxd0_sv           );
+      h_ntrkDV_maxz0_sv           .push_back( h_ntrkdv_maxz0_sv           );
+      h_ntrkDV_maxP_sv            .push_back( h_ntrkdv_maxP_sv            );
+      if ( m_histoInfoSwitch->m_vtxErrors ) {
+	h_ntrkDV_sqrterrx         .push_back( h_ntrkdv_sqrterrx           );
+	h_ntrkDV_sqrterry         .push_back( h_ntrkdv_sqrterry           );
+	h_ntrkDV_sqrterrz         .push_back( h_ntrkdv_sqrterrz           );
+	h_ntrkDV_sqrterrr         .push_back( h_ntrkdv_sqrterrr           );
+	h_ntrkDV_sqrterrphi       .push_back( h_ntrkdv_sqrterrphi         );
+	h_ntrkDV_sumSqrterrd0     .push_back( h_ntrkdv_sumSqrterrd0       );
+	h_ntrkDV_sumSqrterrz0     .push_back( h_ntrkdv_sumSqrterrz0       );
+	h_ntrkDV_sumSqrterrP      .push_back( h_ntrkdv_sumSqrterrP        );
+	h_ntrkDV_sumSqrterrd0_sv  .push_back( h_ntrkdv_sumSqrterrd0_sv    );
+	h_ntrkDV_sumSqrterrz0_sv  .push_back( h_ntrkdv_sumSqrterrz0_sv    );
+	h_ntrkDV_sumSqrterrP_sv   .push_back( h_ntrkdv_sumSqrterrP_sv     );
+	h_ntrkDV_minSqrterrd0     .push_back( h_ntrkdv_minSqrterrd0       );
+	h_ntrkDV_minSqrterrz0     .push_back( h_ntrkdv_minSqrterrz0       );
+	h_ntrkDV_minSqrterrP      .push_back( h_ntrkdv_minSqrterrP        );
+	h_ntrkDV_minSqrterrd0_sv  .push_back( h_ntrkdv_minSqrterrd0_sv    );
+	h_ntrkDV_minSqrterrz0_sv  .push_back( h_ntrkdv_minSqrterrz0_sv    );
+	h_ntrkDV_minSqrterrP_sv   .push_back( h_ntrkdv_minSqrterrP_sv     );
+	h_ntrkDV_maxSqrterrd0     .push_back( h_ntrkdv_maxSqrterrd0       );
+	h_ntrkDV_maxSqrterrz0     .push_back( h_ntrkdv_maxSqrterrz0       );
+	h_ntrkDV_maxSqrterrP      .push_back( h_ntrkdv_maxSqrterrP        );
+	h_ntrkDV_maxSqrterrd0_sv  .push_back( h_ntrkdv_maxSqrterrd0_sv    );
+	h_ntrkDV_maxSqrterrz0_sv  .push_back( h_ntrkdv_maxSqrterrz0_sv    );
+	h_ntrkDV_maxSqrterrP_sv   .push_back( h_ntrkdv_maxSqrterrP_sv     );
+      }
     }
 
 
@@ -2479,15 +2630,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // -------------------------- //
     // --- SECONDARY VERTICES --- //
     // -------------------------- //
-    //h_DV_n             .at(ireg) ->Fill( m_secVtx_n,               weight );
-    //h_byJetDV_n        .at(ireg) ->Fill( m_nDV_nearJets,           weight );
-    //h_byLeadJetDV_n    .at(ireg) ->Fill( m_nDV_nearLeadJets,       weight );
-
     // eventually will decide on DV type to use and can make generic "DV" histograms w/ no info switch
-
-    // --> look at fiducial volume cuts
-    // --> look at vertices matched to truth dark pion decays
-    // --> look at vertex tracks --> figure out WHAT to cut / filter on 
 
     // set vector of nDV, ntrkDV counters
     std::vector<int> n_DV ( m_nTypeDVs.at(ireg), 0 );
@@ -2531,7 +2674,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	DV    .push_back( filtDV );
 	DVstr .push_back( "filt" );
       }
-      
+
+      // all vertex types below use BARE variables (no track filtering) for now ...
       // --> vertices near (leading) jets
       bool byJetDV     = false;
       bool byLeadJetDV = false;
@@ -2543,7 +2687,6 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	DVstr .push_back( "byJet"     );
 	DVstr .push_back( "byLeadJet" );
       }
-
       // --> fiducial vertices --> cut on r, z, chi2
       bool fiducDV = false;
       if ( m_secVtx_r    ->at(i) < 300 && fabs( m_secVtx_z ->at(i) ) < 300 &&
@@ -2552,6 +2695,28 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	DV    .push_back( fiducDV    );
 	DVstr .push_back( "fiducial" );
       }
+      // --> k-short-mass-cut vertices --> cut on vertex mass
+      bool ksmDV = false;
+      if ( m_secVtx_mass_bare ->at(i) > 0.7 ) ksmDV = true; // could loosen to 0.55 ...
+      if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ksmVerts ) {
+	DV    .push_back( ksmDV );
+	DVstr .push_back( "ksm" );
+      }
+      // --> low-pt cut
+      bool ptDV = false;
+      if ( m_secVtx_pt_bare ->at(i) > 2.5 ) ptDV = true; // vary between 2-3 ??
+      if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ptVerts ) {
+	DV    .push_back( ptDV );
+	DVstr .push_back( "pt" );
+      }
+
+      // --> min/max-d0 cut
+      // m_secVtx_min/maxd0_bare->at(i)
+
+      // mind0, maxd0, minz0, maxz0, sumd0, sumz0, mind0err, minz0err (maxd0err, maxz0err) --> need to loop over tracks and calculate here 
+
+      
+
 
       // test truth-matching criteria
       // --> look at match scores, (residual) distances to close(st) / matched vertices; ...
@@ -2580,10 +2745,30 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
       	}
       	if ( !darkPionDV && !kshortDV ) nomatchDV = true;
 	if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_vtxTruth ) {
-	  std::vector<int>         mDV     = { darkPionDV,  kshortDV, nomatchDV };
-	  std::vector<std::string> mDVstr  = { "darkPion", "kshort", "nomatch"  };
-	  std::vector<int>         miDV    = { byJetDV,  byLeadJetDV, fiducDV   };
-	  std::vector<std::string> miDVstr = { "byJet", "byLeadJet", "fiducial" };
+	  //std::vector<int>         mDV     = { darkPionDV,  kshortDV, nomatchDV };
+	  //std::vector<std::string> mDVstr  = { "darkPion", "kshort", "nomatch"  };
+	  std::vector<int>         mDV    = { darkPionDV };
+	  std::vector<std::string> mDVstr = { "darkPion" };
+	  std::vector<int>         miDV;
+	  std::vector<std::string> miDVstr;
+	  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_byJetVerts ) {
+	    miDV    .push_back( byJetDV     );
+	    miDV    .push_back( byLeadJetDV );
+	    miDVstr .push_back( "byJet"     );
+	    miDVstr .push_back( "byLeadJet" );
+	  }
+	  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_fiducialVerts ) {
+	    miDV    .push_back( fiducDV    );
+	    miDVstr .push_back( "fiducial" );
+	  }
+	  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ksmVerts ) {
+	    miDV    .push_back( ksmDV );
+	    miDVstr .push_back( "ksm" );
+	  }
+	  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ptVerts ) {
+	    miDV    .push_back( ptDV );
+	    miDVstr .push_back( "pt" );
+	  }
 	  for ( size_t i = 0; i != mDV.size(); ++i ) {
 	    DV    .push_back( mDV    .at(i) );
 	    DVstr .push_back( mDVstr .at(i) );
@@ -2682,6 +2867,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	h_DV_r_s       .at(ireg).at(idv) ->Fill( m_secVtx_r    ->at(i), weight );
 	h_DV_phipos    .at(ireg).at(idv) ->Fill( secVtx_pos     .Phi(), weight );
 	h_DV_pt        .at(ireg).at(idv) ->Fill( secVtx_pt,             weight );
+	h_DV_pt_s      .at(ireg).at(idv) ->Fill( secVtx_pt,             weight );
+	h_DV_pt_xs     .at(ireg).at(idv) ->Fill( secVtx_pt,             weight );
 	h_DV_eta       .at(ireg).at(idv) ->Fill( secVtx_eta,            weight );
 	h_DV_phi       .at(ireg).at(idv) ->Fill( secVtx_phi,            weight );
 	h_DV_mass      .at(ireg).at(idv) ->Fill( secVtx_mass,           weight );
@@ -2702,18 +2889,20 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	// --> --> need to calculate sumP4 using only tracks of interest
 
 	// 2d plots
-	h_DV_z_r         .at(ireg).at(idv) ->Fill( m_secVtx_r    ->at(i), m_secVtx_z    ->at(i), weight );
-	h_DV_mass_r      .at(ireg).at(idv) ->Fill( m_secVtx_r    ->at(i), m_secVtx_mass ->at(i), weight );
-	h_DV_z_chi2      .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_z    ->at(i), weight );
-	h_DV_r_chi2      .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_r    ->at(i), weight );
-	h_DV_mass_chi2   .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_mass ->at(i), weight );
-	h_DV_z_r_s       .at(ireg).at(idv) ->Fill( m_secVtx_r    ->at(i), m_secVtx_z    ->at(i), weight );
-	h_DV_mass_r_s    .at(ireg).at(idv) ->Fill( m_secVtx_r    ->at(i), m_secVtx_mass ->at(i), weight );
-	h_DV_z_chi2_s    .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_z    ->at(i), weight );
-	h_DV_r_chi2_s    .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_r    ->at(i), weight );
-	h_DV_mass_chi2_s .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_mass ->at(i), weight );
+	if ( m_histoInfoSwitch->m_vtx2D ) {
+	  h_DV_z_r         .at(ireg).at(idv) ->Fill( m_secVtx_r    ->at(i), m_secVtx_z    ->at(i), weight );
+	  h_DV_mass_r      .at(ireg).at(idv) ->Fill( m_secVtx_r    ->at(i), m_secVtx_mass ->at(i), weight );
+	  h_DV_z_chi2      .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_z    ->at(i), weight );
+	  h_DV_r_chi2      .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_r    ->at(i), weight );
+	  h_DV_mass_chi2   .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_mass ->at(i), weight );
+	  h_DV_z_r_s       .at(ireg).at(idv) ->Fill( m_secVtx_r    ->at(i), m_secVtx_z    ->at(i), weight );
+	  h_DV_mass_r_s    .at(ireg).at(idv) ->Fill( m_secVtx_r    ->at(i), m_secVtx_mass ->at(i), weight );
+	  h_DV_z_chi2_s    .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_z    ->at(i), weight );
+	  h_DV_r_chi2_s    .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_r    ->at(i), weight );
+	  h_DV_mass_chi2_s .at(ireg).at(idv) ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_mass ->at(i), weight );
+	}
 
-	// squared errors
+	// squared errors --> DOUBLE CHECK ERROR PROPAGATIONS FOR R, PHI...
 	float secVtx_x2     = pow( m_secVtx_x ->at(i), 2 );
 	float secVtx_y2     = pow( m_secVtx_y ->at(i), 2 );
 	float secVtx_r2     = pow( m_secVtx_r ->at(i), 2 );
@@ -2724,36 +2913,41 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	float secVtx_errz   = m_secVtx_covariance ->at(i).at(5);
 	float secVtx_errr   = ( secVtx_x2 * secVtx_errx + secVtx_y2 * secVtx_erry + 2 * secVtx_xy * secVtx_errxy ) / secVtx_r2;
 	float secVtx_errphi = ( secVtx_y2 * secVtx_errx + secVtx_x2 * secVtx_erry - 2 * secVtx_xy * secVtx_errxy ) / pow( secVtx_r2, 2 );
-	h_DV_errx           .at(ireg).at(idv) ->Fill( sqrt(secVtx_errx),                                    weight );
-	h_DV_erry           .at(ireg).at(idv) ->Fill( sqrt(secVtx_erry),                                    weight );
-	h_DV_errz           .at(ireg).at(idv) ->Fill( sqrt(secVtx_errz),                                    weight );
-	h_DV_errr           .at(ireg).at(idv) ->Fill( sqrt(secVtx_errr),                                    weight );
-	h_DV_errphi         .at(ireg).at(idv) ->Fill( sqrt(secVtx_errphi),                                  weight );
-	h_DV_sqrterrx       .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_errx)),                              weight );
-	h_DV_sqrterry       .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_erry)),                              weight );
-	h_DV_sqrterrz       .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_errz)),                              weight );
-	h_DV_sqrterrr       .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_errr)),                              weight );
-	h_DV_sqrterrphi     .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_errphi)),                            weight );
-	h_DV_fracerrx       .at(ireg).at(idv) ->Fill( sqrt(secVtx_errx)        / fabs(m_secVtx_x ->at(i)),  weight );
-	h_DV_fracerry       .at(ireg).at(idv) ->Fill( sqrt(secVtx_erry)        / fabs(m_secVtx_y ->at(i)),  weight );
-	h_DV_fracerrz       .at(ireg).at(idv) ->Fill( sqrt(secVtx_errz)        / fabs(m_secVtx_z ->at(i)),  weight );
-	h_DV_fracerrr       .at(ireg).at(idv) ->Fill( sqrt(secVtx_errr)        / fabs(m_secVtx_r ->at(i)),  weight );
-	h_DV_fracerrphi     .at(ireg).at(idv) ->Fill( sqrt(secVtx_errphi)      / fabs(secVtx_pos  .Phi()),  weight );
-	h_DV_signifx        .at(ireg).at(idv) ->Fill( fabs(m_secVtx_x ->at(i)) / sqrt(secVtx_errx),         weight );
-	h_DV_signify        .at(ireg).at(idv) ->Fill( fabs(m_secVtx_y ->at(i)) / sqrt(secVtx_erry),         weight );
-	h_DV_signifz        .at(ireg).at(idv) ->Fill( fabs(m_secVtx_z ->at(i)) / sqrt(secVtx_errz),         weight );
-	h_DV_signifr        .at(ireg).at(idv) ->Fill( fabs(m_secVtx_r ->at(i)) / sqrt(secVtx_errr),         weight );
-	h_DV_signifphi      .at(ireg).at(idv) ->Fill( fabs(secVtx_pos  .Phi()) / sqrt(secVtx_errphi),       weight );
-	h_DV_errx_x         .at(ireg).at(idv) ->Fill( m_secVtx_x ->at(i),        sqrt(secVtx_errx),         weight );
-	h_DV_erry_y         .at(ireg).at(idv) ->Fill( m_secVtx_y ->at(i),        sqrt(secVtx_erry),         weight );
-	h_DV_errz_z         .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i),        sqrt(secVtx_errz),         weight );
-	h_DV_errr_r         .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i),        sqrt(secVtx_errr),         weight );
-	h_DV_errphi_phi     .at(ireg).at(idv) ->Fill( secVtx_pos  .Phi(),        sqrt(secVtx_errphi),       weight );
-	h_DV_sqrterrx_x     .at(ireg).at(idv) ->Fill( m_secVtx_x ->at(i),        sqrt(sqrt(secVtx_errx)),   weight );
-	h_DV_sqrterry_y     .at(ireg).at(idv) ->Fill( m_secVtx_y ->at(i),        sqrt(sqrt(secVtx_erry)),   weight );
-	h_DV_sqrterrz_z     .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i),        sqrt(sqrt(secVtx_errz)),   weight );
-	h_DV_sqrterrr_r     .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i),        sqrt(sqrt(secVtx_errr)),   weight );
-	h_DV_sqrterrphi_phi .at(ireg).at(idv) ->Fill( secVtx_pos  .Phi(),        sqrt(sqrt(secVtx_errphi)), weight );
+	if ( m_histoInfoSwitch->m_vtxErrors ) {
+	  h_DV_errx             .at(ireg).at(idv) ->Fill( sqrt(secVtx_errx),                                    weight );
+	  h_DV_erry             .at(ireg).at(idv) ->Fill( sqrt(secVtx_erry),                                    weight );
+	  h_DV_errz             .at(ireg).at(idv) ->Fill( sqrt(secVtx_errz),                                    weight );
+	  h_DV_errr             .at(ireg).at(idv) ->Fill( sqrt(secVtx_errr),                                    weight );
+	  h_DV_errphi           .at(ireg).at(idv) ->Fill( sqrt(secVtx_errphi),                                  weight );
+	  h_DV_sqrterrx         .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_errx)),                              weight );
+	  h_DV_sqrterry         .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_erry)),                              weight );
+	  h_DV_sqrterrz         .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_errz)),                              weight );
+	  h_DV_sqrterrr         .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_errr)),                              weight );
+	  h_DV_sqrterrphi       .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_errphi)),                            weight );
+	  h_DV_fracerrx         .at(ireg).at(idv) ->Fill( sqrt(secVtx_errx)        / fabs(m_secVtx_x ->at(i)),  weight );
+	  h_DV_fracerry         .at(ireg).at(idv) ->Fill( sqrt(secVtx_erry)        / fabs(m_secVtx_y ->at(i)),  weight );
+	  h_DV_fracerrz         .at(ireg).at(idv) ->Fill( sqrt(secVtx_errz)        / fabs(m_secVtx_z ->at(i)),  weight );
+	  h_DV_fracerrr         .at(ireg).at(idv) ->Fill( sqrt(secVtx_errr)        / fabs(m_secVtx_r ->at(i)),  weight );
+	  h_DV_fracerrphi       .at(ireg).at(idv) ->Fill( sqrt(secVtx_errphi)      / fabs(secVtx_pos  .Phi()),  weight );
+	  h_DV_signifx          .at(ireg).at(idv) ->Fill( fabs(m_secVtx_x ->at(i)) / sqrt(secVtx_errx),         weight );
+	  h_DV_signify          .at(ireg).at(idv) ->Fill( fabs(m_secVtx_y ->at(i)) / sqrt(secVtx_erry),         weight );
+	  h_DV_signifz          .at(ireg).at(idv) ->Fill( fabs(m_secVtx_z ->at(i)) / sqrt(secVtx_errz),         weight );
+	  h_DV_signifr          .at(ireg).at(idv) ->Fill( fabs(m_secVtx_r ->at(i)) / sqrt(secVtx_errr),         weight );
+	  h_DV_signifphi        .at(ireg).at(idv) ->Fill( fabs(secVtx_pos  .Phi()) / sqrt(secVtx_errphi),       weight );
+	  // --> 2d
+	  if ( m_histoInfoSwitch->m_vtx2D ) {
+	    h_DV_errx_x         .at(ireg).at(idv) ->Fill( m_secVtx_x ->at(i),        sqrt(secVtx_errx),         weight );
+	    h_DV_erry_y         .at(ireg).at(idv) ->Fill( m_secVtx_y ->at(i),        sqrt(secVtx_erry),         weight );
+	    h_DV_errz_z         .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i),        sqrt(secVtx_errz),         weight );
+	    h_DV_errr_r         .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i),        sqrt(secVtx_errr),         weight );
+	    h_DV_errphi_phi     .at(ireg).at(idv) ->Fill( secVtx_pos  .Phi(),        sqrt(secVtx_errphi),       weight );
+	    h_DV_sqrterrx_x     .at(ireg).at(idv) ->Fill( m_secVtx_x ->at(i),        sqrt(sqrt(secVtx_errx)),   weight );
+	    h_DV_sqrterry_y     .at(ireg).at(idv) ->Fill( m_secVtx_y ->at(i),        sqrt(sqrt(secVtx_erry)),   weight );
+	    h_DV_sqrterrz_z     .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i),        sqrt(sqrt(secVtx_errz)),   weight );
+	    h_DV_sqrterrr_r     .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i),        sqrt(sqrt(secVtx_errr)),   weight );
+	    h_DV_sqrterrphi_phi .at(ireg).at(idv) ->Fill( secVtx_pos  .Phi(),        sqrt(sqrt(secVtx_errphi)), weight );
+	  }
+	}
 	
 	// loop over vertex tracks
 	int   ntrk_final             = 0;
@@ -2997,37 +3191,39 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  if ( 1/trk_fracerrP_sv  > secVtx_maxsignifP_sv   ) secVtx_maxsignifP_sv   = 1/trk_fracerrP_sv;
 	  // --> opening angle (wrt PV), dR b/w tracks, chi2 ??
 
-	  h_DV_trkd0_r          .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), m_trk_d0            ->at(trkIx),    weight );
-	  h_DV_trkz0_z          .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), m_trk_z0            ->at(trkIx),    weight );
-	  h_DV_trkP_pt          .at(ireg).at(idv) ->Fill( secVtx_pt,          1000 * m_trk_qOverP ->at(trkIx),    weight );
-	  h_DV_trkErrd0_r       .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(trk_errd0),                    weight );
-	  h_DV_trkErrz0_z       .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(trk_errz0),                    weight );
-	  h_DV_trkErrP_pt       .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(trk_errP),                     weight );
-	  h_DV_trkSqrterrd0_r   .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(trk_errd0)),              weight );
-	  h_DV_trkSqrterrz0_z   .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(trk_errz0)),              weight );
-	  h_DV_trkSqrterrP_pt   .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(trk_errP)),               weight );
-	  h_DV_trkd0sv_r        .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), m_secVtx_trk_d0_sv ->at(i).at(j),   weight );
-	  h_DV_trkz0sv_z        .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), m_secVtx_trk_z0_sv ->at(i).at(j),   weight );
-	  h_DV_trkPsv_pt        .at(ireg).at(idv) ->Fill( secVtx_pt,          trk_qOverP_sv,                      weight );
-	  h_DV_trkErrd0sv_r     .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(trk_errd0_sv),                 weight );
-	  h_DV_trkErrz0sv_z     .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(trk_errz0_sv),                 weight );
-	  h_DV_trkErrPsv_pt     .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(trk_errP_sv),                  weight );
-	  h_DV_trkSqrterrd0sv_r .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(trk_errd0_sv)),           weight );
-	  h_DV_trkSqrterrz0sv_z .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(trk_errz0_sv)),           weight );
-	  h_DV_trkSqrterrPsv_pt .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(trk_errP_sv)),            weight );
+	  if ( m_histoInfoSwitch->m_vtx2D && m_histoInfoSwitch->m_vtxTrks ) {
+	    h_DV_trkd0_r          .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), m_trk_d0            ->at(trkIx),    weight );
+	    h_DV_trkz0_z          .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), m_trk_z0            ->at(trkIx),    weight );
+	    h_DV_trkP_pt          .at(ireg).at(idv) ->Fill( secVtx_pt,          1000 * m_trk_qOverP ->at(trkIx),    weight );
+	    h_DV_trkErrd0_r       .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(trk_errd0),                    weight );
+	    h_DV_trkErrz0_z       .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(trk_errz0),                    weight );
+	    h_DV_trkErrP_pt       .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(trk_errP),                     weight );
+	    h_DV_trkSqrterrd0_r   .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(trk_errd0)),              weight );
+	    h_DV_trkSqrterrz0_z   .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(trk_errz0)),              weight );
+	    h_DV_trkSqrterrP_pt   .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(trk_errP)),               weight );
+	    h_DV_trkd0sv_r        .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), m_secVtx_trk_d0_sv ->at(i).at(j),   weight );
+	    h_DV_trkz0sv_z        .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), m_secVtx_trk_z0_sv ->at(i).at(j),   weight );
+	    h_DV_trkPsv_pt        .at(ireg).at(idv) ->Fill( secVtx_pt,          trk_qOverP_sv,                      weight );
+	    h_DV_trkErrd0sv_r     .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(trk_errd0_sv),                 weight );
+	    h_DV_trkErrz0sv_z     .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(trk_errz0_sv),                 weight );
+	    h_DV_trkErrPsv_pt     .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(trk_errP_sv),                  weight );
+	    h_DV_trkSqrterrd0sv_r .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(trk_errd0_sv)),           weight );
+	    h_DV_trkSqrterrz0sv_z .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(trk_errz0_sv)),           weight );
+	    h_DV_trkSqrterrPsv_pt .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(trk_errP_sv)),            weight );
 
-	  h_DV_trkErrd0_trkd0         .at(ireg).at(idv) ->Fill( m_trk_d0            ->at(trkIx),   sqrt(trk_errd0),          weight );
-	  h_DV_trkErrz0_trkz0         .at(ireg).at(idv) ->Fill( m_trk_z0            ->at(trkIx),   sqrt(trk_errz0),          weight );
-	  h_DV_trkErrP_trkP           .at(ireg).at(idv) ->Fill( 1000 * m_trk_qOverP ->at(trkIx),   sqrt(trk_errP),           weight );
-	  h_DV_trkSqrterrd0_trkd0     .at(ireg).at(idv) ->Fill( m_trk_d0            ->at(trkIx),   sqrt(sqrt(trk_errd0)),    weight );
-	  h_DV_trkSqrterrz0_trkz0     .at(ireg).at(idv) ->Fill( m_trk_z0            ->at(trkIx),   sqrt(sqrt(trk_errz0)),    weight );
-	  h_DV_trkSqrterrP_trkP       .at(ireg).at(idv) ->Fill( 1000 * m_trk_qOverP ->at(trkIx),   sqrt(sqrt(trk_errP)),     weight );
-	  h_DV_trkErrd0sv_trkd0sv     .at(ireg).at(idv) ->Fill( m_secVtx_trk_d0_sv  ->at(i).at(j), sqrt(trk_errd0_sv),       weight );
-	  h_DV_trkErrz0sv_trkz0sv     .at(ireg).at(idv) ->Fill( m_secVtx_trk_z0_sv  ->at(i).at(j), sqrt(trk_errz0_sv),       weight );
-	  h_DV_trkErrPsv_trkPsv       .at(ireg).at(idv) ->Fill( trk_qOverP_sv,                     sqrt(trk_errP),           weight );
-	  h_DV_trkSqrterrd0sv_trkd0sv .at(ireg).at(idv) ->Fill( m_secVtx_trk_d0_sv  ->at(i).at(j), sqrt(sqrt(trk_errd0_sv)), weight );
-	  h_DV_trkSqrterrz0sv_trkz0sv .at(ireg).at(idv) ->Fill( m_secVtx_trk_z0_sv  ->at(i).at(j), sqrt(sqrt(trk_errz0_sv)), weight );
-	  h_DV_trkSqrterrPsv_trkPsv   .at(ireg).at(idv) ->Fill( trk_qOverP_sv,                     sqrt(sqrt(trk_errP)),     weight );
+	    h_DV_trkErrd0_trkd0         .at(ireg).at(idv) ->Fill( m_trk_d0            ->at(trkIx),   sqrt(trk_errd0),          weight );
+	    h_DV_trkErrz0_trkz0         .at(ireg).at(idv) ->Fill( m_trk_z0            ->at(trkIx),   sqrt(trk_errz0),          weight );
+	    h_DV_trkErrP_trkP           .at(ireg).at(idv) ->Fill( 1000 * m_trk_qOverP ->at(trkIx),   sqrt(trk_errP),           weight );
+	    h_DV_trkSqrterrd0_trkd0     .at(ireg).at(idv) ->Fill( m_trk_d0            ->at(trkIx),   sqrt(sqrt(trk_errd0)),    weight );
+	    h_DV_trkSqrterrz0_trkz0     .at(ireg).at(idv) ->Fill( m_trk_z0            ->at(trkIx),   sqrt(sqrt(trk_errz0)),    weight );
+	    h_DV_trkSqrterrP_trkP       .at(ireg).at(idv) ->Fill( 1000 * m_trk_qOverP ->at(trkIx),   sqrt(sqrt(trk_errP)),     weight );
+	    h_DV_trkErrd0sv_trkd0sv     .at(ireg).at(idv) ->Fill( m_secVtx_trk_d0_sv  ->at(i).at(j), sqrt(trk_errd0_sv),       weight );
+	    h_DV_trkErrz0sv_trkz0sv     .at(ireg).at(idv) ->Fill( m_secVtx_trk_z0_sv  ->at(i).at(j), sqrt(trk_errz0_sv),       weight );
+	    h_DV_trkErrPsv_trkPsv       .at(ireg).at(idv) ->Fill( trk_qOverP_sv,                     sqrt(trk_errP),           weight );
+	    h_DV_trkSqrterrd0sv_trkd0sv .at(ireg).at(idv) ->Fill( m_secVtx_trk_d0_sv  ->at(i).at(j), sqrt(sqrt(trk_errd0_sv)), weight );
+	    h_DV_trkSqrterrz0sv_trkz0sv .at(ireg).at(idv) ->Fill( m_secVtx_trk_z0_sv  ->at(i).at(j), sqrt(sqrt(trk_errz0_sv)), weight );
+	    h_DV_trkSqrterrPsv_trkPsv   .at(ireg).at(idv) ->Fill( trk_qOverP_sv,                     sqrt(sqrt(trk_errP)),     weight );
+	  }
 	  
 	} // end loop over tracks
 
@@ -3036,178 +3232,200 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	h_DV_ntrk_assoc .at(ireg).at(idv) ->Fill( ntrk_assoc, weight );
 	h_DV_ntrk_lrt   .at(ireg).at(idv) ->Fill( ntrk_lrt,   weight );
 
-	h_DV_sumd0           .at(ireg).at(idv) ->Fill( secVtx_sumd0,                   weight );
-	h_DV_sumz0           .at(ireg).at(idv) ->Fill( secVtx_sumz0,                   weight );
-	h_DV_sumP            .at(ireg).at(idv) ->Fill( secVtx_sumP,                    weight );
-	h_DV_sumErrd0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrd0),          weight );
-	h_DV_sumErrz0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrz0),          weight );
-	h_DV_sumErrP         .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrP),           weight );
-	h_DV_sumSqrterrd0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrd0)),    weight );
-	h_DV_sumSqrterrz0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrz0)),    weight );
-	h_DV_sumSqrterrP     .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrP)),     weight );
-	h_DV_sumFracerrd0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrd0),      weight );
-	h_DV_sumFracerrz0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrz0),      weight );
-	h_DV_sumFracerrP     .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrP),       weight );
-	h_DV_sumSignifd0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifd0),       weight );
-	h_DV_sumSignifz0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifz0),       weight );
-	h_DV_sumSignifP      .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifP),        weight );
-	h_DV_sumd0_sv        .at(ireg).at(idv) ->Fill( secVtx_sumd0_sv,                weight );
-	h_DV_sumz0_sv        .at(ireg).at(idv) ->Fill( secVtx_sumz0_sv,                weight );
-	h_DV_sumP_sv         .at(ireg).at(idv) ->Fill( secVtx_sumP_sv,                 weight );
-	h_DV_sumErrd0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrd0_sv),       weight );
-	h_DV_sumErrz0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrz0_sv),       weight );
-	h_DV_sumErrP_sv      .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrP_sv),        weight );
-	h_DV_sumSqrterrd0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrd0_sv)), weight );
-	h_DV_sumSqrterrz0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrz0_sv)), weight );
-	h_DV_sumSqrterrP_sv  .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrP_sv)),  weight );
-	h_DV_sumFracerrd0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrd0_sv),   weight );
-	h_DV_sumFracerrz0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrz0_sv),   weight );
-	h_DV_sumFracerrP_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrP_sv),    weight );
-	h_DV_sumSignifd0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifd0_sv),    weight );
-	h_DV_sumSignifz0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifz0_sv),    weight );
-	h_DV_sumSignifP_sv   .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifP_sv),     weight );
+	h_DV_sumd0             .at(ireg).at(idv) ->Fill( secVtx_sumd0,                   weight );
+	h_DV_sumz0             .at(ireg).at(idv) ->Fill( secVtx_sumz0,                   weight );
+	h_DV_sumP              .at(ireg).at(idv) ->Fill( secVtx_sumP,                    weight );
+	h_DV_sumd0_sv          .at(ireg).at(idv) ->Fill( secVtx_sumd0_sv,                weight );
+	h_DV_sumz0_sv          .at(ireg).at(idv) ->Fill( secVtx_sumz0_sv,                weight );
+	h_DV_sumP_sv           .at(ireg).at(idv) ->Fill( secVtx_sumP_sv,                 weight );
+	h_DV_mind0             .at(ireg).at(idv) ->Fill( secVtx_mind0,                   weight );
+	h_DV_minz0             .at(ireg).at(idv) ->Fill( secVtx_minz0,                   weight );
+	h_DV_minP              .at(ireg).at(idv) ->Fill( secVtx_minP,                    weight );
+	h_DV_mind0_sv          .at(ireg).at(idv) ->Fill( secVtx_mind0_sv,                weight );
+	h_DV_minz0_sv          .at(ireg).at(idv) ->Fill( secVtx_minz0_sv,                weight );
+	h_DV_minP_sv           .at(ireg).at(idv) ->Fill( secVtx_minP_sv,                 weight );
+	h_DV_maxd0             .at(ireg).at(idv) ->Fill( secVtx_maxd0,                   weight );
+	h_DV_maxz0             .at(ireg).at(idv) ->Fill( secVtx_maxz0,                   weight );
+	h_DV_maxP              .at(ireg).at(idv) ->Fill( secVtx_maxP,                    weight );
+	h_DV_maxd0_sv          .at(ireg).at(idv) ->Fill( secVtx_maxd0_sv,                weight );
+	h_DV_maxz0_sv          .at(ireg).at(idv) ->Fill( secVtx_maxz0_sv,                weight );
+	h_DV_maxP_sv           .at(ireg).at(idv) ->Fill( secVtx_maxP_sv,                 weight );
+	if ( m_histoInfoSwitch->m_vtxErrors ) {
+	  h_DV_sumErrd0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrd0),          weight );
+	  h_DV_sumErrz0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrz0),          weight );
+	  h_DV_sumErrP         .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrP),           weight );
+	  h_DV_sumSqrterrd0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrd0)),    weight );
+	  h_DV_sumSqrterrz0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrz0)),    weight );
+	  h_DV_sumSqrterrP     .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrP)),     weight );
+	  h_DV_sumFracerrd0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrd0),      weight );
+	  h_DV_sumFracerrz0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrz0),      weight );
+	  h_DV_sumFracerrP     .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrP),       weight );
+	  h_DV_sumSignifd0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifd0),       weight );
+	  h_DV_sumSignifz0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifz0),       weight );
+	  h_DV_sumSignifP      .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifP),        weight );
+	  h_DV_sumErrd0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrd0_sv),       weight );
+	  h_DV_sumErrz0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrz0_sv),       weight );
+	  h_DV_sumErrP_sv      .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumerrP_sv),        weight );
+	  h_DV_sumSqrterrd0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrd0_sv)), weight );
+	  h_DV_sumSqrterrz0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrz0_sv)), weight );
+	  h_DV_sumSqrterrP_sv  .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_sumerrP_sv)),  weight );
+	  h_DV_sumFracerrd0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrd0_sv),   weight );
+	  h_DV_sumFracerrz0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrz0_sv),   weight );
+	  h_DV_sumFracerrP_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumfracerrP_sv),    weight );
+	  h_DV_sumSignifd0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifd0_sv),    weight );
+	  h_DV_sumSignifz0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifz0_sv),    weight );
+	  h_DV_sumSignifP_sv   .at(ireg).at(idv) ->Fill( sqrt(secVtx_sumsignifP_sv),     weight );
 
-	h_DV_mind0           .at(ireg).at(idv) ->Fill( secVtx_mind0,                   weight );
-	h_DV_minz0           .at(ireg).at(idv) ->Fill( secVtx_minz0,                   weight );
-	h_DV_minP            .at(ireg).at(idv) ->Fill( secVtx_minP,                    weight );
-	h_DV_minErrd0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrd0),          weight );
-	h_DV_minErrz0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrz0),          weight );
-	h_DV_minErrP         .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrP),           weight );
-	h_DV_minSqrterrd0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrd0)),    weight );
-	h_DV_minSqrterrz0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrz0)),    weight );
-	h_DV_minSqrterrP     .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrP)),     weight );
-	h_DV_minFracerrd0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrd0),      weight );
-	h_DV_minFracerrz0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrz0),      weight );
-	h_DV_minFracerrP     .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrP),       weight );
-	h_DV_minSignifd0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifd0),       weight );
-	h_DV_minSignifz0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifz0),       weight );
-	h_DV_minSignifP      .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifP),        weight );
-	h_DV_mind0_sv        .at(ireg).at(idv) ->Fill( secVtx_mind0_sv,                weight );
-	h_DV_minz0_sv        .at(ireg).at(idv) ->Fill( secVtx_minz0_sv,                weight );
-	h_DV_minP_sv         .at(ireg).at(idv) ->Fill( secVtx_minP_sv,                 weight );
-	h_DV_minErrd0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrd0_sv),       weight );
-	h_DV_minErrz0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrz0_sv),       weight );
-	h_DV_minErrP_sv      .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrP_sv),        weight );
-	h_DV_minSqrterrd0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrd0_sv)), weight );
-	h_DV_minSqrterrz0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrz0_sv)), weight );
-	h_DV_minSqrterrP_sv  .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrP_sv)),  weight );
-	h_DV_minFracerrd0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrd0_sv),   weight );
-	h_DV_minFracerrz0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrz0_sv),   weight );
-	h_DV_minFracerrP_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrP_sv),    weight );
-	h_DV_minSignifd0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifd0_sv),    weight );
-	h_DV_minSignifz0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifz0_sv),    weight );
-	h_DV_minSignifP_sv   .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifP_sv),     weight );
+	  h_DV_minErrd0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrd0),          weight );
+	  h_DV_minErrz0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrz0),          weight );
+	  h_DV_minErrP         .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrP),           weight );
+	  h_DV_minSqrterrd0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrd0)),    weight );
+	  h_DV_minSqrterrz0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrz0)),    weight );
+	  h_DV_minSqrterrP     .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrP)),     weight );
+	  h_DV_minFracerrd0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrd0),      weight );
+	  h_DV_minFracerrz0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrz0),      weight );
+	  h_DV_minFracerrP     .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrP),       weight );
+	  h_DV_minSignifd0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifd0),       weight );
+	  h_DV_minSignifz0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifz0),       weight );
+	  h_DV_minSignifP      .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifP),        weight );
+	  h_DV_minErrd0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrd0_sv),       weight );
+	  h_DV_minErrz0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrz0_sv),       weight );
+	  h_DV_minErrP_sv      .at(ireg).at(idv) ->Fill( sqrt(secVtx_minerrP_sv),        weight );
+	  h_DV_minSqrterrd0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrd0_sv)), weight );
+	  h_DV_minSqrterrz0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrz0_sv)), weight );
+	  h_DV_minSqrterrP_sv  .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_minerrP_sv)),  weight );
+	  h_DV_minFracerrd0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrd0_sv),   weight );
+	  h_DV_minFracerrz0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrz0_sv),   weight );
+	  h_DV_minFracerrP_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_minfracerrP_sv),    weight );
+	  h_DV_minSignifd0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifd0_sv),    weight );
+	  h_DV_minSignifz0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifz0_sv),    weight );
+	  h_DV_minSignifP_sv   .at(ireg).at(idv) ->Fill( sqrt(secVtx_minsignifP_sv),     weight );
 
-	h_DV_maxd0           .at(ireg).at(idv) ->Fill( secVtx_maxd0,                   weight );
-	h_DV_maxz0           .at(ireg).at(idv) ->Fill( secVtx_maxz0,                   weight );
-	h_DV_maxP            .at(ireg).at(idv) ->Fill( secVtx_maxP,                    weight );
-	h_DV_maxErrd0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrd0),          weight );
-	h_DV_maxErrz0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrz0),          weight );
-	h_DV_maxErrP         .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrP),           weight );
-	h_DV_maxSqrterrd0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrd0)),    weight );
-	h_DV_maxSqrterrz0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrz0)),    weight );
-	h_DV_maxSqrterrP     .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrP)),     weight );
-	h_DV_maxFracerrd0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrd0),      weight );
-	h_DV_maxFracerrz0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrz0),      weight );
-	h_DV_maxFracerrP     .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrP),       weight );
-	h_DV_maxSignifd0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifd0),       weight );
-	h_DV_maxSignifz0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifz0),       weight );
-	h_DV_maxSignifP      .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifP),        weight );
-	h_DV_maxd0_sv        .at(ireg).at(idv) ->Fill( secVtx_maxd0_sv,                weight );
-	h_DV_maxz0_sv        .at(ireg).at(idv) ->Fill( secVtx_maxz0_sv,                weight );
-	h_DV_maxP_sv         .at(ireg).at(idv) ->Fill( secVtx_maxP_sv,                 weight );
-	h_DV_maxErrd0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrd0_sv),       weight );
-	h_DV_maxErrz0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrz0_sv),       weight );
-	h_DV_maxErrP_sv      .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrP_sv),        weight );
-	h_DV_maxSqrterrd0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrd0_sv)), weight );
-	h_DV_maxSqrterrz0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrz0_sv)), weight );
-	h_DV_maxSqrterrP_sv  .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrP_sv)),  weight );
-	h_DV_maxFracerrd0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrd0_sv),   weight );
-	h_DV_maxFracerrz0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrz0_sv),   weight );
-	h_DV_maxFracerrP_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrP_sv),    weight );
-	h_DV_maxSignifd0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifd0_sv),    weight );
-	h_DV_maxSignifz0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifz0_sv),    weight );
-	h_DV_maxSignifP_sv   .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifP_sv),     weight );
+	  h_DV_maxErrd0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrd0),          weight );
+	  h_DV_maxErrz0        .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrz0),          weight );
+	  h_DV_maxErrP         .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrP),           weight );
+	  h_DV_maxSqrterrd0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrd0)),    weight );
+	  h_DV_maxSqrterrz0    .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrz0)),    weight );
+	  h_DV_maxSqrterrP     .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrP)),     weight );
+	  h_DV_maxFracerrd0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrd0),      weight );
+	  h_DV_maxFracerrz0    .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrz0),      weight );
+	  h_DV_maxFracerrP     .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrP),       weight );
+	  h_DV_maxSignifd0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifd0),       weight );
+	  h_DV_maxSignifz0     .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifz0),       weight );
+	  h_DV_maxSignifP      .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifP),        weight );
+	  h_DV_maxErrd0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrd0_sv),       weight );
+	  h_DV_maxErrz0_sv     .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrz0_sv),       weight );
+	  h_DV_maxErrP_sv      .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxerrP_sv),        weight );
+	  h_DV_maxSqrterrd0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrd0_sv)), weight );
+	  h_DV_maxSqrterrz0_sv .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrz0_sv)), weight );
+	  h_DV_maxSqrterrP_sv  .at(ireg).at(idv) ->Fill( sqrt(sqrt(secVtx_maxerrP_sv)),  weight );
+	  h_DV_maxFracerrd0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrd0_sv),   weight );
+	  h_DV_maxFracerrz0_sv .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrz0_sv),   weight );
+	  h_DV_maxFracerrP_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxfracerrP_sv),    weight );
+	  h_DV_maxSignifd0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifd0_sv),    weight );
+	  h_DV_maxSignifz0_sv  .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifz0_sv),    weight );
+	  h_DV_maxSignifP_sv   .at(ireg).at(idv) ->Fill( sqrt(secVtx_maxsignifP_sv),     weight );
+	}
 
 	// 2d plots
-	h_DV_sumErrd0_r       .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_sumerrd0),          weight );
-	h_DV_sumErrz0_z       .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_sumerrz0),          weight );
-	h_DV_sumErrP_pt       .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_sumerrP),           weight );
-	h_DV_sumSqrterrd0_r   .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_sumerrd0)),    weight );
-	h_DV_sumSqrterrz0_z   .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_sumerrz0)),    weight );
-	h_DV_sumSqrterrP_pt   .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_sumerrP)),     weight );
-	h_DV_sumErrd0sv_r     .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_sumerrd0_sv),       weight );
-	h_DV_sumErrz0sv_z     .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_sumerrz0_sv),       weight );
-	h_DV_sumErrPsv_pt     .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_sumerrP_sv),        weight );
-	h_DV_sumSqrterrd0sv_r .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_sumerrd0_sv)), weight );
-	h_DV_sumSqrterrz0sv_z .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_sumerrz0_sv)), weight );
-	h_DV_sumSqrterrPsv_pt .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_sumerrP_sv)),  weight );
+	if ( m_histoInfoSwitch->m_vtx2D && m_histoInfoSwitch->m_vtxErrors ) {
+	  h_DV_sumErrd0_r       .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_sumerrd0),          weight );
+	  h_DV_sumErrz0_z       .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_sumerrz0),          weight );
+	  h_DV_sumErrP_pt       .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_sumerrP),           weight );
+	  h_DV_sumSqrterrd0_r   .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_sumerrd0)),    weight );
+	  h_DV_sumSqrterrz0_z   .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_sumerrz0)),    weight );
+	  h_DV_sumSqrterrP_pt   .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_sumerrP)),     weight );
+	  h_DV_sumErrd0sv_r     .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_sumerrd0_sv),       weight );
+	  h_DV_sumErrz0sv_z     .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_sumerrz0_sv),       weight );
+	  h_DV_sumErrPsv_pt     .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_sumerrP_sv),        weight );
+	  h_DV_sumSqrterrd0sv_r .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_sumerrd0_sv)), weight );
+	  h_DV_sumSqrterrz0sv_z .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_sumerrz0_sv)), weight );
+	  h_DV_sumSqrterrPsv_pt .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_sumerrP_sv)),  weight );
 
-	h_DV_minErrd0_r       .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_minerrd0),          weight );
-	h_DV_minErrz0_z       .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_minerrz0),          weight );
-	h_DV_minErrP_pt       .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_minerrP),           weight );
-	h_DV_minSqrterrd0_r   .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_minerrd0)),    weight );
-	h_DV_minSqrterrz0_z   .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_minerrz0)),    weight );
-	h_DV_minSqrterrP_pt   .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_minerrP)),     weight );
-	h_DV_minErrd0sv_r     .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_minerrd0_sv),       weight );
-	h_DV_minErrz0sv_z     .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_minerrz0_sv),       weight );
-	h_DV_minErrPsv_pt     .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_minerrP_sv),        weight );
-	h_DV_minSqrterrd0sv_r .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_minerrd0_sv)), weight );
-	h_DV_minSqrterrz0sv_z .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_minerrz0_sv)), weight );
-	h_DV_minSqrterrPsv_pt .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_minerrP_sv)),  weight );
+	  h_DV_minErrd0_r       .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_minerrd0),          weight );
+	  h_DV_minErrz0_z       .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_minerrz0),          weight );
+	  h_DV_minErrP_pt       .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_minerrP),           weight );
+	  h_DV_minSqrterrd0_r   .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_minerrd0)),    weight );
+	  h_DV_minSqrterrz0_z   .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_minerrz0)),    weight );
+	  h_DV_minSqrterrP_pt   .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_minerrP)),     weight );
+	  h_DV_minErrd0sv_r     .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_minerrd0_sv),       weight );
+	  h_DV_minErrz0sv_z     .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_minerrz0_sv),       weight );
+	  h_DV_minErrPsv_pt     .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_minerrP_sv),        weight );
+	  h_DV_minSqrterrd0sv_r .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_minerrd0_sv)), weight );
+	  h_DV_minSqrterrz0sv_z .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_minerrz0_sv)), weight );
+	  h_DV_minSqrterrPsv_pt .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_minerrP_sv)),  weight );
 
-	h_DV_maxErrd0_r       .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_maxerrd0),          weight );
-	h_DV_maxErrz0_z       .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_maxerrz0),          weight );
-	h_DV_maxErrP_pt       .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_maxerrP),           weight );
-	h_DV_maxSqrterrd0_r   .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_maxerrd0)),    weight );
-	h_DV_maxSqrterrz0_z   .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_maxerrz0)),    weight );
-	h_DV_maxSqrterrP_pt   .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_maxerrP)),     weight );
-	h_DV_maxErrd0sv_r     .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_maxerrd0_sv),       weight );
-	h_DV_maxErrz0sv_z     .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_maxerrz0_sv),       weight );
-	h_DV_maxErrPsv_pt     .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_maxerrP_sv),        weight );
-	h_DV_maxSqrterrd0sv_r .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_maxerrd0_sv)), weight );
-	h_DV_maxSqrterrz0sv_z .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_maxerrz0_sv)), weight );
-	h_DV_maxSqrterrPsv_pt .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_maxerrP_sv)),  weight );
+	  h_DV_maxErrd0_r       .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_maxerrd0),          weight );
+	  h_DV_maxErrz0_z       .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_maxerrz0),          weight );
+	  h_DV_maxErrP_pt       .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_maxerrP),           weight );
+	  h_DV_maxSqrterrd0_r   .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_maxerrd0)),    weight );
+	  h_DV_maxSqrterrz0_z   .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_maxerrz0)),    weight );
+	  h_DV_maxSqrterrP_pt   .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_maxerrP)),     weight );
+	  h_DV_maxErrd0sv_r     .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_maxerrd0_sv),       weight );
+	  h_DV_maxErrz0sv_z     .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_maxerrz0_sv),       weight );
+	  h_DV_maxErrPsv_pt     .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(secVtx_maxerrP_sv),        weight );
+	  h_DV_maxSqrterrd0sv_r .at(ireg).at(idv) ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_maxerrd0_sv)), weight );
+	  h_DV_maxSqrterrz0sv_z .at(ireg).at(idv) ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_maxerrz0_sv)), weight );
+	  h_DV_maxSqrterrPsv_pt .at(ireg).at(idv) ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_maxerrP_sv)),  weight );
+	}
 
 	// n-track vertices
 	if ( m_numVtxTrks ) {
-	  //int ntrk = secVtx_ntrk;
-	  //if ( ntrk >= m_numVtxTrks ) ntrk = m_numVtxTrks;
-	  //++n_ntrkDV.at(idv)[ntrk];
-	  h_ntrkDV_z               .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_z ->at(i),             weight );
-	  h_ntrkDV_z_s             .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_z ->at(i),             weight );
-	  h_ntrkDV_r               .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_r ->at(i),             weight );
-	  h_ntrkDV_r_s             .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_r ->at(i),             weight );
-	  h_ntrkDV_mass            .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_mass,                    weight );
-	  h_ntrkDV_mass_s          .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_mass,                    weight );
-	  h_ntrkDV_direction       .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_dir,                     weight );
-	  h_ntrkDV_minOpAng        .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_minOpAng,                weight );
-	  h_ntrkDV_maxOpAng        .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_maxOpAng,                weight );
-	  h_ntrkDV_chi2            .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_chi2 ->at(i),          weight );
-	  h_ntrkDV_chi2_s          .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_chi2 ->at(i),          weight );
-	  h_ntrkDV_sqrterrx        .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_errx)),        weight );
-	  h_ntrkDV_sqrterry        .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_erry)),        weight );
-	  h_ntrkDV_sqrterrz        .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_errz)),        weight );
-	  h_ntrkDV_sqrterrr        .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_errr)),        weight );
-	  h_ntrkDV_sqrterrphi      .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_errphi)),      weight );
-	  h_ntrkDV_sumSqrterrd0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrd0)),    weight );
-	  h_ntrkDV_sumSqrterrz0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrz0)),    weight );
-	  h_ntrkDV_sumSqrterrP     .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrP)),     weight );
-	  h_ntrkDV_sumSqrterrd0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrd0_sv)), weight );
-	  h_ntrkDV_sumSqrterrz0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrz0_sv)), weight );
-	  h_ntrkDV_sumSqrterrP_sv  .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrP_sv)),  weight );
-	  h_ntrkDV_minSqrterrd0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrd0)),    weight );
-	  h_ntrkDV_minSqrterrz0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrz0)),    weight );
-	  h_ntrkDV_minSqrterrP     .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrP)),     weight );
-	  h_ntrkDV_minSqrterrd0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrd0_sv)), weight );
-	  h_ntrkDV_minSqrterrz0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrz0_sv)), weight );
-	  h_ntrkDV_minSqrterrP_sv  .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrP_sv)),  weight );
-	  h_ntrkDV_maxSqrterrd0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrd0)),    weight );
-	  h_ntrkDV_maxSqrterrz0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrz0)),    weight );
-	  h_ntrkDV_maxSqrterrP     .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrP)),     weight );
-	  h_ntrkDV_maxSqrterrd0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrd0_sv)), weight );
-	  h_ntrkDV_maxSqrterrz0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrz0_sv)), weight );
-	  h_ntrkDV_maxSqrterrP_sv  .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrP_sv)),  weight );
+	  h_ntrkDV_z                 .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_z ->at(i),             weight );
+	  h_ntrkDV_z_s               .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_z ->at(i),             weight );
+	  h_ntrkDV_r                 .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_r ->at(i),             weight );
+	  h_ntrkDV_r_s               .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_r ->at(i),             weight );
+	  h_ntrkDV_mass              .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_mass,                    weight );
+	  h_ntrkDV_mass_s            .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_mass,                    weight );
+	  h_ntrkDV_mass_xs           .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_mass,                    weight );
+	  h_ntrkDV_direction         .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_dir,                     weight );
+	  h_ntrkDV_minOpAng          .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_minOpAng,                weight );
+	  h_ntrkDV_maxOpAng          .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_maxOpAng,                weight );
+	  h_ntrkDV_chi2              .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_chi2 ->at(i),          weight );
+	  h_ntrkDV_chi2_s            .at(ireg).at(idv).at(ntrk-2)->Fill( m_secVtx_chi2 ->at(i),          weight );
+	  h_ntrkDV_sumd0             .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_sumd0,                   weight );
+	  h_ntrkDV_sumz0             .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_sumz0,                   weight );
+	  h_ntrkDV_sumP              .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_sumP,                    weight );
+	  h_ntrkDV_sumd0_sv          .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_sumd0_sv,                weight );
+	  h_ntrkDV_sumd0_sv          .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_sumz0_sv,                weight );
+	  h_ntrkDV_sumP_sv           .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_sumP_sv,                 weight );
+	  h_ntrkDV_mind0             .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_mind0,                   weight );
+	  h_ntrkDV_minz0             .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_minz0,                   weight );
+	  h_ntrkDV_minP              .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_minP,                    weight );
+	  h_ntrkDV_mind0_sv          .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_mind0_sv,                weight );
+	  h_ntrkDV_minz0_sv          .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_minz0_sv,                weight );
+	  h_ntrkDV_minP_sv           .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_minP_sv,                 weight );
+	  h_ntrkDV_maxd0             .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_maxd0,                   weight );
+	  h_ntrkDV_maxz0             .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_maxz0,                   weight );
+	  h_ntrkDV_maxP              .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_maxP,                    weight );
+	  h_ntrkDV_maxd0_sv          .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_maxd0_sv,                weight );
+	  h_ntrkDV_maxz0_sv          .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_maxz0_sv,                weight );
+	  h_ntrkDV_maxP_sv           .at(ireg).at(idv).at(ntrk-2)->Fill( secVtx_maxP_sv,                 weight );
+	  if ( m_histoInfoSwitch->m_vtxErrors ) {
+	    h_ntrkDV_sqrterrx        .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_errx)),        weight );
+	    h_ntrkDV_sqrterry        .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_erry)),        weight );
+	    h_ntrkDV_sqrterrz        .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_errz)),        weight );
+	    h_ntrkDV_sqrterrr        .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_errr)),        weight );
+	    h_ntrkDV_sqrterrphi      .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_errphi)),      weight );
+	    h_ntrkDV_sumSqrterrd0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrd0)),    weight );
+	    h_ntrkDV_sumSqrterrz0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrz0)),    weight );
+	    h_ntrkDV_sumSqrterrP     .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrP)),     weight );
+	    h_ntrkDV_sumSqrterrd0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrd0_sv)), weight );
+	    h_ntrkDV_sumSqrterrz0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrz0_sv)), weight );
+	    h_ntrkDV_sumSqrterrP_sv  .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_sumerrP_sv)),  weight );
+	    h_ntrkDV_minSqrterrd0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrd0)),    weight );
+	    h_ntrkDV_minSqrterrz0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrz0)),    weight );
+	    h_ntrkDV_minSqrterrP     .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrP)),     weight );
+	    h_ntrkDV_minSqrterrd0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrd0_sv)), weight );
+	    h_ntrkDV_minSqrterrz0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrz0_sv)), weight );
+	    h_ntrkDV_minSqrterrP_sv  .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_minerrP_sv)),  weight );
+	    h_ntrkDV_maxSqrterrd0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrd0)),    weight );
+	    h_ntrkDV_maxSqrterrz0    .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrz0)),    weight );
+	    h_ntrkDV_maxSqrterrP     .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrP)),     weight );
+	    h_ntrkDV_maxSqrterrd0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrd0_sv)), weight );
+	    h_ntrkDV_maxSqrterrz0_sv .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrz0_sv)), weight );
+	    h_ntrkDV_maxSqrterrP_sv  .at(ireg).at(idv).at(ntrk-2)->Fill( sqrt(sqrt(secVtx_maxerrP_sv)),  weight );
+	  }
 	}
 	
       } // end loop over DV types

@@ -101,8 +101,11 @@ namespace EJsHelperClasses {
     bool m_byJetVerts;
     bool m_fiducialVerts;
     bool m_ksmVerts;
+    bool m_ptVerts;
     bool m_vtxTruth;
     bool m_vtxTrks;
+    bool m_vtxErrors;
+    bool m_vtx2D;
     bool m_llps;
     bool m_darkPions;
     bool m_kshorts;

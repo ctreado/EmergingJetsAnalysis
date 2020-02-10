@@ -466,6 +466,8 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_r_s;        //!
   std::vector<std::vector<TH1F*>> h_DV_phipos;     //!
   std::vector<std::vector<TH1F*>> h_DV_pt;         //!
+  std::vector<std::vector<TH1F*>> h_DV_pt_s;       //!
+  std::vector<std::vector<TH1F*>> h_DV_pt_xs;      //!
   std::vector<std::vector<TH1F*>> h_DV_eta;        //!
   std::vector<std::vector<TH1F*>> h_DV_phi;        //!
   std::vector<std::vector<TH1F*>> h_DV_mass;       //!
@@ -742,15 +744,30 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_r_s;             //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_mass;            //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_mass_s;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_mass_xs;         //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_direction;       //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minOpAng;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxOpAng;        //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_mind0;           //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxd0;           //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_mind0_sv;        //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxd0_sv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_chi2;            //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_chi2_s;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumd0;           //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumz0;           //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumP;            //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumd0_sv;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumz0_sv;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumP_sv;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_mind0;           //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minz0;           //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minP;            //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_mind0_sv;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minz0_sv;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minP_sv;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxd0;           //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxz0;           //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxP;            //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxd0_sv;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxz0_sv;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxP_sv;         //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sqrterrx;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sqrterry;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sqrterrz;        //!
