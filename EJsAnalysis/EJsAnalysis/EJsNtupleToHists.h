@@ -31,6 +31,9 @@ class EJsNtupleToHists : public xAH::Algorithm
   // regions to num over
   std::string m_regionName = "";
 
+  // dv type to use as base
+  std::string m_baseDVName = "bare";
+
   // input branch names
   std::string m_jetBranchName             = "";
   std::string m_otherJetBranchName        = "";
@@ -83,6 +86,8 @@ class EJsNtupleToHists : public xAH::Algorithm
  protected:
   std::vector<std::string>       m_regionNames; //!
   std::vector<EJsHelper::Region> m_regions;     //!
+
+  EJsHelper::BaseDV m_baseDV; //!
   
   EJsHistogramManager* m_plots = 0; //!
   

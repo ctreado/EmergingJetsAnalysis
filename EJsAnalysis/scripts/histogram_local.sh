@@ -32,8 +32,8 @@ intags_17="data17"
 input_bench="$EJ_PATH/../output/localOutput/tmp_search-minus-one/tree/"
 output_bench="$EJ_PATH/../output/localOutput/tmp_search-minus-one/"
 output_test="$EJ_PATH/../run/test.histos/"
-intags_04="312028"
-runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_04}   --mergeDatasets --renameAndMove
+intags_04="312008"
+runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_04}   --mergeDatasets --renameAndMove --nevents -1
 #runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_bench} --inTags ${intags_mc}   --mergeDatasets --renameAndMove
 #runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_bench} --inTags ${intags_17}   --mergeDatasets --renameAndMove
 

@@ -77,6 +77,19 @@ namespace EJsHelper {
   void fillRegion ( Region&, const std::string );
 
 
+  // --------------- dv type info --------------- //
+
+  // base dv enums
+  enum BaseDVType { BARE, CLEAN, FILTERED, TRIMMED };
+  // base dv structures
+  struct BaseDV {
+    std::string name;
+    BaseDVType  type;
+  };
+  // fills base dv structure info given input string
+  void fillBaseDV ( BaseDV&, const std::string );
+
+
   
   // --------------- truth helper functions (some taken from VsiPerf/VsiTruthHelper) --------------- //
 

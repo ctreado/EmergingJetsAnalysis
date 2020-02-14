@@ -48,16 +48,39 @@ namespace EJsHelper {
 
   // ------------------------------------------------------------------------------------------ //
 
-  void fillRegion ( Region& region, const std::string regionName )
+  void fillRegion ( Region& region, const std::string region_name )
   {
-    enum RegionType regionType = ALL;
+    std::string     regionName = region_name;
+    enum RegionType regionType;
     if      ( regionName == "search-minus-one" || regionName == "srch-1"   ) regionType = SEARCH_MINUS_ONE;
     else if ( regionName == "search"           || regionName == "srch"     ) regionType = SEARCH;
     else if ( regionName == "signal"           || regionName == "sgnl"     ) regionType = SIGNAL;
     else if ( regionName == "validation"       || regionName == "valid"    ) regionType = VALIDATION;
+    else {
+      regionName = "all";
+      regionType = ALL; // default
+    }
 
     region .name = regionName;
     region .type = regionType;
+  }
+
+  // ------------------------------------------------------------------------------------------ //
+
+  void fillBaseDV ( BaseDV& baseDV, const std::string baseDV_name )
+  {
+    std::string     baseDVName = baseDV_name;
+    enum BaseDVType baseDVType;
+    if      ( baseDVName == "clean"                            ) baseDVType = CLEAN;
+    else if ( baseDVName == "filtered" || baseDVName == "filt" ) baseDVType = FILTERED;
+    else if ( baseDVName == "trimmed"  || baseDVName == "trim" ) baseDVType = TRIMMED;
+    else {
+      baseDVName = "bare";
+      baseDVType = BARE; // default
+    }
+
+    baseDV .name = baseDVName;
+    baseDV .type = baseDVType;
   }
   
   // ------------------------------------------------------------------------------------------ //

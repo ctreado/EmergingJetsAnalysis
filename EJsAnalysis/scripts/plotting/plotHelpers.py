@@ -220,8 +220,10 @@ def getHists( sname, stype, flist, hlist, subdir, scaleData = False, metadir = N
     if scaleData and stype == sampleType.DATA:
         dataScale = getDataScale( data_initSumw, getDataNEvents( metadir ) )
         for hist in CombinedHists:
+            # skip metadata hists -- don't want them scaled...
+            if "MetaData" in hist.GetName(): continue
             hist.Scale( dataScale )
-
+    
     # add overflow/underflow
 
     # save
@@ -434,7 +436,7 @@ def getMaxBinContent( hist ):
 
 
 ## --- SET X-AXIS TITLE --- ##
-def setXaxisTitle( hist, doMulti = False, hvar = histVarType.DV ):
+def setXaxisTitle( hist, doMulti = False, hvar = histVarType.DV, doSOverB = False ):
     xtitle = hist.GetXaxis().GetTitle()
 
     if doMulti:
@@ -489,6 +491,9 @@ def setXaxisTitle( hist, doMulti = False, hvar = histVarType.DV ):
                     title += " "
                 title += "unmatched"
             xtitle = title + " " + xtitle
+
+    if doSOverB:
+        xtitle += " (S/B)"
 
     return xtitle
 
@@ -550,28 +555,25 @@ def getDataScale( nSub, nTot ):
 
 
 ## --- GET TOTAL N-EVENTS FOR FULL RUN2 DATA --- ##
-def getDataNEvents( metadir = None, useInit = True ):
-    
-    # --> from COMA period stream reports -- maybe overcounting bad-physics events?
-    n18 = 6400342575
-    n17 = 5649254354
-    n16 = 5387156693
-    n15 = 1694552005
-    nCOMA = n18 + n17 + n16 + n15
+def getDataNEvents( metadir = None ):
 
     # --> from total number of initial sum of weights in all data samples -- maybe only includes events passing filter?
     nInit = 0
+    nSel  = 0
     if metadir:
         for item in os.listdir( metadir ):
-            f = ROOT.TFile.Open( os.path.join( metadir, item ), "READ" ) # --> add error handling; don't crash if file can't be opened
+            # --> add error handling; don't crash if file can't be opened
+            f = ROOT.TFile.Open( os.path.join( metadir, item ), "READ" ) 
             for key in f.GetListOfKeys():
                 if "MetaData_EventCount" in key.GetName():
                     h = f.Get( key.GetName() )
                     nInit += h.GetBinContent(3)
+                    nSel  += h.GetBinContent(4)
 
-    # add argument to choose nCOMA or nInit --> nInit ~ 1/3 nCOMA ... which is right ???
-    if useInit and nInit: n = nInit
-    else:                 n = nCOMA
+    # not sure what we're supposed to scale to -- nInit (unskimmed daod_rpvll)? nSel (skimmed daod_exot23)?
+    # --> shouldn't matter if we use nInit or nSel, since we'll use same count in numerator, so scale will be the same...
+    n = nInit
+    print n
 
     return n
 

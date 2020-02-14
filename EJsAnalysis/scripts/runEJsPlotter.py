@@ -108,10 +108,10 @@ def main():
 
 
     ## multi-hist 1d plots (comparing different histos over SAME sample) ##
-    Ntrk = 5
-    histList_multi  = "''"
+    Ntrk = 3 # 5
+    histList_multi  = ""
     command_multi   = []
-    command_multi1d = " --drawMulti1D --outSubdir multi --legLenEnum 5 --lxint 0.007 --lyint 0.027 --histList " + histList_multi
+    command_multi1d = " --drawMulti1D --outSubdir multi --legLenEnum 5 --lxint 0.007 --lyint 0.027"
     # --> different DV types against each other
     histVars, outNames = [], []
     histVars.append( "darkPionDV,kshortDV,nomatchDV"                            )
@@ -127,7 +127,10 @@ def main():
     for iVar, var in enumerate( histVars ):
         if iVar: lxl = "0.500"
         else:    lxl = "0.600"
-        command_multi.append( command_multi1d + " --histVars " + var + " --outName " + outNames[iVar] + " --lxl " + lxl )
+        histList = var
+        if histList_multi: histList += "," + histList_multi
+        command_multi.append( command_multi1d + " --histVars " + var + " --outName " + outNames[iVar] + \
+                                  " --lxl " + lxl + " --histList " + histList )
         # n-trk DVs
         for itrk in range( 2, Ntrk+1 ):
             ntrk = str(itrk) + "trk"
@@ -164,27 +167,91 @@ def main():
 
 
     ## multi-hist, multi-sample 1d plots (comparing different histos over DIFFERENT sample) ##
-    histList_multismpl  = "'pt_s,pt_xs'"
+    histList_multismpl  = "_n=_pt=_mass=_r=_z=d0=z0"
     command_multismpl   = []
-    command_multismpl1d = " --drawMulti1D --doMultiSmpl --outSubdir multismpl" + \
-      " --legLenEnum 3 --lxint 0.007 --lyint 0.027 --histList " + histList_multismpl
+    command_multismpl1d = " --drawMulti1D --doMultiSmpl --drawSOverB --outSubdir multismpl" + \
+      " --legLenEnum 3 --lxint 0.007 --lyint 0.027"
     outName = []
     # --> different DV types across different samples against each other
     hvars, httls = [], []
-    hvars.append( "darkPionDV,bareDV"               )
-    hvars.append( "byJetDarkPionDV,byJetDV"         )
-    hvars.append( "byLeadJetDarkPionDV,byLeadJetDV" )
-    hvars.append( "fiducialDarkPionDV,fiducialDV"   )
-    httls.append( "'matched signal vs all background'"                       )
-    httls.append( "'by-jet matched signal vs by-jet background'"             )
-    httls.append( "'by-lead-jet matched signal vs by-lead-jet background'"   )
-    httls.append( "'fiducial-cut matched signal vs fiducial-cut background'" )
+    #hvars.append( "darkPionDV,bareDV"                               )
+    #hvars.append( "byJetDarkPionDV,byJetDV"                         )
+    #hvars.append( "byLeadJetDarkPionDV,byLeadJetDV"                 )
+    #hvars.append( "fiducialDarkPionDV,fiducialDV"                   )
+    #hvars.append( "ksmDarkPionDV,ksmDV"                             )
+    #hvars.append( "ptDarkPionDV,ptDV"                               )
+    hvars.append( "mind01DarkPionDV,mind01DV"                       )
+    hvars.append( "mind05DarkPionDV,mind05DV"                       )
+    hvars.append( "mind010DarkPionDV,mind010DV"                     )
+    hvars.append( "minz0DarkPionDV,minz0DV"                         )
+    hvars.append( "minsqerrd05DarkPionDV,minsqerrd05DV"             )
+    hvars.append( "minsqerrd08DarkPionDV,minsqerrd08DV"             )
+    hvars.append( "minsqerrd010DarkPionDV,minsqerrd010DV"           )
+    hvars.append( "minsqerrz015DarkPionDV,minsqerrz015DV"           )
+    hvars.append( "minsqerrz020DarkPionDV,minsqerrz020DV"           )
+    #hvars.append( "byJetFiducialDarkPionDV,byJetFiducialDV"         )
+    #hvars.append( "byLeadJetFiducialDarkPionDV,byLeadJetFiducialDV" )
+    #hvars.append( "byJetKsmDarkPionDV,byJetKsmDV"                   )
+    #hvars.append( "byLeadJetKsmDarkPionDV,byLeadJetKsmDV"           )
+    hvars.append( "byJetPtDarkPionDV,byJetPtDV"                     )
+    hvars.append( "byLeadJetPtDarkPionDV,byLeadJetPtDV"             )
+    hvars.append( "byJetMind01DarkPionDV,byJetMind01DV"             )
+    hvars.append( "byLeadJetMind01DarkPionDV,byLeadJetMind01DV"     )
+    hvars.append( "byJetMind05DarkPionDV,byJetMind05DV"             )
+    hvars.append( "byLeadJetMind05DarkPionDV,byLeadJetMind05DV"     )
+    hvars.append( "byJetMind010DarkPionDV,byJetMind010DV"           )
+    hvars.append( "byLeadJetMind010DarkPionDV,byLeadJetMind010DV"   )
+    hvars.append( "byJetMinz0DarkPionDV,byJetMinz0DV"               )
+    hvars.append( "byLeadJetMinz0DarkPionDV,byLeadJetMinz0DV"       )
+    #hvars.append( "fiducKsmDarkPionDV,fiducKsmDV"                   )
+    #hvars.append( "byJetFiducKsmDarkPionDV,byJetFiducKsmDV"         )
+    #hvars.append( "byLeadJetFiducKsmDarkPionDV,byLeadJetFiducKsmDV" )
+    #httls.append( "'matched signal vs all background'"                                                         )
+    #httls.append( "'by-jet matched signal vs by-jet background'"                                               )
+    #httls.append( "'by-lead-jet matched signal vs by-lead-jet background'"                                     )
+    #httls.append( "'fiducial-cut matched signal vs fiducial-cut background'"                                   )
+    #httls.append( "'k-short-mass-cut matched signal vs k-short-mass-cut background'"                           )
+    #httls.append( "'low-pt-cut matched signal vs low-pt-cut background'"                                       )
+    httls.append( "'mind0-10-cut matched signal vs mind0-10-cut background'"                                   )
+    httls.append( "'mind0-50-cut matched signal vs mind0-50-cut background'"                                   )
+    httls.append( "'mind0-100-cut matched signal vs mind0-100-cut background'"                                 )
+    httls.append( "'minz0-cut matched signal vs minz0-cut background'"                                         )
+    httls.append( "'min-sqrterr-d0-0.5-cut matched signal vs min-sqrterr-d0-0.5-cut background'"               )
+    httls.append( "'min-sqrterr-d0-0.8-cut matched signal vs min-sqrterr-d0-0.8-cut background'"               )
+    httls.append( "'min-sqrterr-d0-1.0-cut matched signal vs min-sqrterr-d0-1.0-cut background'"               )
+    httls.append( "'min-sqrterr-z0-1.5-cut matched signal vs min-sqrterr-z0-1.5-cut background'"               )
+    httls.append( "'min-sqrterr-z0-2.0-cut matched signal vs min-sqrterr-z0-2.5-cut background'"               )
+    #httls.append( "'by-jet fiducial-cut matched signal vs by-jet fiducial-cut background'"                     )
+    #httls.append( "'by-lead-jet fiducial-cut matched signal vs by-lead-jet fiducial-cut background'"           )
+    #httls.append( "'by-jet ksm-cut matched signal vs by-jet ksm-cut background'"                               )
+    #httls.append( "'by-lead-jet ksm-cut matched signal vs by-lead-jet ksm-cut background'"                     )
+    httls.append( "'by-jet pt-cut matched signal vs by-jet pt-cut background'"                                 )
+    httls.append( "'by-lead-jet pt-cut matched signal vs by-lead-jet pt-cut background'"                       )
+    httls.append( "'by-jet mind0-10-cut matched signal vs by-jet mind0-10-cut background'"                     )
+    httls.append( "'by-lead-jet mind0-10-cut matched signal vs by-lead-jet mind0-10-cut background'"           )
+    httls.append( "'by-jet mind0-50-cut matched signal vs by-jet mind0-50-cut background'"                     )
+    httls.append( "'by-lead-jet mind0-50-cut matched signal vs by-lead-jet mind0-50-cut background'"           )
+    httls.append( "'by-jet mind0-100-cut matched signal vs by-jet mind0-100-cut background'"                   )
+    httls.append( "'by-lead-jet mind0-100-cut matched signal vs by-lead-jet mind0-100-cut background'"         )
+    httls.append( "'by-jet minz0-cut matched signal vs by-jet minz0-cut background'"                           )
+    httls.append( "'by-lead-jet minz0-cut matched signal vs by-lead-jet minz0-cut background'"                 )
+    #httls.append( "'fiducial- + ksm-cut matched signal vs fiducial- + ksm-cut background'"                     )
+    #httls.append( "'by-jet fiduc.- + ksm-cut matched signal vs by-jet fiduc.- + ksm-cut background'"           )
+    #httls.append( "'by-lead-jet fiduc.- + ksm-cut matched signal vs by-lead-jet fiduc.- + ksm-cut background'" )
     # old ex: hvars = "darkPionDV,nomatchDV,bareDV"; sbdVars = "darkPionDV,nomatchDV:darkPionDV,bareDV"; httls = "'nomatch:bare'"
     for iVar, var in enumerate( hvars ):
         if iVar: lxl = "0.500"
         else:    lxl = "0.600"
+        histList = var
+        if histList_multismpl:
+            hlist = histList.split(',')
+            histList = ""
+            for hl in hlist:
+                hl += "+" + histList_multismpl
+                histList += hl + ","
+            if histList.endswith(','): histList = histList[:-1]
         command_multismpl.append( command_multismpl1d + " --histVars " + var + " --sbdVars " + var + \
-                                      " --histTitle " + httls[iVar] + " --lxl " + lxl )
+                                      " --histList " + histList + " --histTitle " + httls[iVar] + " --lxl " + lxl )
         outName.append( "" )
         for itrk in range( 2, Ntrk+1 ):
             ntrk = str(itrk) + "trk"
@@ -193,9 +260,9 @@ def main():
                 ntrkvar += ntrk + v + ","
             if ntrkvar.endswith(','):
                 ntrkvar = ntrkvar[:-1]
-            command_multismpl.append( command_multismpl1d + " --histVars " + ntrkvar + " --sbdVars " + var + \
-                                          " --histTitle " + httls[iVar] + " --lxl " + lxl )
-            outName.append( ntrk )
+            #command_multismpl.append( command_multismpl1d + " --histVars " + ntrkvar + " --sbdVars " + var + \
+            #                              " --histList " + histList + " --histTitle " + httls[iVar] + " --lxl " + lxl )
+            #outName.append( ntrk )
     command_sb_14_multismpl_S1, command_sb_10_multismpl_S1, command_sb_06_multismpl_S1 = [], [], []
     command_sb_14_multismpl_S,  command_sb_10_multismpl_S,  command_sb_06_multismpl_S  = [], [], []
     for iC, command in enumerate( command_multismpl ):
@@ -206,7 +273,9 @@ def main():
         command_sb_10_multismpl_S .append( command_sb_10 + "." + outName[iC] + command + command_S  )
         command_sb_06_multismpl_S .append( command_sb_06 + "." + outName[iC] + command + command_S  )
 
-    
+    #os.system( command_sb_10 + " --drawSOverB --doMultiSmpl --outSubdir multismpl_soverb" + \
+    #               " --legLenEnum 3 --lxint 0.007 --lyint 0.027 --histList 'darkPionDV,bareDV' --histVars 'darkPionDV,bareDV'" + \
+    #               " --sbdVars 'darkPionDV,bareDV' --histTitle 'matched signal vs all background' --lxl 0.500" + command_S1 )
 
     
     ## --- run plotting jobs --- ##
@@ -221,8 +290,8 @@ def main():
     ## --> xdm-600
     #os.system( command_sb_06_1d_S  )
     #os.system( command_sb_06_1d_S1 )
-    # 1d: background vs data
-    os.system( command_bd_1d_V     )
+    ## 1d: background vs data
+    #os.system( command_bd_1d_V     )
 
     ## multi 1d
     #for cm_sS1 in command_s_multi_S1:

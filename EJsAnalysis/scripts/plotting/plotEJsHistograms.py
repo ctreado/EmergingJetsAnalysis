@@ -91,6 +91,7 @@ parser.add_argument( "--draw1D", dest = "draw1D", action = "store_true", default
 parser.add_argument( "--draw2D", dest = "draw2D", action = "store_true", default = False, help = "Draw individual 2D plots." )
 parser.add_argument( "--drawMulti1D", dest = "drawMulti1D", action = "store_true", default = False,
                          help = "Draw 1D multivariate stack plots over multiple variables." )
+parser.add_argument( "--drawSOverB", dest = "drawSOverB", action = "store_true", default = False, help = "Draw S/B plots." )
 parser.add_argument( "--drawOpt1D", dest = "drawOpt1D", default = "nostack hist", help = "Draw option(s) for 1D stack plots." )
 parser.add_argument( "--drawOpt2D", dest = "drawOpt2D", default = "colz", help = "Draw option(s) for 2D plots." )
 parser.add_argument( "--drawOptMulti1D", dest = "drawOptMulti1D", default = "nostack hist",
@@ -253,13 +254,21 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, histNames, hists ):
                         he = (iS+1)* len( args.histVars.split(',') )
                         plotMulti1D( hists[hb:he], base, sample, sampleTypes[iS], sampleDicts[iS] )
                         plotMulti1D( hists[hb:he], base, sample, sampleTypes[iS], sampleDicts[iS], True ) # log-y
-                # draw 1D multi-variate stack plots from DIFFERENT samples (multiplee histos, multiple samples per plot)
+                # draw 1D multi-variate stack plots from DIFFERENT samples (multiple histos, multiple samples per plot)
                 elif args.doMultiSmpl:
                     for iSBD, sbd in enumerate( args.sbdVars.split(':') ):
                         htitle = args.histTitle.split(':')[iSBD]
                         plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle )
                         plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, True ) # log-y
-                    
+                        # do s/b plots --> EVENTUALLY WANT TO CHANGE TO GENERAL 'doRatio' WITH CONFIGURABLE ENUM FOR RATIO TYPE AND 
+                        if args.drawSOverB:
+                            if hists[0].GetName().split('_')[-1] == "n": # can make this configurable if we want to look at other variables...
+                                #plotSOverB( hists, sampleTypes )
+                                plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, False, True )
+                                plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, True,  True ) # log-y
+                                plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, False, True, False ) # unnorm
+                                plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, True,  True, False ) # log-y unnorm
+                        # --> eventually want to add "doRatio" option to other plotting functions...
                 
 
 
@@ -432,6 +441,7 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
         maxy = hist.GetMaximum()
         if doLogy: maxy *= 4
         else:      maxy *= 1.2
+        hist.SetMaximum( maxy )
 
         # add legend entry
         l.AddEntry( hist, plotHelpers.setMultiLegStr( hist.GetName().split('_')[1],
@@ -491,8 +501,18 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
 
 
 ## --- DRAW 1D MULTI-VARIATE - MULTI-SAMPLE STACK PLOTS --- ##
-def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle, doLogy = False ):
+def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle, doLogy = False, doSOverB = False, doNorm = True ):
 
+    iBkgd  = -1
+    isbd_b = -1
+    for iS, stype in enumerate( sampleTypes ):
+        if stype == plotHelpers.sampleType.BKGD:
+            iBkgd = iS
+            for iSBD, sbd in enumerate( sbdVars.split(',') ):
+                if stype == iSBD+1:
+                    for ihv, hvar in enumerate( args.histVars.split(',') ):
+                        if sbd == hvar: isbd_b = ihv
+    
     # build list of booleans to configure legend based on samples of desired type
     doPlotTypes = []
     for stype in sampleTypes:
@@ -501,6 +521,8 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
         for iSBD, sbd in enumerate( sbdVars.split(',') ):
             if stype == iSBD+1:
                 doPlotType = True
+        if doSOverB and stype == plotHelpers.sampleType.BKGD:
+            doPlotType = False
         doPlotTypes.append( doPlotType )
 
     # set canvas
@@ -533,14 +555,30 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
         hist.SetLineStyle( lstyle )
         hist.SetLineWidth( plotHelpers.setLineWidth( lstyle ) )
 
+        # divide by background for S/B plots
+        if doSOverB and iBkgd >= 0:
+            bkgdHist = hists[iBkgd*len(args.histVars.split(','))+isbd_b]
+            if hist != bkgdHist: # don't divide background histogram
+                hist.Divide( hist, bkgdHist )
+                print hist.GetBinContent(1)
+
         # normalize
-        if hist.Integral():
+        if doNorm and hist.Integral():
             hist.Scale( 1 / hist.Integral() )
+
+        # skip background histograms for S/B plots
+        if doSOverB and iH/len(args.histVars.split(',')) == iBkgd:
+            continue
 
         # set maximum
         maxy = hist.GetMaximum()
-        if doLogy: maxy *= 4
-        else:      maxy *= 1.2
+        if doLogy:
+            if doSOverB: maxy *= 100 # modify
+            else:        maxy *= 4
+        else:
+            if doSOverB: maxy *= 1.3
+            else:        maxy *= 1.2
+        hist.SetMaximum( maxy )
 
         # add legend entry
         l.AddEntry( hist, plotHelpers.setMultiLegStr( hist.GetName().split('_')[1],
@@ -561,11 +599,12 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
     l.Draw()
 
     # set titles and axes
-    hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist, True, varType( args.varEnum ).value ) )
+    hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist, True, varType( args.varEnum ).value, doSOverB ) )
     hs.GetXaxis().SetTitleSize( 0.03  )
     hs.GetXaxis().SetTitleOffset( 1.4 )
 
     # add text
+    if doSOverB: htitle += " (S/B)"
     text = plotHelpers.configText( htitle, args.regionDir )
     for txt in text:
         txt.Draw("same")
@@ -581,10 +620,13 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
     for sbd in sbdVars.split(','):
         if sbd: bname += sbd + "."
     baseName = bname + baseName
+    if doSOverB: baseName += "-SOverB"
     cname = "multismpl1d." + baseName + "." + rOutName
     if doLogy:
         ROOT.gPad.SetLogy()
         cname += "_logy"
+    if not doNorm:
+        cname += "_unnorm"
     # --> set output directory
     poutDir = os.path.join( outDir, rOutName )
     coutDir = os.path.join( poutDir, outName + bname + args.regionDir )
@@ -598,9 +640,7 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
     c.Clear()
     c.Close()
     del c
-    
-        
-    
+
 
 
 

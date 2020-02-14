@@ -109,6 +109,10 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
     m_regions.push_back( region );
   }
 
+  // get base DV type
+  //EJsHelper::BaseDV baseDV;
+  EJsHelper::fillBaseDV( m_baseDV, m_baseDVName );
+
   if ( m_jetHistoName      .empty() ) m_jetHistoName      = m_jetBranchName;
   if ( m_otherJetHistoName .empty() ) m_otherJetHistoName = m_otherJetBranchName;
   
@@ -121,7 +125,7 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   
   // declare histogram manager class + add histograms to ouput
   m_plots = new EJsHistogramManager ( m_name, m_detailStr, m_jetStr, m_metadata, m_lumi, m_debug, m_isMC, m_unblind );
-  ANA_CHECK( m_plots ->initialize( outFileName, m_regions, m_jetHistoName ) );
+  ANA_CHECK( m_plots ->initialize( outFileName, m_regions, m_jetHistoName, m_baseDV ) );
   m_plots->record( wk() );
 
   return EL::StatusCode::SUCCESS;
@@ -218,7 +222,7 @@ EL::StatusCode EJsNtupleToHists :: execute ()
   ANA_MSG_DEBUG( "Executing EJsNtupleToHists algorithm" );
 
   TTree* tree = wk()->tree();
-  ANA_CHECK( m_plots ->execute( tree, wk()->treeEntry(), m_regions ) );
+  ANA_CHECK( m_plots ->execute( tree, wk()->treeEntry(), m_regions, m_baseDV ) );
 
   return EL::StatusCode::SUCCESS;
 }

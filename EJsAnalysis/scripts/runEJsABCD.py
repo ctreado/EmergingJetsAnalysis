@@ -16,7 +16,7 @@ def main():
 
     ## --- initialize commands --- ##
     # --> change when needed
-    inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-01_n1/EJsNtupToHistOutput/"
+    inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-01_n1/tmp_hists/"
     pscript = os.getenv('EJ_PATH') + "/EJsAnalysis/scripts/plotting/plotEJsABCD.py"
     command = "python " + pscript + " --inDir " + inDir
 
@@ -59,13 +59,20 @@ def main():
     command_sbd_de06  = command_sbd
     command_sbd_de06 += " --sgnlType 312067,312090"
     command_sbd_de06 += " --outSgnlName ModDE_Xdm06"
-    # --> all (don't plot, just run calculations) ...
+    # --> Xdm-1000; no plots
+    command_sbd_10    = command_sbd
+    command_sbd_10   += " --sgnlType 312008,312028,312046,312066,312080"
+    command_sbd_10   += " --outName Xdm10"
+    # --> all; no plots
+    command_sbd_all   = command_sbd
+    command_sbd_all  += " --sgnlType 312004,312008,312017,312022,312028,312031,312039,312046,312052,312060,312066,312067,312075,312080,312090"
+    command_sbd_all  += " --outName all"
 
 
     ## --- update commands --- ##
     # abcd plots
-    #command_abcd = " --drawABCD"
-    command_abcd = ""
+    command_abcd    = " --doABCD --drawABCD"
+    command_abcd_np = " --doABCD"
     # --> Models A and B; Xdm-1400
     command_sbd_ab14 += command_abcd
     # --> Models A and B; Xdm-1000
@@ -84,6 +91,10 @@ def main():
     command_sbd_de10 += command_abcd
     # --> Models D and E; Xdm-600
     command_sbd_de06 += command_abcd
+    # --> Xdm-1000; no plots
+    command_sbd_10   += command_abcd_np
+    # --> all; no plots
+    command_sbd_all  += command_abcd_np
 
 
     
@@ -91,9 +102,9 @@ def main():
     # signal vs background
     ## --> Models A and B; Xdm-1400
     #os.system( command_sbd_ab14 )
-    # --> Models A and B; Xdm-1000
-    os.system( command_sbd_ab10 + " --doABCD" )
-    ## --> Models A and B; Xdm-700
+    ## --> Models A and B; Xdm-1000
+    #os.system( command_sbd_ab10 )
+    ## --> Models A and B; Xdm-600
     #os.system( command_sbd_ab06 )
     ## --> Model C; Xdm-1400
     #os.system( command_sbd_c14  )
@@ -107,6 +118,10 @@ def main():
     #os.system( command_sbd_de10 )
     ## --> Models D and E; Xdm-600
     #os.system( command_sbd_de06 )
+    ## --> Xdm-1000; no plots
+    #os.system( command_sbd_10   )
+    # --> all; no plots
+    os.system( command_sbd_all  )
 
 
     

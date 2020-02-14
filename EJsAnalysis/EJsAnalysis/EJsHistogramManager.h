@@ -40,8 +40,9 @@ class EJsHistogramManager : public HistogramManager
   StatusCode connectTruthVerts     ( TTree* tree, const std::string& truthVtxName  = "truthVtx"  );
 
   StatusCode initialize ( const std::string& outFileName,  const std::vector<EJsHelper::Region>& regions,
-			  const std::string& jetHistName );
-  StatusCode execute    ( TTree* tree, Long64_t treeEntry, const std::vector<EJsHelper::Region>& regions );
+			  const std::string& jetHistName,  const EJsHelper::BaseDV& base_dv );
+  StatusCode execute    ( TTree* tree, Long64_t treeEntry, const std::vector<EJsHelper::Region>& regions,
+			  const EJsHelper::BaseDV& base_dv );
   StatusCode finalize   ( const std::vector<EJsHelper::Region>& regions );
 
   using HistogramManager::book;       // overload
@@ -508,6 +509,8 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_signifz;    //!
   std::vector<std::vector<TH1F*>> h_DV_signifr;    //!
   std::vector<std::vector<TH1F*>> h_DV_signifphi;  //!
+  std::vector<std::vector<TH1F*>> h_DV_jetDR;      //!
+  std::vector<std::vector<TH1F*>> h_DV_leadJetDR;  //!
   // --> for truth-matched DVs, look at match score, distance to truth, visible mass/mult fraction, etc; make 2d plots
   // tracks
   // --> track parameters wrt PV
@@ -559,6 +562,9 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_sumd0;           //!
   std::vector<std::vector<TH1F*>> h_DV_sumz0;           //!
   std::vector<std::vector<TH1F*>> h_DV_sumP;            //!
+  std::vector<std::vector<TH1F*>> h_DV_sumsqrtd0;       //!
+  std::vector<std::vector<TH1F*>> h_DV_sumsqrtz0;       //!
+  std::vector<std::vector<TH1F*>> h_DV_sumsqrtP;        //!
   std::vector<std::vector<TH1F*>> h_DV_sumErrd0;        //!
   std::vector<std::vector<TH1F*>> h_DV_sumErrz0;        //!
   std::vector<std::vector<TH1F*>> h_DV_sumErrP;         //!
@@ -574,6 +580,9 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_sumd0_sv;        //!
   std::vector<std::vector<TH1F*>> h_DV_sumz0_sv;        //!
   std::vector<std::vector<TH1F*>> h_DV_sumP_sv;         //!
+  std::vector<std::vector<TH1F*>> h_DV_sumsqrtd0_sv;    //!
+  std::vector<std::vector<TH1F*>> h_DV_sumsqrtz0_sv;    //!
+  std::vector<std::vector<TH1F*>> h_DV_sumsqrtP_sv;     //!
   std::vector<std::vector<TH1F*>> h_DV_sumErrd0_sv;     //!
   std::vector<std::vector<TH1F*>> h_DV_sumErrz0_sv;     //!
   std::vector<std::vector<TH1F*>> h_DV_sumErrP_sv;      //!
@@ -590,6 +599,9 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_mind0;           //!
   std::vector<std::vector<TH1F*>> h_DV_minz0;           //!
   std::vector<std::vector<TH1F*>> h_DV_minP;            //!
+  std::vector<std::vector<TH1F*>> h_DV_minsqrtd0;       //!
+  std::vector<std::vector<TH1F*>> h_DV_minsqrtz0;       //!
+  std::vector<std::vector<TH1F*>> h_DV_minsqrtP;        //!
   std::vector<std::vector<TH1F*>> h_DV_minErrd0;        //!
   std::vector<std::vector<TH1F*>> h_DV_minErrz0;        //!
   std::vector<std::vector<TH1F*>> h_DV_minErrP;         //!
@@ -605,6 +617,9 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_mind0_sv;        //!
   std::vector<std::vector<TH1F*>> h_DV_minz0_sv;        //!
   std::vector<std::vector<TH1F*>> h_DV_minP_sv;         //!
+  std::vector<std::vector<TH1F*>> h_DV_minsqrtd0_sv;    //!
+  std::vector<std::vector<TH1F*>> h_DV_minsqrtz0_sv;    //!
+  std::vector<std::vector<TH1F*>> h_DV_minsqrtP_sv;     //!
   std::vector<std::vector<TH1F*>> h_DV_minErrd0_sv;     //!
   std::vector<std::vector<TH1F*>> h_DV_minErrz0_sv;     //!
   std::vector<std::vector<TH1F*>> h_DV_minErrP_sv;      //!
@@ -621,6 +636,9 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_maxd0;           //!
   std::vector<std::vector<TH1F*>> h_DV_maxz0;           //!
   std::vector<std::vector<TH1F*>> h_DV_maxP;            //!
+  std::vector<std::vector<TH1F*>> h_DV_maxsqrtd0;       //!
+  std::vector<std::vector<TH1F*>> h_DV_maxsqrtz0;       //!
+  std::vector<std::vector<TH1F*>> h_DV_maxsqrtP;        //!
   std::vector<std::vector<TH1F*>> h_DV_maxErrd0;        //!
   std::vector<std::vector<TH1F*>> h_DV_maxErrz0;        //!
   std::vector<std::vector<TH1F*>> h_DV_maxErrP;         //!
@@ -636,6 +654,9 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_maxd0_sv;        //!
   std::vector<std::vector<TH1F*>> h_DV_maxz0_sv;        //!
   std::vector<std::vector<TH1F*>> h_DV_maxP_sv;         //!
+  std::vector<std::vector<TH1F*>> h_DV_maxsqrtd0_sv;    //!
+  std::vector<std::vector<TH1F*>> h_DV_maxsqrtz0_sv;    //!
+  std::vector<std::vector<TH1F*>> h_DV_maxsqrtP_sv;     //!
   std::vector<std::vector<TH1F*>> h_DV_maxErrd0_sv;     //!
   std::vector<std::vector<TH1F*>> h_DV_maxErrz0_sv;     //!
   std::vector<std::vector<TH1F*>> h_DV_maxErrP_sv;      //!
@@ -756,18 +777,36 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumd0_sv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumz0_sv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumP_sv;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumsqrtd0;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumsqrtz0;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumsqrtP;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumsqrtd0_sv;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumsqrtz0_sv;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sumsqrtP_sv;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_mind0;           //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minz0;           //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minP;            //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_mind0_sv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minz0_sv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minP_sv;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minsqrtd0;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minsqrtz0;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minsqrtP;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minsqrtd0_sv;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minsqrtz0_sv;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_minsqrtP_sv;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxd0;           //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxz0;           //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxP;            //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxd0_sv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxz0_sv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxP_sv;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxsqrtd0;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxsqrtz0;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxsqrtP;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxsqrtd0_sv;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxsqrtz0_sv;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxsqrtP_sv;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sqrterrx;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sqrterry;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_sqrterrz;        //!

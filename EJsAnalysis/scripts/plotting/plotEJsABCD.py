@@ -127,7 +127,12 @@ if args.doABCD or args.doABCD_shift:
     outTextDir = os.path.join( parentDir, "text_files", outSubdir )
     if not os.path.exists( outTextDir ):
         os.makedirs( outTextDir )
-    abcd_file = open( os.path.join( outTextDir, "abcd.txt" ), "w+" ) # --> make file name configurable...
+    outName = args.outName
+    if outName:          outName += "."
+    if args.outSgnlName: outName += args.outSgnlName + "."
+    if args.outBkgdName: outName += args.outBkgdName + "."
+    if args.outDataName: outName += args.outDataName + "."
+    abcd_file = open( os.path.join( outTextDir, "abcd." + outName + "txt" ), "w+" ) # --> make file name configurable...
 
 # --> enumerators
 # --> --> sample types to plot against one another
@@ -235,11 +240,14 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, validHistNames, validHist
                 nSearch, effSearch = countABCD( hists, metaEventHists, metaWeightHists, sampleTypes, "search", dataScale )
                 # use standard ABCD method to estimate background in A
                 estA_search, errA_search, zA_search = estimateABCD( nSearch )
+                # get significance
+                sb0_search, sb1_search, sb2_search, sb3_search = significanceABCD( nSearch, estA_search, sampleTypes )
 
                 
             # write out ABCD info
             if args.doABCD: # or shift
-                writeABCD( hists, name, sampleNames, nSearch, effSearch, estA_search, errA_search, zA_search )
+                writeABCD( hists, name, sampleNames, sampleTypes, nSearch, effSearch, estA_search, errA_search, zA_search,
+                               sb0_search, sb1_search, sb2_search, sb3_search )
             # draw ABCD plots
             if args.drawABCD or args.drawNoCutABCD:
                 plotABCD( hists, name, sampleTypes, sampleDicts, "search", plotTypes( args.searchEnum ) )
@@ -295,7 +303,8 @@ def estimateABCD( count ):
     A_estimate, A_errors, A_z = [], [], []
     for c in count:
         # do ABCD method to estimate number of events in A
-        estA = c[1] * c[2] / c[3]
+        if c[3]: estA = c[1] * c[2] / c[3]
+        else:    estA = c[1] * c[2] # what else can we do when c[3] = 0 ??
         
         # calculate statistical uncertainty
         estA_statErr = 0
@@ -303,8 +312,10 @@ def estimateABCD( count ):
         estA_z = 0
         if c[0] and c[1] and c[2] and c[3]:
             estA_statErr = math.sqrt( estA )
-            estA_systErr = estA * math.sqrt( abs(1./c[1]) + abs(1./c[2]) + abs(1./c[3]) ) # dA=|A|*sqrt((dB/B)^2+(dC/C)^2+(dD/D)^2); dN=sqrt(N)
-            estA_z       = ( c[0] - estA ) / math.sqrt( pow(estA_statErr,2) + pow(estA_systErr,2) ) # z = (M-mu)/SE
+            estA_systErr = estA * math.sqrt( abs(1./c[1]) + abs(1./c[2]) + abs(1./c[3]) )
+            # --> dA = |A| * sqrt( (dB/B)^2 + (dC/C)^2 + (dD/D)^2 ); dN = sqrt(N)
+            estA_z       = ( c[0] - estA ) / math.sqrt( pow(estA_statErr,2) + pow(estA_systErr,2) )
+            # --> z = (M-mu) / SE
 
         # placeholders for blinded search region data
         if c[0] == -999 or c[1] == -999 or c[2] == -999 or c[3] == -999:
@@ -320,56 +331,101 @@ def estimateABCD( count ):
     return A_estimate, A_errors, A_z
 
 
-## --- ESTIMATE EVENTS IN A WITH SHIFTED ABCD METHOD --- ##
+## --- ESTIMATE EVENTS IN A WITH SHIFTED ABCD METHOD --- ## --> DO TODAY !!!
 # --> need to add scaled histos in EJsHistogramManager; will need to pass counts from search and validation regions...
 
 
 ## --- CALCULATE SIGNIFICANCE IN A --- ##
+def significanceABCD( count, A_est, sampleTypes ):
+    # pass boolean or string or enum saying whether to use MC background or data as b...
+    # also may want way to decide to use standard ABCD or shifted ABCD estimate (or just pass in the one we want to use without caring what it is)
+
+    b = 0
+    for iS, stype in enumerate( sampleTypes ):
+        if stype == plotHelpers.sampleType.BKGD:
+            b      = A_est[iS]    # ABCD estimated value
+            b_true = count[iS][0] # true value
+
+    signif_v0, signif_v1, signif_v2, signif_v3 = [], [], [], []
+    for iC, c in enumerate( count ):
+        if sampleTypes[iC] == plotHelpers.sampleType.SGNL:
+            s = c[0]
+            signif_v0.append( s/b                  )
+            signif_v1.append( s/(b + 0.1*b)        )
+            signif_v2.append( s/(b + pow(0.1*b,2)) )
+            signif_v3.append( s/math.sqrt(b)       )
+
+    return signif_v0, signif_v1, signif_v2, signif_v3
+        
+    
 
 
 ## --- WRITE OUT ABCD INFO TO TEXT FILE --- ##
-def writeABCD( hists, histName, sampleNames, count, efficiency, A_est, A_err, A_z ):
+def writeABCD( hists, histName, sampleNames, sampleTypes, count, efficiency, A_est, A_err, A_z, sb0, sb1, sb2, sb3 ):
     # add "onlyA" argument; if true, only output values for A; make this argparse and update text file name accordingly
     # set number of decimal points? turn certain output on/off?
-
     ## --> consider using histName to write out more meaningful string (i.e. "n bare DVs vs N-jet Ht"), removing "ABCD_"...
     abcd_file.write( "------------------------------------------------------- \n" )
     abcd_file.write( "ABCD HISTOGRAM: " + histName + " --> \n" )
     # print x/y cuts
     abcd_file.write( "\n" )
 
+    isig = 0
     abcd_string = [ "A", "B", "C", "D" ]
     for iH, hist in enumerate( hists ):
+        # skip data for now...
+        #if sampleTypes[iH] == plotHelpers.sampleType.DATA:
+        #    continue
+        
         abcd_file.write( "SAMPLE: " + sampleNames[iH] + "\n" ) # add sample type ??
         
-        abcd_file.write( "########## ABCD counts ########## \n" )
+        abcd_file.write( "########## ABCD counts ##################### \n" )
         for i in range(len(abcd_string)):
             abcd_file.write( "n events in " + abcd_string[i] + ": " + str(count[iH][i]) + "\n" )
         # --> add raw (unweighted) yields ?? -->
         # --> --> print "Raw / Weighted Yield in A:", nAi, nAi / ( xsec[iH] * genFiltEff[iH] * lumi[iH] / initSumw[iH] )
         
-        abcd_file.write( "########## ABCD efficiencies ########## \n" )
+        abcd_file.write( "########## ABCD efficiencies ############### \n" )
         for i in range(len(abcd_string)):
             abcd_file.write( "efficiency in " + abcd_string[i] + ": " + str(efficiency[iH][i]) + "\n" )
             
-        abcd_file.write( "########## ABCD method ########## \n" )
+        abcd_file.write( "########## ABCD method ##################### \n" )
         a_err = math.sqrt(abs(count[iH][0]))
         if count[iH][0] == -999: a_err = -999
         abcd_file.write( "Region A estimate: " + str(A_est[iH]) + " +- " +
                              str(A_err[iH][0]) + " (stat) +- " + str(A_err[iH][1]) + " (syst) \n" )
         abcd_file.write( "True value: " + str(count[iH][0]) + " +- " + str(a_err) + "\n" )
         abcd_file.write( "Standardized difference: " + str(A_z[iH]) + "\n" )
-        abcd_file.write( "\n" )
 
         # scaled ABCD estimates
 
-        # significances [try a few different definitions] --> DO THIS FIRST !!!
+        # significances
+        # --> add "expected signal (s), expected background (b) in A"
+        if sampleTypes[iH] == plotHelpers.sampleType.SGNL:
+            abcd_file.write( "########## ABCD significances ########## \n" )
+            abcd_file.write( "s/b: "               + str(sb0[isig]) + "\n" )
+            abcd_file.write( "s/(b + 0.1*b): "     + str(sb1[isig]) + "\n" )
+            abcd_file.write( "s/(b + (0.1*b)^2): " + str(sb2[isig]) + "\n" )
+            abcd_file.write( "s/sqrt(b): "         + str(sb3[isig]) + "\n" )
+            isig += 1
 
-    
-    # add overall signal efficiency, background rejection (maybe instead of turning BCD on/off, just add another list, with just signal efficiencies for each signal point and background rejection...
-
+        abcd_file.write( "\n" )
         
+    abcd_file.write( "\n" )
 
+    isig = 0
+    abcd_file.write( "SIGNAL EFFICIENCY AND S/B: \n" )
+    for iS, stype in enumerate( sampleTypes ):
+        if stype == plotHelpers.sampleType.SGNL:
+            abcd_file.write( sampleNames[iS] + ": " + str(efficiency[iS][0]) + " | " + str(sb0[isig]) + "\n" )
+            isig += 1
+    abcd_file.write( "\n" )
+    abcd_file.write( "BACKGROUND REJECTION: \n" )
+    for iS, stype in enumerate( sampleTypes ):
+        if stype == plotHelpers.sampleType.BKGD:
+            abcd_file.write( sampleNames[iS] + ": " +str(1-efficiency[iS][0]) + "\n" ) # should we estimated value of A instead of true value? YES! need to calculate efficiency of expected value (and return and pass in here) when doing estimate above...
+        # add data ...
+    abcd_file.write( "\n" )
 
                 
 
@@ -426,7 +482,7 @@ def plotABCD( hists, histName, sampleTypes, sampleDicts, region, plotType ):
         hist.SetLineColor( sampleDicts[iH]["lcolor"] )
         hist.SetLineStyle( sampleDicts[iH]["lstyle"] )
         hist.SetLineWidth(3)
-        #hist.SetContour(5)
+        hist.SetContour(10)
 
         # draw histogram
         hist.DrawNormalized( "cont0 same" ) # surface colors
