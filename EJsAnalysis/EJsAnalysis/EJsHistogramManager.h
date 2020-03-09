@@ -50,6 +50,8 @@ class EJsHistogramManager : public HistogramManager
   using HistogramManager::execute;    // overload
   using HistogramManager::finalize;   // overload
 
+  void getTrkTypes ( int trk_index, std::vector<int>& trk );
+
 
  protected:
   // holds bools that controls which histograms are filled
@@ -78,7 +80,9 @@ class EJsHistogramManager : public HistogramManager
   float lumi   = 139.; // [fb-1]  
 
   // counters
-  std::vector<int>   m_nTypeDVs;
+  int m_nTypeJs   = 0;
+  int m_nTypeTrks = 0;
+  int m_nTypeDVs  = 0;
   std::vector<int>   m_nEntries;
   std::vector<float> m_nWeightedEntries;
   std::vector<int>   m_nFourJets;
@@ -107,10 +111,8 @@ class EJsHistogramManager : public HistogramManager
   int    m_nTrigJets  = 4;
   double m_trigJetPt  = 120.;
   double m_trigJetEta = 3.1;
-  // ABCD region discriminating variables (temp)
-  // --> A = > njetHt, > nDV
-  double m_ABCD_njetHt = 1375.;
-  int    m_ABCD_nDV    = 2;
+  // ABCD VR shift values
+  double m_VRShift_njetHt = 4./3;
   
 
 
@@ -174,6 +176,15 @@ class EJsHistogramManager : public HistogramManager
   std::vector<float>* m_jet_M;       //!
   std::vector<float>* m_jet_rapid;   //!
   std::vector<int>*   m_jet_passJVT; //!
+  // jets: matched (dark) truth
+  std::vector<uint8_t>* m_jet_isDark;     //!
+  std::vector<int>*     m_jet_darkID;     //!
+  std::vector<int>*     m_jet_darkIndex;  //!
+  std::vector<float>*   m_jet_darkDR;     //!
+  std::vector<uint8_t>* m_jet_isTruth;    //!
+  std::vector<int>*     m_jet_truthID;    //!
+  std::vector<int>*     m_jet_truthIndex; //!
+  std::vector<float>*   m_jet_truthDR;    //!
   // jets: matched tracks
   std::vector<int>*                m_jet_trk_n;        //!
   std::vector<std::vector<int>>*   m_jet_trk_ID;       //!
@@ -190,26 +201,50 @@ class EJsHistogramManager : public HistogramManager
   std::vector<float>* m_jetOth_eta;     //!
   std::vector<int>*   m_jetOth_passJVT; //!
 
+  // TRUTH JET BRANCHES
+  // truth jets: basics / kinematics
+  int m_truthJet_n;                   //!
+  std::vector<int>* m_truthJet_ID;    //!
+  std::vector<int>* m_truthJet_index; //!
+  // truth jets: matched dark
+  std::vector<uint8_t>* m_truthJet_isDark;    //!
+  std::vector<int>*     m_truthJet_darkID;    //!
+  std::vector<int>*     m_truthJet_darkIndex; //!
+  std::vector<float>*   m_truthJet_darkDR;    //!
+
+  // DARK JET BRANCHES
+  // dark jets: basics / kinematics
+  int m_darkJet_n;                      //!
+  std::vector<int>* m_darkJet_ID;       //!
+  std::vector<int>* m_darkJet_index;    //!
+  std::vector<int>* m_darkJet_nConstit; //!
+
   // TRACK BRANCHES
   // tracks: basics / kinematics
-  int m_trk_n;                      //!
-  std::vector<int>*     m_trk_ID;     //!
-  std::vector<int>*     m_trk_index;  //!
-  std::vector<float>*   m_trk_qOverP; //!
-  std::vector<float>*   m_trk_theta;  //!
-  std::vector<float>*   m_trk_pt;     //!
-  std::vector<float>*   m_trk_eta;    //!
-  std::vector<float>*   m_trk_phi;    //!
-  std::vector<float>*   m_trk_d0;     //!
-  std::vector<float>*   m_trk_z0;     //!
-  std::vector<float>*   m_trk_errd0;  //!
-  std::vector<float>*   m_trk_errz0;  //!
-  std::vector<float>*   m_trk_errP;   //!
-  std::vector<float>*   m_trk_chi2;   //!
-  std::vector<float>*   m_trk_chiSq;  //!
-  std::vector<int>*     m_trk_ndof;   //!
-  std::vector<float>*   m_trk_charge; //!
-  std::vector<uint8_t>* m_trk_isLRT;  //!
+  int m_trk_n;                           //!
+  std::vector<int>*     m_trk_ID;        //!
+  std::vector<int>*     m_trk_index;     //!
+  std::vector<float>*   m_trk_qOverP;    //!
+  std::vector<float>*   m_trk_theta;     //!
+  std::vector<float>*   m_trk_pt;        //!
+  std::vector<float>*   m_trk_eta;       //!
+  std::vector<float>*   m_trk_phi;       //!
+  std::vector<float>*   m_trk_d0;        //!
+  std::vector<float>*   m_trk_z0;        //!
+  std::vector<float>*   m_trk_errd0;     //!
+  std::vector<float>*   m_trk_errz0;     //!
+  std::vector<float>*   m_trk_errP;      //!
+  std::vector<float>*   m_trk_chi2;      //!
+  std::vector<float>*   m_trk_chiSq;     //!
+  std::vector<int>*     m_trk_ndof;      //!
+  std::vector<float>*   m_trk_charge;    //!
+  std::vector<uint8_t>* m_trk_isLRT;     //!
+  std::vector<uint8_t>* m_trk_isSel;     //!
+  std::vector<uint8_t>* m_trk_isAssoc;   //!
+  std::vector<uint8_t>* m_trk_isSV;      //!
+  std::vector<uint8_t>* m_trk_isCleanSV; //!
+  std::vector<uint8_t>* m_trk_isFiltSV;  //!
+  std::vector<uint8_t>* m_trk_isFinalSV; //!
 				
 
   // TRUTH VERTEX BRANCHES
@@ -354,46 +389,45 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_pv_phi;  //!
   std::vector<TH1F*> h_pv_ntrk; //!
   // leading N-jet Ht
-  std::vector<TH1F*> h_njetHt; //!
+  std::vector<TH1F*> h_njetHt;      //!
+  std::vector<TH1F*> h_njetHt_vrsh; //!
 
   // 2D EVENT HISTOS -- ABCD PLANE TESTS
-  std::vector<std::vector<TH2F*>> h_abcd_nDV_njetHt; //!
-  //std::vector<TH2F*> h_abcd_nJetDV_njetHt;           //!
-  //std::vector<TH2F*> h_abcd_nLeadJetDV_njetHt;       //!
-  //std::vector<TH2F*> h_abcd_nDV_njetOthHt;           //!
-  //std::vector<TH2F*> h_abcd_nJetOthDV_njetOthHt;     //!
-  //std::vector<TH2F*> h_abcd_nLeadJetOthDV_njetOthHt; //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_njetHt;          //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_njetHt_vrsh;     //!
+  std::vector<std::vector<TH2F*>> h_abcd_raw_nDV_njetHt;      //!
+  std::vector<std::vector<TH2F*>> h_abcd_raw_nDV_njetHt_vrsh; //!
 
   // JET HISTOS
   // basics
-  std::vector<TH1F*> h_jet_n;      //!
-  std::vector<TH1F*> h_jet_pt;     //!
-  std::vector<TH1F*> h_jet_pt_l;   //!
-  std::vector<TH1F*> h_jet_pt_m;   //!
-  std::vector<TH1F*> h_jet_pt_s;   //!
-  std::vector<TH1F*> h_jet_eta;    //!
-  std::vector<TH1F*> h_jet_phi;    //!
-  std::vector<TH1F*> h_jet_E;      //!
-  std::vector<TH1F*> h_jet_M;      //!
-  std::vector<TH1F*> h_jet_rapid;  //!
+  std::vector<std::vector<TH1F*>> h_jet_n;     //!
+  std::vector<std::vector<TH1F*>> h_jet_pt;    //!
+  std::vector<std::vector<TH1F*>> h_jet_pt_l;  //!
+  std::vector<std::vector<TH1F*>> h_jet_pt_m;  //!
+  std::vector<std::vector<TH1F*>> h_jet_pt_s;  //!
+  std::vector<std::vector<TH1F*>> h_jet_eta;   //!
+  std::vector<std::vector<TH1F*>> h_jet_phi;   //!
+  std::vector<std::vector<TH1F*>> h_jet_E;     //!
+  std::vector<std::vector<TH1F*>> h_jet_M;     //!
+  std::vector<std::vector<TH1F*>> h_jet_rapid; //!
   // extra kinematics
-  std::vector<TH1F*> h_jet_px;     //!
-  std::vector<TH1F*> h_jet_py;     //!
-  std::vector<TH1F*> h_jet_pz;     //!
-  std::vector<TH1F*> h_jet_Et;     //!
-  std::vector<TH1F*> h_jet_Et_m;   //!
-  std::vector<TH1F*> h_jet_Et_s;   //!
+  std::vector<std::vector<TH1F*>> h_jet_px;   //!
+  std::vector<std::vector<TH1F*>> h_jet_py;   //!
+  std::vector<std::vector<TH1F*>> h_jet_pz;   //!
+  std::vector<std::vector<TH1F*>> h_jet_Et;   //!
+  std::vector<std::vector<TH1F*>> h_jet_Et_m; //!
+  std::vector<std::vector<TH1F*>> h_jet_Et_s; //!
   // matched tracks
-  std::vector<TH1F*> h_jet_nTrk;       //!
-  std::vector<TH1F*> h_jet_trk_dR;     //!
-  std::vector<TH2F*> h_jet_nTrk_vs_dR; //!
-  // --> look at number of LRT, selected, vertex tracks, etc.
-  // matched vertices
-  std::vector<TH1F*> h_jet_nDV;       //!
-  std::vector<TH1F*> h_jet_DV_dR;     //!
-  std::vector<TH2F*> h_jet_nDV_vs_dR; //!
-  // --> investigate further (like number of "good" vertices) after vertex studies...
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_ntrk;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_dR; //!
   
+  // --> look at number of LRT, selected, vertex tracks, etc.
+  // --> look at track properties, including number of hits
+  // matched secondary vertices
+  std::vector<std::vector<TH1F*>> h_jet_nsv;    //!
+  std::vector<std::vector<TH1F*>> h_jet_sv_dR;  //!
+  // --> investigate further (like number of "good" vertices) after vertex studies / finalized DV cuts...
+
   // leading jets
   std::vector<std::vector<TH1F*>> h_jetN_pt;    //!
   std::vector<std::vector<TH1F*>> h_jetN_pt_l;  //!
@@ -408,11 +442,60 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_jetN_Et;    //!
   std::vector<std::vector<TH1F*>> h_jetN_Et_m;  //!
   std::vector<std::vector<TH1F*>> h_jetN_Et_s;  //!
-  // --> add matched tracks / vertices (at least counts)
+  // leading jet matched tracks
+  std::vector<std::vector<TH1F*>> h_jetN_ntrk;   //!
+  std::vector<std::vector<TH1F*>> h_jetN_trk_dR; //!
+  // leading jet matched secondary vertices
+  std::vector<std::vector<TH1F*>> h_jetN_nsv;    //!
+  std::vector<std::vector<TH1F*>> h_jetN_sv_dR;  //!
+  
+  // dijets
+  std::vector<std::vector<TH1F*>> h_dijet_n;           //!
+  std::vector<std::vector<TH1F*>> h_dijet_pt;          //!
+  std::vector<std::vector<TH1F*>> h_dijet_eta;         //!
+  std::vector<std::vector<TH1F*>> h_dijet_phi;         //!
+  std::vector<std::vector<TH1F*>> h_dijet_m;           //!
+  std::vector<std::vector<TH1F*>> h_dijet_sumPt;       //!
+  std::vector<std::vector<TH1F*>> h_dijet_dR;          //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxp4_pt;    //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxp4_eta;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxp4_phi;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxp4_m;     //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxp4_sumPt; //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxp4_dR;    //!
+  std::vector<std::vector<TH1F*>> h_dijet_minp4_pt;    //!
+  std::vector<std::vector<TH1F*>> h_dijet_minp4_eta;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_minp4_phi;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_minp4_m;     //!
+  std::vector<std::vector<TH1F*>> h_dijet_minp4_sumPt; //!
+  std::vector<std::vector<TH1F*>> h_dijet_minp4_dR;    //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_pt;    //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_eta;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_phi;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_m;     //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_sumPt; //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_dR;    //!
+  // N jets (all jets in event)
+  std::vector<std::vector<TH1F*>> h_njet_pt;    //!
+  std::vector<std::vector<TH1F*>> h_njet_eta;   //!
+  std::vector<std::vector<TH1F*>> h_njet_phi;   //!
+  std::vector<std::vector<TH1F*>> h_njet_m;     //!
+  std::vector<std::vector<TH1F*>> h_njet_sumPt; //!
+
+  // leading N-jet dijet invariant mass (avg of dijet pairs w/ min diff invM b/w them)
+  std::vector<TH1F*> h_NJetMjj;         //!
+  std::vector<TH1F*> h_NJetMjjDiff;     //!
+  std::vector<TH1F*> h_NJetMjj_all;     //!
+  std::vector<TH1F*> h_NJetMjjDiff_all; //!
+
+  // --> count number of jets with some number of associated vertices, (selected/lrt/vtx,etc.) tracks
+  // --> --> i.e. want to know per event how many jets have at least one associated DV...
+  
+  
 
   // TRACK HISTOS
   // basics
-  std::vector<TH1F*> h_trk_n; //!
+  std::vector<std::vector<TH1F*>> h_trk_n; //!
 
   // TRUTH VERTEX HISTOS
   std::vector<TH1F*> h_truthVtx_n; //!
@@ -449,12 +532,6 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_truthKshortDecay_nPos;      //!
 
   // SECONDARY VERTEX HISTOS
-  //// basics
-  //std::vector<TH1F*> h_DV_n;           //!
-  //// DVs nearby to (lead) jets
-  //std::vector<TH1F*> h_byJetDV_n;        //!
-  //std::vector<TH1F*> h_byLeadJetDV_n;    //!
-
   // basics
   std::vector<std::vector<TH1F*>> h_DV_n;          //!
   std::vector<std::vector<TH1F*>> h_DV_x;          //!
@@ -489,6 +566,8 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_ntrk_sel;   //!
   std::vector<std::vector<TH1F*>> h_DV_ntrk_assoc; //!
   std::vector<std::vector<TH1F*>> h_DV_ntrk_lrt;   //!
+  std::vector<std::vector<TH1F*>> h_DV_ntrk_d0;    //!
+  std::vector<std::vector<TH1F*>> h_DV_ntrk_seld0; //!
   std::vector<std::vector<TH1F*>> h_DV_errx;       //!
   std::vector<std::vector<TH1F*>> h_DV_erry;       //!
   std::vector<std::vector<TH1F*>> h_DV_errz;       //!
@@ -520,6 +599,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_trk_eta;        //!
   std::vector<std::vector<TH1F*>> h_DV_trk_phi;        //!
   std::vector<std::vector<TH1F*>> h_DV_trk_d0;         //!
+  std::vector<std::vector<TH1F*>> h_DV_trk_d0_xs;      //!
   std::vector<std::vector<TH1F*>> h_DV_trk_z0;         //!
   std::vector<std::vector<TH1F*>> h_DV_trk_errd0;      //!
   std::vector<std::vector<TH1F*>> h_DV_trk_errz0;      //!
@@ -557,6 +637,9 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_trk_signifP_sv;    //!
   std::vector<std::vector<TH1F*>> h_DV_trk_chi2_sv;       //!
   std::vector<std::vector<TH1F*>> h_DV_trk_chiSq_sv;      //!
+  // --> selected tracks
+  std::vector<std::vector<TH1F*>> h_DV_seltrk_d0;    //!
+  std::vector<std::vector<TH1F*>> h_DV_seltrk_d0_xs; //!
   // --> look at final, selected, associated (and combo) tracks, ...
   // --> combined track parameters
   std::vector<std::vector<TH1F*>> h_DV_sumd0;           //!

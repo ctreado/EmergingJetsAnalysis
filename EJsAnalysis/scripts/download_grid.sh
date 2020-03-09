@@ -27,19 +27,19 @@ types="tree"
 outpath="$EJ_PATH/../output/gridOutput/v0_2020-01_n1/"
 
 ## data
-cont15="user.ctreado.data15_13TeV.*.EJsAna."${dtag}"*."${vtag}"*.root"
-cont16="user.ctreado.data16_13TeV.*.EJsAna."${dtag}"*."${vtag}"*.root"
-cont17="user.ctreado.data17_13TeV.*.EJsAna."${dtag}"*."${vtag}"*.root"
-cont18="user.ctreado.data18_13TeV.*.EJsAna."${dtag}"*."${vtag}"*.root"
+cont15="user.ctreado.data15_13TeV.*.EJsAna."${dtag}"-08."${vtag}"*.root"
+cont16="user.ctreado.data16_13TeV.*.EJsAna."${dtag}"-08."${vtag}"*.root"
+cont17="user.ctreado.data17_13TeV.*.EJsAna."${dtag}"-08."${vtag}"*.root"
+cont18="user.ctreado.data18_13TeV.*.EJsAna."${dtag}"-08."${vtag}"*.root"
 
 ## mc16
 # --> signal
 conta0="user.ctreado.mc16_13TeV.3120*.*r10740*.EJsAna.sub0."${dtag}"*."${vtag}"*.root"
-contd0="user.ctreado.mc16_13TeV.312075*.*r10739*.EJsAna.sub0."${dtag}"*."${vtag}"*.root"
+contd0="user.ctreado.mc16_13TeV.3120*.*r10739*.EJsAna.sub0."${dtag}"*."${vtag}"*.root"
 conte0="user.ctreado.mc16_13TeV.3120*.*r11265*.EJsAna.sub0."${dtag}"*."${vtag}"*.root"
 # --> background
-contab="user.ctreado.mc16_13TeV.361024.*r10847*.EJsAna.bkgd."${dtag}"*."${vtag}"*.root"
-contdb="user.ctreado.mc16_13TeV.361024.*r10848*.EJsAna.bkgd."${dtag}"*."${vtag}"*.root"
+contab="user.ctreado.mc16_13TeV.361024.*r10847*.EJsAna.bkgd."${dtag}"-08."${vtag}"*.root"
+contdb="user.ctreado.mc16_13TeV.361024.*r10848*.EJsAna.bkgd."${dtag}"-08."${vtag}"*.root"
 
 #downloadAndMergeEJs.py --container ${cont15} --types ${types} --outPath ${outpath} --nrandom 1
 #downloadAndMergeEJs.py --container ${cont16} --types ${types} --outPath ${outpath} --nrandom 1

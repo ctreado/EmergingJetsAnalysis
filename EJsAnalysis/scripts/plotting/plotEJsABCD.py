@@ -263,6 +263,8 @@ def countABCD( hists, metaEventHists, metaWeightHists, sampleTypes, region, data
         xbin = hist.GetXaxis().FindBin( args.xCutABCD )
         ybin = hist.GetYaxis().FindBin( args.yCutABCD )
 
+        # add raw capabilities (dedicated "raw" abcd histograms) -- scale = 1, efficiency denominator = initial n events
+        
         # count events in each region
         nA_iH = hist.Integral( xbin,     -1, ybin,     -1 )
         nB_iH = hist.Integral( xbin,     -1,   -1, ybin-1 )

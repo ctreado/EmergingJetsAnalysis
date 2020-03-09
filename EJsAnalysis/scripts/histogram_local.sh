@@ -20,10 +20,10 @@ intags_data="data"
 #runEJsHistogrammer.py --inDir ${input_local} --outDir ${output_local} --inTags ${intags_data} --renameAndMove --mergeDatasets
 
 # run over SUB-SET of trees
-intags_a="mc16,ModelA"
+intags_b="mc16,ModelB"
 intags_bkgd="jetjet"
-intags_17="data17"
-#runEJsHistogrammer.py --inDir ${input_local} --outDir ${output_local} --inTags ${intags_a}    --mergeDatasets --renameAndMove
+intags_17="data17,331804"
+#runEJsHistogrammer.py --inDir ${input_local} --outDir ${output_local} --inTags ${intags_b}    --mergeDatasets --renameAndMove
 #runEJsHistogrammer.py --inDir ${input_local} --outDir ${output_local} --inTags ${intags_bkgd} --mergeDatasets --renameAndMove
 #runEJsHistogrammer.py --inDir ${input_local} --outDir ${output_local} --inTags ${intags_17}   --mergeDatasets --renameAndMove
 
@@ -32,10 +32,9 @@ intags_17="data17"
 input_bench="$EJ_PATH/../output/localOutput/tmp_search-minus-one/tree/"
 output_bench="$EJ_PATH/../output/localOutput/tmp_search-minus-one/"
 output_test="$EJ_PATH/../run/test.histos/"
-intags_04="312008"
-runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_04}   --mergeDatasets --renameAndMove --nevents -1
-#runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_bench} --inTags ${intags_mc}   --mergeDatasets --renameAndMove
-#runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_bench} --inTags ${intags_17}   --mergeDatasets --renameAndMove
+runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_b}    --mergeDatasets --renameAndMove --nevents -1
+#runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_bkgd} --mergeDatasets --renameAndMove --nevents -1
+#runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_17}   --mergeDatasets --renameAndMove --nevents 10
 
 # run over latest TRIGGER mc trees
 jo_trig="$EJ_PATH/EJsAnalysis/config/EJsHistoConfig_trig.py"

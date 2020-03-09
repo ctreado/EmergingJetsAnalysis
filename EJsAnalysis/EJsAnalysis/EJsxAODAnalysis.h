@@ -56,8 +56,8 @@ class EJsxAODAnalysis : public xAH::Algorithm
   std::string m_signalTrigList;
   std::string m_validTrigList;
 
-  // input metadata text file
-  std::string m_metadataFileName = "";
+  // // input metadata text file
+  // std::string m_metadataFileName = "";
 
   // event selections
   unsigned m_nSignalJets  = 4;

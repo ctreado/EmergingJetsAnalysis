@@ -16,8 +16,8 @@ if systName != "":
 
 ## --- material map --- ##
 matMapPath = "EJsAnalysis/material_map/"
-## --- metadata --- ##
-metadataPath = "EJsAnalysis/"
+### --- metadata --- ##
+#metadataPath = "EJsAnalysis/"
 
 
 ## --- trigger lists --- ##
@@ -276,7 +276,7 @@ Dict_EJsxAODAnalysis = {
     "m_cutflowJets"            : "EMTopo", # --> only fill cutflows for one jet container
     "m_signalTrigList"         : fourJetTriggers,
     "m_validTrigList"          : singleJetTriggers,
-    "m_metadataFileName"       : metadataPath + "mc16.metadata.txt"
+    #"m_metadataFileName"       : metadataPath + "mc16.metadata.txt"
 }
 
 

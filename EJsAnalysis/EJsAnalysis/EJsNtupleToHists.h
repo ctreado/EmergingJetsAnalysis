@@ -9,7 +9,11 @@
 
 #include <vector>
 #include <string>
+#include <fstream>
+#include <sstream>
 #include <map>
+
+#include <TSystem.h>
 
 #include <xAODAnaHelpers/Algorithm.h>
 
@@ -27,6 +31,9 @@ class EJsNtupleToHists : public xAH::Algorithm
 
   // histogram info switches
   std::string m_detailStr = "";
+
+  // input metadata text file
+  std::string m_metadataFileName = "";
 
   // regions to num over
   std::string m_regionName = "";
@@ -99,9 +106,9 @@ class EJsNtupleToHists : public xAH::Algorithm
   float m_sumw_sel     = AlgConsts::invalidFloat; //! // sum of weights after skimming
   float m_sumw2_init   = AlgConsts::invalidFloat; //! // sum of weights squared before skimming
   float m_sumw2_sel    = AlgConsts::invalidFloat; //! // sum o weights squared after skimming
-  float m_crossSection = AlgConsts::invalidFloat; //! // [nb]
-  float m_kFactor      = AlgConsts::invalidFloat; //!
-  float m_genFilterEff = AlgConsts::invalidFloat; //!
+  float m_crossSection = 1;                       //! // [nb]
+  float m_kFactor      = 1;                       //!
+  float m_genFilterEff = 1;                       //!
   std::map<std::string, float> m_metadata;        //!
   
   

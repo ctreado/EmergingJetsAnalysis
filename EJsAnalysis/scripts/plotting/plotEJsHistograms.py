@@ -108,6 +108,9 @@ parser.add_argument( "--format", dest = "format", default = "pdf", help = "File 
 args = parser.parse_args()
 
 
+# add ratio plots (for calculating efficiencies)
+
+
 
 ## --- SET GLOBAL VARIABLES --- ##
 

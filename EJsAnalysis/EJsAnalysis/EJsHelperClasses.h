@@ -92,8 +92,10 @@ namespace EJsHelperClasses {
     bool m_pv;
     bool m_kinematics;
     bool m_kinematics_jet;
+    bool m_jetTruth;
     bool m_jetTrks;
     bool m_jetVerts;
+    bool m_dijets;
     bool m_vertices;
     bool m_baseVerts;
     bool m_byJetVerts;

@@ -55,8 +55,10 @@ namespace EJsHelperClasses {
     m_pv                = has_exact( "pv"                );
     m_kinematics        = has_exact( "kinematics"        );
     m_kinematics_jet    = has_exact( "kinematics_jet"    );
+    m_jetTruth          = has_exact( "jetTruth"          );
     m_jetTrks           = has_exact( "jetTrks"           );
     m_jetVerts          = has_exact( "jetVerts"          );
+    m_dijets            = has_exact( "dijets"            );
     m_vertices          = has_exact( "vertices"          );
     m_baseVerts         = has_exact( "baseVerts"         );
     m_byJetVerts        = has_exact( "byJetVerts"        );

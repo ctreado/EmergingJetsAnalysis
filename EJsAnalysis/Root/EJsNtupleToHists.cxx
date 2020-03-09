@@ -51,6 +51,11 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   // get input file name
   TFile* inFile = wk()->inputFile();
   std::string inFileName = inFile->GetName();
+
+  // set m_isMC
+  m_isMC = false;
+  if ( ( inFileName.find("mc16") != std::string::npos ) || ( inFileName.find("data1") == std::string::npos ) )
+    m_isMC = true;
   
   // get total number of initial events
   if ( inFile->GetListOfKeys()->Contains( "MetaData_EventCount" ) ) {
@@ -66,17 +71,49 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   else
     ANA_MSG_INFO( "No MetaData_EventCount information available." );
   
-  // get weights
-  if ( inFile->GetListOfKeys()->Contains( "MetaData_Weights" ) ) {
-    TH1F* metadata_weights = (TH1F*) inFile->Get( "MetaData_Weights" );
-    m_crossSection = metadata_weights->GetBinContent(1);
-    m_kFactor      = metadata_weights->GetBinContent(2);
-    m_genFilterEff = metadata_weights->GetBinContent(3);
-    ANA_MSG_INFO( "Found cross-section, k-factor, generator filter efficiency: " << m_crossSection << " " <<
-		  m_kFactor << " " << m_genFilterEff );
+  // get metadata weights from input text file for corresponding mc channel number
+  if ( m_isMC ) {
+    // get channel number
+    int mcChannelNumber = 0;
+    inTree->SetBranchStatus( "*", 0 ); // disable all branches
+    EJsHelper::connectBranch<int> ( inTree, "mcChannelNumber", &mcChannelNumber );
+    inTree->GetEntry( wk()->treeEntry() );
+    
+    // get metadata file
+    const char* metadataPath = gSystem->ExpandPathName( PathResolverFindCalibFile( m_metadataFileName ).c_str() );
+    std::ifstream m_metadataFile( metadataPath );
+    delete [] metadataPath;
+
+    std::string line;
+    double word;
+    std::vector<double> metadata;
+    if ( m_metadataFile.is_open() ) {
+      while ( std::getline( m_metadataFile, line ) ) {
+	std::istringstream iss( line );
+	int i = 0;
+	while ( iss >> word ) {
+	  if ( i == 0 && word != mcChannelNumber ) continue;
+	  metadata.push_back( word );
+	  ++i;
+	}
+      }
+    }
+    // metadata = { dataset_number, crossSection [nb], kFactor, genFiltEff }
+    m_crossSection = metadata.at(1);
+    m_kFactor      = metadata.at(2);
+    m_genFilterEff = metadata.at(3);
   }
-  else
-    ANA_MSG_INFO( "No MetaData_Weights information available." );
+  // // --> old way: reading histo -- bug when hadding ntuple files together...
+  // if ( inFile->GetListOfKeys()->Contains( "MetaData_Weights" ) ) {
+  //   TH1F* metadata_weights = (TH1F*) inFile->Get( "MetaData_Weights" );
+  //   m_crossSection = metadata_weights->GetBinContent(1);
+  //   m_kFactor      = metadata_weights->GetBinContent(2);
+  //   m_genFilterEff = metadata_weights->GetBinContent(3);
+  //   ANA_MSG_INFO( "Found cross-section, k-factor, generator filter efficiency: " << m_crossSection << " " <<
+  // 		  m_kFactor << " " << m_genFilterEff );
+  // }
+  // else
+  //   ANA_MSG_INFO( "No MetaData_Weights information available." );
 
   // set metadata map
   m_metadata[ "eventCount_init" ] = m_nEvents_init;
@@ -89,11 +126,6 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   m_metadata[ "kFactor"         ] = m_kFactor;
   m_metadata[ "genFilterEff"    ] = m_genFilterEff;
   
-  // set m_isMC
-  m_isMC = false;
-  if ( ( inFileName.find("mc16") != std::string::npos ) || ( inFileName.find("data1") == std::string::npos ) )
-    m_isMC = true;
-
   // get list of regions to run over
   std::string token;
   std::istringstream ss_region_names( m_regionName );
@@ -110,7 +142,6 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   }
 
   // get base DV type
-  //EJsHelper::BaseDV baseDV;
   EJsHelper::fillBaseDV( m_baseDV, m_baseDVName );
 
   if ( m_jetHistoName      .empty() ) m_jetHistoName      = m_jetBranchName;

@@ -192,43 +192,45 @@ EL::StatusCode EJsxAODAnalysis :: initialize ()
     m_valid_cutflow_njetmax = m_valid_cutflowHist->GetXaxis()->FindBin( ("nJetsMax_" + m_cutflowJets).c_str() );  
   }
 
-  
-  // get metadata from input text file for corresponding mc channel number
-  if ( xAH::Algorithm::isMC() ) {
+
+  // // --> histo method of saving metadata overcounts weights: bug from hadding histos across ntuple files...
+  // // --> --> instead, read metadata file in histo alg (consider also adding metadata info to branches ??)
+  // // get metadata from input text file for corresponding mc channel number
+  // if ( xAH::Algorithm::isMC() ) {
     
-    const xAOD::EventInfo* eventInfo = 0;
-    ANA_CHECK( HelperFunctions::retrieve( eventInfo, "EventInfo", m_event, m_store, msg() ) );
-    m_mcChannelNumber         = eventInfo ->mcChannelNumber();
+  //   const xAOD::EventInfo* eventInfo = 0;
+  //   ANA_CHECK( HelperFunctions::retrieve( eventInfo, "EventInfo", m_event, m_store, msg() ) );
+  //   m_mcChannelNumber         = eventInfo ->mcChannelNumber();
     
-    const char* metadataPath = gSystem->ExpandPathName( PathResolverFindCalibFile( m_metadataFileName ).c_str() );
-    std::ifstream m_metadataFile( metadataPath );
-    delete [] metadataPath;
+  //   const char* metadataPath = gSystem->ExpandPathName( PathResolverFindCalibFile( m_metadataFileName ).c_str() );
+  //   std::ifstream m_metadataFile( metadataPath );
+  //   delete [] metadataPath;
     
-    std::string line;
-    double word;
-    std::vector<double> metadata;
-    if ( m_metadataFile.is_open() ) {
-      while ( std::getline( m_metadataFile, line ) ) {
-	std::istringstream iss( line );
-	int i = 0;
-	while ( iss >> word ) {
-	  if ( i == 0 && word != m_mcChannelNumber ) continue;
-	  metadata.push_back( word );
-	  ++i;
-	}
-      }
-    }
-    // metadata = { dataset_number, crossSection [nb], kFactor, genFiltEff }
-    m_xsec    = metadata.at(1);
-    m_kfactor = metadata.at(2);
-    m_filteff = metadata.at(3);  
-  }
-  // initialize metadata histogram
-  m_meta_weightHist     = new TH1D( "MetaData_Weights", "MetaData_Weights", 1, 1, 2 );
-  m_meta_weightHist     ->SetCanExtend( TH1::kAllAxes );
-  m_meta_weight_xsec    = m_meta_weightHist->GetXaxis()->FindBin( "cross-section"  );
-  m_meta_weight_kfactor = m_meta_weightHist->GetXaxis()->FindBin( "k-factor"       );
-  m_meta_weight_filteff = m_meta_weightHist->GetXaxis()->FindBin( "gen-filter eff" );
+  //   std::string line;
+  //   double word;
+  //   std::vector<double> metadata;
+  //   if ( m_metadataFile.is_open() ) {
+  //     while ( std::getline( m_metadataFile, line ) ) {
+  // 	std::istringstream iss( line );
+  // 	int i = 0;
+  // 	while ( iss >> word ) {
+  // 	  if ( i == 0 && word != m_mcChannelNumber ) continue;
+  // 	  metadata.push_back( word );
+  // 	  ++i;
+  // 	}
+  //     }
+  //   }
+  //   // metadata = { dataset_number, crossSection [nb], kFactor, genFiltEff }
+  //   m_xsec    = metadata.at(1);
+  //   m_kfactor = metadata.at(2);
+  //   m_filteff = metadata.at(3);  
+  // }
+  // // initialize metadata histogram
+  // m_meta_weightHist     = new TH1D( "MetaData_Weights", "MetaData_Weights", 1, 1, 2 );
+  // m_meta_weightHist     ->SetCanExtend( TH1::kAllAxes );
+  // m_meta_weight_xsec    = m_meta_weightHist->GetXaxis()->FindBin( "cross-section"  );
+  // m_meta_weight_kfactor = m_meta_weightHist->GetXaxis()->FindBin( "k-factor"       );
+  // m_meta_weight_filteff = m_meta_weightHist->GetXaxis()->FindBin( "gen-filter eff" );
   
   // initialize counters
   m_eventNumber         = 0;
@@ -396,12 +398,12 @@ EL::StatusCode EJsxAODAnalysis :: finalize ()
     meta_cutflowHist       ->LabelsDeflate("X");
     meta_cutflowHist       ->Write();
 
-    // write new metadata weight histogram to output tree file
-    m_meta_weightHist ->SetBinContent( m_meta_weight_xsec,    m_xsec    );
-    m_meta_weightHist ->SetBinContent( m_meta_weight_kfactor, m_kfactor );
-    m_meta_weightHist ->SetBinContent( m_meta_weight_filteff, m_filteff );
-    m_meta_weightHist ->LabelsDeflate("X");
-    m_meta_weightHist ->Write();
+    // // write new metadata weight histogram to output tree file
+    // m_meta_weightHist ->SetBinContent( m_meta_weight_xsec,    m_xsec    );
+    // m_meta_weightHist ->SetBinContent( m_meta_weight_kfactor, m_kfactor );
+    // m_meta_weightHist ->SetBinContent( m_meta_weight_filteff, m_filteff );
+    // m_meta_weightHist ->LabelsDeflate("X");
+    // m_meta_weightHist ->Write();
   }
 
   delete m_signal_cutflowHist;
