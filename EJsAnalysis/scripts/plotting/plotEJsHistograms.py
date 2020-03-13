@@ -18,6 +18,7 @@ import os, sys, time
 import argparse
 import ROOT
 from enum import Enum
+import re
 import plotHelpers
 
 ### command line arguments ###
@@ -78,6 +79,7 @@ parser.add_argument( "--sbdVars", dest = "sbdVars", default = "",
                          vs 3-track data DVs and dark pion signal DVs vs unmatched background DVs." )
 parser.add_argument( "--varEnum", dest = "varEnum", type = int, default = 1,
                          help = "Enumerator for variable histogram type (i.e. DV, DV_NTRK). Input must be integer." )
+parser.add_argument( "--baseDV", dest = "baseDV", default = "bare", help = "Base DV type." )
 # output combined histograms
 parser.add_argument( "--outDirCombined", dest = "outDirCombined", default = None,
                          help = "Output directory where combined histogram files are written. \
@@ -98,6 +100,8 @@ parser.add_argument( "--drawOptMulti1D", dest = "drawOptMulti1D", default = "nos
                          help = "Draw option(s) for 1D multivariate stack plots." )
 parser.add_argument( "--doMultiSmpl", dest = "doMultiSmpl", action = "store_true", default = False,
                          help = "Plot histograms from different samples against each other." )
+parser.add_argument( "--doTruthSvB", dest = "doTruthSvB", action = "store_true", default = False,
+                         help = "Do truth-matched signal vs background plots (for purposes of default legend, out-name strings)." )
 parser.add_argument( "--legLenEnum", dest = "legLenEnum", type = int, default = 1,
                          help = "Enumerator for legend entry string length. Input must be integer." )
 parser.add_argument( "--lxint", dest = "lxint", type = float, default = 0.008, help = "Legend x-length per entry string length." )
@@ -155,6 +159,7 @@ class legStrLen( Enum ):
 class varType( Enum ):
     DV      = 1
     DV_NTRK = 2
+    JET     = 3
 
 
 
@@ -448,7 +453,7 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
 
         # add legend entry
         l.AddEntry( hist, plotHelpers.setMultiLegStr( hist.GetName().split('_')[1],
-              sampleType, sampleDict, varType( args.varEnum ).value ) ).SetTextColor( lcolor )
+              sampleType, sampleDict, varType( args.varEnum ).value, False, args.doTruthSvB ) ).SetTextColor( lcolor )
  
         # add histo to stack
         hs.Add( hist )
@@ -464,7 +469,9 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
     l.Draw()
 
     # set titles and axes
-    hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist, True, varType( args.varEnum ).value ) )
+    #htitle = ""
+    #if args.histTitle: htitle = args.histTitle + " "
+    hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist, True, args.histTitle, varType( args.varEnum ).value ) )
     hs.GetXaxis().SetTitleSize( 0.03  )
     hs.GetXaxis().SetTitleOffset( 1.4 )
 
@@ -478,10 +485,12 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
     outName = args.outName
     if outName and not outName.endswith('.'):
         outName += "."
-    if varType( args.varEnum ) == varType.DV:
+    if   varType( args.varEnum ) == varType.DV:
         outName = "dvtype-" + outName
     elif varType( args.varEnum ) == varType.DV_NTRK:
         outName = "ntrkdv-" + outName
+    elif varType( args.varEnum ) == varType.JET:
+        outName = "jettype-" + outName
     outName = tname + "." + sampleName + "." + outName + args.regionDir
     cname = "multi1d." + baseName + "." + outName
     if doLogy:
@@ -563,7 +572,6 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
             bkgdHist = hists[iBkgd*len(args.histVars.split(','))+isbd_b]
             if hist != bkgdHist: # don't divide background histogram
                 hist.Divide( hist, bkgdHist )
-                print hist.GetBinContent(1)
 
         # normalize
         if doNorm and hist.Integral():
@@ -586,7 +594,7 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
         # add legend entry
         l.AddEntry( hist, plotHelpers.setMultiLegStr( hist.GetName().split('_')[1],
               sampleTypes[iH/len(args.histVars.split(','))], sampleDicts[iH/len(args.histVars.split(','))],
-              varType( args.varEnum ).value, True ) ).SetTextColor( lcolor )
+              varType( args.varEnum ).value, True, args.doTruthSvB ) ).SetTextColor( lcolor )
 
         # add histo to stack
         hs.Add( hist )
@@ -602,7 +610,7 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
     l.Draw()
 
     # set titles and axes
-    hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist, True, varType( args.varEnum ).value, doSOverB ) )
+    hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist, True, "", varType( args.varEnum ).value, doSOverB ) )
     hs.GetXaxis().SetTitleSize( 0.03  )
     hs.GetXaxis().SetTitleOffset( 1.4 )
 
@@ -619,9 +627,54 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
         outName += "."
     outName  = tname + "." + outName
     rOutName = outName + args.regionDir
+
+    baseDV = "bare"
     bname = ""
-    for sbd in sbdVars.split(','):
-        if sbd: bname += sbd + "."
+    if args.doTruthSvB:
+        sbd_bname, sbd_tname = [], []
+        for sbd in sbdVars.split(','):
+            if sbd:
+                if   varType( args.varEnum ) == varType.DV:
+                    if "darkPion".lower() in sbd.lower():
+                        sbd_bname.append( re.split( 'darkPion',  sbd, flags=re.IGNORECASE )[0] )
+                        sbd_tname.append( 'darkPionDV'  )
+                    elif "kshort".lower() in sbd.lower():
+                        sbd_bname.append( re.split( 'kshort',    sbd, flags=re.IGNORECASE )[0] )
+                        sbd_tname.append( 'kshortDV'    )
+                    elif "nomatch".lower() in sbd.lower():
+                        sbd_bname.append( re.split( 'nomatch',   sbd, flags=re.IGNORECASE )[0] )
+                        sbd_tname.append( 'nomatchDV'   )
+                    elif args.baseDV.lower() in sbd.lower():
+                        sbd_bname.append( re.split( args.baseDV, sbd, flags=re.IGNORECASE )[0] )
+                        sbd_tname.append( args.baseDV )
+                    else:
+                        sbd_bname.append( re.split( 'DV',        sbd, flags=re.IGNORECASE )[0] )
+                        sbd_tname.append( args.baseDV )
+                elif varType( args.varEnum ) == varType.JET:
+                    if "darkMatch".lower() in sbd.lower():
+                        sbd_bname.append( re.split( 'darkMatch', sbd, flags=re.IGNORECASE )[0] )
+                        sbd_tname.append( 'darkMatchJet' )
+                    else:
+                        sbd_bname.append( re.split( 'jet',       sbd, flags=re.IGNORECASE )[0] )
+                        sbd_tname.append( 'jet' )
+        bname_tmp = sbd_bname[0]
+        bname += bname_tmp
+        if bname: bname += "."
+        for sbd_b in sbd_bname:
+            if sbd_b != bname_tmp:
+                bname_tmp = sbd_b
+                bname += bname_tmp + "."
+        for sbd_t in sbd_tname:
+            bname += sbd_t + "."
+    else:
+        for sbd in sbdVars.split(','):
+            if sbd: bname += sbd + "."
+    if varType( args.varEnum ) == varType.DV:
+        histName = hist.GetName().split('_')[1]
+        if   histName.startswith("2trk"): bname += "2trk."
+        elif histName.startswith("3trk"): bname += "3trk."
+        elif histName.startswith("4trk"): bname += "4trk."
+        elif histName.startswith("5trk"): bname += "5trk."
     baseName = bname + baseName
     if doSOverB: baseName += "-SOverB"
     cname = "multismpl1d." + baseName + "." + rOutName

@@ -41,6 +41,7 @@ class legSize:
 class histVarType:
     DV      = 1
     DV_NTRK = 2
+    JET     = 3
     # add NONE option ?? would want to update usage in if statements here; would need to update enum in plotEJsHistogram, too...
 
 
@@ -273,7 +274,24 @@ def getVarHists( stypes, histNames, hists, histVars ):
                     for iName, name in enumerate( histNames ):
                         if var.lower() + "_" + base.lower() == name.lower():
                             varHists[iBase].append( hists[iType][iName] )
+                
     return varHists, baseNames
+
+## --- RETRIEVE FILE LIST --- ##
+def getFileList( histDir, histTag ):
+    
+    # get list of files matching hist-tags in hist-directory
+    histFiles = []
+    for f in os.listdir( histDir ):
+        passedTags = True
+        for tag in histTag:
+            orTags = tag.split('=')
+            if not any( ot in f for ot in orTags ):
+                passedTags = False
+        if passedTags:
+            histFiles.append( os.path.join( histDir, f ) )
+
+    return histFiles
 
 
 
@@ -358,48 +376,65 @@ def setLegStr( stype, sdict, lslen ):
 
 
 ## --- SET STRING FOR MULTIVARIATE LEGEND ENTRY --- ##
-def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False ):
+def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False, doSvBStr = False ):
     legend_string = ""
 
     if hvar == histVarType.DV:
-        if "byJet"     .lower() in hname.lower():
-            if legend_string:
-                legend_string += " "
-            legend_string += "by-jet DV"
-        if "byLeadJet" .lower() in hname.lower():
-            if legend_string:
-                legend_string += " "
-            legend_string += "by-lead-jet DV"
-        if "fiducial"  .lower() in hname.lower():
-            if legend_string:
-                legend_string += " "
-            legend_string += "fiducial-cut DV"
-        if "bareDV"    .lower() in hname.lower():
-            if legend_string:
-                legend_string += " "
-            legend_string += "bare DV"
-        if "cleanDV"   .lower() in hname.lower():
-            if legend_string:
-                legend_string += " "
-            legend_string += "clean DV"
-        if "filtDV"    .lower() in hname.lower():
-            if legend_string:
-                legend_string += " "
-            legend_string += "filtered DV"
-        if "darkPionDV".lower() in hname.lower():
-            if legend_string:
-                legend_string += " "
-            legend_string += "dark-pion-decay matched DV"
-        if "kshortDV"  .lower() in hname.lower():
-            if legend_string:
-                legend_string += " "
-            legend_string += "k-short-decay matched DV"
-        if "nomatchDV" .lower() in hname.lower():
-            if legend_string:
-                legend_string += " "
-            legend_string += "unmatched DV"
-        if not legend_string:
-            legend_string = hname
+        if doSvBStr:
+            if "darkPion".lower() in hname.lower():
+                legend_string = "dark pion DV"
+            elif "kshort".lower() in hname.lower():
+                legend_string = "k-short DV"
+            elif "nomatch".lower() in hname.lower():
+                legend_string = "unmatched DV"
+            else:
+                legend_string = "DV"
+        else:
+            if "bare"    .lower() in hname.lower():
+                if legend_string:
+                    legend_string += " "
+                legend_string += "bare"
+            if "clean"   .lower() in hname.lower():
+                if legend_string:
+                    legend_string += " "
+                legend_string += "clean"
+            if "filt"    .lower() in hname.lower():
+                if legend_string:
+                    legend_string += " "
+                legend_string += "filt"
+            if "byJet"   .lower() in hname.lower():
+                if legend_string:
+                    legend_string += " "
+                legend_string += "by-jet"
+            if "byNJet"  .lower() in hname.lower():
+                if legend_string:
+                    legend_string += " "
+                legend_string += "by-N-lead-jet"
+            if "fiduc"   .lower() in hname.lower():
+                if legend_string:
+                    legend_string += " "
+                legend_string += "fiduc"
+            if "ksm"     .lower() in hname.lower():
+                if legend_string:
+                    legend_string += " "
+                legend_string += "ksm"
+            # add other cuts
+            if "darkPion".lower() in hname.lower():
+                if legend_string:
+                    legend_string += " "
+                legend_string += "dark pion"
+            if "kshort"  .lower() in hname.lower():
+                if legend_string:
+                    legend_string += " "
+                legend_string += "k-short"
+            if "nomatch" .lower() in hname.lower():
+                if legend_string:
+                    legend_string += " "
+                legend_string += "unmatched"
+            if not legend_string or len(legend_string) > 100:
+                legend_string = hname
+            else:
+                legend_string += " DV"
     elif hvar == histVarType.DV_NTRK:
         if hname.startswith("2trk"):
             legend_string = "2-track DV"
@@ -411,12 +446,18 @@ def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False ):
             legend_string = "5-plus-track DV"
         else:
             legend_string = hname
+    elif hvar == histVarType.JET:
+        if "darkMatch" .lower() in hname.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "dark-matched"
+        if not legend_string:
+            legend_string = hname
+        else:
+            legend_string += " jet"
+
     if doMultiSmpl:
         legend_string += " (" + setLegStr( stype, sdict, 10 ) + ")"
-        
-    #if doMultiSample:
-    #    ... add sample info (maybe in parentheses); would need to add "doMultiSample" argument -->
-    # --> # legend_string += " " + setLegStr( sampleType, sampleDict, False )
 
     return legend_string
 
@@ -436,13 +477,15 @@ def getMaxBinContent( hist ):
 
 
 ## --- SET X-AXIS TITLE --- ##
-def setXaxisTitle( hist, doMulti = False, hvar = histVarType.DV, doSOverB = False ):
+def setXaxisTitle( hist, doMulti = False, multiObjStr = "", hvar = histVarType.DV, doSOverB = False ):
     xtitle = hist.GetXaxis().GetTitle()
 
     if doMulti:
         histName = hist.GetName().split('_')[1]
-        if hvar == histVarType.DV:
-            xtitle = "DV" + xtitle.split('DV')[-1]
+        if   hvar == histVarType.DV or hvar == histVarType.DV_NTRK:
+            dvStr = "DV"
+            if multiObjStr: dvStr = multiObjStr + " " + dvStr
+            xtitle = dvStr  + xtitle.split('DV') [-1]
             if   histName.startswith("2trk"):
                 xtitle = "2-track " + xtitle
             elif histName.startswith("3trk"):
@@ -451,46 +494,74 @@ def setXaxisTitle( hist, doMulti = False, hvar = histVarType.DV, doSOverB = Fals
                 xtitle = "4-track " + xtitle
             elif histName.startswith("5trk"):
                 xtitle = "5-plus-track " + xtitle
-        elif hvar == histVarType.DV_NTRK:
-            xtitle = "DV" + xtitle.split('DV')[-1]
-            title = ""
-            if "byJet" .lower() in histName.lower():
-                if title:
-                    title += " "
-                title += "by-jet"
-            if "byLeadJet" .lower() in histName.lower():
-                if title:
-                    title += " "
-                title += "by-lead-jet"
-            if "fiducial" .lower() in histName.lower():
-                if title:
-                    title += " "
-                title += "fiducial-cut"
-            if "bareDV".lower() in histName.lower():
-                if title:
-                    title += " "
-                title += "bare"
-            if "cleanDV".lower() in histName.lower():
-                if title:
-                    title += " "
-                title += "clean"
-            if "filtDV".lower() in histName.lower():
-                if title:
-                    title += " "
-                title += "filtered"
-            if "darkPionDV".lower() in histName.lower():
-                if title:
-                    title += " "
-                title += "dark-pion-decay matched"
-            if "kshortDV".lower() in histName.lower():
-                if title:
-                    title += " "
-                title += "k-short-decay matched"
-            if "nomatchDV".lower() in histName.lower():
-                if title:
-                    title += " "
-                title += "unmatched"
-            xtitle = title + " " + xtitle
+        elif hvar == histVarType.JET:
+            jetStr = "jet"
+            if multiObjStr: jetStr = multiObjStr + " " + jetStr
+            xtitle = jetStr + xtitle.split('jet')[-1]
+        else:
+            xtitle = xtitle
+
+
+    ## if doMulti:
+    ##     histName = hist.GetName().split('_')[1]
+    ##     if hvar == histVarType.DV:
+    ##         xtitle = "DV" + xtitle.split('DV')[-1]
+    ##         if   histName.startswith("2trk"):
+    ##             xtitle = "2-track " + xtitle
+    ##         elif histName.startswith("3trk"):
+    ##             xtitle = "3-track " + xtitle
+    ##         elif histName.startswith("4trk"):
+    ##             xtitle = "4-track " + xtitle
+    ##         elif histName.startswith("5trk"):
+    ##             xtitle = "5-plus-track " + xtitle
+    ##     elif hvar == histVarType.DV_NTRK:
+    ##         xtitle = "DV" + xtitle.split('DV')[-1]
+    ##         title = ""
+    ##         if "byJet" .lower() in histName.lower():
+    ##             if title:
+    ##                 title += " "
+    ##             title += "by-jet"
+    ##         if "byLeadJet" .lower() in histName.lower():
+    ##             if title:
+    ##                 title += " "
+    ##             title += "by-lead-jet"
+    ##         if "fiducial" .lower() in histName.lower():
+    ##             if title:
+    ##                 title += " "
+    ##             title += "fiducial-cut"
+    ##         if "bareDV".lower() in histName.lower():
+    ##             if title:
+    ##                 title += " "
+    ##             title += "bare"
+    ##         if "cleanDV".lower() in histName.lower():
+    ##             if title:
+    ##                 title += " "
+    ##             title += "clean"
+    ##         if "filtDV".lower() in histName.lower():
+    ##             if title:
+    ##                 title += " "
+    ##             title += "filtered"
+    ##         if "darkPionDV".lower() in histName.lower():
+    ##             if title:
+    ##                 title += " "
+    ##             title += "dark-pion-decay matched"
+    ##         if "kshortDV".lower() in histName.lower():
+    ##             if title:
+    ##                 title += " "
+    ##             title += "k-short-decay matched"
+    ##         if "nomatchDV".lower() in histName.lower():
+    ##             if title:
+    ##                 title += " "
+    ##             title += "unmatched"
+    ##         xtitle = title + " " + xtitle
+    ##     elif hvar == histVarType.JET:
+    ##         xtitle = "jet" + xtitle.split('jet')[-1]
+    ##         title = ""
+    ##         if "darkMatch" .lower() in histName.lower():
+    ##             if title:
+    ##                 title += " "
+    ##             title += "dark-matched"
+    ##         xtitle = title + " " + xtitle
 
     if doSOverB:
         xtitle += " (S/B)"
@@ -573,7 +644,6 @@ def getDataNEvents( metadir = None ):
     # not sure what we're supposed to scale to -- nInit (unskimmed daod_rpvll)? nSel (skimmed daod_exot23)?
     # --> shouldn't matter if we use nInit or nSel, since we'll use same count in numerator, so scale will be the same...
     n = nInit
-    print n
 
     return n
 

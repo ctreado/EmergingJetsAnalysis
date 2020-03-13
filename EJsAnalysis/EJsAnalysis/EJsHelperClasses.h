@@ -92,14 +92,17 @@ namespace EJsHelperClasses {
     bool m_pv;
     bool m_kinematics;
     bool m_kinematics_jet;
+    bool m_jetCalo;
+    bool m_jetTrkMom;
     bool m_jetTruth;
     bool m_jetTrks;
+    bool m_jetTrksDVTypes;
     bool m_jetVerts;
     bool m_dijets;
     bool m_vertices;
     bool m_baseVerts;
     bool m_byJetVerts;
-    bool m_fiducialVerts;
+    bool m_fiducVerts;
     bool m_ksmVerts;
     bool m_ptVerts;
     bool m_d0Verts;
@@ -107,14 +110,16 @@ namespace EJsHelperClasses {
     bool m_d0z0ErrVerts;
     bool m_vtxTruth;
     bool m_vtxTrks;
+    bool m_vtxOverallTrk;
     bool m_vtxErrors;
     bool m_vtx2D;
     bool m_llps;
     bool m_darkPions;
     bool m_kshorts;
 
-    int  m_numLeadingJets; // n leading jets
-    int  m_numVtxTrks;     // n vertex tracks
+    int  m_numLeadingJets;  // n leading jets
+    int  m_numVtxTrks;      // n vertex tracks
+    int  m_numVtxCutCombos; // n vertex cut combinations
     
     HistogramInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
     virtual ~HistogramInfoSwitch() {}

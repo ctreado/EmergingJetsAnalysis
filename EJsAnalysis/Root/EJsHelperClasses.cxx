@@ -49,40 +49,47 @@ namespace EJsHelperClasses {
   }
 
   void HistogramInfoSwitch::initialize() {
-    m_trigTest          = has_exact( "trigTest"          );
-    m_abcd              = has_exact( "abcd"              );
-    m_pileup            = has_exact( "pileup"            );
-    m_pv                = has_exact( "pv"                );
-    m_kinematics        = has_exact( "kinematics"        );
-    m_kinematics_jet    = has_exact( "kinematics_jet"    );
-    m_jetTruth          = has_exact( "jetTruth"          );
-    m_jetTrks           = has_exact( "jetTrks"           );
-    m_jetVerts          = has_exact( "jetVerts"          );
-    m_dijets            = has_exact( "dijets"            );
-    m_vertices          = has_exact( "vertices"          );
-    m_baseVerts         = has_exact( "baseVerts"         );
-    m_byJetVerts        = has_exact( "byJetVerts"        );
-    m_fiducialVerts     = has_exact( "fiducialVerts"     );
-    m_ksmVerts          = has_exact( "ksmVerts"          );
-    m_ptVerts           = has_exact( "ptVerts"           );
-    m_d0Verts           = has_exact( "d0Verts"           );
-    m_z0Verts           = has_exact( "z0Verts"           );
-    m_d0z0ErrVerts      = has_exact( "d0z0ErrVerts"      );
-    m_vtxTruth          = has_exact( "vtxTruth"          );
-    m_vtxTrks           = has_exact( "vtxTrks"           );
-    m_vtxErrors         = has_exact( "vtxErrors"         );
-    m_vtx2D             = has_exact( "vtx2D"             );
-    m_llps              = has_exact( "llps"              );
-    m_darkPions         = has_exact( "darkPions"         );
-    m_kshorts           = has_exact( "kshorts"           );
+    m_trigTest       = has_exact( "trigTest"       );
+    m_abcd           = has_exact( "abcd"           );
+    m_pileup         = has_exact( "pileup"         );
+    m_pv             = has_exact( "pv"             );
+    m_kinematics     = has_exact( "kinematics"     );
+    m_kinematics_jet = has_exact( "kinematics_jet" );
+    m_jetCalo        = has_exact( "jetCalo"        );
+    m_jetTrkMom      = has_exact( "jetTrkMom"      );
+    m_jetTruth       = has_exact( "jetTruth"       );
+    m_jetTrks        = has_exact( "jetTrks"        );
+    m_jetTrksDVTypes = has_exact( "jetTrksDVTypes" );
+    m_jetVerts       = has_exact( "jetVerts"       );
+    m_dijets         = has_exact( "dijets"         );
+    m_vertices       = has_exact( "vertices"       );
+    m_baseVerts      = has_exact( "baseVerts"      );
+    m_byJetVerts     = has_exact( "byJetVerts"     );
+    m_fiducVerts     = has_exact( "fiducVerts"     );
+    m_ksmVerts       = has_exact( "ksmVerts"       );
+    m_ptVerts        = has_exact( "ptVerts"        );
+    m_d0Verts        = has_exact( "d0Verts"        );
+    m_z0Verts        = has_exact( "z0Verts"        );
+    m_d0z0ErrVerts   = has_exact( "d0z0ErrVerts"   );
+    m_vtxTruth       = has_exact( "vtxTruth"       );
+    m_vtxTrks        = has_exact( "vtxTrks"        );
+    m_vtxOverallTrk  = has_exact( "vtxOverallTrk"  );
+    m_vtxErrors      = has_exact( "vtxErrors"      );
+    m_vtx2D          = has_exact( "vtx2D"          );
+    m_llps           = has_exact( "llps"           );
+    m_darkPions      = has_exact( "darkPions"      );
+    m_kshorts        = has_exact( "kshorts"        );
 
-    m_numLeadingJets = 0;
-    m_numVtxTrks     = 0;
+    m_numLeadingJets  = 0;
+    m_numVtxTrks      = 0;
+    m_numVtxCutCombos = 0;
     for ( auto configDetail : m_configDetails ) {
-      if ( configDetail.compare( 0, 9, "NLeadJets" ) == 0 )
-	m_numLeadingJets = std::atoi( configDetail.substr( 9, std::string::npos ).c_str() );
-      if ( configDetail.compare( 0, 8,  "NVtxTrks" ) == 0 )
-	m_numVtxTrks     = std::atoi( configDetail.substr( 8, std::string::npos ).c_str() );
+      if ( configDetail.compare( 0, 9,      "NLeadJets" ) == 0 )
+	m_numLeadingJets  = std::atoi( configDetail.substr(  9, std::string::npos ).c_str() );
+      if ( configDetail.compare( 0, 8,       "NVtxTrks" ) == 0 )
+	m_numVtxTrks      = std::atoi( configDetail.substr(  8, std::string::npos ).c_str() );
+      if ( configDetail.compare( 0, 13, "NVtxCutCombos" ) == 0 )
+	m_numVtxCutCombos = std::atoi( configDetail.substr( 13, std::string::npos ).c_str() ); // -1 = all
     }
   }
   
