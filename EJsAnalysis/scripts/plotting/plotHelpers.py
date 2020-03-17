@@ -165,11 +165,11 @@ def getHistList( histFiles, subdir, inTag, exTag ):
                 orInTags = intag.split('=')
                 if not any( oit.lower() in key.GetName().lower() for oit in orInTags ):
                     passedInTags = False
-                for extag in exTag:
-                    if extag:
-                        orExTags = extag.split('=')
-                        if any( oet.lower() in key.GetName().lower() for oet in orExTags ):
-                            passedExTags = False
+            for extag in exTag:
+                if extag:
+                    orExTags = extag.split('=')
+                    if any( oet.lower() in key.GetName().lower() for oet in orExTags ):
+                        passedExTags = False
             # always get metadata hists no matter what
             if "MetaData" in key.GetName():
                 passedInTags = True
@@ -447,10 +447,18 @@ def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False, doSvBStr = F
         else:
             legend_string = hname
     elif hvar == histVarType.JET:
+        if "lead"      .lower() in hname.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "lead"
         if "darkMatch" .lower() in hname.lower():
             if legend_string:
                 legend_string += " "
             legend_string += "dark-matched"
+        if "nomatch"   .lower() in hname.lower():
+            if legend_string:
+                legend_string += " "
+            legend_string += "unmatched"
         if not legend_string:
             legend_string = hname
         else:
@@ -477,7 +485,7 @@ def getMaxBinContent( hist ):
 
 
 ## --- SET X-AXIS TITLE --- ##
-def setXaxisTitle( hist, doMulti = False, multiObjStr = "", hvar = histVarType.DV, doSOverB = False ):
+def setXaxisTitle( hist, doMulti = False, multiObjStr = "", hvar = histVarType.DV, doSOverB = False, jetType = "EMTopo" ):
     xtitle = hist.GetXaxis().GetTitle()
 
     if doMulti:
@@ -495,73 +503,15 @@ def setXaxisTitle( hist, doMulti = False, multiObjStr = "", hvar = histVarType.D
             elif histName.startswith("5trk"):
                 xtitle = "5-plus-track " + xtitle
         elif hvar == histVarType.JET:
-            jetStr = "jet"
+            jetStr = jetType + " jet"
             if multiObjStr: jetStr = multiObjStr + " " + jetStr
-            xtitle = jetStr + xtitle.split('jet')[-1]
+            oldJetStr = jetType + " jet"
+            if "darkMatch".lower() in histName.lower(): oldJetStr = "dark-matched " + oldJetStr
+            if "nomatch"  .lower() in histName.lower(): oldJetStr = "unmatched "    + oldJetStr
+            if "lead"     .lower() in histName.lower(): oldJetStr = "lead "         + oldJetStr
+            xtitle = xtitle.replace( oldJetStr, jetStr )
         else:
             xtitle = xtitle
-
-
-    ## if doMulti:
-    ##     histName = hist.GetName().split('_')[1]
-    ##     if hvar == histVarType.DV:
-    ##         xtitle = "DV" + xtitle.split('DV')[-1]
-    ##         if   histName.startswith("2trk"):
-    ##             xtitle = "2-track " + xtitle
-    ##         elif histName.startswith("3trk"):
-    ##             xtitle = "3-track " + xtitle
-    ##         elif histName.startswith("4trk"):
-    ##             xtitle = "4-track " + xtitle
-    ##         elif histName.startswith("5trk"):
-    ##             xtitle = "5-plus-track " + xtitle
-    ##     elif hvar == histVarType.DV_NTRK:
-    ##         xtitle = "DV" + xtitle.split('DV')[-1]
-    ##         title = ""
-    ##         if "byJet" .lower() in histName.lower():
-    ##             if title:
-    ##                 title += " "
-    ##             title += "by-jet"
-    ##         if "byLeadJet" .lower() in histName.lower():
-    ##             if title:
-    ##                 title += " "
-    ##             title += "by-lead-jet"
-    ##         if "fiducial" .lower() in histName.lower():
-    ##             if title:
-    ##                 title += " "
-    ##             title += "fiducial-cut"
-    ##         if "bareDV".lower() in histName.lower():
-    ##             if title:
-    ##                 title += " "
-    ##             title += "bare"
-    ##         if "cleanDV".lower() in histName.lower():
-    ##             if title:
-    ##                 title += " "
-    ##             title += "clean"
-    ##         if "filtDV".lower() in histName.lower():
-    ##             if title:
-    ##                 title += " "
-    ##             title += "filtered"
-    ##         if "darkPionDV".lower() in histName.lower():
-    ##             if title:
-    ##                 title += " "
-    ##             title += "dark-pion-decay matched"
-    ##         if "kshortDV".lower() in histName.lower():
-    ##             if title:
-    ##                 title += " "
-    ##             title += "k-short-decay matched"
-    ##         if "nomatchDV".lower() in histName.lower():
-    ##             if title:
-    ##                 title += " "
-    ##             title += "unmatched"
-    ##         xtitle = title + " " + xtitle
-    ##     elif hvar == histVarType.JET:
-    ##         xtitle = "jet" + xtitle.split('jet')[-1]
-    ##         title = ""
-    ##         if "darkMatch" .lower() in histName.lower():
-    ##             if title:
-    ##                 title += " "
-    ##             title += "dark-matched"
-    ##         xtitle = title + " " + xtitle
 
     if doSOverB:
         xtitle += " (S/B)"

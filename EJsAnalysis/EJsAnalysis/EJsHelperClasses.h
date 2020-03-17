@@ -5,6 +5,7 @@
    that defines EJs-specific info switches (namely for our new vertex container classes) */
 
 #include <string>
+#include <vector>
 
 #include <xAODAnaHelpers/HelperClasses.h>
 
@@ -108,6 +109,7 @@ namespace EJsHelperClasses {
     bool m_d0Verts;
     bool m_z0Verts;
     bool m_d0z0ErrVerts;
+    bool m_vtxCombos;
     bool m_vtxTruth;
     bool m_vtxTrks;
     bool m_vtxOverallTrk;
@@ -117,9 +119,10 @@ namespace EJsHelperClasses {
     bool m_darkPions;
     bool m_kshorts;
 
-    int  m_numLeadingJets;  // n leading jets
-    int  m_numVtxTrks;      // n vertex tracks
-    int  m_numVtxCutCombos; // n vertex cut combinations
+    int              m_numLeadingJets;     // n leading jets
+    int              m_numVtxTrks;         // n vertex tracks
+    int              m_numVtxCutCombos;    // n vertex cut combinations (inclusive: do all combos for n <= N)
+    std::vector<int> m_numVtxCutCombosVec; // n vertex cut combinations (exclusive: do only combos for n = N, for multiple N's)
     
     HistogramInfoSwitch ( const std::string configStr ) : HelperClasses::InfoSwitch( configStr ) { initialize(); };
     virtual ~HistogramInfoSwitch() {}

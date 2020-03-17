@@ -45,7 +45,6 @@ def main():
     command_d    = command
     command_d   += d
 
-    
     # signal vs background
     command_sb     = command
     command_sb    += b
@@ -77,7 +76,6 @@ def main():
     command_bd    += " --histTitle 'background vs data'"
 
 
-    
     ## --- update plotting commands --- ##
     command_S  = " --regionDir search"
     command_S1 = " --regionDir search-minus-one"
@@ -152,7 +150,6 @@ def main():
     histList_multi = "_mass"
     command_multi  = []
     command_multi1d = " --drawMulti1D --doTruthSvB --outSubdir multi_dv --legLenEnum 5 --lxint 0.007 --lyint 0.027"
-
     # --> set hist vars for given DV types
     histvars, histttls, outnames = [], [], []
     histvars.append( "darkPionDV,kshortDV,nomatchDV" )
@@ -162,8 +159,7 @@ def main():
         histvars.append( dvType + "DarkPionDV," + dvType + "KshortDV," + dvType + "NomatchDV" )
         histttls.append( "'" + dvType + "'" )
         outnames.append( dvType + "Match" )
-
-    # --> loop over hist vars and run plotting script
+    # --> loop over hist vars and configure plotting script
     for iVar, var in enumerate( histvars ):
         histList = var
         if histList_multi:
@@ -175,7 +171,6 @@ def main():
             if histList.endswith(','): histList = histList[:-1]
         command_multi.append( command_multi1d + " --histVars " + var + " --outName " + outnames[iVar] + \
                                   " --histList " + histList + " --histTitle " + histttls[iVar] + " --lxl 0.700" )
-
         # --> plot n-trk dvs
         for itrk in range( 2, Ntrk+1 ):
             ntrk = str(itrk) + "trk"
@@ -184,7 +179,6 @@ def main():
             if ntrkvar.endswith(','): ntrkvar = ntrkvar[:-1]
             command_multi.append( command_multi1d + " --histVars " + ntrkvar + " --outName " + outnames[iVar] + "." + ntrk + \
                                       " --histList " + histList + " --histTitle " + histttls[iVar] + " --lxl 0.700" )
-
     # --> different number of track DVs of same type against each other
     ntrkHistVars = []
     for hv in histvars:
@@ -212,7 +206,7 @@ def main():
             outvar = var[:-2]
         command_multi.append( command_multi1d + " --histVars " + ntrkvar + " --outName " + outvar + \
                                   " --histList " + histList + " --histTitle " + outvar + " --lxl 0.750 --varEnum 2" )
-
+    # --> complete commands
     command_s_ab_multi_S, command_s_ab_multi_S1 = [], [] # ab benchmark test
     command_s_14_multi_S, command_s_14_multi_S1 = [], []
     command_s_10_multi_S, command_s_10_multi_S1 = [], []
@@ -235,7 +229,6 @@ def main():
     histList_multismpl  = "_mass"
     command_multismpl   = []
     command_multismpl1d = " --drawMulti1D --doMultiSmpl --doTruthSvB --outSubdir multismpl_dv --legLenEnum 3 --lxint 0.007 --lyint 0.027"
-    
     # --> set hist vars, titles for given DV types
     hvars, httls = [], []
     hvars.append( "darkPionDV," + baseDV + "DV" )
@@ -244,8 +237,7 @@ def main():
         htitle = "'" + dvType + "'"
         hvars.append( dvType + "DarkPionDV," + dvType + "DV" ) # cut combos
         httls.append( htitle + "' dark pion matched signal vs background'" + "' (" + baseDV + " DVs)'" )
-        
-    # --> loop over hist vars and run plotting script
+    # --> loop over hist vars and configure plotting script
     for iVar, var in enumerate( hvars ):
         histList = var
         if histList_multismpl:
@@ -257,7 +249,6 @@ def main():
             if histList.endswith(','): histList = histList[:-1]
         command_multismpl.append( command_multismpl1d + " --histVars " + var + " --sbdVars " + var + \
                                       " --histList " + histList + " --histTitle " + httls[iVar] + " --baseDV " + baseDV )
-
         # --> plot n-trk dvs
         for itrk in range( 2, Ntrk+1 ):
             ntrk = str(itrk) + "trk"
@@ -268,7 +259,7 @@ def main():
                 ntrkvar = ntrkvar[:-1]
             command_multismpl.append( command_multismpl1d + " --histVars " + ntrkvar + " --sbdVars " + var + \
                                           " --histList " + histList + " --histTitle " + httls[iVar] + " --baseDV " + baseDV )
-                                      
+    # --> complete commands
     command_sb_ab_multismpl_S, command_sb_ab_multismpl_S1 = [], [] # --> ab benchmark test
     command_sb_14_multismpl_S, command_sb_14_multismpl_S1 = [], []
     command_sb_10_multismpl_S, command_sb_10_multismpl_S1 = [], []

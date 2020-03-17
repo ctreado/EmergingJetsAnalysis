@@ -469,8 +469,6 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
     l.Draw()
 
     # set titles and axes
-    #htitle = ""
-    #if args.histTitle: htitle = args.histTitle + " "
     hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist, True, args.histTitle, varType( args.varEnum ).value ) )
     hs.GetXaxis().SetTitleSize( 0.03  )
     hs.GetXaxis().SetTitleOffset( 1.4 )

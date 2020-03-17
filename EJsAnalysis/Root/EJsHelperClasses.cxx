@@ -71,6 +71,7 @@ namespace EJsHelperClasses {
     m_d0Verts        = has_exact( "d0Verts"        );
     m_z0Verts        = has_exact( "z0Verts"        );
     m_d0z0ErrVerts   = has_exact( "d0z0ErrVerts"   );
+    m_vtxCombos      = has_exact( "vtxCombos"      ); // do combos only, not individual cuts
     m_vtxTruth       = has_exact( "vtxTruth"       );
     m_vtxTrks        = has_exact( "vtxTrks"        );
     m_vtxOverallTrk  = has_exact( "vtxOverallTrk"  );
@@ -84,12 +85,18 @@ namespace EJsHelperClasses {
     m_numVtxTrks      = 0;
     m_numVtxCutCombos = 0;
     for ( auto configDetail : m_configDetails ) {
-      if ( configDetail.compare( 0, 9,      "NLeadJets" ) == 0 )
+      if ( configDetail.compare( 0,  9,      "NLeadJets" ) == 0 )
 	m_numLeadingJets  = std::atoi( configDetail.substr(  9, std::string::npos ).c_str() );
-      if ( configDetail.compare( 0, 8,       "NVtxTrks" ) == 0 )
+      if ( configDetail.compare( 0,  8,       "NVtxTrks" ) == 0 )
 	m_numVtxTrks      = std::atoi( configDetail.substr(  8, std::string::npos ).c_str() );
-      if ( configDetail.compare( 0, 13, "NVtxCutCombos" ) == 0 )
+      if ( configDetail.compare( 0, 13,  "NVtxCutCombos" ) == 0 )
 	m_numVtxCutCombos = std::atoi( configDetail.substr( 13, std::string::npos ).c_str() ); // -1 = all
+      if ( configDetail.compare( 0, 14, "NVtxCutCombosV" ) == 0 ) {
+	std::string token;
+	std::istringstream vec_str ( configDetail.substr( 14, std::string::npos ) );
+	while ( std::getline( vec_str, token, ',' ) )
+	  m_numVtxCutCombosVec.push_back( std::atoi(token.c_str()) );
+      }
     }
   }
   
