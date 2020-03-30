@@ -215,6 +215,9 @@ def getHists( sname, stype, flist, hlist, subdir, scaleData = False, metadir = N
             else:
                 CombinedHists[iHist].Add(h) # add to existing histogram
 
+            if "efficiency" in h.GetName() or "cutflowEff" in h.GetName() or "cutflowTotEff" in h.GetName(): # change back to 'efficiency'
+                CombinedHists[iHist].Scale(1./len(flist)) # average efficiency histograms over all files
+
         f.Close()
 
     # scale data to full Run2 (if running over subset)
@@ -255,43 +258,64 @@ def getNewHists( stypes, histNames, hists ):
 
 # --> for plotting different histograms from same or different samples against each other
 def getVarHists( stypes, histNames, hists, histVars ):
-    varHists, baseNames = [], []
+    varHists, baseNames, baseNames_pre, baseNames_post = [], [], [], []
     if len( histVars ) > 0:
         histVars = histVars.split(',')
-        for iType, type in enumerate( stypes ):
+        for iType, stype in enumerate( stypes ):
             for iName, name in enumerate( histNames ):
                 getBaseHists = False
                 for iVar, var in enumerate( histVars ):
-                    if var.lower() in name.lower():
-                        getBaseHists = True
-                if getBaseHists:
-                    baseName = '_'.join( name.split('_')[1:] )
-                    if baseName not in baseNames:
-                        baseNames.append( baseName )
-                        varHists.append( [] )
+                    if var in name:
+                        baseName_pre  = '_'.join( name.split(var)[:-1] )
+                        baseName_post = '_'.join( name.split(var)[1:]  )
+                        if baseName_pre.endswith('_'):
+                            baseName_pre = baseName_pre[:-1]
+                        if baseName_post.startswith('_'):
+                            baseName_post = baseName_post[1:]
+                        baseName = baseName_pre
+                        if baseName and baseName_post:
+                            baseName += "_"
+                        baseName += baseName_post
+                        if baseName not in baseNames:
+                            baseNames      .append( baseName      )
+                            baseNames_pre  .append( baseName_pre  )
+                            baseNames_post .append( baseName_post )
+                            varHists.append( [] )
             for iBase, base in enumerate( baseNames ):
                 for iVar, var in enumerate( histVars ):
                     for iName, name in enumerate( histNames ):
-                        if var.lower() + "_" + base.lower() == name.lower():
+                        hname = baseNames_pre[iBase]
+                        if hname:
+                            hname += "_"
+                        hname += var
+                        if baseNames_post[iBase]:
+                            hname += "_" + baseNames_post[iBase]
+                        if hname == name:
                             varHists[iBase].append( hists[iType][iName] )
                 
     return varHists, baseNames
 
-## --- RETRIEVE FILE LIST --- ##
-def getFileList( histDir, histTag ):
-    
-    # get list of files matching hist-tags in hist-directory
-    histFiles = []
-    for f in os.listdir( histDir ):
-        passedTags = True
-        for tag in histTag:
-            orTags = tag.split('=')
-            if not any( ot in f for ot in orTags ):
-                passedTags = False
-        if passedTags:
-            histFiles.append( os.path.join( histDir, f ) )
 
-    return histFiles
+
+## --- DO NORMALIZATION --- ##
+def doNorm( hist, norm_factor = 1 ):
+    # skip cutflow, count, and efficiency histograms
+    if "cutflow"    in hist.GetName().lower():
+        return
+    if "count"      in hist.GetName().lower():
+        return
+    if "efficiency" in hist.GetName().lower():
+        return
+    if "cuteff"     in hist.GetName().lower():
+        return
+
+    # add other histos to skip as needed...
+
+    # add handling of s/b ??
+
+    hist.Scale( norm_factor / hist.Integral() )
+
+    return
 
 
 
@@ -419,6 +443,10 @@ def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False, doSvBStr = F
                     legend_string += " "
                 legend_string += "ksm"
             # add other cuts
+            if "good"    .lower() in hname.lower():
+                if legend_string:
+                    legend_string += " "
+                legend_string += "good"
             if "darkPion".lower() in hname.lower():
                 if legend_string:
                     legend_string += " "

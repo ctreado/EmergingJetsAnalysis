@@ -11,7 +11,7 @@
 
 import os, sys, glob, subprocess, time, shutil
 import argparse
-import ROOT # --> figure out how to get this running outside of athena
+import ROOT
 
 ### command line arguments ###
 parser = argparse.ArgumentParser( description= "histogramming options", formatter_class = argparse.ArgumentDefaultsHelpFormatter )

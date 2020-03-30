@@ -29,8 +29,6 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_unblind            = unblind;
   m_numLeadJets        = m_histoInfoSwitch->m_numLeadingJets;
   m_numVtxTrks         = m_histoInfoSwitch->m_numVtxTrks;
-  m_numVtxCutCombos    = m_histoInfoSwitch->m_numVtxCutCombos;
-  m_numVtxCutCombosVec = m_histoInfoSwitch->m_numVtxCutCombosVec;
 
   if ( m_debug ) Info( "EJsHistogramManager()", "setting up" );
 
@@ -153,35 +151,39 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_darkJet_nConstit = new std::vector<int>;
 
   // track branches
-  m_trk_n          = 0;
-  m_trk_ID         = new std::vector<int>;
-  m_trk_index      = new std::vector<int>;
-  m_trk_qOverP     = new std::vector<float>;
-  m_trk_theta      = new std::vector<float>;
-  m_trk_pt         = new std::vector<float>;
-  m_trk_eta        = new std::vector<float>;
-  m_trk_phi        = new std::vector<float>;
-  m_trk_E          = new std::vector<float>;
-  m_trk_M          = new std::vector<float>;
-  m_trk_d0         = new std::vector<float>;
-  m_trk_z0         = new std::vector<float>;
-  m_trk_errd0      = new std::vector<float>;
-  m_trk_errz0      = new std::vector<float>;
-  m_trk_errP       = new std::vector<float>;
-  m_trk_chi2       = new std::vector<float>;
-  m_trk_chiSq      = new std::vector<float>;
-  m_trk_ndof       = new std::vector<int>;
-  m_trk_charge     = new std::vector<float>;
-  m_trk_isLRT      = new std::vector<uint8_t>;
-  m_trk_isSel      = new std::vector<uint8_t>;
-  m_trk_isAssoc    = new std::vector<uint8_t>;
-  m_trk_isSV       = new std::vector<uint8_t>;
-  m_trk_isCleanSV  = new std::vector<uint8_t>;
-  m_trk_isFiltSV   = new std::vector<uint8_t>;
-  m_trk_isFinalSV  = new std::vector<uint8_t>;
-  m_trk_nSCT       = new std::vector<uint8_t>;
-  m_trk_nPixel     = new std::vector<uint8_t>;
-  m_trk_nTRT       = new std::vector<uint8_t>;
+  m_trk_n              = 0;
+  m_trk_ID             = new std::vector<int>;
+  m_trk_index          = new std::vector<int>;
+  m_trk_qOverP         = new std::vector<float>;
+  m_trk_theta          = new std::vector<float>;
+  m_trk_pt             = new std::vector<float>;
+  m_trk_eta            = new std::vector<float>;
+  m_trk_phi            = new std::vector<float>;
+  m_trk_E              = new std::vector<float>;
+  m_trk_M              = new std::vector<float>;
+  m_trk_d0             = new std::vector<float>;
+  m_trk_z0             = new std::vector<float>;
+  m_trk_errd0          = new std::vector<float>;
+  m_trk_errz0          = new std::vector<float>;
+  m_trk_errP           = new std::vector<float>;
+  m_trk_chi2           = new std::vector<float>;
+  m_trk_chiSq          = new std::vector<float>;
+  m_trk_ndof           = new std::vector<int>;
+  m_trk_charge         = new std::vector<float>;
+  m_trk_isLRT          = new std::vector<uint8_t>;
+  m_trk_isSel          = new std::vector<uint8_t>;
+  m_trk_isAssoc        = new std::vector<uint8_t>;
+  m_trk_isSV           = new std::vector<uint8_t>;
+  m_trk_isCleanSV      = new std::vector<uint8_t>;
+  m_trk_isFiltSV       = new std::vector<uint8_t>;
+  m_trk_isFinalSV      = new std::vector<uint8_t>;
+  m_trk_nSCT           = new std::vector<uint8_t>;
+  m_trk_nPixel         = new std::vector<uint8_t>;
+  m_trk_nTRT           = new std::vector<uint8_t>;
+  m_trk_jetMatch       = new std::vector<uint8_t>;
+  m_trk_jetMatch_ID    = new std::vector<int>;
+  m_trk_jetMatch_index = new std::vector<int>;
+  m_trk_jetMatch_dR    = new std::vector<float>;
 
   // truth vertex branches
   m_truthVtx_n            = 0;
@@ -223,6 +225,8 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_secVtx_mass            = new std::vector<float>;
   m_secVtx_massNA          = new std::vector<float>;
   m_secVtx_direction       = new std::vector<float>;
+  m_secVtx_H               = new std::vector<float>;
+  m_secVtx_Ht              = new std::vector<float>;
   m_secVtx_minOpAng        = new std::vector<float>;
   m_secVtx_maxOpAng        = new std::vector<float>;
   m_secVtx_mind0           = new std::vector<float>;
@@ -233,6 +237,8 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_secVtx_mass_clean      = new std::vector<float>;
   m_secVtx_massNA_clean    = new std::vector<float>;
   m_secVtx_direction_clean = new std::vector<float>;
+  m_secVtx_H_clean         = new std::vector<float>;
+  m_secVtx_Ht_clean        = new std::vector<float>;
   m_secVtx_minOpAng_clean  = new std::vector<float>;
   m_secVtx_maxOpAng_clean  = new std::vector<float>;
   m_secVtx_mind0_clean     = new std::vector<float>;
@@ -243,6 +249,8 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_secVtx_mass_bare       = new std::vector<float>;
   m_secVtx_massNA_bare     = new std::vector<float>;
   m_secVtx_direction_bare  = new std::vector<float>;
+  m_secVtx_H_bare          = new std::vector<float>;
+  m_secVtx_Ht_bare         = new std::vector<float>;
   m_secVtx_minOpAng_bare   = new std::vector<float>;
   m_secVtx_maxOpAng_bare   = new std::vector<float>;
   m_secVtx_mind0_bare      = new std::vector<float>;
@@ -397,6 +405,10 @@ EJsHistogramManager :: ~EJsHistogramManager ()
   delete m_trk_nSCT;
   delete m_trk_nPixel;
   delete m_trk_nTRT;
+  delete m_trk_jetMatch;
+  delete m_trk_jetMatch_ID;
+  delete m_trk_jetMatch_index;
+  delete m_trk_jetMatch_dR;
 
   // truth vertex branches
   delete m_truthVtx_llp;
@@ -436,6 +448,8 @@ EJsHistogramManager :: ~EJsHistogramManager ()
   delete m_secVtx_mass;
   delete m_secVtx_massNA;
   delete m_secVtx_direction;
+  delete m_secVtx_H;
+  delete m_secVtx_Ht;
   delete m_secVtx_minOpAng;
   delete m_secVtx_maxOpAng;
   delete m_secVtx_mind0;
@@ -446,6 +460,8 @@ EJsHistogramManager :: ~EJsHistogramManager ()
   delete m_secVtx_mass_clean;
   delete m_secVtx_massNA_clean;
   delete m_secVtx_direction_clean;
+  delete m_secVtx_H_clean;
+  delete m_secVtx_Ht_clean;
   delete m_secVtx_minOpAng_clean;
   delete m_secVtx_maxOpAng_clean;
   delete m_secVtx_mind0_clean;
@@ -456,6 +472,8 @@ EJsHistogramManager :: ~EJsHistogramManager ()
   delete m_secVtx_mass_bare;
   delete m_secVtx_massNA_bare;
   delete m_secVtx_direction_bare;
+  delete m_secVtx_H_bare;
+  delete m_secVtx_Ht_bare;
   delete m_secVtx_minOpAng_bare;
   delete m_secVtx_maxOpAng_bare;
   delete m_secVtx_mind0_bare;
@@ -761,6 +779,13 @@ StatusCode EJsHistogramManager :: connectTracks ( TTree* tree, const std::string
   connectBranch<uint8_t> ( name, tree, "nSCTHits",          &m_trk_nSCT      );
   connectBranch<uint8_t> ( name, tree, "nPixelHits",        &m_trk_nPixel    );
   connectBranch<uint8_t> ( name, tree, "nTRTHits",          &m_trk_nTRT      );
+
+  std::string trk_jetStr = m_jetStr;
+  for ( size_t i = 0; i != trk_jetStr.length(); ++i ) trk_jetStr[i] = std::tolower( trk_jetStr[i] );
+  connectBranch<uint8_t> ( name, tree, trk_jetStr + "JetMatch",       &m_trk_jetMatch       );
+  connectBranch<int>     ( name, tree, trk_jetStr + "JetMatch_ID",    &m_trk_jetMatch_ID    );
+  connectBranch<int>     ( name, tree, trk_jetStr + "JetMatch_index", &m_trk_jetMatch_index );
+  connectBranch<float>   ( name, tree, trk_jetStr + "JetMatch_dR",    &m_trk_jetMatch_dR    );
   
   return StatusCode::SUCCESS;
 }
@@ -800,6 +825,8 @@ StatusCode EJsHistogramManager :: connectSecondaryVerts ( TTree* tree, const std
   connectBranch<float> ( name, tree, "mass",                &m_secVtx_mass            );
   connectBranch<float> ( name, tree, "mass_nonAssoc",       &m_secVtx_massNA          );
   connectBranch<float> ( name, tree, "direction",           &m_secVtx_direction       );
+  connectBranch<float> ( name, tree, "H",                   &m_secVtx_H               );
+  connectBranch<float> ( name, tree, "Ht",                  &m_secVtx_Ht              );
   connectBranch<float> ( name, tree, "minOpAng",            &m_secVtx_minOpAng        );
   connectBranch<float> ( name, tree, "maxOpAng",            &m_secVtx_maxOpAng        );
   connectBranch<float> ( name, tree, "mind0",               &m_secVtx_mind0           );
@@ -810,6 +837,8 @@ StatusCode EJsHistogramManager :: connectSecondaryVerts ( TTree* tree, const std
   connectBranch<float> ( name, tree, "mass_clean",          &m_secVtx_mass_clean      );
   connectBranch<float> ( name, tree, "mass_nonAssoc_clean", &m_secVtx_massNA_clean    );
   connectBranch<float> ( name, tree, "direction_clean",     &m_secVtx_direction_clean );
+  connectBranch<float> ( name, tree, "H_clean",             &m_secVtx_H_clean         );
+  connectBranch<float> ( name, tree, "Ht_clean",            &m_secVtx_Ht_clean        );
   connectBranch<float> ( name, tree, "minOpAng_clean",      &m_secVtx_minOpAng_clean  );
   connectBranch<float> ( name, tree, "maxOpAng_clean",      &m_secVtx_maxOpAng_clean  );
   connectBranch<float> ( name, tree, "mind0_clean",         &m_secVtx_mind0_clean     );
@@ -820,6 +849,8 @@ StatusCode EJsHistogramManager :: connectSecondaryVerts ( TTree* tree, const std
   connectBranch<float> ( name, tree, "mass_bare",           &m_secVtx_mass_bare       );
   connectBranch<float> ( name, tree, "mass_nonAssoc_bare",  &m_secVtx_massNA_bare     );
   connectBranch<float> ( name, tree, "direction_bare",      &m_secVtx_direction_bare  );
+  connectBranch<float> ( name, tree, "H_bare",              &m_secVtx_H_bare          );
+  connectBranch<float> ( name, tree, "Ht_bare",             &m_secVtx_Ht_bare         );
   connectBranch<float> ( name, tree, "minOpAng_bare",       &m_secVtx_minOpAng_bare   );
   connectBranch<float> ( name, tree, "maxOpAng_bare",       &m_secVtx_maxOpAng_bare   );
   connectBranch<float> ( name, tree, "mind0_bare",          &m_secVtx_mind0_bare      );
@@ -930,13 +961,17 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   // lead jets (N top-pt)
   hJ    .push_back( "lead" );
   hJstr .push_back( "lead" );
-  // --> look at jets passing pt, eta requirements (may be more than four?); investigate other cuts
+
+  m_LJix = hJ.size();
+
+  // number of jet types excluding truth matching
+  m_nTypeBJs = hJ.size();
   
   // truth-(dark-)matched jets
   // --> dark = has truth match + dark match (highest pT w/in dR = 0.3), with dark also matched to truth match
   // --> need additional cut on dark matching; averaging 3/4 dark-matched lead jets (should be 2/4)
   if ( m_mc && m_histoInfoSwitch->m_jetTruth ) {
-    std::vector<std::string> mJ    = { "darkMatch",    "nomatch"   };
+    std::vector<std::string> mJ    = { "DarkMatch",    "Nomatch"   };
     std::vector<std::string> mJstr = { "dark-matched", "unmatched" };
     std::vector<std::string> miJ, miJstr;
     for ( size_t ihj = 0; ihj != hJ.size(); ++ihj ) {
@@ -944,16 +979,19 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       miJstr .push_back( hJstr [ihj] );
     }
     for ( size_t i = 0; i != mJ.size(); ++i ) {
-      hJ    .push_back( mJ    [i] );
-      hJstr .push_back( mJstr [i] );
       for ( size_t j = 0; j != miJ.size(); ++j ) {
-	if ( j == 0 ) continue; // skip base jet name for nominal case
-	std::string mJs = mJ[i]; mJs[0] = toupper(mJs[0]);
-	hJ    .push_back( miJ    [j] +       mJs      );
-	hJstr .push_back( miJstr [j] + " " + mJstr[i] );
+	std::string mJs  = mJ  [i];
+	std::string tmpj = miJ [j] + mJs; tmpj[0] = tolower(tmpj[0]);
+	std::string tmpjstr = miJstr [j];
+	if ( !tmpjstr.empty() ) tmpjstr += " ";
+	tmpjstr += mJstr[i];
+	hJ    .push_back( tmpj    );
+	hJstr .push_back( tmpjstr );
       }
     }
   }
+
+  // number of jet types including truth matching
   m_nTypeJs = hJ.size();
 
 
@@ -970,17 +1008,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   hTrkstr .push_back( "associated"                );
   hTrk    .push_back( "SV"                        );
   hTrkstr .push_back( "secondary vertex"          );
-  // hTrk    .push_back( "cleanSV"                   ); // --> count these inside matched SVs instead...
-  // hTrkstr .push_back( "secondary vertex clean"    );
-  // hTrk    .push_back( "filtSV"         cleanSV           );
-  // hTrkstr .push_back( "secondary vertex filtered" );
-  // hTrk    .push_back( "finalSV"                   );
-  // hTrkstr .push_back( "secondary vertex final"    );
   m_nTypeTrks = hTrk.size();
   
 
   // --> secondary vertices
-  std::vector<std::string> hDV, hDVstr;
+  std::vector<std::string> hDV,  hDVstr;
+  std::vector<std::string> hJDV, hJDVstr;
   // base vertices (bare or clean or filtered or custom-trimmed --> starting point for all further cuts)
   std::string baseDV    = "";
   std::string baseDVstr = base_dv.name + ",";
@@ -988,11 +1021,15 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   else if ( base_dv.type == EJsHelper::CLEAN    ) baseDV = "Clean";
   else if ( base_dv.type == EJsHelper::FILTERED ) baseDV = "Filt";
   else if ( base_dv.type == EJsHelper::TRIMMED  ) baseDV = "Trim";
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_baseVerts ) {
-    hDV    .push_back( baseDV    );
-    hDVstr .push_back( baseDVstr );
+  if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_baseVerts    ) {
+    hDV     .push_back( baseDV    );
+    hDVstr  .push_back( baseDVstr );
   }
-  // vertices by (leading) jets
+  if ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_baseJetVerts ) {
+    hJDV    .push_back( baseDV    );
+    hJDVstr .push_back( baseDVstr );
+  }
+  // vertices by (leading) jets -- skip for jet DVs
   std::string jDV     = "ByJet";
   std::string ljDV    = "ByNJet";
   std::string jDVstr  = "by-jet,";
@@ -1006,39 +1043,59 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   // vertices passing fiducial cuts (fiducial volume, chi2)
   std::string fidDV    = "Fiduc";
   std::string fidDVstr = "fiduc,";
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_fiducVerts ) {
-    hDV    .push_back( fidDV    );
-    hDVstr .push_back( fidDVstr );
+  if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_fiducVerts    ) {
+    hDV     .push_back( fidDV    );
+    hDVstr  .push_back( fidDVstr );
+  }
+  if ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_fiducJetVerts ) {
+    hJDV    .push_back( fidDV    );
+    hJDVstr .push_back( fidDVstr );
   }
   // vertices w/ k-short mass window removed
   std::string ksmDV    = "Ksm";
   std::string ksmDVstr = "ksm,";
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ksmVerts ) {
+  if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ksmVerts    ) {
     hDV    .push_back( ksmDV    );
     hDVstr .push_back( ksmDVstr );
+  }
+  if ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_ksmJetVerts ) {
+    hJDV    .push_back( ksmDV    );
+    hJDVstr .push_back( ksmDVstr );
   }
   // vertices passing low-pt cut
   std::string ptDV    = "Pt";
   std::string ptDVstr = "pt,";
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ptVerts ) {
-    hDV    .push_back( ptDV    );
-    hDVstr .push_back( ptDVstr );
+  if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ptVerts    ) {
+    hDV     .push_back( ptDV    );
+    hDVstr  .push_back( ptDVstr );
+  }
+  if ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_ptJetVerts ) {
+    hJDV    .push_back( ptDV    );
+    hJDVstr .push_back( ptDVstr );
   }
   // vertices pass min-d0 cut
   // --> add max/sum-d0 (wrt SV) cuts if necessary...
   std::string mind0DV    = "Mind0";
   std::string mind0DVstr = "mind0,";
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_d0Verts ) {
-    hDV    .push_back( mind0DV    );
-    hDVstr .push_back( mind0DVstr );
+  if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0Verts    ) {
+    hDV     .push_back( mind0DV    );
+    hDVstr  .push_back( mind0DVstr );
+  }
+  if ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_d0JetVerts ) {
+    hJDV    .push_back( mind0DV    );
+    hJDVstr .push_back( mind0DVstr );
   }
   // vertices passing min-z0 cut
   // --> add max/sum-z0 (wrt SV) cuts if necessary...
   std::string minz0DV    = "Minz0";
   std::string minz0DVstr = "minz0,";
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_z0Verts ) {
-    hDV    .push_back( minz0DV    );
-    hDVstr .push_back( minz0DVstr );
+  if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_z0Verts    ) {
+    hDV     .push_back( minz0DV    );
+    hDVstr  .push_back( minz0DVstr );
+  }
+  if ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_z0JetVerts ) {
+    hJDV    .push_back( minz0DV    );
+    hJDVstr .push_back( minz0DVstr );
   }
   // vertices passing min-sqrterr-d0/z0 cut
   // --> add max/sum-sqrterr-d0/z0 (wrt SV) cuts if necessary...
@@ -1046,69 +1103,105 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   std::string minsqerrz0DV    = "Minsqerrz0";
   std::string minsqerrd0DVstr = "minsqerrd0,";
   std::string minsqerrz0DVstr = "minsqerrz0,";
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_d0z0ErrVerts ) {
-    hDV    .push_back( minsqerrd0DV    );
-    hDV    .push_back( minsqerrz0DV    );
-    hDVstr .push_back( minsqerrd0DVstr );
-    hDVstr .push_back( minsqerrz0DVstr );
+  if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0z0ErrVerts    ) {
+    hDV     .push_back( minsqerrd0DV    );
+    hDV     .push_back( minsqerrz0DV    );
+    hDVstr  .push_back( minsqerrd0DVstr );
+    hDVstr  .push_back( minsqerrz0DVstr );
+  }
+  if ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_d0z0ErrJetVerts ) {
+    hJDV    .push_back( minsqerrd0DV    );
+    hJDV    .push_back( minsqerrz0DV    );
+    hJDVstr .push_back( minsqerrd0DVstr );
+    hJDVstr .push_back( minsqerrz0DVstr );
   }
 
-  // vertices passing combination cuts
-  std::vector<std::string> dvTypeCombos, dvTypeStrCombos;
-  if ( m_numVtxCutCombos ) {
-    size_t nc = m_numVtxCutCombos;
-    if ( m_numVtxCutCombos == -1 ) nc = hDV.size()-1;
-    for ( size_t ic = 2; ic != nc+1; ++ic ) {
-      getTypeCombos ( hDV,    dvTypeCombos,    ic );
-      getTypeCombos ( hDVstr, dvTypeStrCombos, ic );
-    }
-  }
-  else if ( !m_numVtxCutCombosVec.empty() ) {
-    for ( size_t ic = 0; ic != m_numVtxCutCombosVec.size(); ++ic ) {
-      getTypeCombos ( hDV,    dvTypeCombos,    m_numVtxCutCombosVec[ic] );
-      getTypeCombos ( hDVstr, dvTypeStrCombos, m_numVtxCutCombosVec[ic] );
-    }
-  }
-  if ( m_histoInfoSwitch->m_vtxCombos ) {
-    hDV   .clear();
-    hDVstr.clear();
-  }
-  for ( size_t i = 0; i != dvTypeCombos.size(); ++i ) {
-    if ( dvTypeCombos[i].find("Bare")   != std::string::npos ) continue;
-    if ( dvTypeCombos[i].find("ByJet")  != std::string::npos &&
-	 dvTypeCombos[i].find("ByNJet") != std::string::npos ) continue;
-    hDV    .push_back( dvTypeCombos   [i] );
-    hDVstr .push_back( dvTypeStrCombos[i] );
-  }
-  m_dvTypeCombos = dvTypeCombos;
+  // number of (jet) DV cuts
+  m_nType1DVs  = hDV .size();
+  m_nType1JDVs = hJDV.size();
+  
+  // --> do combinations
+  
+  // --> "good" DVs -- tentatively = combo of all above cuts
+  std::vector<std::string> hGDVstr;
+  hGDVstr .push_back( baseDVstr       );
+  hGDVstr .push_back( jDVstr          );
+  hGDVstr .push_back( ljDVstr         );
+  hGDVstr .push_back( fidDVstr        );
+  hGDVstr .push_back( ksmDVstr        );
+  hGDVstr .push_back( ptDVstr         );
+  hGDVstr .push_back( mind0DVstr      );
+  hGDVstr .push_back( minz0DVstr      );
+  hGDVstr .push_back( minsqerrd0DVstr );
+  hGDVstr .push_back( minsqerrz0DVstr );
+  std::string goodDV    = "Good";
+  std::string goodDVstr = "good,";
+  hDV     .push_back( goodDV    );
+  hJDV    .push_back( goodDV    );
+  hDVstr  .push_back( goodDVstr );
+  hJDVstr .push_back( goodDVstr );
+
+  // number of (jet) DV types excluding truth matching
+  m_nTypeBDVs  = hDV .size();
+  m_nTypeBJDVs = hJDV.size();
 
   // truth-matched vertices (testing matching criteria)  
   // --> initial matching criteria (v0): match score > 0; no requirement on no. / type of matches (may be matched to multiple llps)
   // --> --> test other criteria: additional distance-based requirement; require single match or llp type
-  if ( m_mc && m_histoInfoSwitch->m_vtxTruth ) {
-    //std::vector<std::string> mDV     = { "darkPion",   "kshort",   "nomatch"    };
+  if ( m_mc ) {
+    //std::vector<std::string> mDV     = { "DarkPion",   "Kshort",   "Nomatch"    };
     //std::vector<std::string> mDVstr  = { "dark pion,", "k-short,", "unmatched," };
-    std::vector<std::string> mDV     = { "darkPion"   };
+    std::vector<std::string> mDV     = { "DarkPion"   };
     std::vector<std::string> mDVstr  = { "dark pion," };
-    std::vector<std::string> miDV, miDVstr;
-    for ( size_t ihdv = 0; ihdv != hDV.size(); ++ihdv ) {
-      miDV    .push_back( hDV    [ihdv] );
-      miDVstr .push_back( hDVstr [ihdv] );
+    if ( m_histoInfoSwitch->m_vtxTruth ) {
+      std::vector<std::string> miDV, miDVstr;
+      for ( size_t ihdv = 0; ihdv != hDV.size(); ++ihdv ) {
+	miDV    .push_back( hDV    [ihdv] );
+	miDVstr .push_back( hDVstr [ihdv] );
+      }
+      for ( size_t i = 0; i != mDV.size(); ++i ) {
+	for ( size_t j = 0; j != miDV.size(); ++j ) {
+	  std::string mDVs  = mDV  [i];
+	  std::string tmpdv = miDV [j];
+	  if ( tmpdv == baseDV ) tmpdv = "";
+	  tmpdv += mDVs; tmpdv[0] = tolower(tmpdv[0]);
+	  std::string tmpdvstr = miDVstr [j];
+	  if ( tmpdvstr == baseDVstr ) tmpdvstr  = ",";
+	  tmpdvstr.pop_back();
+	  if ( !tmpdvstr.empty()     ) tmpdvstr += " ";
+	  tmpdvstr += mDVstr[i];
+	  hDV    .push_back( tmpdv    );
+	  hDVstr .push_back( tmpdvstr );
+	}
+      }
     }
-    for ( size_t i = 0; i != mDV.size(); ++i ) {
-      hDV    .push_back( mDV    [i] );
-      hDVstr .push_back( mDVstr [i] );
-      for ( size_t j = 0; j != miDV.size(); ++j ) {
-  	if ( j == 0 ) continue; // skip base DV name for nominal case
-  	std::string mDVs   = mDV     [i]; mDVs[0] = toupper(mDVs[0]);
-	std::string tmpstr = miDVstr [j]; tmpstr.pop_back(); tmpstr += " " + mDVstr[i];
-  	hDV    .push_back( miDV [j] + mDVs );
-	hDVstr .push_back( tmpstr );
+    if ( m_histoInfoSwitch->m_jetVtxTruth ) {
+      std::vector<std::string> miJDV, miJDVstr;
+      for ( size_t ihjdv = 0; ihjdv != hJDV.size(); ++ihjdv ) {
+	miJDV    .push_back( hJDV    [ihjdv] );
+	miJDVstr .push_back( hJDVstr [ihjdv] );
+      }
+      for ( size_t i = 0; i != mDV.size(); ++i ) {
+	for ( size_t j = 0; j != miJDV.size(); ++j ) {
+	  std::string mDVs  = mDV   [i];
+	  std::string tmpdv = miJDV [j];
+	  if ( tmpdv == baseDV ) tmpdv = "";
+	  tmpdv += mDVs; tmpdv[0] = tolower(tmpdv[0]);
+	  std::string tmpdvstr = miJDVstr [j];
+	  if ( tmpdvstr == baseDVstr ) tmpdvstr  = ",";
+	  tmpdvstr.pop_back();
+	  if ( !tmpdvstr.empty()     ) tmpdvstr += " ";
+	  tmpdvstr += mDVstr[i];
+	  hJDV    .push_back( tmpdv    );
+	  hJDVstr .push_back( tmpdvstr );
+	}
       }
     }
   }
-  
-  m_nTypeDVs = hDV.size();
+
+  // number of (jet) DV types including truth matching
+  m_nTypeDVs  = hDV .size();
+  m_nTypeJDVs = hJDV.size();
   
 
   // loop over regions + book histograms
@@ -1117,25 +1210,26 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     const std::string       name   = m_name + outFileName + "/" + region.name + "/";
 
     // initialize count vectors
-    m_nEntries                    .push_back( 0 );
+    m_nEntries                  .push_back( 0 );
+    m_nWeightedEntries          .push_back( 0 );
     if ( m_histoInfoSwitch->m_trigTest ) {
-      m_nFourJets                 .push_back( 0 );
-      m_nSearch                   .push_back( 0 );
-      m_nTrig_4j120               .push_back( 0 );
-      m_nOffTrig_4j120            .push_back( 0 );
-      m_nOffTrig_4j120_other      .push_back( 0 );
-      m_nOffTrigJVT_4j120         .push_back( 0 );
-      m_nOffTrigJVT_4j120_other   .push_back( 0 );
-      m_nTrig_fourJet             .push_back( 0 );
-      m_nOffTrig_fourJet          .push_back( 0 );
-      m_nOthOffTrig_fourJet       .push_back( 0 );
-      m_nOffTrigJVT_fourJet       .push_back( 0 );
-      m_nOthOffTrigJVT_fourJet    .push_back( 0 );
-      m_nTrig_search              .push_back( 0 );
-      m_nOffTrig_search           .push_back( 0 );
-      m_nOthOffTrig_search        .push_back( 0 );
-      m_nOffTrigJVT_search        .push_back( 0 );
-      m_nOthOffTrigJVT_search     .push_back( 0 );
+      m_nFourJets               .push_back( 0 );
+      m_nSearch                 .push_back( 0 );
+      m_nTrig_4j120             .push_back( 0 );
+      m_nOffTrig_4j120          .push_back( 0 );
+      m_nOffTrig_4j120_other    .push_back( 0 );
+      m_nOffTrigJVT_4j120       .push_back( 0 );
+      m_nOffTrigJVT_4j120_other .push_back( 0 );
+      m_nTrig_fourJet           .push_back( 0 );
+      m_nOffTrig_fourJet        .push_back( 0 );
+      m_nOthOffTrig_fourJet     .push_back( 0 );
+      m_nOffTrigJVT_fourJet     .push_back( 0 );
+      m_nOthOffTrigJVT_fourJet  .push_back( 0 );
+      m_nTrig_search            .push_back( 0 );
+      m_nOffTrig_search         .push_back( 0 );
+      m_nOthOffTrig_search      .push_back( 0 );
+      m_nOffTrigJVT_search      .push_back( 0 );
+      m_nOthOffTrigJVT_search   .push_back( 0 );
     }
 
     // set bins
@@ -1183,8 +1277,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       h_pv_ntrk .push_back( book( name, "pv_nTrk", "n PV tracks",   100,    0, 250 ) );
     }
     // event info: leading N-jet Ht
-    h_njetHt      .push_back( book( name, "NJetHt",      "leading N " + m_jetStr + " Jet H_{T} [GeV]",            100, njetht_xmin, 4000 ) );
-    h_njetHt_vrsh .push_back( book( name, "NJetHt_vrsh", "leading N " + m_jetStr + " Jet H_{T} [GeV] (VR-shift)", 100, njetht_xmin, 4000 ) );
+    h_NJetHt      .push_back( book( name, "NJetHt",      "leading N " + m_jetStr + " Jet H_{T} [GeV]",            100, njetht_xmin, 4000 ) );
+    h_NJetHt_vrsh .push_back( book( name, "NJetHt_vrsh", "leading N " + m_jetStr + " Jet H_{T} [GeV] (VR-shift)", 100, njetht_xmin, 4000 ) );
 
     
     // --- RECO JETS --- //
@@ -1249,9 +1343,6 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     std::vector<std::vector<TH1F*>> h_j_trk_minDR;
     std::vector<std::vector<TH1F*>> h_j_trk_maxDR;
     std::vector<std::vector<TH1F*>> h_j_trk_pt;
-    std::vector<std::vector<TH1F*>> h_j_trk_minpt;
-    std::vector<std::vector<TH1F*>> h_j_trk_maxpt;
-    std::vector<std::vector<TH1F*>> h_j_trk_sumpt;
     std::vector<std::vector<TH1F*>> h_j_trk_d0;
     std::vector<std::vector<TH1F*>> h_j_trk_mind0;
     std::vector<std::vector<TH1F*>> h_j_trk_maxd0;
@@ -1269,32 +1360,135 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     std::vector<std::vector<TH1F*>> h_j_trk_maxErrz0;
     std::vector<std::vector<TH1F*>> h_j_trk_sumErrz0;
     std::vector<std::vector<TH1F*>> h_j_trk_sqrtpt;
-    std::vector<std::vector<TH1F*>> h_j_trk_minsqrtpt;
-    std::vector<std::vector<TH1F*>> h_j_trk_maxsqrtpt;
-    std::vector<std::vector<TH1F*>> h_j_trk_sumsqrtpt;
     std::vector<std::vector<TH1F*>> h_j_trk_sqrtd0;
-    std::vector<std::vector<TH1F*>> h_j_trk_minsqrtd0;
-    std::vector<std::vector<TH1F*>> h_j_trk_maxsqrtd0;
-    std::vector<std::vector<TH1F*>> h_j_trk_sumsqrtd0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtmind0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtmaxd0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtsumd0;
     std::vector<std::vector<TH1F*>> h_j_trk_sqrtz0;
-    std::vector<std::vector<TH1F*>> h_j_trk_minsqrtz0;
-    std::vector<std::vector<TH1F*>> h_j_trk_maxsqrtz0;
-    std::vector<std::vector<TH1F*>> h_j_trk_sumsqrtz0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtminz0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtmaxz0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtsumz0;
     std::vector<std::vector<TH1F*>> h_j_trk_sqrterrd0;
-    std::vector<std::vector<TH1F*>> h_j_trk_minSqrterrd0;
-    std::vector<std::vector<TH1F*>> h_j_trk_maxSqrterrd0;
-    std::vector<std::vector<TH1F*>> h_j_trk_sumSqrterrd0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtminErrd0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtmaxErrd0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtsumErrd0;
     std::vector<std::vector<TH1F*>> h_j_trk_sqrterrz0;
-    std::vector<std::vector<TH1F*>> h_j_trk_minSqrterrz0;
-    std::vector<std::vector<TH1F*>> h_j_trk_maxSqrterrz0;
-    std::vector<std::vector<TH1F*>> h_j_trk_sumSqrterrz0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtminErrz0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtmaxErrz0;
+    std::vector<std::vector<TH1F*>> h_j_trk_sqrtsumErrz0;
     std::vector<std::vector<TH1F*>> h_j_trk_nSCT;
     std::vector<std::vector<TH1F*>> h_j_trk_nPixel;
     std::vector<std::vector<TH1F*>> h_j_trk_nSi;
     std::vector<std::vector<TH1F*>> h_j_trk_nTRT;
+    std::vector<std::vector<TH1F*>> h_j_ntrk_pt;
+    std::vector<std::vector<TH1F*>> h_j_ntrk_eta;
+    std::vector<std::vector<TH1F*>> h_j_ntrk_phi;
+    std::vector<std::vector<TH1F*>> h_j_ntrk_m;
+    std::vector<std::vector<TH1F*>> h_j_ntrk_sumPt;
+    std::vector<std::vector<TH1F*>> h_j_ntrk_sqrtsumPt;
     std::vector<std::vector<TH1F*>> h_j_nsv;
-    //std::vector<TH1F*> h_j_nsv;
-    //std::vector<TH1F*> h_j_sv_dR;
+    std::vector<std::vector<TH1F*>> h_j_sv_dR;
+    std::vector<std::vector<TH1F*>> h_j_sv_minDR;
+    std::vector<std::vector<TH1F*>> h_j_sv_maxDR;
+    std::vector<std::vector<TH1F*>> h_j_sv_pt;
+    std::vector<std::vector<TH1F*>> h_j_sv_Ht;
+    std::vector<std::vector<TH1F*>> h_j_sv_H;
+    std::vector<std::vector<TH1F*>> h_j_sv_sqrtpt;
+    std::vector<std::vector<TH1F*>> h_j_sv_sqrtHt;
+    std::vector<std::vector<TH1F*>> h_j_sv_sqrtH;
+    std::vector<std::vector<TH1F*>> h_j_sv_mass;
+    std::vector<std::vector<TH1F*>> h_j_sv_mass_s;
+    std::vector<std::vector<TH1F*>> h_j_sv_ntrk;
+    std::vector<std::vector<TH1F*>> h_j_sv_njtrk;
+    std::vector<std::vector<TH1F*>> h_j_sv_z;
+    std::vector<std::vector<TH1F*>> h_j_sv_minz;
+    std::vector<std::vector<TH1F*>> h_j_sv_maxz;
+    std::vector<std::vector<TH1F*>> h_j_sv_sumz;
+    std::vector<std::vector<TH1F*>> h_j_sv_r;
+    std::vector<std::vector<TH1F*>> h_j_sv_minr;
+    std::vector<std::vector<TH1F*>> h_j_sv_maxr;
+    std::vector<std::vector<TH1F*>> h_j_sv_sumr;
+    std::vector<std::vector<TH1F*>> h_j_sv_chi2;
+    std::vector<std::vector<TH1F*>> h_j_nsv_pt;
+    std::vector<std::vector<TH1F*>> h_j_nsv_eta;
+    std::vector<std::vector<TH1F*>> h_j_nsv_phi;
+    std::vector<std::vector<TH1F*>> h_j_nsv_m;
+    std::vector<std::vector<TH1F*>> h_j_nsv_sumPt;
+    std::vector<std::vector<TH1F*>> h_j_nsv_sumHt;
+    std::vector<std::vector<TH1F*>> h_j_nsv_sumH;
+    std::vector<std::vector<TH1F*>> h_j_nsv_sqrtsumPt;
+    std::vector<std::vector<TH1F*>> h_j_nsv_sqrtsumHt;
+    std::vector<std::vector<TH1F*>> h_j_nsv_sqrtsumH;
+    std::vector<std::vector<TH1F*>> h_j_nsv_sumMass;
+    std::vector<std::vector<TH1F*>> h_j_nsv_sumMass_s;
+    std::vector<std::vector<TH1F*>> h_j_nsv_ntrk;
+    std::vector<std::vector<TH1F*>> h_j_nsv_njtrk;
+    std::vector<std::vector<TH1F*>> h_nlj_pt;
+    std::vector<std::vector<TH1F*>> h_nlj_pt_s;
+    std::vector<std::vector<TH1F*>> h_nlj_eta;
+    std::vector<std::vector<TH1F*>> h_nlj_phi;
+    std::vector<std::vector<TH1F*>> h_nlj_E;
+    std::vector<std::vector<TH1F*>> h_nlj_M;
+    std::vector<std::vector<TH1F*>> h_nlj_rapid;
+    std::vector<std::vector<TH1F*>> h_nlj_nConstits;
+    std::vector<std::vector<TH1F*>> h_nlj_Et;
+    std::vector<std::vector<TH1F*>> h_nlj_Et_s;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_ntrk;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_minDR;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_maxDR;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_mind0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_maxd0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sumd0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_minz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_maxz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sumz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_minErrd0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_maxErrd0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sumErrd0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_minErrz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_maxErrz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sumErrz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtmind0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtmaxd0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtsumd0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtminz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtmaxz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtsumz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtminErrd0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtmaxErrd0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtsumErrd0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtminErrz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtmaxErrz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_trk_sqrtsumErrz0;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_ntrk_pt;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_ntrk_eta;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_ntrk_phi;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_ntrk_m;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_ntrk_sumPt;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_ntrk_sqrtsumPt;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_sv_minDR;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_sv_maxDR;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_sv_minz;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_sv_maxz;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_sv_sumz;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_sv_minr;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_sv_maxr;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_sv_sumr;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_pt;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_eta;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_phi;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_m;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_sumPt;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_sumHt;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_sumH;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_sqrtsumPt;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_sqrtsumHt;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_sqrtsumH;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_sumMass;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_sumMass_s;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_ntrk;
+    std::vector<std::vector<std::vector<TH1F*>> > h_nlj_nsv_njtrk;
     std::vector<TH1F*> h_jj_n;
     std::vector<TH1F*> h_jj_pt;
     std::vector<TH1F*> h_jj_eta;
@@ -1302,6 +1496,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     std::vector<TH1F*> h_jj_m;
     std::vector<TH1F*> h_jj_sumPt;
     std::vector<TH1F*> h_jj_dR;
+    std::vector<TH1F*> h_jj_avg_pt;
+    std::vector<TH1F*> h_jj_avg_eta;
+    std::vector<TH1F*> h_jj_avg_phi;
+    std::vector<TH1F*> h_jj_avg_m;
+    std::vector<TH1F*> h_jj_avg_sumPt;
+    std::vector<TH1F*> h_jj_avg_dR;
     std::vector<TH1F*> h_jj_max_pt;
     std::vector<TH1F*> h_jj_max_eta;
     std::vector<TH1F*> h_jj_max_phi;
@@ -1314,17 +1514,83 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     std::vector<TH1F*> h_jj_min_m;
     std::vector<TH1F*> h_jj_min_sumPt;
     std::vector<TH1F*> h_jj_min_dR;
-    std::vector<TH1F*> h_jj_avg_pt;
-    std::vector<TH1F*> h_jj_avg_eta;
-    std::vector<TH1F*> h_jj_avg_phi;
-    std::vector<TH1F*> h_jj_avg_m;
-    std::vector<TH1F*> h_jj_avg_sumPt;
-    std::vector<TH1F*> h_jj_avg_dR;
+    std::vector<std::vector<TH1F*>> h_jj_max_ntrk;
+    std::vector<std::vector<TH1F*>> h_jj_max_ntrk_pt;
+    std::vector<std::vector<TH1F*>> h_jj_max_ntrk_eta;
+    std::vector<std::vector<TH1F*>> h_jj_max_ntrk_phi;
+    std::vector<std::vector<TH1F*>> h_jj_max_ntrk_m;
+    std::vector<std::vector<TH1F*>> h_jj_max_ntrk_sumPt;
+    std::vector<std::vector<TH1F*>> h_jj_min_ntrk;
+    std::vector<std::vector<TH1F*>> h_jj_min_ntrk_pt;
+    std::vector<std::vector<TH1F*>> h_jj_min_ntrk_eta;
+    std::vector<std::vector<TH1F*>> h_jj_min_ntrk_phi;
+    std::vector<std::vector<TH1F*>> h_jj_min_ntrk_m;
+    std::vector<std::vector<TH1F*>> h_jj_min_ntrk_sumPt;
+    std::vector<std::vector<TH1F*>> h_jj_max_nsv;
+    std::vector<std::vector<TH1F*>> h_jj_max_nsv_pt;
+    std::vector<std::vector<TH1F*>> h_jj_max_nsv_eta;
+    std::vector<std::vector<TH1F*>> h_jj_max_nsv_phi;
+    std::vector<std::vector<TH1F*>> h_jj_max_nsv_m;
+    std::vector<std::vector<TH1F*>> h_jj_max_nsv_sumPt;
+    std::vector<std::vector<TH1F*>> h_jj_min_nsv;
+    std::vector<std::vector<TH1F*>> h_jj_min_nsv_pt;
+    std::vector<std::vector<TH1F*>> h_jj_min_nsv_eta;
+    std::vector<std::vector<TH1F*>> h_jj_min_nsv_phi;
+    std::vector<std::vector<TH1F*>> h_jj_min_nsv_m;
+    std::vector<std::vector<TH1F*>> h_jj_min_nsv_sumPt;
+    std::vector<TH1F*> h_jj_maxpt_pt;
+    std::vector<TH1F*> h_jj_maxpt_eta;
+    std::vector<TH1F*> h_jj_maxpt_phi;
+    std::vector<TH1F*> h_jj_maxpt_m;
+    std::vector<TH1F*> h_jj_maxpt_sumPt;
+    std::vector<TH1F*> h_jj_maxpt_dR;
+    std::vector<TH1F*> h_jj_minpt_pt;
+    std::vector<TH1F*> h_jj_minpt_eta;
+    std::vector<TH1F*> h_jj_minpt_phi;
+    std::vector<TH1F*> h_jj_minpt_m;
+    std::vector<TH1F*> h_jj_minpt_sumPt;
+    std::vector<TH1F*> h_jj_minpt_dR;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_ntrk;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_ntrk_pt;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_ntrk_eta;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_ntrk_phi;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_ntrk_m;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_ntrk_sumPt;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_ntrk;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_ntrk_pt;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_ntrk_eta;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_ntrk_phi;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_ntrk_m;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_ntrk_sumPt;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_nsv;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_nsv_pt;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_nsv_eta;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_nsv_phi;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_nsv_m;
+    std::vector<std::vector<TH1F*>> h_jj_maxpt_nsv_sumPt;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_nsv;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_nsv_pt;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_nsv_eta;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_nsv_phi;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_nsv_m;
+    std::vector<std::vector<TH1F*>> h_jj_minpt_nsv_sumPt;
     std::vector<TH1F*> h_nj_pt;
     std::vector<TH1F*> h_nj_eta;
     std::vector<TH1F*> h_nj_phi;
     std::vector<TH1F*> h_nj_m;
     std::vector<TH1F*> h_nj_sumPt;
+    std::vector<std::vector<TH1F*>> h_nj_ntrk;
+    std::vector<std::vector<TH1F*>> h_nj_ntrk_pt;
+    std::vector<std::vector<TH1F*>> h_nj_ntrk_eta;
+    std::vector<std::vector<TH1F*>> h_nj_ntrk_phi;
+    std::vector<std::vector<TH1F*>> h_nj_ntrk_m;
+    std::vector<std::vector<TH1F*>> h_nj_ntrk_sumPt;
+    std::vector<std::vector<TH1F*>> h_nj_nsv;
+    std::vector<std::vector<TH1F*>> h_nj_nsv_pt;
+    std::vector<std::vector<TH1F*>> h_nj_nsv_eta;
+    std::vector<std::vector<TH1F*>> h_nj_nsv_phi;
+    std::vector<std::vector<TH1F*>> h_nj_nsv_m;
+    std::vector<std::vector<TH1F*>> h_nj_nsv_sumPt;
     for ( size_t i = 0; i != hJ.size(); ++i ) {
       std::string jetHistNameUp = jetHistName; jetHistNameUp[0] = toupper(jetHistNameUp[0]);
       std::string hjName   = "";
@@ -1337,9 +1603,9 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       else                    hjString = hJstr[i] + " ";
       std::string hj     = hjName;
       std::string hjstr  = hjString + m_jetStr + " jet";
-      std::string hjj    = hjName   + "_dijet";
+      std::string hjj    = hjName   + "_jj";
       std::string hjjstr = hjString + m_jetStr + " dijet";
-      std::string hnj    = hjName   + "_Njet";
+      std::string hnj    = hjName   + "_Nj";
       std::string hnjstr = hjString + m_jetStr + " N-jet";
 
       int njet = 20;
@@ -1347,7 +1613,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       
       h_j_n         .push_back( book( name, hj + "_n",         "n " + hjstr + "s",       njet,     0, njet ) );
       h_j_pt        .push_back( book( name, hj + "_pt",        hjstr + " p_{T} [GeV]",    100,     0, 1500 ) );
-      h_j_pt_s      .push_back( book( name, hj + "_pt_m",      hjstr + " p_{T} [GeV]",    100,     0,  500 ) );
+      h_j_pt_s      .push_back( book( name, hj + "_pt_s",      hjstr + " p_{T} [GeV]",    100,     0,  500 ) );
       h_j_eta       .push_back( book( name, hj + "_eta",       hjstr + " eta",            100,    -3,    3 ) );
       h_j_phi       .push_back( book( name, hj + "_phi",       hjstr + " phi",            100,  -3.5,  3.5 ) );
       h_j_E         .push_back( book( name, hj + "_E",         hjstr + " energy [GeV]",   100,     0, 2500 ) );
@@ -1418,9 +1684,6 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<TH1F*> h_j_track_minDR;
       std::vector<TH1F*> h_j_track_maxDR;
       std::vector<TH1F*> h_j_track_pt;
-      std::vector<TH1F*> h_j_track_minpt;
-      std::vector<TH1F*> h_j_track_maxpt;
-      std::vector<TH1F*> h_j_track_sumpt;
       std::vector<TH1F*> h_j_track_d0;
       std::vector<TH1F*> h_j_track_mind0;
       std::vector<TH1F*> h_j_track_maxd0;
@@ -1438,122 +1701,124 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<TH1F*> h_j_track_maxErrz0;
       std::vector<TH1F*> h_j_track_sumErrz0;
       std::vector<TH1F*> h_j_track_sqrtpt;
-      std::vector<TH1F*> h_j_track_minsqrtpt;
-      std::vector<TH1F*> h_j_track_maxsqrtpt;
-      std::vector<TH1F*> h_j_track_sumsqrtpt;
       std::vector<TH1F*> h_j_track_sqrtd0;
-      std::vector<TH1F*> h_j_track_minsqrtd0;
-      std::vector<TH1F*> h_j_track_maxsqrtd0;
-      std::vector<TH1F*> h_j_track_sumsqrtd0;
+      std::vector<TH1F*> h_j_track_sqrtmind0;
+      std::vector<TH1F*> h_j_track_sqrtmaxd0;
+      std::vector<TH1F*> h_j_track_sqrtsumd0;
       std::vector<TH1F*> h_j_track_sqrtz0;
-      std::vector<TH1F*> h_j_track_minsqrtz0;
-      std::vector<TH1F*> h_j_track_maxsqrtz0;
-      std::vector<TH1F*> h_j_track_sumsqrtz0;
+      std::vector<TH1F*> h_j_track_sqrtminz0;
+      std::vector<TH1F*> h_j_track_sqrtmaxz0;
+      std::vector<TH1F*> h_j_track_sqrtsumz0;
       std::vector<TH1F*> h_j_track_sqrterrd0;
-      std::vector<TH1F*> h_j_track_minSqrterrd0;
-      std::vector<TH1F*> h_j_track_maxSqrterrd0;
-      std::vector<TH1F*> h_j_track_sumSqrterrd0;
+      std::vector<TH1F*> h_j_track_sqrtminErrd0;
+      std::vector<TH1F*> h_j_track_sqrtmaxErrd0;
+      std::vector<TH1F*> h_j_track_sqrtsumErrd0;
       std::vector<TH1F*> h_j_track_sqrterrz0;
-      std::vector<TH1F*> h_j_track_minSqrterrz0;
-      std::vector<TH1F*> h_j_track_maxSqrterrz0;
-      std::vector<TH1F*> h_j_track_sumSqrterrz0;
+      std::vector<TH1F*> h_j_track_sqrtminErrz0;
+      std::vector<TH1F*> h_j_track_sqrtmaxErrz0;
+      std::vector<TH1F*> h_j_track_sqrtsumErrz0;
       std::vector<TH1F*> h_j_track_nSCT;
       std::vector<TH1F*> h_j_track_nPixel;
       std::vector<TH1F*> h_j_track_nSi;
       std::vector<TH1F*> h_j_track_nTRT;
-
-      // get rid of last three elements if not using clean, filtered, final track types...
-      std::vector<int>   nt_x2        = {   250,   200,    50,    10,    15,   15,   15,   15 };
-      std::vector<float> tpt_x2       = {  1250,   750,   250,    25,    75,   75,   75,   75 }; 
-      std::vector<float> tminpt_x2    = {  1.25,  1.75,     4,    15,    20,   20,   20,   20 }; 
-      std::vector<float> tmaxpt_x2    = {  2500,  1500,   500,    25,    75,   75,   75,   75 };
-      std::vector<float> tsumpt_x2    = {  5000,  3000,  1000,    50,   150,  150,  150,  150 };
-      std::vector<float> td0_x2       = {   300,   300,   300,   300,   300,  300,  300,  300 };
-      std::vector<float> tmind0_x2    = {   0.1,   100,   100,   100,   100,  100,  100,  100 };
-      std::vector<float> tmaxd0_x2    = {   300,   300,   300,   300,   300,  300,  300,  300 };
-      std::vector<float> tsumd0_x2    = { 10000, 10000,  2500,   250,   500,  500,  500,  500 };
-      std::vector<float> tz0_x2       = {  1500,  1500,  1500,  1500,  1500, 1500, 1500, 1500 };
-      std::vector<float> tminz0_x2    = {    50,   250,   250,   250,   500,  500,  500,  500 };
-      std::vector<float> tmaxz0_x2    = {  1500,  1500,  1500,  1500,  1500, 1500, 1500, 1500 };
-      std::vector<float> tsumz0_x2    = { 75000, 75000, 10000,  1000,  2000, 2000, 2000, 2000 };
-      std::vector<float> terrd0_x2    = {    25,    10,     5,     5,     5,    5,    5,    5 };
-      std::vector<float> tminerrd0_x2 = {  0.05,   0.5,  0.75,     1,     1,    1,    1,    1 };
-      std::vector<float> tmaxerrd0_x2 = {    25,    15,     5,     3,     3,    3,    3,    3 };
-      std::vector<float> tsumerrd0_x2 = {    50,    25,    10,     5,     5,    5,    5,    5 };
-      std::vector<float> terrz0_x2    = {   500,    50,    25,    10,    10,   10,   10,   10 };
-      std::vector<float> tminerrz0_x2 = {  0.25,     5,   7.5,    10,    10,   10,   10,   10 };
-      std::vector<float> tmaxerrz0_x2 = {   500,    75,    30,    15,    15,   15,   15,   15 };
-      std::vector<float> tsumerrz0_x2 = {  1000,   150,    50,    20,    20,   20,   20,   20 };
-	
+      std::vector<TH1F*> h_j_ntrack_pt;
+      std::vector<TH1F*> h_j_ntrack_eta;
+      std::vector<TH1F*> h_j_ntrack_phi;
+      std::vector<TH1F*> h_j_ntrack_m;
+      std::vector<TH1F*> h_j_ntrack_sumPt;
+      std::vector<TH1F*> h_j_ntrack_sqrtsumPt;
+      std::vector<int>   nt_x2        = {   250,   200,    50,    10,    15 };
+      std::vector<float> tpt_x2       = {  1250,   750,   250,    25,    75 }; 
+      std::vector<float> td0_x2       = {   300,   300,   300,   300,   300 };
+      std::vector<float> tmind0_x2    = {   0.1,   100,   100,   100,   100 };
+      std::vector<float> tmaxd0_x2    = {   300,   300,   300,   300,   300 };
+      std::vector<float> tsumd0_x2    = { 10000, 10000,  2500,   250,   500 };
+      std::vector<float> tz0_x2       = {  1500,  1500,  1500,  1500,  1500 };
+      std::vector<float> tminz0_x2    = {    50,   250,   250,   250,   500 };
+      std::vector<float> tmaxz0_x2    = {  1500,  1500,  1500,  1500,  1500 };
+      std::vector<float> tsumz0_x2    = { 75000, 75000, 10000,  1000,  2000 };
+      std::vector<float> terrd0_x2    = {    25,    10,     5,     5,     5 };
+      std::vector<float> tminerrd0_x2 = {  0.05,   0.5,  0.75,     1,     1 };
+      std::vector<float> tmaxerrd0_x2 = {    25,    15,     5,     3,     3 };
+      std::vector<float> tsumerrd0_x2 = {    50,    25,    10,     5,     5 };
+      std::vector<float> terrz0_x2    = {   500,    50,    25,    10,    10 };
+      std::vector<float> tminerrz0_x2 = {  0.25,     5,   7.5,    10,    10 };
+      std::vector<float> tmaxerrz0_x2 = {   500,    75,    30,    15,    15 };
+      std::vector<float> tsumerrz0_x2 = {  1000,   150,    50,    20,    20 };
+      std::vector<float> ntpt_x2      = {  3500,  1750,   500,    50,   150 };
+      std::vector<float> ntm_x2       = {  1000,   500,   150,   7.5,    25 };
+      std::vector<float> ntsumpt_x2   = {  3500,  1750,   500,    50,   150 };
+      // loop over jet-matched track types
       for ( size_t j = 0; j != hTrk.size(); ++j ) {
-	std::string ht    = hTrk[j] + "trk";
-	std::string hjt   = hj + "_" + ht;
-	std::string htstr = "matched";
-	if ( !hTrkstr[j].empty() ) htstr += " ";
-	htstr += hTrkstr[j] + " track";
-	std::string hjtstr = hjstr + " " + htstr;
+	std::string htsubstr = "matched";
+	if ( !hTrkstr[j].empty() ) htsubstr += " ";
+	std::string ht       = hTrk[j] + "trk";
+	std::string hjt      = hj + "_" + ht;
+	std::string htstr    = htsubstr + hTrkstr[j] + " track";
+	std::string hjtstr   = hjstr + " " + htstr;
+	std::string hnt      = "n" + ht;
+	std::string hjnt     = hj + "_" + hnt;
+	std::string hntstr   = htsubstr + hTrkstr[j] + " n-track";
+	std::string hjntstr  = hjstr + " " + hntstr;
 	int nbin = nt_x2[j];
 	if ( j < 2 ) nbin = nt_x2[j] / 2;
-	h_j_ntrack .push_back( book( name, hj + "_n" + ht, "n " + htstr + "s per " + hjstr, nbin, 0, nt_x2[j] ) );
+	h_j_ntrack              .push_back( book( name, hj + "_n" + ht,       "n " + htstr + "s per " + hjstr,  nbin, 0, nt_x2            [j] ) );
 	if ( m_histoInfoSwitch->m_jetTrks ) {
-	  h_j_track_dR          .push_back( book( name, hjt + "_dR",          hjstr  +" - "+ htstr + " dR",    100, 0,                  0.6 ) );
-	  h_j_track_minDR       .push_back( book( name, hjt + "_minDR",       hjstr  +" - "+ htstr + " min dR",100, 0,                  0.6 ) );
-	  h_j_track_maxDR       .push_back( book( name, hjt + "_maxDR",       hjstr  +" - "+ htstr + " max dR",100, 0,                  0.6 ) );
-	  h_j_track_pt          .push_back( book( name, hjt + "_pt",          hjtstr + " p_{T} [GeV]",         100, 1, tpt_x2           [j] ) );
-	  h_j_track_minpt       .push_back( book( name, hjt + "_minpt",       hjtstr + " min p_{T} [GeV]",     100, 1, tminpt_x2        [j] ) );
-	  h_j_track_maxpt       .push_back( book( name, hjt + "_maxpt",       hjtstr + " max p_{T} [GeV]",     100, 1, tmaxpt_x2        [j] ) );
-	  h_j_track_sumpt       .push_back( book( name, hjt + "_sumpt",       hjtstr + " sum-pt_{T} [GeV]",    100, 0, tsumpt_x2        [j] ) );
-	  h_j_track_d0          .push_back( book( name, hjt + "_d0",          hjtstr + " abs. d0 [mm]",        100, 0, td0_x2           [j] ) );
-	  h_j_track_mind0       .push_back( book( name, hjt + "_mind0",       hjtstr + " min d0 [mm]",         100, 0, tmind0_x2        [j] ) );
-	  h_j_track_maxd0       .push_back( book( name, hjt + "_maxd0",       hjtstr + " max d0 [mm]",         100, 0, tmaxd0_x2        [j] ) );
-	  h_j_track_sumd0       .push_back( book( name, hjt + "_sumd0",       hjtstr + " sum-d0 [mm]",         100, 0, tsumd0_x2        [j] ) );
-	  h_j_track_z0          .push_back( book( name, hjt + "_z0",          hjtstr + " abs. z0 [mm]",        100, 0, tz0_x2           [j] ) );
-	  h_j_track_minz0       .push_back( book( name, hjt + "_minz0",       hjtstr + " min z0 [mm]",         100, 0, tminz0_x2        [j] ) );
-	  h_j_track_maxz0       .push_back( book( name, hjt + "_maxz0",       hjtstr + " max z0 [mm]",         100, 0, tmaxz0_x2        [j] ) );
-	  h_j_track_sumz0       .push_back( book( name, hjt + "_sumz0",       hjtstr + " sum-z0 [mm]",         100, 0, tsumz0_x2        [j] ) );
-	  h_j_track_errd0       .push_back( book( name, hjt + "_errd0",       hjtstr + " d0 uncert.",          100, 0, terrd0_x2        [j] ) );
-	  h_j_track_minErrd0    .push_back( book( name, hjt + "_minErrd0",    hjtstr + " min d0 uncert.",      100, 0, tminerrd0_x2     [j] ) );
-	  h_j_track_maxErrd0    .push_back( book( name, hjt + "_maxErrd0",    hjtstr + " max d0 uncert.",      100, 0, tmaxerrd0_x2     [j] ) );
-	  h_j_track_sumErrd0    .push_back( book( name, hjt + "_sumErrd0",    hjtstr + " sum d0 uncert.",      100, 0, tsumerrd0_x2     [j] ) );
-	  h_j_track_errz0       .push_back( book( name, hjt + "_errz0",       hjtstr + " z0 uncert.",          100, 0, terrz0_x2        [j] ) );
-	  h_j_track_minErrz0    .push_back( book( name, hjt + "_minErrz0",    hjtstr + " min z0 uncert.",      100, 0, tminerrz0_x2     [j] ) );
-	  h_j_track_maxErrz0    .push_back( book( name, hjt + "_maxErrz0",    hjtstr + " max z0 uncert.",      100, 0, tmaxerrz0_x2     [j] ) );
-	  h_j_track_sumErrz0    .push_back( book( name, hjt + "_sumErrz0",    hjtstr + " sum z0 uncert.",      100, 0, tsumerrz0_x2     [j] ) );
-	  h_j_track_sqrtpt      .push_back( book( name, hjt + "_sqrtpt",      hjtstr + " sqrt p_{T} [GeV]",    100, 1, sqrt(tpt_x2      [j])) );
-	  h_j_track_minsqrtpt   .push_back( book( name, hjt + "_minsqrtpt",   hjtstr + " sqrt min p_{T} [GeV]",100, 1, sqrt(tminpt_x2   [j])) );
-	  h_j_track_maxsqrtpt   .push_back( book( name, hjt + "_maxsqrtpt",   hjtstr + " sqrt max p_{T} [GeV]",100, 1, sqrt(tmaxpt_x2   [j])) );
-	  h_j_track_sumsqrtpt   .push_back( book( name, hjt + "_sumsqrtpt",   hjtstr + " sqrt sum-p_{T} [GeV]",100, 0, sqrt(tsumpt_x2   [j])) );
-	  h_j_track_sqrtd0      .push_back( book( name, hjt + "_sqrtd0",      hjtstr + " sqrt d0 [mm]",        100, 0, sqrt(td0_x2      [j])) );
-	  h_j_track_minsqrtd0   .push_back( book( name, hjt + "_minsqrtd0",   hjtstr + " sqrt min d0 [mm]",    100, 0, sqrt(tmind0_x2   [j])) );
-	  h_j_track_maxsqrtd0   .push_back( book( name, hjt + "_maxsqrtd0",   hjtstr + " sqrt max d0 [mm]",    100, 0, sqrt(tmaxd0_x2   [j])) );
-	  h_j_track_sumsqrtd0   .push_back( book( name, hjt + "_sumsqrtd0",   hjtstr + " sqrt sum-d0 [mm]",    100, 0, sqrt(tsumd0_x2   [j])) );
-	  h_j_track_sqrtz0      .push_back( book( name, hjt + "_sqrtz0",      hjtstr + " sqrt z0 [mm]",        100, 0, sqrt(tz0_x2      [j])) );
-	  h_j_track_minsqrtz0   .push_back( book( name, hjt + "_minsqrtz0",   hjtstr + " sqrt min z0 [mm]",    100, 0, sqrt(tminz0_x2   [j])) );
-	  h_j_track_maxsqrtz0   .push_back( book( name, hjt + "_maxsqrtz0",   hjtstr + " sqrt max z0 [mm]",    100, 0, sqrt(tmaxz0_x2   [j])) );
-	  h_j_track_sumsqrtz0   .push_back( book( name, hjt + "_sumsqrtz0",   hjtstr + " sqrt sum-z0 [mm]",    100, 0, sqrt(tsumz0_x2   [j])) );
-	  h_j_track_sqrterrd0   .push_back( book( name, hjt + "_sqrterrd0",   hjtstr + " d0 sqrt-uncert.",     100, 0, sqrt(terrd0_x2   [j])) );
-	  h_j_track_minSqrterrd0.push_back( book( name, hjt + "_minSqrterrd0",hjtstr + " min d0 sqrt-uncert.", 100, 0, sqrt(tminerrd0_x2[j])) );
-	  h_j_track_maxSqrterrd0.push_back( book( name, hjt + "_maxSqrterrd0",hjtstr + " max d0 sqrt-uncert.", 100, 0, sqrt(tmaxerrd0_x2[j])) );
-	  h_j_track_sumSqrterrd0.push_back( book( name, hjt + "_sumSqrterrd0",hjtstr + " sum d0 sqrt-uncert.", 100, 0, sqrt(tsumerrd0_x2[j])) );
-	  h_j_track_sqrterrz0   .push_back( book( name, hjt + "_sqrterrz0",   hjtstr + " z0 sqrt-uncert.",     100, 0, sqrt(terrz0_x2   [j])) );
-	  h_j_track_minSqrterrz0.push_back( book( name, hjt + "_minSqrterrz0",hjtstr + " min z0 sqrt-uncert.", 100, 0, sqrt(tminerrz0_x2[j])) );
-	  h_j_track_maxSqrterrz0.push_back( book( name, hjt + "_maxSqrterrz0",hjtstr + " max z0 sqrt-uncert.", 100, 0, sqrt(tmaxerrz0_x2[j])) );
-	  h_j_track_sumSqrterrz0.push_back( book( name, hjt + "_sumSqrterrz0",hjtstr + " sum z0 sqrt-uncert.", 100, 0, sqrt(tsumerrz0_x2[j])) );
-	  h_j_track_nSCT        .push_back( book( name, hjt + "_nSCT",        hjtstr + " n SCT hits",          100, 0,                    5 ) );
-	  h_j_track_nPixel      .push_back( book( name, hjt + "_nPixel",      hjtstr + " n Pixel hits",        100, 0,                   10 ) );
-	  h_j_track_nSi         .push_back( book( name, hjt + "_nSi",         hjtstr + " n Silicon hits",      100, 0,                   30 ) );
-	  h_j_track_nTRT        .push_back( book( name, hjt + "_nTRT",        hjtstr + " n TRT hits",          100, 0,                   75 ) );
+	  h_j_track_dR          .push_back( book( name, hjt  + "_dR",          hjstr   +" - "+ htstr + " dR",    100, 0,                  0.6 ) );
+	  h_j_track_minDR       .push_back( book( name, hjt  + "_minDR",       hjstr   +" - "+ htstr + " min dR",100, 0,                  0.6 ) );
+	  h_j_track_maxDR       .push_back( book( name, hjt  + "_maxDR",       hjstr   +" - "+ htstr + " max dR",100, 0,                  0.6 ) );
+	  h_j_track_pt          .push_back( book( name, hjt  + "_pt",          hjtstr  + " p_{T} [GeV]",         100, 1, tpt_x2           [j] ) );
+	  h_j_track_d0          .push_back( book( name, hjt  + "_d0",          hjtstr  + " abs. d0 [mm]",        100, 0, td0_x2           [j] ) );
+	  h_j_track_mind0       .push_back( book( name, hjt  + "_mind0",       hjtstr  + " min d0 [mm]",         100, 0, tmind0_x2        [j] ) );
+	  h_j_track_maxd0       .push_back( book( name, hjt  + "_maxd0",       hjtstr  + " max d0 [mm]",         100, 0, tmaxd0_x2        [j] ) );
+	  h_j_track_sumd0       .push_back( book( name, hjt  + "_sumd0",       hjtstr  + " sum-d0 [mm]",         100, 0, tsumd0_x2        [j] ) );
+	  h_j_track_z0          .push_back( book( name, hjt  + "_z0",          hjtstr  + " abs. z0 [mm]",        100, 0, tz0_x2           [j] ) );
+	  h_j_track_minz0       .push_back( book( name, hjt  + "_minz0",       hjtstr  + " min z0 [mm]",         100, 0, tminz0_x2        [j] ) );
+	  h_j_track_maxz0       .push_back( book( name, hjt  + "_maxz0",       hjtstr  + " max z0 [mm]",         100, 0, tmaxz0_x2        [j] ) );
+	  h_j_track_sumz0       .push_back( book( name, hjt  + "_sumz0",       hjtstr  + " sum-z0 [mm]",         100, 0, tsumz0_x2        [j] ) );
+	  h_j_track_errd0       .push_back( book( name, hjt  + "_errd0",       hjtstr  + " d0 uncert.",          100, 0, terrd0_x2        [j] ) );
+	  h_j_track_minErrd0    .push_back( book( name, hjt  + "_minErrd0",    hjtstr  + " min d0 uncert.",      100, 0, tminerrd0_x2     [j] ) );
+	  h_j_track_maxErrd0    .push_back( book( name, hjt  + "_maxErrd0",    hjtstr  + " max d0 uncert.",      100, 0, tmaxerrd0_x2     [j] ) );
+	  h_j_track_sumErrd0    .push_back( book( name, hjt  + "_sumErrd0",    hjtstr  + " sum d0 uncert.",      100, 0, tsumerrd0_x2     [j] ) );
+	  h_j_track_errz0       .push_back( book( name, hjt  + "_errz0",       hjtstr  + " z0 uncert.",          100, 0, terrz0_x2        [j] ) );
+	  h_j_track_minErrz0    .push_back( book( name, hjt  + "_minErrz0",    hjtstr  + " min z0 uncert.",      100, 0, tminerrz0_x2     [j] ) );
+	  h_j_track_maxErrz0    .push_back( book( name, hjt  + "_maxErrz0",    hjtstr  + " max z0 uncert.",      100, 0, tmaxerrz0_x2     [j] ) );
+	  h_j_track_sumErrz0    .push_back( book( name, hjt  + "_sumErrz0",    hjtstr  + " sum z0 uncert.",      100, 0, tsumerrz0_x2     [j] ) );
+	  h_j_track_sqrtpt      .push_back( book( name, hjt  + "_sqrtpt",      hjtstr  + " sqrt p_{T} [GeV]",    100, 1, sqrt(tpt_x2      [j])) );
+	  h_j_track_sqrtd0      .push_back( book( name, hjt  + "_sqrtd0",      hjtstr  + " sqrt d0 [mm]",        100, 0, sqrt(td0_x2      [j])) );
+	  h_j_track_sqrtmind0   .push_back( book( name, hjt  + "_sqrtmind0",   hjtstr  + " sqrt min d0 [mm]",    100, 0, sqrt(tmind0_x2   [j])) );
+	  h_j_track_sqrtmaxd0   .push_back( book( name, hjt  + "_sqrtmaxd0",   hjtstr  + " sqrt max d0 [mm]",    100, 0, sqrt(tmaxd0_x2   [j])) );
+	  h_j_track_sqrtsumd0   .push_back( book( name, hjt  + "_sqrtsumd0",   hjtstr  + " sqrt sum-d0 [mm]",    100, 0, sqrt(tsumd0_x2   [j])) );
+	  h_j_track_sqrtz0      .push_back( book( name, hjt  + "_sqrtz0",      hjtstr  + " sqrt z0 [mm]",        100, 0, sqrt(tz0_x2      [j])) );
+	  h_j_track_sqrtminz0   .push_back( book( name, hjt  + "_sqrtminz0",   hjtstr  + " sqrt min z0 [mm]",    100, 0, sqrt(tminz0_x2   [j])) );
+	  h_j_track_sqrtmaxz0   .push_back( book( name, hjt  + "_sqrtmaxz0",   hjtstr  + " sqrt max z0 [mm]",    100, 0, sqrt(tmaxz0_x2   [j])) );
+	  h_j_track_sqrtsumz0   .push_back( book( name, hjt  + "_sumsqrtz0",   hjtstr  + " sqrt sum-z0 [mm]",    100, 0, sqrt(tsumz0_x2   [j])) );
+	  h_j_track_sqrterrd0   .push_back( book( name, hjt  + "_sqrterrd0",   hjtstr  + " sqrt d0 uncert.",     100, 0, sqrt(terrd0_x2   [j])) );
+	  h_j_track_sqrtminErrd0.push_back( book( name, hjt  + "_sqrtminErrd0",hjtstr  + " sqrt min d0 uncert.", 100, 0, sqrt(tminerrd0_x2[j])) );
+	  h_j_track_sqrtmaxErrd0.push_back( book( name, hjt  + "_sqrtmaxErrd0",hjtstr  + " sqrt max d0 uncert.", 100, 0, sqrt(tmaxerrd0_x2[j])) );
+	  h_j_track_sqrtsumErrd0.push_back( book( name, hjt  + "_sqrtsumErrd0",hjtstr  + " sqrt sum d0 uncert.", 100, 0, sqrt(tsumerrd0_x2[j])) );
+	  h_j_track_sqrterrz0   .push_back( book( name, hjt  + "_sqrterrz0",   hjtstr  + " sqrt z0 uncert.",     100, 0, sqrt(terrz0_x2   [j])) );
+	  h_j_track_sqrtminErrz0.push_back( book( name, hjt  + "_sqrtminErrz0",hjtstr  + " sqrt min z0 uncert.", 100, 0, sqrt(tminerrz0_x2[j])) );
+	  h_j_track_sqrtmaxErrz0.push_back( book( name, hjt  + "_sqrtmaxErrz0",hjtstr  + " sqrt max z0 uncert.", 100, 0, sqrt(tmaxerrz0_x2[j])) );
+	  h_j_track_sqrtsumErrz0.push_back( book( name, hjt  + "_sqrtsumErrz0",hjtstr  + " sqrt sum z0 uncert.", 100, 0, sqrt(tsumerrz0_x2[j])) );
+	  h_j_track_nSCT        .push_back( book( name, hjt  + "_nSCT",        hjtstr  + " n SCT hits",          100, 0,                    5 ) );
+	  h_j_track_nPixel      .push_back( book( name, hjt  + "_nPixel",      hjtstr  + " n Pixel hits",        100, 0,                   10 ) );
+	  h_j_track_nSi         .push_back( book( name, hjt  + "_nSi",         hjtstr  + " n Silicon hits",      100, 0,                   30 ) );
+	  h_j_track_nTRT        .push_back( book( name, hjt  + "_nTRT",        hjtstr  + " n TRT hits",          100, 0,                   75 ) );
+	  h_j_ntrack_pt         .push_back( book( name, hjnt + "_pt",          hjntstr + " p_{T} [GeV]",         100, 1, ntpt_x2          [j] ) );
+	  h_j_ntrack_eta        .push_back( book( name, hjnt + "_eta",         hjntstr + " eta",                 100, -3,                   3 ) );
+	  h_j_ntrack_phi        .push_back( book( name, hjnt + "_phi",         hjntstr + " phi",                 100, -3.5,               3.5 ) );
+	  h_j_ntrack_m          .push_back( book( name, hjnt + "_m",           hjntstr + " mass [GeV]",          100, 0, ntm_x2           [j] ) );
+	  h_j_ntrack_sumPt      .push_back( book( name, hjnt + "_sumPt",       hjntstr + " sum-p_{T} [GeV]",     100, 1, ntsumpt_x2       [j] ) );
+	  h_j_ntrack_sqrtsumPt  .push_back( book( name, hjnt + "_sqrtsumPt",   hjntstr + " sqrt sum-p_{T} [GeV]",100, 1, sqrt(ntsumpt_x2  [j])) );
 	} // end if jetTrks info switch
       } // end loop over track types
-      h_j_ntrk     .push_back( h_j_ntrack   );
+      h_j_ntrk               .push_back( h_j_ntrack             );
       if ( m_histoInfoSwitch->m_jetTrks ) {
 	h_j_trk_dR           .push_back( h_j_track_dR           );
 	h_j_trk_minDR        .push_back( h_j_track_minDR        );
 	h_j_trk_maxDR        .push_back( h_j_track_maxDR        );
 	h_j_trk_pt           .push_back( h_j_track_pt           );
-	h_j_trk_minpt        .push_back( h_j_track_minpt        );
-	h_j_trk_maxpt        .push_back( h_j_track_maxpt        );
-	h_j_trk_sumpt        .push_back( h_j_track_sumpt        );
 	h_j_trk_d0           .push_back( h_j_track_d0           );
 	h_j_trk_mind0        .push_back( h_j_track_mind0        );
 	h_j_trk_maxd0        .push_back( h_j_track_maxd0        );
@@ -1571,92 +1836,907 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	h_j_trk_maxErrz0     .push_back( h_j_track_maxErrz0     );
 	h_j_trk_sumErrz0     .push_back( h_j_track_sumErrz0     );
 	h_j_trk_sqrtpt       .push_back( h_j_track_sqrtpt       );
-	h_j_trk_minsqrtpt    .push_back( h_j_track_minsqrtpt    );
-	h_j_trk_maxsqrtpt    .push_back( h_j_track_maxsqrtpt    );
-	h_j_trk_sumsqrtpt    .push_back( h_j_track_sumsqrtpt    );
 	h_j_trk_sqrtd0       .push_back( h_j_track_sqrtd0       );
-	h_j_trk_minsqrtd0    .push_back( h_j_track_minsqrtd0    );
-	h_j_trk_maxsqrtd0    .push_back( h_j_track_maxsqrtd0    );
-	h_j_trk_sumsqrtd0    .push_back( h_j_track_sumsqrtd0    );
+	h_j_trk_sqrtmind0    .push_back( h_j_track_sqrtmind0    );
+	h_j_trk_sqrtmaxd0    .push_back( h_j_track_sqrtmaxd0    );
+	h_j_trk_sqrtsumd0    .push_back( h_j_track_sqrtsumd0    );
 	h_j_trk_sqrtz0       .push_back( h_j_track_sqrtz0       );
-	h_j_trk_minsqrtz0    .push_back( h_j_track_minsqrtz0    );
-	h_j_trk_maxsqrtz0    .push_back( h_j_track_maxsqrtz0    );
-	h_j_trk_sumsqrtz0    .push_back( h_j_track_sumsqrtz0    );
+	h_j_trk_sqrtminz0    .push_back( h_j_track_sqrtminz0    );
+	h_j_trk_sqrtmaxz0    .push_back( h_j_track_sqrtmaxz0    );
+	h_j_trk_sqrtsumz0    .push_back( h_j_track_sqrtsumz0    );
 	h_j_trk_sqrterrd0    .push_back( h_j_track_sqrterrd0    );
-	h_j_trk_minSqrterrd0 .push_back( h_j_track_minSqrterrd0 );
-	h_j_trk_maxSqrterrd0 .push_back( h_j_track_maxSqrterrd0 );
-	h_j_trk_sumSqrterrd0 .push_back( h_j_track_sumSqrterrd0 );
+	h_j_trk_sqrtminErrd0 .push_back( h_j_track_sqrtminErrd0 );
+	h_j_trk_sqrtmaxErrd0 .push_back( h_j_track_sqrtmaxErrd0 );
+	h_j_trk_sqrtsumErrd0 .push_back( h_j_track_sqrtsumErrd0 );
 	h_j_trk_sqrterrz0    .push_back( h_j_track_sqrterrz0    );
-	h_j_trk_minSqrterrz0 .push_back( h_j_track_minSqrterrz0 );
-	h_j_trk_maxSqrterrz0 .push_back( h_j_track_maxSqrterrz0 );
-	h_j_trk_sumSqrterrz0 .push_back( h_j_track_sumSqrterrz0 );
+	h_j_trk_sqrtminErrz0 .push_back( h_j_track_sqrtminErrz0 );
+	h_j_trk_sqrtmaxErrz0 .push_back( h_j_track_sqrtmaxErrz0 );
+	h_j_trk_sqrtsumErrz0 .push_back( h_j_track_sqrtsumErrz0 );
 	h_j_trk_nSCT         .push_back( h_j_track_nSCT         );
 	h_j_trk_nPixel       .push_back( h_j_track_nPixel       );
 	h_j_trk_nSi          .push_back( h_j_track_nSi          );
 	h_j_trk_nTRT         .push_back( h_j_track_nTRT         );
+	h_j_ntrk_pt          .push_back( h_j_ntrack_pt          );
+	h_j_ntrk_eta         .push_back( h_j_ntrack_eta         );
+	h_j_ntrk_phi         .push_back( h_j_ntrack_phi         );
+	h_j_ntrk_m           .push_back( h_j_ntrack_m           );
+	h_j_ntrk_sumPt       .push_back( h_j_ntrack_sumPt       );
+	h_j_ntrk_sqrtsumPt   .push_back( h_j_ntrack_sqrtsumPt   );
       } // end if jetTrks info switch
-      
-      // // jets: matched secondary vertices --> add handling of various DV types (like track types above); eventually will want to look at matched "good" DVs (when cuts finalized)... -- until then, stick to basic DV variables
-      // h_j_nsv     .push_back( book( name, hj + "_nsv",   "n matched secondary vertices per " + hjstr, 10,  0,  10 ) );
-      // if ( m_histoInfoSwitch->m_jetVerts ) {
-      // 	h_j_sv_dR .push_back( book( name, hj + "_sv_dR", hjstr + " - secondary vertex dR",            100, 0, 0.6 ) );
-      // }
 
       // jets: matched secondary vertices
       std::vector<TH1F*> h_j_nsecvtx;
-      
-      for ( size_t k = 0; k != hDV.size(); ++k ) {
-	if ( hDV[k].find( "ByJet"  ) != std::string::npos ) continue;
-	if ( hDV[k].find( "ByNJet" ) != std::string::npos ) continue;
-	// --> skip truth vertices as well ??
-      	std::string hv     = hDV[k] + "SV"; // hv[0] = tolower(hv[0])
-      	std::string hjv    = hj + "_" + hv;
-	std::string hdvstr = hDVstr[k]; hdvstr.pop_back();
-	std::string hvstr  = "matched " + hdvstr + " SV";
-      	std::string hjvstr = hjstr + " " + hvstr;
-	h_j_nsecvtx .push_back( book( name, hj + "_n" + hv, "n " + hvstr + "s per " + hjstr, 10, 0, 10 ) );
+      std::vector<TH1F*> h_j_secvtx_dR;
+      std::vector<TH1F*> h_j_secvtx_minDR;
+      std::vector<TH1F*> h_j_secvtx_maxDR;
+      std::vector<TH1F*> h_j_secvtx_pt;
+      std::vector<TH1F*> h_j_secvtx_Ht;
+      std::vector<TH1F*> h_j_secvtx_H;
+      std::vector<TH1F*> h_j_secvtx_sqrtpt;
+      std::vector<TH1F*> h_j_secvtx_sqrtHt;
+      std::vector<TH1F*> h_j_secvtx_sqrtH;
+      std::vector<TH1F*> h_j_secvtx_mass;
+      std::vector<TH1F*> h_j_secvtx_mass_s;
+      std::vector<TH1F*> h_j_secvtx_ntrk;
+      std::vector<TH1F*> h_j_secvtx_njtrk;
+      std::vector<TH1F*> h_j_secvtx_z;
+      std::vector<TH1F*> h_j_secvtx_minz;
+      std::vector<TH1F*> h_j_secvtx_maxz;
+      std::vector<TH1F*> h_j_secvtx_sumz;
+      std::vector<TH1F*> h_j_secvtx_r;
+      std::vector<TH1F*> h_j_secvtx_minr;
+      std::vector<TH1F*> h_j_secvtx_maxr;
+      std::vector<TH1F*> h_j_secvtx_sumr;
+      std::vector<TH1F*> h_j_secvtx_chi2;
+      std::vector<TH1F*> h_j_nsecvtx_pt;
+      std::vector<TH1F*> h_j_nsecvtx_eta;
+      std::vector<TH1F*> h_j_nsecvtx_phi;
+      std::vector<TH1F*> h_j_nsecvtx_m;
+      std::vector<TH1F*> h_j_nsecvtx_sumPt;
+      std::vector<TH1F*> h_j_nsecvtx_sumHt;
+      std::vector<TH1F*> h_j_nsecvtx_sumH;
+      std::vector<TH1F*> h_j_nsecvtx_sqrtsumPt;
+      std::vector<TH1F*> h_j_nsecvtx_sqrtsumHt;
+      std::vector<TH1F*> h_j_nsecvtx_sqrtsumH;
+      std::vector<TH1F*> h_j_nsecvtx_sumMass;
+      std::vector<TH1F*> h_j_nsecvtx_sumMass_s;
+      std::vector<TH1F*> h_j_nsecvtx_ntrk;
+      std::vector<TH1F*> h_j_nsecvtx_njtrk;
+      // loop over jet-matched secondary vertices
+      for ( size_t k = 0; k != hJDV.size(); ++k ) {
+      	std::string hv       = hJDV[k] + "SV"; hv[0] = tolower(hv[0]);
+      	std::string hjv      = hj + "_" + hv;
+	std::string hdvstr   = hJDVstr[k]; hdvstr.pop_back();
+	std::string hvstr    = "matched " + hdvstr + " SV";
+      	std::string hjvstr   = hjstr + " " + hvstr;
+	std::string hnv      = "n" + hv;
+	std::string hjnv     = hj + "_" + hnv;
+	std::string hnvstr   = "matched " + hdvstr + " n-SV";
+	std::string hjnvstr  = hjstr + " " + hnvstr;
+	std::string hnjnv    = hnj + "_" + hnv;
+	std::string hnjnvstr = hnjstr + " " + hnvstr;
+	h_j_nsecvtx             .push_back( book( name, hj    + "_n" + hv,    "n " + hvstr + "s per " + hjstr,    10, 0,   10 ) );
+	if ( m_histoInfoSwitch->m_jetVerts ) {
+	  h_j_secvtx_dR         .push_back( book( name, hjv   + "_dR",        hjstr   +" - "+ hvstr + " dR",     100, 0,  0.6 ) );
+	  h_j_secvtx_minDR      .push_back( book( name, hjv   + "_minDR",     hjstr   +" - "+ hvstr + " min dR", 100, 0,  0.6 ) );
+	  h_j_secvtx_maxDR      .push_back( book( name, hjv   + "_maxDR",     hjstr   +" - "+ hvstr + " max dR", 100, 0,  0.6 ) );
+	  h_j_secvtx_pt         .push_back( book( name, hjv   + "_pt",        hjvstr  + " p_{T} [GeV]",          100, 0,  100 ) );
+	  h_j_secvtx_Ht         .push_back( book( name, hjv   + "_Ht",        hjvstr  + " H_{T} [GeV]",          100, 0,  100 ) );
+	  h_j_secvtx_H          .push_back( book( name, hjv   + "_H",         hjvstr  + " H [GeV]",              100, 0,  125 ) );
+	  h_j_secvtx_sqrtpt     .push_back( book( name, hjv   + "_sqrtpt",    hjvstr  + " sqrt p_{T} [GeV]",     100, 0,   10 ) );
+	  h_j_secvtx_sqrtHt     .push_back( book( name, hjv   + "_sqrtHt",    hjvstr  + " sqrt H_{T} [GeV]",     100, 0,   10 ) );
+	  h_j_secvtx_sqrtH      .push_back( book( name, hjv   + "_sqrtH",     hjvstr  + " sqrt H [GeV]",         100, 0,   11 ) );
+	  h_j_secvtx_mass_s     .push_back( book( name, hjv   + "_mass",      hjvstr  + " mass [GeV]",           100, 0,   50 ) );
+	  h_j_secvtx_mass       .push_back( book( name, hjv   + "_mass_s",    hjvstr  + " mass [GeV]",           100, 0,   25 ) );
+	  h_j_secvtx_ntrk       .push_back( book( name, hjv   + "_ntrk",      hjvstr  + " n tracks",              10, 2,   12 ) );
+	  h_j_secvtx_njtrk      .push_back( book( name, hjv   + "_njtrk",     hjvstr  + " n jet-matched tracks",  12, 0,   12 ) );
+	  h_j_secvtx_z          .push_back( book( name, hjv   + "_z",         hjvstr  + " abs z-pos [mm]",       100, 0,  300 ) );
+	  h_j_secvtx_minz       .push_back( book( name, hjv   + "_minz",      hjvstr  + " min abs z-pos [mm]",   100, 0,  300 ) );
+	  h_j_secvtx_maxz       .push_back( book( name, hjv   + "_maxz",      hjvstr  + " max abs z-pos [mm]",   100, 0,  300 ) );
+	  h_j_secvtx_sumz       .push_back( book( name, hjv   + "_sumz",      hjvstr  + " sum abs z-pos [mm]",   100, 0,  600 ) );
+	  h_j_secvtx_r          .push_back( book( name, hjv   + "_r",         hjvstr  + " r-pos [mm]",           100, 0,  300 ) );
+	  h_j_secvtx_minr       .push_back( book( name, hjv   + "_minr",      hjvstr  + " min r-pos [mm]",       100, 0,  300 ) );
+	  h_j_secvtx_maxr       .push_back( book( name, hjv   + "_maxr",      hjvstr  + " max r-pos [mm]",       100, 0,  300 ) );
+	  h_j_secvtx_sumr       .push_back( book( name, hjv   + "_sumr",      hjvstr  + " sum r-pos [mm]",       100, 0,  600 ) );
+	  h_j_secvtx_chi2       .push_back( book( name, hjv   + "_chi2",      hjvstr  + " chi2 / nDoF",          100, 0,    5 ) );
+	  h_j_nsecvtx_pt        .push_back( book( name, hjnv  + "_pt",        hjnvstr + " p_{T} [GeV]",          100, 0,  100 ) );
+	  h_j_nsecvtx_eta       .push_back( book( name, hjnv  + "_eta",       hjnvstr + " eta",                  100, -3,   3 ) );
+	  h_j_nsecvtx_phi       .push_back( book( name, hjnv  + "_phi",       hjnvstr + " phi",                  100,-3.5,3.5 ) );
+	  h_j_nsecvtx_m         .push_back( book( name, hjnv  + "_m",         hjnvstr + " invariant mass [GeV]", 100, 0,  100 ) );
+	  h_j_nsecvtx_sumPt     .push_back( book( name, hjnv  + "_sumPt",     hjnvstr + " sum-p_{T} [GeV]",      100, 0,  150 ) );
+	  h_j_nsecvtx_sumHt     .push_back( book( name, hjnv  + "_sumHt",     hjnvstr + " sum-H_{T} [GeV]",      100, 0,  150 ) );
+	  h_j_nsecvtx_sumH      .push_back( book( name, hjnv  + "_sumH",      hjnvstr + " sum-H [GeV]",          100, 0,  200 ) );
+	  h_j_nsecvtx_sqrtsumPt .push_back( book( name, hjnv  + "_sumSqrtpt", hjnvstr + " sqrt sum-p_{T} [GeV]", 100, 0, 12.5 ) );
+	  h_j_nsecvtx_sqrtsumHt .push_back( book( name, hjnv  + "_sumSqrtHt", hjnvstr + " sqrt sum-H_{T} [GeV]", 100, 0, 12.5 ) );
+	  h_j_nsecvtx_sqrtsumH  .push_back( book( name, hjnv  + "_sumSqrtH",  hjnvstr + " sqrt sum-H [GeV]",     100, 0,   15 ) );
+	  h_j_nsecvtx_sumMass   .push_back( book( name, hjnv  + "_sumMass",   hjnvstr + " sum-mass [GeV]",       100, 0,   75 ) );
+	  h_j_nsecvtx_sumMass_s .push_back( book( name, hjnv  + "_sumMass_s", hjnvstr + " sum-mass [GeV]",       100, 0,   35 ) );
+	  h_j_nsecvtx_ntrk      .push_back( book( name, hjnv  + "_ntrk",      hjnvstr + " sum n tracks",          18, 2,   20 ) );
+	  h_j_nsecvtx_njtrk     .push_back( book( name, hjnv  + "_njtrk",     hjnvstr + " sum n jet-matched tracks",20,0,  20 ) );
+	}
       } // end loop over SV types
       h_j_nsv .push_back( h_j_nsecvtx );
+      if ( m_histoInfoSwitch->m_jetVerts ) {
+	h_j_sv_dR         .push_back( h_j_secvtx_dR         );
+	h_j_sv_minDR      .push_back( h_j_secvtx_minDR      );
+	h_j_sv_maxDR      .push_back( h_j_secvtx_maxDR      );
+	h_j_sv_pt         .push_back( h_j_secvtx_pt         );
+	h_j_sv_Ht         .push_back( h_j_secvtx_Ht         );
+	h_j_sv_H          .push_back( h_j_secvtx_H          );
+	h_j_sv_sqrtpt     .push_back( h_j_secvtx_sqrtpt     );
+	h_j_sv_sqrtHt     .push_back( h_j_secvtx_sqrtHt     );	
+	h_j_sv_sqrtH      .push_back( h_j_secvtx_sqrtH      );	
+	h_j_sv_mass       .push_back( h_j_secvtx_mass       );
+	h_j_sv_mass_s     .push_back( h_j_secvtx_mass_s     );
+	h_j_sv_ntrk       .push_back( h_j_secvtx_ntrk       );
+	h_j_sv_njtrk      .push_back( h_j_secvtx_njtrk      );
+	h_j_sv_z          .push_back( h_j_secvtx_z          );
+	h_j_sv_minz       .push_back( h_j_secvtx_minz       );
+	h_j_sv_maxz       .push_back( h_j_secvtx_maxz       );
+	h_j_sv_sumz       .push_back( h_j_secvtx_sumz       );
+	h_j_sv_r          .push_back( h_j_secvtx_r          );
+	h_j_sv_minr       .push_back( h_j_secvtx_minr       );
+	h_j_sv_maxr       .push_back( h_j_secvtx_maxr       );
+	h_j_sv_sumr       .push_back( h_j_secvtx_sumr       );
+	h_j_sv_chi2       .push_back( h_j_secvtx_chi2       );
+	h_j_nsv_pt        .push_back( h_j_nsecvtx_pt        );
+	h_j_nsv_eta       .push_back( h_j_nsecvtx_eta       );
+	h_j_nsv_phi       .push_back( h_j_nsecvtx_phi       );
+	h_j_nsv_m         .push_back( h_j_nsecvtx_m         );
+	h_j_nsv_sumPt     .push_back( h_j_nsecvtx_sumPt     );
+	h_j_nsv_sumHt     .push_back( h_j_nsecvtx_sumHt     );
+	h_j_nsv_sumH      .push_back( h_j_nsecvtx_sumH      );
+	h_j_nsv_sqrtsumPt .push_back( h_j_nsecvtx_sqrtsumPt );
+	h_j_nsv_sqrtsumHt .push_back( h_j_nsecvtx_sqrtsumHt );
+	h_j_nsv_sqrtsumH  .push_back( h_j_nsecvtx_sqrtsumH  );
+	h_j_nsv_sumMass   .push_back( h_j_nsecvtx_sumMass   );
+	h_j_nsv_sumMass_s .push_back( h_j_nsecvtx_sumMass_s );
+	h_j_nsv_ntrk      .push_back( h_j_nsecvtx_ntrk      );
+	h_j_nsv_njtrk     .push_back( h_j_nsecvtx_njtrk     );
+      }
+      m_nTypeJDVs = h_j_nsecvtx.size();
+
+      // N leading jets
+      if ( m_numLeadJets && i % m_LJix ) {
+	std::vector<TH1F*> h_nleadj_pt;
+	std::vector<TH1F*> h_nleadj_pt_s;
+	std::vector<TH1F*> h_nleadj_eta;
+	std::vector<TH1F*> h_nleadj_phi;
+	std::vector<TH1F*> h_nleadj_E;
+	std::vector<TH1F*> h_nleadj_M;
+	std::vector<TH1F*> h_nleadj_rapid;
+	std::vector<TH1F*> h_nleadj_nConstits;
+	std::vector<TH1F*> h_nleadj_Et;
+	std::vector<TH1F*> h_nleadj_Et_s;
+	std::vector<std::vector<TH1F*>> h_nleadj_ntrk;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_minDR;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_maxDR;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_mind0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_maxd0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sumd0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_minz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_maxz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sumz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_minErrd0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_maxErrd0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sumErrd0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_minErrz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_maxErrz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sumErrz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtmind0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtmaxd0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtsumd0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtminz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtmaxz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtsumz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtminErrd0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtmaxErrd0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtsumErrd0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtminErrz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtmaxErrz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_trk_sqrtsumErrz0;
+	std::vector<std::vector<TH1F*>> h_nleadj_ntrk_pt;
+	std::vector<std::vector<TH1F*>> h_nleadj_ntrk_eta;
+	std::vector<std::vector<TH1F*>> h_nleadj_ntrk_phi;
+	std::vector<std::vector<TH1F*>> h_nleadj_ntrk_m;
+	std::vector<std::vector<TH1F*>> h_nleadj_ntrk_sumPt;
+	std::vector<std::vector<TH1F*>> h_nleadj_ntrk_sqrtsumPt;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv;
+	std::vector<std::vector<TH1F*>> h_nleadj_sv_minDR;
+	std::vector<std::vector<TH1F*>> h_nleadj_sv_maxDR;
+	std::vector<std::vector<TH1F*>> h_nleadj_sv_minz;
+	std::vector<std::vector<TH1F*>> h_nleadj_sv_maxz;
+	std::vector<std::vector<TH1F*>> h_nleadj_sv_sumz;
+	std::vector<std::vector<TH1F*>> h_nleadj_sv_minr;
+	std::vector<std::vector<TH1F*>> h_nleadj_sv_maxr;
+	std::vector<std::vector<TH1F*>> h_nleadj_sv_sumr;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_pt;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_eta;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_phi;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_m;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_sumPt;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_sumHt;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_sumH;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_sqrtsumPt;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_sqrtsumHt;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_sqrtsumH;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_sumMass;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_sumMass_s;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_ntrk;
+	std::vector<std::vector<TH1F*>> h_nleadj_nsv_njtrk;
+	for ( int j = 0; j != m_numLeadJets; ++j ) {
+	  std::string njet     = std::to_string(j);
+	  std::string hnjet    = hj + njet;
+	  std::string hnjetstr = hjstr + "-" + njet;
+	  h_nleadj_pt        .push_back( book( name, hnjet + "_pt",        hnjetstr + " p_{T} [GeV]",    100,    0, 1500 ) );
+	  h_nleadj_pt_s      .push_back( book( name, hnjet + "_pt_s",      hnjetstr + " p_{T} [GeV]",    100,    0,  500 ) );
+	  h_nleadj_eta       .push_back( book( name, hnjet + "_eta",       hnjetstr + " eta",            100,   -5,    5 ) );
+	  h_nleadj_phi       .push_back( book( name, hnjet + "_phi",       hnjetstr + " phi",            100, -3.5,  3.5 ) );
+	  h_nleadj_E         .push_back( book( name, hnjet + "_E",         hnjetstr + " energy [GeV]",   100,    0, 2500 ) );
+	  h_nleadj_M         .push_back( book( name, hnjet + "_M",         hnjetstr + " mass [GeV]",     100,    0,  250 ) );
+	  h_nleadj_rapid     .push_back( book( name, hnjet + "_rapid",     hnjetstr + " rapidity",       100,   -5,    5 ) );
+	  h_nleadj_nConstits .push_back( book( name, hnjet + "_nConstits", hnjetstr + " n constituents", 100,    0,   60 ) );
+	  if ( m_histoInfoSwitch->m_kinematics || m_histoInfoSwitch->m_kinematics_jet ) {
+	    h_nleadj_Et      .push_back( book( name, hnjet + "_Et",        hnjetstr + " E_{T} [GeV]",    100,    0, 1500 ) );
+	    h_nleadj_Et_s    .push_back( book( name, hnjet + "_Et_s",      hnjetstr + " E_{T} [GeV]",    100,    0,  500 ) );
+	  }
+	  
+	  std::vector<TH1F*> h_nleadj_ntrack;
+	  std::vector<TH1F*> h_nleadj_track_minDR;
+	  std::vector<TH1F*> h_nleadj_track_maxDR;
+	  std::vector<TH1F*> h_nleadj_track_mind0;
+	  std::vector<TH1F*> h_nleadj_track_maxd0;
+	  std::vector<TH1F*> h_nleadj_track_sumd0;
+	  std::vector<TH1F*> h_nleadj_track_minz0;
+	  std::vector<TH1F*> h_nleadj_track_maxz0;
+	  std::vector<TH1F*> h_nleadj_track_sumz0;
+	  std::vector<TH1F*> h_nleadj_track_minErrd0;
+	  std::vector<TH1F*> h_nleadj_track_maxErrd0;
+	  std::vector<TH1F*> h_nleadj_track_sumErrd0;
+	  std::vector<TH1F*> h_nleadj_track_minErrz0;
+	  std::vector<TH1F*> h_nleadj_track_maxErrz0;
+	  std::vector<TH1F*> h_nleadj_track_sumErrz0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtmind0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtmaxd0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtsumd0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtminz0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtmaxz0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtsumz0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtminErrd0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtmaxErrd0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtsumErrd0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtminErrz0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtmaxErrz0;
+	  std::vector<TH1F*> h_nleadj_track_sqrtsumErrz0;
+	  std::vector<TH1F*> h_nleadj_ntrack_pt;
+	  std::vector<TH1F*> h_nleadj_ntrack_eta;
+	  std::vector<TH1F*> h_nleadj_ntrack_phi;
+	  std::vector<TH1F*> h_nleadj_ntrack_m;
+	  std::vector<TH1F*> h_nleadj_ntrack_sumPt;
+	  std::vector<TH1F*> h_nleadj_ntrack_sqrtsumPt;
+	  for ( size_t k = 0; k != hTrk.size(); ++k ) {
+	    std::string htsubstr   = "matched";
+	    if ( !hTrkstr[k].empty() ) htsubstr += " ";
+	    std::string ht         = hTrk[k]  + "trk";
+	    std::string htstr      = htsubstr + hTrkstr[k] + " track";
+	    std::string hnjett     = hnjet + "_" + ht;
+	    std::string hnjettstr  = hnjetstr + " " + htstr;
+	    std::string hnt        = "n" + ht;
+	    std::string hntstr     = htsubstr + hTrkstr[k] + " n-track";
+	    std::string hnjetnt    = hnjet + "_" + hnt;
+	    std::string hnjetntstr = hnjetstr + " " + hntstr;
+	    int nbin = nt_x2[k];
+	    if ( k < 2 ) nbin = nt_x2[k] / 2;
+	    h_nleadj_ntrack
+	      .push_back(   book( name, hnjet + "_n" + ht,        "n " + htstr + "s per " + hnjetstr, nbin, 0, nt_x2            [k] ) );
+	    if ( m_histoInfoSwitch->m_jetTrks ) {
+	      h_nleadj_track_minDR
+		.push_back( book( name, hnjett  + "_minDR",       hnjetstr   +" - "+ htstr + " min dR",100, 0,                  0.6 ) );
+	      h_nleadj_track_maxDR
+		.push_back( book( name, hnjett  + "_maxDR",       hnjetstr   +" - "+ htstr + " max dR",100, 0,                  0.6 ) );
+	      h_nleadj_track_mind0
+		.push_back( book( name, hnjett  + "_mind0",       hnjettstr  + " min d0 [mm]",         100, 0, tmind0_x2        [k] ) );
+	      h_nleadj_track_maxd0
+		.push_back( book( name, hnjett  + "_maxd0",       hnjettstr  + " max d0 [mm]",         100, 0, tmaxd0_x2        [k] ) );
+	      h_nleadj_track_sumd0
+		.push_back( book( name, hnjett  + "_sumd0",       hnjettstr  + " sum-d0 [mm]",         100, 0, tsumd0_x2        [k] ) );
+	      h_nleadj_track_minz0
+		.push_back( book( name, hnjett  + "_minz0",       hnjettstr  + " min z0 [mm]",         100, 0, tminz0_x2        [k] ) );
+	      h_nleadj_track_maxz0
+		.push_back( book( name, hnjett  + "_maxz0",       hnjettstr  + " max z0 [mm]",         100, 0, tmaxz0_x2        [k] ) );
+	      h_nleadj_track_sumz0
+		.push_back( book( name, hnjett  + "_sumz0",       hnjettstr  + " sum-z0 [mm]",         100, 0, tsumz0_x2        [k] ) );
+	      h_nleadj_track_minErrd0
+		.push_back( book( name, hnjett  + "_minErrd0",    hnjettstr  + " min d0 uncert.",      100, 0, tminerrd0_x2     [k] ) );
+	      h_nleadj_track_maxErrd0
+		.push_back( book( name, hnjett  + "_maxErrd0",    hnjettstr  + " max d0 uncert.",      100, 0, tmaxerrd0_x2     [k] ) );
+	      h_nleadj_track_sumErrd0
+		.push_back( book( name, hnjett  + "_sumErrd0",    hnjettstr  + " sum d0 uncert.",      100, 0, tsumerrd0_x2     [k] ) );
+	      h_nleadj_track_minErrz0
+		.push_back( book( name, hnjett  + "_minErrz0",    hnjettstr  + " min z0 uncert.",      100, 0, tminerrz0_x2     [k] ) );
+	      h_nleadj_track_maxErrz0
+		.push_back( book( name, hnjett  + "_maxErrz0",    hnjettstr  + " max z0 uncert.",      100, 0, tmaxerrz0_x2     [k] ) );
+	      h_nleadj_track_sumErrz0
+		.push_back( book( name, hnjett  + "_sumErrz0",    hnjettstr  + " sum z0 uncert.",      100, 0, tsumerrz0_x2     [k] ) );
+	      h_nleadj_track_sqrtmind0
+		.push_back( book( name, hnjett  + "_sqrtmind0",   hnjettstr  + " sqrt min d0 [mm]",    100, 0, sqrt(tmind0_x2   [k])) );
+	      h_nleadj_track_sqrtmaxd0
+		.push_back( book( name, hnjett  + "_sqrtmaxd0",   hnjettstr  + " sqrt max d0 [mm]",    100, 0, sqrt(tmaxd0_x2   [k])) );
+	      h_nleadj_track_sqrtsumd0
+		.push_back( book( name, hnjett  + "_sqrtsumd0",   hnjettstr  + " sqrt sum-d0 [mm]",    100, 0, sqrt(tsumd0_x2   [k])) );
+	      h_nleadj_track_sqrtminz0
+		.push_back( book( name, hnjett  + "_sqrtminz0",   hnjettstr  + " sqrt min z0 [mm]",    100, 0, sqrt(tminz0_x2   [k])) );
+	      h_nleadj_track_sqrtmaxz0
+		.push_back( book( name, hnjett  + "_sqrtmaxz0",   hnjettstr  + " sqrt max z0 [mm]",    100, 0, sqrt(tmaxz0_x2   [k])) );
+	      h_nleadj_track_sqrtsumz0
+		.push_back( book( name, hnjett  + "_sumsqrtz0",   hnjettstr  + " sqrt sum-z0 [mm]",    100, 0, sqrt(tsumz0_x2   [k])) );
+	      h_nleadj_track_sqrtminErrd0
+		.push_back( book( name, hnjett  + "_sqrtminErrd0",hnjettstr  + " sqrt min d0 uncert.", 100, 0, sqrt(tminerrd0_x2[k])) );
+	      h_nleadj_track_sqrtmaxErrd0
+		.push_back( book( name, hnjett  + "_sqrtmaxErrd0",hnjettstr  + " sqrt max d0 uncert.", 100, 0, sqrt(tmaxerrd0_x2[k])) );
+	      h_nleadj_track_sqrtsumErrd0
+		.push_back( book( name, hnjett  + "_sqrtsumErrd0",hnjettstr  + " sqrt sum d0 uncert.", 100, 0, sqrt(tsumerrd0_x2[k])) );
+	      h_nleadj_track_sqrtminErrz0
+		.push_back( book( name, hnjett  + "_sqrtminErrz0",hnjettstr  + " sqrt min z0 uncert.", 100, 0, sqrt(tminerrz0_x2[k])) );
+	      h_nleadj_track_sqrtmaxErrz0
+		.push_back( book( name, hnjett  + "_sqrtmaxErrz0",hnjettstr  + " sqrt max z0 uncert.", 100, 0, sqrt(tmaxerrz0_x2[k])) );
+	      h_nleadj_track_sqrtsumErrz0
+		.push_back( book( name, hnjett  + "_sqrtsumErrz0",hnjettstr  + " sqrt sum z0 uncert.", 100, 0, sqrt(tsumerrz0_x2[k])) );
+	      h_nleadj_ntrack_pt
+		.push_back( book( name, hnjetnt + "_pt",          hnjetntstr + " p_{T} [GeV]",         100, 1, ntpt_x2          [k] ) );
+	      h_nleadj_ntrack_eta
+		.push_back( book( name, hnjetnt + "_eta",         hnjetntstr + " eta",                 100, -3,                   3 ) );
+	      h_nleadj_ntrack_phi
+		.push_back( book( name, hnjetnt + "_phi",         hnjetntstr + " phi",                 100, -3.5,               3.5 ) );
+	      h_nleadj_ntrack_m
+		.push_back( book( name, hnjetnt + "_m",           hnjetntstr + " mass [GeV]",          100, 0, ntm_x2           [k] ) );
+	      h_nleadj_ntrack_sumPt
+		.push_back( book( name, hnjetnt + "_sumPt",       hnjetntstr + " sum-p_{T} [GeV]",     100, 1, ntsumpt_x2       [k] ) );
+	      h_nleadj_ntrack_sqrtsumPt
+		.push_back( book( name, hnjetnt + "_sqrtsumPt",   hnjetntstr + " sqrt sum-p_{T} [GeV]",100, 1, sqrt(ntsumpt_x2  [k])) );
+	    }
+	  }
+	  h_nleadj_ntrk               .push_back( h_nleadj_ntrack             );
+	  if ( m_histoInfoSwitch->m_jetTrks ) {
+	    h_nleadj_trk_minDR        .push_back( h_nleadj_track_minDR        );
+	    h_nleadj_trk_maxDR        .push_back( h_nleadj_track_maxDR        );
+	    h_nleadj_trk_mind0        .push_back( h_nleadj_track_mind0        );
+	    h_nleadj_trk_maxd0        .push_back( h_nleadj_track_maxd0        );
+	    h_nleadj_trk_sumd0        .push_back( h_nleadj_track_sumd0        );
+	    h_nleadj_trk_minz0        .push_back( h_nleadj_track_minz0        );
+	    h_nleadj_trk_maxz0        .push_back( h_nleadj_track_maxz0        );
+	    h_nleadj_trk_sumz0        .push_back( h_nleadj_track_sumz0        );
+	    h_nleadj_trk_minErrd0     .push_back( h_nleadj_track_minErrd0     );
+	    h_nleadj_trk_maxErrd0     .push_back( h_nleadj_track_maxErrd0     );
+	    h_nleadj_trk_sumErrd0     .push_back( h_nleadj_track_sumErrd0     );
+	    h_nleadj_trk_minErrz0     .push_back( h_nleadj_track_minErrz0     );
+	    h_nleadj_trk_maxErrz0     .push_back( h_nleadj_track_maxErrz0     );
+	    h_nleadj_trk_sumErrz0     .push_back( h_nleadj_track_sumErrz0     );
+	    h_nleadj_trk_sqrtmind0    .push_back( h_nleadj_track_sqrtmind0    );
+	    h_nleadj_trk_sqrtmaxd0    .push_back( h_nleadj_track_sqrtmaxd0    );
+	    h_nleadj_trk_sqrtsumd0    .push_back( h_nleadj_track_sqrtsumd0    );
+	    h_nleadj_trk_sqrtminz0    .push_back( h_nleadj_track_sqrtminz0    );
+	    h_nleadj_trk_sqrtmaxz0    .push_back( h_nleadj_track_sqrtmaxz0    );
+	    h_nleadj_trk_sqrtsumz0    .push_back( h_nleadj_track_sqrtsumz0    );
+	    h_nleadj_trk_sqrtminErrd0 .push_back( h_nleadj_track_sqrtminErrd0 );
+	    h_nleadj_trk_sqrtmaxErrd0 .push_back( h_nleadj_track_sqrtmaxErrd0 );
+	    h_nleadj_trk_sqrtsumErrd0 .push_back( h_nleadj_track_sqrtsumErrd0 );
+	    h_nleadj_trk_sqrtminErrz0 .push_back( h_nleadj_track_sqrtminErrz0 );
+	    h_nleadj_trk_sqrtmaxErrz0 .push_back( h_nleadj_track_sqrtmaxErrz0 );
+	    h_nleadj_trk_sqrtsumErrz0 .push_back( h_nleadj_track_sqrtsumErrz0 );
+	    h_nleadj_ntrk_pt          .push_back( h_nleadj_ntrack_pt          );
+	    h_nleadj_ntrk_eta         .push_back( h_nleadj_ntrack_eta         );
+	    h_nleadj_ntrk_phi         .push_back( h_nleadj_ntrack_phi         );
+	    h_nleadj_ntrk_m           .push_back( h_nleadj_ntrack_m           );
+	    h_nleadj_ntrk_sumPt       .push_back( h_nleadj_ntrack_sumPt       );
+	    h_nleadj_ntrk_sqrtsumPt   .push_back( h_nleadj_ntrack_sqrtsumPt   );
+	  }
+
+	  std::vector<TH1F*> h_nleadj_nsecvtx;
+	  std::vector<TH1F*> h_nleadj_secvtx_minDR;
+	  std::vector<TH1F*> h_nleadj_secvtx_maxDR;
+	  std::vector<TH1F*> h_nleadj_secvtx_minz;
+	  std::vector<TH1F*> h_nleadj_secvtx_maxz;
+	  std::vector<TH1F*> h_nleadj_secvtx_sumz;
+	  std::vector<TH1F*> h_nleadj_secvtx_minr;
+	  std::vector<TH1F*> h_nleadj_secvtx_maxr;
+	  std::vector<TH1F*> h_nleadj_secvtx_sumr;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_pt;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_eta;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_phi;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_m;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_sumPt;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_sumHt;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_sumH;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_sqrtsumPt;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_sqrtsumHt;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_sqrtsumH;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_sumMass;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_sumMass_s;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_ntrk;
+	  std::vector<TH1F*> h_nleadj_nsecvtx_njtrk;
+	  for ( size_t k = 0; k != hJDV.size(); ++k ) {
+	    std::string hv         = hJDV[k] + "SV"; hv[0] = tolower(hv[0]);
+	    std::string hdvstr     = hJDVstr[k]; hdvstr.pop_back();
+	    std::string hvstr      = "matched " + hdvstr + " SV";
+	    std::string hnjetv     = hnjet + "_" + hv;
+	    std::string hnjetvstr  = hnjetstr + " " + hvstr;
+	    std::string hnv        = "n" + hv;
+	    std::string hnjetnv    = hnjet + "_" + hnv;
+	    std::string hnvstr     = "matched " + hdvstr + " n-SV";
+	    std::string hnjetnvstr = hnjetstr + " " + hnvstr;
+	    h_nleadj_nsecvtx .push_back( book( name, hnjet + "_n" + hv, "n " + hvstr + "s per " + hnjetstr, 10, 0, 10 ) );
+	    if ( m_histoInfoSwitch->m_jetVerts ) {
+	      h_nleadj_secvtx_minDR      .push_back( book( name, hnjetv   + "_minDR",     hnjetstr   +" - "+ hvstr + " min dR", 100, 0,  0.6 ) );
+	      h_nleadj_secvtx_maxDR      .push_back( book( name, hnjetv   + "_maxDR",     hnjetstr   +" - "+ hvstr + " max dR", 100, 0,  0.6 ) );
+	      h_nleadj_secvtx_minz       .push_back( book( name, hnjetv   + "_minz",      hnjetvstr  + " min abs z-pos [mm]",   100, 0,  300 ) );
+	      h_nleadj_secvtx_maxz       .push_back( book( name, hnjetv   + "_maxz",      hnjetvstr  + " max abs z-pos [mm]",   100, 0,  300 ) );
+	      h_nleadj_secvtx_sumz       .push_back( book( name, hnjetv   + "_sumz",      hnjetvstr  + " sum abs z-pos [mm]",   100, 0,  600 ) );
+	      h_nleadj_secvtx_minr       .push_back( book( name, hnjetv   + "_minr",      hnjetvstr  + " min r-pos [mm]",       100, 0,  300 ) );
+	      h_nleadj_secvtx_maxr       .push_back( book( name, hnjetv   + "_maxr",      hnjetvstr  + " max r-pos [mm]",       100, 0,  300 ) );
+	      h_nleadj_secvtx_sumr       .push_back( book( name, hnjetv   + "_sumr",      hnjetvstr  + " sum r-pos [mm]",       100, 0,  600 ) );
+	      h_nleadj_nsecvtx_pt        .push_back( book( name, hnjetnv  + "_pt",        hnjetnvstr + " p_{T} [GeV]",          100, 0,  100 ) );
+	      h_nleadj_nsecvtx_eta       .push_back( book( name, hnjetnv  + "_eta",       hnjetnvstr + " eta",                  100, -3,   3 ) );
+	      h_nleadj_nsecvtx_phi       .push_back( book( name, hnjetnv  + "_phi",       hnjetnvstr + " phi",                  100,-3.5,3.5 ) );
+	      h_nleadj_nsecvtx_m         .push_back( book( name, hnjetnv  + "_m",         hnjetnvstr + " invariant mass [GeV]", 100, 0,  100 ) );
+	      h_nleadj_nsecvtx_sumPt     .push_back( book( name, hnjetnv  + "_sumPt",     hnjetnvstr + " sum-p_{T} [GeV]",      100, 0,  150 ) );
+	      h_nleadj_nsecvtx_sumHt     .push_back( book( name, hnjetnv  + "_sumHt",     hnjetnvstr + " sum-H_{T} [GeV]",      100, 0,  150 ) );
+	      h_nleadj_nsecvtx_sumH      .push_back( book( name, hnjetnv  + "_sumH",      hnjetnvstr + " sum-H [GeV]",          100, 0,  200 ) );
+	      h_nleadj_nsecvtx_sqrtsumPt .push_back( book( name, hnjetnv  + "_sumSqrtpt", hnjetnvstr + " sqrt sum-p_{T} [GeV]", 100, 0, 12.5 ) );
+	      h_nleadj_nsecvtx_sqrtsumHt .push_back( book( name, hnjetnv  + "_sumSqrtHt", hnjetnvstr + " sqrt sum-H_{T} [GeV]", 100, 0, 12.5 ) );
+	      h_nleadj_nsecvtx_sqrtsumH  .push_back( book( name, hnjetnv  + "_sumSqrtH",  hnjetnvstr + " sqrt sum-H [GeV]",     100, 0,   15 ) );
+	      h_nleadj_nsecvtx_sumMass   .push_back( book( name, hnjetnv  + "_sumMass",   hnjetnvstr + " sum-mass [GeV]",       100, 0,   75 ) );
+	      h_nleadj_nsecvtx_sumMass_s .push_back( book( name, hnjetnv  + "_sumMass_s", hnjetnvstr + " sum-mass [GeV]",       100, 0,   35 ) );
+	      h_nleadj_nsecvtx_ntrk      .push_back( book( name, hnjetnv  + "_ntrk",      hnjetnvstr + " sum n tracks",          18, 2,   20 ) );
+	      h_nleadj_nsecvtx_njtrk     .push_back( book( name, hnjetnv  + "_njtrk",     hnjetnvstr + " sum n jet-matched tracks",20,0,  20 ) );
+	    }
+	  }
+	  h_nleadj_nsv             .push_back( h_nleadj_nsecvtx           );
+	  if ( m_histoInfoSwitch->m_jetVerts ) {
+	    h_nleadj_sv_minDR      .push_back( h_nleadj_secvtx_minDR      );
+	    h_nleadj_sv_maxDR      .push_back( h_nleadj_secvtx_maxDR      );
+	    h_nleadj_sv_minz       .push_back( h_nleadj_secvtx_minz       );
+	    h_nleadj_sv_maxz       .push_back( h_nleadj_secvtx_maxz       );
+	    h_nleadj_sv_sumz       .push_back( h_nleadj_secvtx_sumz       );
+	    h_nleadj_sv_minr       .push_back( h_nleadj_secvtx_minr       );
+	    h_nleadj_sv_maxr       .push_back( h_nleadj_secvtx_maxr       );
+	    h_nleadj_sv_sumr       .push_back( h_nleadj_secvtx_sumr       );
+	    h_nleadj_nsv_pt        .push_back( h_nleadj_nsecvtx_pt        );
+	    h_nleadj_nsv_eta       .push_back( h_nleadj_nsecvtx_eta       );
+	    h_nleadj_nsv_phi       .push_back( h_nleadj_nsecvtx_phi       );
+	    h_nleadj_nsv_m         .push_back( h_nleadj_nsecvtx_m         );
+	    h_nleadj_nsv_sumPt     .push_back( h_nleadj_nsecvtx_sumPt     );
+	    h_nleadj_nsv_sumHt     .push_back( h_nleadj_nsecvtx_sumHt     );
+	    h_nleadj_nsv_sumH      .push_back( h_nleadj_nsecvtx_sumH      );
+	    h_nleadj_nsv_sqrtsumPt .push_back( h_nleadj_nsecvtx_sqrtsumPt );
+	    h_nleadj_nsv_sqrtsumHt .push_back( h_nleadj_nsecvtx_sqrtsumHt );
+	    h_nleadj_nsv_sqrtsumH  .push_back( h_nleadj_nsecvtx_sqrtsumH  );
+	    h_nleadj_nsv_sumMass   .push_back( h_nleadj_nsecvtx_sumMass   );
+	    h_nleadj_nsv_sumMass_s .push_back( h_nleadj_nsecvtx_sumMass_s );
+	    h_nleadj_nsv_ntrk      .push_back( h_nleadj_nsecvtx_ntrk      );
+	    h_nleadj_nsv_njtrk     .push_back( h_nleadj_nsecvtx_njtrk     );
+	  }
+	}
+	
+	h_nlj_pt        .push_back( h_nleadj_pt        );
+	h_nlj_pt_s      .push_back( h_nleadj_pt_s      );
+	h_nlj_eta       .push_back( h_nleadj_eta       );
+	h_nlj_phi       .push_back( h_nleadj_phi       );
+	h_nlj_E         .push_back( h_nleadj_E         );
+	h_nlj_M         .push_back( h_nleadj_M         );
+	h_nlj_rapid     .push_back( h_nleadj_rapid     );
+	h_nlj_nConstits .push_back( h_nleadj_nConstits );
+	if ( m_histoInfoSwitch->m_kinematics || m_histoInfoSwitch->m_kinematics_jet ) {
+	  h_nlj_Et      .push_back( h_nleadj_Et        );
+	  h_nlj_Et_s    .push_back( h_nleadj_Et_s      );
+	}
+	h_nlj_ntrk      .push_back( h_nleadj_ntrk      );
+	if ( m_histoInfoSwitch->m_jetTrks ) {
+	  h_nlj_trk_minDR        .push_back( h_nleadj_trk_minDR        );
+	  h_nlj_trk_maxDR        .push_back( h_nleadj_trk_maxDR        );
+	  h_nlj_trk_mind0        .push_back( h_nleadj_trk_mind0        );
+	  h_nlj_trk_maxd0        .push_back( h_nleadj_trk_maxd0        );
+	  h_nlj_trk_sumd0        .push_back( h_nleadj_trk_sumd0        );
+	  h_nlj_trk_minz0        .push_back( h_nleadj_trk_minz0        );
+	  h_nlj_trk_maxz0        .push_back( h_nleadj_trk_maxz0        );
+	  h_nlj_trk_sumz0        .push_back( h_nleadj_trk_sumz0        );
+	  h_nlj_trk_minErrd0     .push_back( h_nleadj_trk_minErrd0     );
+	  h_nlj_trk_maxErrd0     .push_back( h_nleadj_trk_maxErrd0     );
+	  h_nlj_trk_sumErrd0     .push_back( h_nleadj_trk_sumErrd0     );
+	  h_nlj_trk_minErrz0     .push_back( h_nleadj_trk_minErrz0     );
+	  h_nlj_trk_maxErrz0     .push_back( h_nleadj_trk_maxErrz0     );
+	  h_nlj_trk_sumErrz0     .push_back( h_nleadj_trk_sumErrz0     );
+	  h_nlj_trk_sqrtmind0    .push_back( h_nleadj_trk_sqrtmind0    );
+	  h_nlj_trk_sqrtmaxd0    .push_back( h_nleadj_trk_sqrtmaxd0    );
+	  h_nlj_trk_sqrtsumd0    .push_back( h_nleadj_trk_sqrtsumd0    );
+	  h_nlj_trk_sqrtminz0    .push_back( h_nleadj_trk_sqrtminz0    );
+	  h_nlj_trk_sqrtmaxz0    .push_back( h_nleadj_trk_sqrtmaxz0    );
+	  h_nlj_trk_sqrtsumz0    .push_back( h_nleadj_trk_sqrtsumz0    );
+	  h_nlj_trk_sqrtminErrd0 .push_back( h_nleadj_trk_sqrtminErrd0 );
+	  h_nlj_trk_sqrtmaxErrd0 .push_back( h_nleadj_trk_sqrtmaxErrd0 );
+	  h_nlj_trk_sqrtsumErrd0 .push_back( h_nleadj_trk_sqrtsumErrd0 );
+	  h_nlj_trk_sqrtminErrz0 .push_back( h_nleadj_trk_sqrtminErrz0 );
+	  h_nlj_trk_sqrtmaxErrz0 .push_back( h_nleadj_trk_sqrtmaxErrz0 );
+	  h_nlj_trk_sqrtsumErrz0 .push_back( h_nleadj_trk_sqrtsumErrz0 );
+	  h_nlj_ntrk_pt          .push_back( h_nleadj_ntrk_pt          );
+	  h_nlj_ntrk_eta         .push_back( h_nleadj_ntrk_eta         );
+	  h_nlj_ntrk_phi         .push_back( h_nleadj_ntrk_phi         );
+	  h_nlj_ntrk_m           .push_back( h_nleadj_ntrk_m           );
+	  h_nlj_ntrk_sumPt       .push_back( h_nleadj_ntrk_sumPt       );
+	  h_nlj_ntrk_sqrtsumPt   .push_back( h_nleadj_ntrk_sqrtsumPt   );
+	}
+	h_nlj_nsv             .push_back( h_nleadj_nsv           );
+	if ( m_histoInfoSwitch->m_jetVerts ) {
+	  h_nlj_sv_minDR      .push_back( h_nleadj_sv_minDR      );
+	  h_nlj_sv_maxDR      .push_back( h_nleadj_sv_maxDR      );
+	  h_nlj_sv_minz       .push_back( h_nleadj_sv_minz       );
+	  h_nlj_sv_maxz       .push_back( h_nleadj_sv_maxz       );
+	  h_nlj_sv_sumz       .push_back( h_nleadj_sv_sumz       );
+	  h_nlj_sv_minr       .push_back( h_nleadj_sv_minr       );
+	  h_nlj_sv_maxr       .push_back( h_nleadj_sv_maxr       );
+	  h_nlj_sv_sumr       .push_back( h_nleadj_sv_sumr       );
+	  h_nlj_nsv_pt        .push_back( h_nleadj_nsv_pt        );
+	  h_nlj_nsv_eta       .push_back( h_nleadj_nsv_eta       );
+	  h_nlj_nsv_phi       .push_back( h_nleadj_nsv_phi       );
+	  h_nlj_nsv_m         .push_back( h_nleadj_nsv_m         );
+	  h_nlj_nsv_sumPt     .push_back( h_nleadj_nsv_sumPt     );
+	  h_nlj_nsv_sumHt     .push_back( h_nleadj_nsv_sumHt     );
+	  h_nlj_nsv_sumH      .push_back( h_nleadj_nsv_sumH      );
+	  h_nlj_nsv_sqrtsumPt .push_back( h_nleadj_nsv_sqrtsumPt );
+	  h_nlj_nsv_sqrtsumHt .push_back( h_nleadj_nsv_sqrtsumHt );
+	  h_nlj_nsv_sqrtsumH  .push_back( h_nleadj_nsv_sqrtsumH  );
+	  h_nlj_nsv_sumMass   .push_back( h_nleadj_nsv_sumMass   );
+	  h_nlj_nsv_sumMass_s .push_back( h_nleadj_nsv_sumMass_s );
+	  h_nlj_nsv_ntrk      .push_back( h_nleadj_nsv_ntrk      );
+	  h_nlj_nsv_njtrk     .push_back( h_nleadj_nsv_njtrk     );
+	}
+      }
       
       // dijets
       if ( m_histoInfoSwitch->m_dijets ) {
-	h_jj_n         .push_back( book( name, hjj + "_n",           "n " + hjjstr + "s",                     100,    0,   60 ) );
-	h_jj_pt        .push_back( book( name, hjj + "_pt",          hjjstr + " p_{T} [GeV]",                 100,    0, 2500 ) );
-	h_jj_eta       .push_back( book( name, hjj + "_eta",         hjjstr + " eta",                         100,   -5,    5 ) );
-	h_jj_phi       .push_back( book( name, hjj + "_phi",         hjjstr + " phi",                         100, -3.5,  3.5 ) );
-	h_jj_m         .push_back( book( name, hjj + "_m",           hjjstr + " invariant mass [GeV]",        100,    0, 3500 ) );
-	h_jj_sumPt     .push_back( book( name, hjj + "_sumPt",       hjjstr + " sum-p_{T} [GeV]",             100,    0, 3500 ) );
-	h_jj_dR        .push_back( book( name, hjj + "_dR",          hjjstr + " dR",                          100,    0,    6 ) );
-	// max dijet system
-	h_jj_max_pt    .push_back( book( name, hjj + "_maxP4_pt",    hjjstr + " max-p4 p_{T} [GeV]",          100,    0, 1750 ) );
-	h_jj_max_eta   .push_back( book( name, hjj + "_maxP4_eta",   hjjstr + " max-p4 eta",                  100,   -5,    5 ) );
-	h_jj_max_phi   .push_back( book( name, hjj + "_maxP4_phi",   hjjstr + " max-p4 phi",                  100, -3.5,  3.5 ) );
-	h_jj_max_m     .push_back( book( name, hjj + "_maxP4_m",     hjjstr + " max-p4 invariant mass [GeV]", 100,    0, 4500 ) );
-	h_jj_max_sumPt .push_back( book( name, hjj + "_maxP4_sumPt", hjjstr + " max-p4 sum-p_{T} [GeV]",      100,    0, 4500 ) );
-	h_jj_max_dR    .push_back( book( name, hjj + "_maxP4_dR",    hjjstr + " max-p4 dR",                   100,    0,    6 ) );
-	// min dijet system
-	h_jj_min_pt    .push_back( book( name, hjj + "_minP4_pt",    hjjstr + " min-p4 p_{T} [GeV]",          100,    0, 2000 ) );
-	h_jj_min_eta   .push_back( book( name, hjj + "_minP4_eta",   hjjstr + " min-p4 eta",                  100,   -5,    5 ) );
-	h_jj_min_phi   .push_back( book( name, hjj + "_minP4_phi",   hjjstr + " min-p4 phi",                  100, -3.5,  3.5 ) );
-	h_jj_min_m     .push_back( book( name, hjj + "_minP4_m",     hjjstr + " min-p4 invariant mass [GeV]", 100,    0, 1500 ) );
-	h_jj_min_sumPt .push_back( book( name, hjj + "_minP4_sumPt", hjjstr + " min-p4 sum-p_{T} [GeV]",      100,    0, 2000 ) );
-	h_jj_min_dR    .push_back( book( name, hjj + "_minP4_dR",    hjjstr + " min-p4 dR",                   100,    0,    6 ) );
+	std::string hjjavg    = hjj    + "_avgP4";
+	std::string hjjavgstr = hjjstr + " avg-p4";
+	std::string hjjmax    = hjj    + "_maxP4";
+	std::string hjjmaxstr = hjjstr + " max-p4";
+	std::string hjjmin    = hjj    + "_minP4";
+	std::string hjjminstr = hjjstr + " min-p4";
+	h_jj_n         .push_back( book( name, hjj + "_n",        "n " + hjjstr + "s",                 100,    0,   60 ) );
+	h_jj_pt        .push_back( book( name, hjj + "_pt",       hjjstr + " p_{T} [GeV]",             100,    0, 2500 ) );
+	h_jj_eta       .push_back( book( name, hjj + "_eta",      hjjstr + " eta",                     100,   -5,    5 ) );
+	h_jj_phi       .push_back( book( name, hjj + "_phi",      hjjstr + " phi",                     100, -3.5,  3.5 ) );
+	h_jj_m         .push_back( book( name, hjj + "_m",        hjjstr + " invariant mass [GeV]",    100,    0, 3500 ) );
+	h_jj_sumPt     .push_back( book( name, hjj + "_sumPt",    hjjstr + " sum-p_{T} [GeV]",         100,    0, 3500 ) );
+	h_jj_dR        .push_back( book( name, hjj + "_dR",       hjjstr + " dR",                      100,    0,    6 ) );
 	// avg dijet system
-	h_jj_avg_pt    .push_back( book( name, hjj + "_avgP4_pt",    hjjstr + " avg-p4 p_{T} [GeV]",          100,    0, 1500 ) );
-	h_jj_avg_eta   .push_back( book( name, hjj + "_avgP4_eta",   hjjstr + " avg-p4 eta",                  100,   -5,    5 ) );
-	h_jj_avg_phi   .push_back( book( name, hjj + "_avgP4_phi",   hjjstr + " avg-p4 phi",                  100, -3.5,  3.5 ) );
-	h_jj_avg_m     .push_back( book( name, hjj + "_avgP4_m",     hjjstr + " avg-p4 invariant mass [GeV]", 100,    0, 2000 ) );
-	h_jj_avg_sumPt .push_back( book( name, hjj + "_avgP4_sumPt", hjjstr + " avg-p4 sum-p_{T} [GeV]",      100,    0, 2000 ) );
-	h_jj_avg_dR    .push_back( book( name, hjj + "_avgP4_dR",    hjjstr + " avg-p4 dR",                   100,    0,    6 ) );
+	h_jj_avg_pt    .push_back( book( name, hjjavg + "_pt",    hjjavgstr + " p_{T} [GeV]",          100,    0, 1500 ) );
+	h_jj_avg_eta   .push_back( book( name, hjjavg + "_eta",   hjjavgstr + " eta",                  100,   -5,    5 ) );
+	h_jj_avg_phi   .push_back( book( name, hjjavg + "_phi",   hjjavgstr + " phi",                  100, -3.5,  3.5 ) );
+	h_jj_avg_m     .push_back( book( name, hjjavg + "_m",     hjjavgstr + " invariant mass [GeV]", 100,    0, 2000 ) );
+	h_jj_avg_sumPt .push_back( book( name, hjjavg + "_sumPt", hjjavgstr + " sum-p_{T} [GeV]",      100,    0, 2000 ) );
+	h_jj_avg_dR    .push_back( book( name, hjjavg + "_dR",    hjjavgstr + " dR",                   100,    0,    6 ) );
+	// max dijet system
+	h_jj_max_pt    .push_back( book( name, hjjmax + "_pt",    hjjmaxstr + " p_{T} [GeV]",          100,    0, 1750 ) );
+	h_jj_max_eta   .push_back( book( name, hjjmax + "_eta",   hjjmaxstr + " eta",                  100,   -5,    5 ) );
+	h_jj_max_phi   .push_back( book( name, hjjmax + "_phi",   hjjmaxstr + " phi",                  100, -3.5,  3.5 ) );
+	h_jj_max_m     .push_back( book( name, hjjmax + "_m",     hjjmaxstr + " invariant mass [GeV]", 100,    0, 4500 ) );
+	h_jj_max_sumPt .push_back( book( name, hjjmax + "_sumPt", hjjmaxstr + " sum-p_{T} [GeV]",      100,    0, 4500 ) );
+	h_jj_max_dR    .push_back( book( name, hjjmax + "_dR",    hjjmaxstr + " dR",                   100,    0,    6 ) );
+	// min dijet system
+	h_jj_min_pt    .push_back( book( name, hjjmin + "_pt",    hjjminstr + " p_{T} [GeV]",          100,    0, 2000 ) );
+	h_jj_min_eta   .push_back( book( name, hjjmin + "_eta",   hjjminstr + " eta",                  100,   -5,    5 ) );
+	h_jj_min_phi   .push_back( book( name, hjjmin + "_phi",   hjjminstr + " phi",                  100, -3.5,  3.5 ) );
+	h_jj_min_m     .push_back( book( name, hjjmin + "_m",     hjjminstr + " invariant mass [GeV]", 100,    0, 1500 ) );
+	h_jj_min_sumPt .push_back( book( name, hjjmin + "_sumPt", hjjminstr + " sum-p_{T} [GeV]",      100,    0, 2000 ) );
+	h_jj_min_dR    .push_back( book( name, hjjmin + "_dR",    hjjminstr + " dR",                   100,    0,    6 ) );
+	// min/max dijet ntrk system
+	std::vector<TH1F*> h_jj_max_ntrack;
+	std::vector<TH1F*> h_jj_max_ntrack_pt;
+	std::vector<TH1F*> h_jj_max_ntrack_eta;
+	std::vector<TH1F*> h_jj_max_ntrack_phi;
+	std::vector<TH1F*> h_jj_max_ntrack_m;
+	std::vector<TH1F*> h_jj_max_ntrack_sumPt;
+	std::vector<TH1F*> h_jj_min_ntrack;
+	std::vector<TH1F*> h_jj_min_ntrack_pt;
+	std::vector<TH1F*> h_jj_min_ntrack_eta;
+	std::vector<TH1F*> h_jj_min_ntrack_phi;
+	std::vector<TH1F*> h_jj_min_ntrack_m;
+	std::vector<TH1F*> h_jj_min_ntrack_sumPt;
+	std::vector<int>   djnt_nbin    = {   100,  125,   75,  10,  20 };
+	std::vector<int>   djnt_x2      = {   500,  250,   75,  10,  20 };
+	std::vector<float> djntpt_x2    = {  5000, 2500, 1250,  25, 100 };
+	std::vector<float> djntmu_x2    = { 10000, 5000, 2500,  50, 200 };
+	std::vector<float> djntml_x2    = {  5000, 2500, 1250,  25, 100 };
+	std::vector<float> djntsumpt_x2 = { 10000, 5000, 2500,  50, 200 };
+	for ( size_t j = 0; j != hTrk.size(); ++j ) {
+	  std::string htsubstr = "matched";
+	  if ( !hTrkstr[j].empty() ) htsubstr += " ";
+	  std::string ht          = hTrk[j] + "trk";
+	  std::string hnt         = "n" + ht;
+	  std::string hntstr      = htsubstr + hTrkstr[j] + " n-track";
+	  std::string hjjmaxnt    = hjjmax    + "_" + hnt;
+	  std::string hjjmaxntstr = hjjmaxstr + " " + hntstr;
+	  std::string hjjminnt    = hjjmin    + "_" + hnt;
+	  std::string hjjminntstr = hjjminstr + " " + hntstr;
+	  h_jj_max_ntrack        .push_back( book( name, hjjmaxnt,           hntstr + "s per " + hjjmaxstr, djnt_nbin[j], 0, djnt_x2   [j] ) );
+	  h_jj_min_ntrack        .push_back( book( name, hjjminnt,           hntstr + "s per " + hjjminstr, djnt_nbin[j], 0, djnt_x2   [j] ) );
+	  if ( m_histoInfoSwitch->m_jetTrks ) {
+	    h_jj_max_ntrack_pt   .push_back( book( name, hjjmaxnt + "_pt",   hjjmaxntstr + " p_{T} [GeV]",         100, 0, djntpt_x2   [j] ) );
+	    h_jj_max_ntrack_eta  .push_back( book( name, hjjmaxnt + "_eta",  hjjmaxntstr + " eta",                 100,-5,               5 ) );
+	    h_jj_max_ntrack_phi  .push_back( book( name, hjjmaxnt + "_phi",  hjjmaxntstr + " phi",                 100,-3.5,           3.5 ) );
+	    h_jj_max_ntrack_m    .push_back( book( name, hjjmaxnt + "_m",    hjjmaxntstr + " invariant mass [GeV]",100, 0, djntmu_x2   [j] ) );
+	    h_jj_max_ntrack_sumPt.push_back( book( name, hjjmaxnt + "_sumPt",hjjmaxntstr + " sum-p_{T} [GeV]",     100, 0, djntsumpt_x2[j] ) );
+	    h_jj_min_ntrack_pt   .push_back( book( name, hjjminnt + "_pt",   hjjminntstr + " p_{T} [GeV]",         100, 0, djntpt_x2   [j] ) );
+	    h_jj_min_ntrack_eta  .push_back( book( name, hjjminnt + "_eta",  hjjminntstr + " eta",                 100,-5,               5 ) );
+	    h_jj_min_ntrack_phi  .push_back( book( name, hjjminnt + "_phi",  hjjminntstr + " phi",                 100,-3.5,           3.5 ) );
+	    h_jj_min_ntrack_m    .push_back( book( name, hjjminnt + "_m",    hjjminntstr + " invariant mass [GeV]",100, 0, djntml_x2   [j] ) );
+	    h_jj_min_ntrack_sumPt.push_back( book( name, hjjminnt + "_sumPt",hjjminntstr + " sum-p_{T} [GeV]",     100, 0, djntsumpt_x2[j] ) );
+	  }
+	}
+	h_jj_max_ntrk         .push_back( h_jj_max_ntrack       );
+	h_jj_min_ntrk         .push_back( h_jj_min_ntrack       );
+	if ( m_histoInfoSwitch->m_jetTrks ) {
+	  h_jj_max_ntrk_pt    .push_back( h_jj_max_ntrack_pt    );
+	  h_jj_max_ntrk_eta   .push_back( h_jj_max_ntrack_eta   );
+	  h_jj_max_ntrk_phi   .push_back( h_jj_max_ntrack_phi   );
+	  h_jj_max_ntrk_m     .push_back( h_jj_max_ntrack_m     );
+	  h_jj_max_ntrk_sumPt .push_back( h_jj_max_ntrack_sumPt );
+	  h_jj_min_ntrk_pt    .push_back( h_jj_min_ntrack_pt    );
+	  h_jj_min_ntrk_eta   .push_back( h_jj_min_ntrack_eta   );
+	  h_jj_min_ntrk_phi   .push_back( h_jj_min_ntrack_phi   );
+	  h_jj_min_ntrk_m     .push_back( h_jj_min_ntrack_m     );
+	  h_jj_min_ntrk_sumPt .push_back( h_jj_min_ntrack_sumPt );
+	}
+	// min/max dijet nsv system
+	std::vector<TH1F*> h_jj_max_nsecvtx;
+	std::vector<TH1F*> h_jj_max_nsecvtx_pt;
+	std::vector<TH1F*> h_jj_max_nsecvtx_eta;
+	std::vector<TH1F*> h_jj_max_nsecvtx_phi;
+	std::vector<TH1F*> h_jj_max_nsecvtx_m;
+	std::vector<TH1F*> h_jj_max_nsecvtx_sumPt;
+	std::vector<TH1F*> h_jj_min_nsecvtx;
+	std::vector<TH1F*> h_jj_min_nsecvtx_pt;
+	std::vector<TH1F*> h_jj_min_nsecvtx_eta;
+	std::vector<TH1F*> h_jj_min_nsecvtx_phi;
+	std::vector<TH1F*> h_jj_min_nsecvtx_m;
+	std::vector<TH1F*> h_jj_min_nsecvtx_sumPt;
+	for ( size_t k = 0; k != hJDV.size(); ++k ) {
+	  std::string hv          = hJDV[k] + "SV"; hv[0] = tolower(hv[0]);
+	  std::string hdvstr      = hJDVstr[k];     hdvstr.pop_back();
+	  std::string hnv         = "n" + hv;
+	  std::string hnvstr      = "matched " + hdvstr + " n-SV";
+	  std::string hjjmaxnv    = hjjmax     + "_" + hnv;
+	  std::string hjjminnv    = hjjmin     + "_" + hnv;
+	  std::string hjjmaxnvstr = hjjmaxstr  + " " + hnvstr;
+	  std::string hjjminnvstr = hjjminstr  + " " + hnvstr;
+	  h_jj_max_nsecvtx         .push_back( book( name, hjjmaxnv,            hnvstr + "s per " + hjjmaxstr,          10,    0,   10 ) );
+	  h_jj_min_nsecvtx         .push_back( book( name, hjjminnv,            hnvstr + "s per " + hjjminstr,          10,    0,   10 ) );
+	  if ( m_histoInfoSwitch->m_jetVerts ) {
+	    h_jj_max_nsecvtx_pt    .push_back( book( name, hjjmaxnv + "_pt",    hjjmaxnvstr + " p_{T} [GeV]",          100,    0,  175 ) );
+	    h_jj_max_nsecvtx_eta   .push_back( book( name, hjjmaxnv + "_eta",   hjjmaxnvstr + " eta",                  100,   -5,    5 ) );
+	    h_jj_max_nsecvtx_phi   .push_back( book( name, hjjmaxnv + "_phi",   hjjmaxnvstr + " phi",                  100, -3.5,  3.5 ) );
+	    h_jj_max_nsecvtx_m     .push_back( book( name, hjjmaxnv + "_m",     hjjmaxnvstr + " invariant mass [GeV]", 100,    0,  150 ) );
+	    h_jj_max_nsecvtx_sumPt .push_back( book( name, hjjmaxnv + "_sumPt", hjjmaxnvstr + " sum-p_{T} [GeV]",      100,    0,  200 ) );
+	    h_jj_min_nsecvtx_pt    .push_back( book( name, hjjminnv + "_pt",    hjjminnvstr + " p_{T} [GeV]",          100,    0,  175 ) );
+	    h_jj_min_nsecvtx_eta   .push_back( book( name, hjjminnv + "_eta",   hjjminnvstr + " eta",                  100,   -5,    5 ) );
+	    h_jj_min_nsecvtx_phi   .push_back( book( name, hjjminnv + "_phi",   hjjminnvstr + " phi",                  100, -3.5,  3.5 ) );
+	    h_jj_min_nsecvtx_m     .push_back( book( name, hjjminnv + "_m",     hjjminnvstr + " invariant mass [GeV]", 100,    0,   75 ) );
+	    h_jj_min_nsecvtx_sumPt .push_back( book( name, hjjminnv + "_sumPt", hjjminnvstr + " sum-p_{T} [GeV]",      100,    0,  200 ) );
+	  }
+	}
+	h_jj_max_nsv         .push_back( h_jj_max_nsecvtx       );
+	h_jj_min_nsv         .push_back( h_jj_min_nsecvtx       );
+	if ( m_histoInfoSwitch->m_jetVerts ) {
+	  h_jj_max_nsv_pt    .push_back( h_jj_max_nsecvtx_pt    );
+	  h_jj_max_nsv_eta   .push_back( h_jj_max_nsecvtx_eta   );
+	  h_jj_max_nsv_phi   .push_back( h_jj_max_nsecvtx_phi   );
+	  h_jj_max_nsv_m     .push_back( h_jj_max_nsecvtx_m     );
+	  h_jj_max_nsv_sumPt .push_back( h_jj_max_nsecvtx_sumPt );
+	  h_jj_min_nsv_pt    .push_back( h_jj_min_nsecvtx_pt    );
+	  h_jj_min_nsv_eta   .push_back( h_jj_min_nsecvtx_eta   );
+	  h_jj_min_nsv_phi   .push_back( h_jj_min_nsecvtx_phi   );
+	  h_jj_min_nsv_m     .push_back( h_jj_min_nsecvtx_m     );
+	  h_jj_min_nsv_sumPt .push_back( h_jj_min_nsecvtx_sumPt );
+	}
+
+	std::string hjjmaxpt    = hjj    + "_maxPt";
+	std::string hjjmaxptstr = hjjstr + " max-pt";
+	std::string hjjminpt    = hjj    + "_minPt";
+	std::string hjjminptstr = hjjstr + " min-pt";
+	// max-pt dijet system
+	h_jj_maxpt_pt    .push_back( book( name, hjjmaxpt + "_pt",    hjjmaxptstr + " p_{T} [GeV]",          100,    0, 3000 ) );
+	h_jj_maxpt_eta   .push_back( book( name, hjjmaxpt + "_eta",   hjjmaxptstr + " eta",                  100,   -5,    5 ) );
+	h_jj_maxpt_phi   .push_back( book( name, hjjmaxpt + "_phi",   hjjmaxptstr + " phi",                  100, -3.5,  3.5 ) );
+	h_jj_maxpt_m     .push_back( book( name, hjjmaxpt + "_m",     hjjmaxptstr + " invariant mass [GeV]", 100,    0, 3500 ) );
+	h_jj_maxpt_sumPt .push_back( book( name, hjjmaxpt + "_sumPt", hjjmaxptstr + " sum-p_{T} [GeV]",      100,    0, 3500 ) );
+	h_jj_maxpt_dR    .push_back( book( name, hjjmaxpt + "_dR",    hjjmaxptstr + " dR",                   100,    0,    6 ) );
+	// min-pt dijet system
+	h_jj_minpt_pt    .push_back( book( name, hjjminpt + "_pt",    hjjminptstr + " p_{T} [GeV]",          100,    0, 1250 ) );
+	h_jj_minpt_eta   .push_back( book( name, hjjminpt + "_eta",   hjjminptstr + " eta",                  100,   -5,    5 ) );
+	h_jj_minpt_phi   .push_back( book( name, hjjminpt + "_phi",   hjjminptstr + " phi",                  100, -3.5,  3.5 ) );
+	h_jj_minpt_m     .push_back( book( name, hjjminpt + "_m",     hjjminptstr + " invariant mass [GeV]", 100,    0, 3500 ) );
+	h_jj_minpt_sumPt .push_back( book( name, hjjminpt + "_sumPt", hjjminptstr + " sum-p_{T} [GeV]",      100,    0, 3000 ) );
+	h_jj_minpt_dR    .push_back( book( name, hjjminpt + "_dR",    hjjminptstr + " dR",                   100,    0,    6 ) );
+	// min/max dijet ntrk system
+	std::vector<TH1F*> h_jj_maxpt_ntrack;
+	std::vector<TH1F*> h_jj_maxpt_ntrack_pt;
+	std::vector<TH1F*> h_jj_maxpt_ntrack_eta;
+	std::vector<TH1F*> h_jj_maxpt_ntrack_phi;
+	std::vector<TH1F*> h_jj_maxpt_ntrack_m;
+	std::vector<TH1F*> h_jj_maxpt_ntrack_sumPt;
+	std::vector<TH1F*> h_jj_minpt_ntrack;
+	std::vector<TH1F*> h_jj_minpt_ntrack_pt;
+	std::vector<TH1F*> h_jj_minpt_ntrack_eta;
+	std::vector<TH1F*> h_jj_minpt_ntrack_phi;
+	std::vector<TH1F*> h_jj_minpt_ntrack_m;
+	std::vector<TH1F*> h_jj_minpt_ntrack_sumPt;
+	for ( size_t j = 0; j != hTrk.size(); ++j ) {
+	  std::string htsubstr = "matched";
+	  if ( !hTrkstr[j].empty() ) htsubstr += " ";
+	  std::string ht          = hTrk[j]  + "trk";
+	  std::string hnt         = "n"      + ht;
+	  std::string hntstr      = htsubstr + hTrkstr[j] + " n-track";
+	  std::string hjjmaxnt    = hjjmaxpt    + "_" + hnt;
+	  std::string hjjmaxntstr = hjjmaxptstr + " " + hntstr;
+	  std::string hjjminnt    = hjjminpt    + "_" + hnt;
+	  std::string hjjminntstr = hjjminptstr + " " + hntstr;
+	  h_jj_maxpt_ntrack        .push_back( book( name, hjjmaxnt,           hntstr +"s per "+ hjjmaxptstr, djnt_nbin[j], 0, djnt_x2   [j] ) );
+	  h_jj_minpt_ntrack        .push_back( book( name, hjjminnt,           hntstr +"s per "+ hjjminptstr, djnt_nbin[j], 0, djnt_x2   [j] ) );
+	  if ( m_histoInfoSwitch->m_jetTrks ) {
+	    h_jj_maxpt_ntrack_pt   .push_back( book( name, hjjmaxnt + "_pt",   hjjmaxntstr + " p_{T} [GeV]",         100, 0, djntpt_x2   [j] ) );
+	    h_jj_maxpt_ntrack_eta  .push_back( book( name, hjjmaxnt + "_eta",  hjjmaxntstr + " eta",                 100,-5,               5 ) );
+	    h_jj_maxpt_ntrack_phi  .push_back( book( name, hjjmaxnt + "_phi",  hjjmaxntstr + " phi",                 100,-3.5,           3.5 ) );
+	    h_jj_maxpt_ntrack_m    .push_back( book( name, hjjmaxnt + "_m",    hjjmaxntstr + " invariant mass [GeV]",100, 0, djntmu_x2   [j] ) );
+	    h_jj_maxpt_ntrack_sumPt.push_back( book( name, hjjmaxnt + "_sumPt",hjjmaxntstr + " sum-p_{T} [GeV]",     100, 0, djntsumpt_x2[j] ) );
+	    h_jj_minpt_ntrack_pt   .push_back( book( name, hjjminnt + "_pt",   hjjminntstr + " p_{T} [GeV]",         100, 0, djntpt_x2   [j] ) );
+	    h_jj_minpt_ntrack_eta  .push_back( book( name, hjjminnt + "_eta",  hjjminntstr + " eta",                 100,-5,               5 ) );
+	    h_jj_minpt_ntrack_phi  .push_back( book( name, hjjminnt + "_phi",  hjjminntstr + " phi",                 100,-3.5,           3.5 ) );
+	    h_jj_minpt_ntrack_m    .push_back( book( name, hjjminnt + "_m",    hjjminntstr + " invariant mass [GeV]",100, 0, djntml_x2   [j] ) );
+	    h_jj_minpt_ntrack_sumPt.push_back( book( name, hjjminnt + "_sumPt",hjjminntstr + " sum-p_{T} [GeV]",     100, 0, djntsumpt_x2[j] ) );
+	  }
+	}
+	h_jj_maxpt_ntrk         .push_back( h_jj_maxpt_ntrack       );
+	h_jj_minpt_ntrk         .push_back( h_jj_minpt_ntrack       );
+	if ( m_histoInfoSwitch->m_jetTrks ) {
+	  h_jj_maxpt_ntrk_pt    .push_back( h_jj_maxpt_ntrack_pt    );
+	  h_jj_maxpt_ntrk_eta   .push_back( h_jj_maxpt_ntrack_eta   );
+	  h_jj_maxpt_ntrk_phi   .push_back( h_jj_maxpt_ntrack_phi   );
+	  h_jj_maxpt_ntrk_m     .push_back( h_jj_maxpt_ntrack_m     );
+	  h_jj_maxpt_ntrk_sumPt .push_back( h_jj_maxpt_ntrack_sumPt );
+	  h_jj_minpt_ntrk_pt    .push_back( h_jj_minpt_ntrack_pt    );
+	  h_jj_minpt_ntrk_eta   .push_back( h_jj_minpt_ntrack_eta   );
+	  h_jj_minpt_ntrk_phi   .push_back( h_jj_minpt_ntrack_phi   );
+	  h_jj_minpt_ntrk_m     .push_back( h_jj_minpt_ntrack_m     );
+	  h_jj_minpt_ntrk_sumPt .push_back( h_jj_minpt_ntrack_sumPt );
+	}
+	// min/max-pt dijet nsv system
+	std::vector<TH1F*> h_jj_maxpt_nsecvtx;
+	std::vector<TH1F*> h_jj_maxpt_nsecvtx_pt;
+	std::vector<TH1F*> h_jj_maxpt_nsecvtx_eta;
+	std::vector<TH1F*> h_jj_maxpt_nsecvtx_phi;
+	std::vector<TH1F*> h_jj_maxpt_nsecvtx_m;
+	std::vector<TH1F*> h_jj_maxpt_nsecvtx_sumPt;
+	std::vector<TH1F*> h_jj_minpt_nsecvtx;
+	std::vector<TH1F*> h_jj_minpt_nsecvtx_pt;
+	std::vector<TH1F*> h_jj_minpt_nsecvtx_eta;
+	std::vector<TH1F*> h_jj_minpt_nsecvtx_phi;
+	std::vector<TH1F*> h_jj_minpt_nsecvtx_m;
+	std::vector<TH1F*> h_jj_minpt_nsecvtx_sumPt;
+	for ( size_t k = 0; k != hJDV.size(); ++k ) {
+	  std::string hv          = hJDV[k] + "SV"; hv[0] = tolower(hv[0]);
+	  std::string hdvstr      = hJDVstr[k];     hdvstr.pop_back();
+	  std::string hnv         = "n" + hv;
+	  std::string hnvstr      = "matched " + hdvstr + " n-SV";
+	  std::string hjjmaxnv    = hjjmaxpt     + "_" + hnv;
+	  std::string hjjminnv    = hjjminpt     + "_" + hnv;
+	  std::string hjjmaxnvstr = hjjmaxptstr  + " " + hnvstr;
+	  std::string hjjminnvstr = hjjminptstr  + " " + hnvstr;
+	  h_jj_maxpt_nsecvtx         .push_back( book( name, hjjmaxnv,            hnvstr + "s per " + hjjmaxptstr,        10,    0,   10 ) );
+	  h_jj_minpt_nsecvtx         .push_back( book( name, hjjminnv,            hnvstr + "s per " + hjjminptstr,        10,    0,   10 ) );
+	  if ( m_histoInfoSwitch->m_jetVerts ) {
+	    h_jj_maxpt_nsecvtx_pt    .push_back( book( name, hjjmaxnv + "_pt",    hjjmaxnvstr + " p_{T} [GeV]",          100,    0,  175 ) );
+	    h_jj_maxpt_nsecvtx_eta   .push_back( book( name, hjjmaxnv + "_eta",   hjjmaxnvstr + " eta",                  100,   -5,    5 ) );
+	    h_jj_maxpt_nsecvtx_phi   .push_back( book( name, hjjmaxnv + "_phi",   hjjmaxnvstr + " phi",                  100, -3.5,  3.5 ) );
+	    h_jj_maxpt_nsecvtx_m     .push_back( book( name, hjjmaxnv + "_m",     hjjmaxnvstr + " invariant mass [GeV]", 100,    0,  150 ) );
+	    h_jj_maxpt_nsecvtx_sumPt .push_back( book( name, hjjmaxnv + "_sumPt", hjjmaxnvstr + " sum-p_{T} [GeV]",      100,    0,  200 ) );
+	    h_jj_minpt_nsecvtx_pt    .push_back( book( name, hjjminnv + "_pt",    hjjminnvstr + " p_{T} [GeV]",          100,    0,  175 ) );
+	    h_jj_minpt_nsecvtx_eta   .push_back( book( name, hjjminnv + "_eta",   hjjminnvstr + " eta",                  100,   -5,    5 ) );
+	    h_jj_minpt_nsecvtx_phi   .push_back( book( name, hjjminnv + "_phi",   hjjminnvstr + " phi",                  100, -3.5,  3.5 ) );
+	    h_jj_minpt_nsecvtx_m     .push_back( book( name, hjjminnv + "_m",     hjjminnvstr + " invariant mass [GeV]", 100,    0,   75 ) );
+	    h_jj_minpt_nsecvtx_sumPt .push_back( book( name, hjjminnv + "_sumPt", hjjminnvstr + " sum-p_{T} [GeV]",      100,    0,  200 ) );
+	  }
+	}
+	h_jj_maxpt_nsv         .push_back( h_jj_maxpt_nsecvtx       );
+	h_jj_minpt_nsv         .push_back( h_jj_minpt_nsecvtx       );
+	if ( m_histoInfoSwitch->m_jetVerts ) {
+	  h_jj_maxpt_nsv_pt    .push_back( h_jj_maxpt_nsecvtx_pt    );
+	  h_jj_maxpt_nsv_eta   .push_back( h_jj_maxpt_nsecvtx_eta   );
+	  h_jj_maxpt_nsv_phi   .push_back( h_jj_maxpt_nsecvtx_phi   );
+	  h_jj_maxpt_nsv_m     .push_back( h_jj_maxpt_nsecvtx_m     );
+	  h_jj_maxpt_nsv_sumPt .push_back( h_jj_maxpt_nsecvtx_sumPt );
+	  h_jj_minpt_nsv_pt    .push_back( h_jj_minpt_nsecvtx_pt    );
+	  h_jj_minpt_nsv_eta   .push_back( h_jj_minpt_nsecvtx_eta   );
+	  h_jj_minpt_nsv_phi   .push_back( h_jj_minpt_nsecvtx_phi   );
+	  h_jj_minpt_nsv_m     .push_back( h_jj_minpt_nsecvtx_m     );
+	  h_jj_minpt_nsv_sumPt .push_back( h_jj_minpt_nsecvtx_sumPt );
+	}
       }
       
       // event-level jets (all jets in event)
-      h_nj_pt    .push_back( book( name, hnj + "_pt",    hnjstr + " p_{T} [GeV]",          100,           0,  750 ) );
-      h_nj_eta   .push_back( book( name, hnj + "_eta",   hnjstr + " eta",                  100,          -7,    7 ) );
-      h_nj_phi   .push_back( book( name, hnj + "_phi",   hnjstr + " phi",                  100,        -3.5,  3.5 ) );
-      h_nj_m     .push_back( book( name, hnj + "_m",     hnjstr + " invariant mass [GeV]", 100, njetht_xmin, 7500 ) );
-      h_nj_sumPt .push_back( book( name, hnj + "_sumPt", hnjstr + " sum-p_{T} [GeV]",      100, njetht_xmin, 5500 ) );
-      
+      if ( m_histoInfoSwitch->m_njets ) {
+	h_nj_pt    .push_back( book( name, hnj + "_pt",    hnjstr + " p_{T} [GeV]",          100,           0,  750 ) );
+	h_nj_eta   .push_back( book( name, hnj + "_eta",   hnjstr + " eta",                  100,          -7,    7 ) );
+	h_nj_phi   .push_back( book( name, hnj + "_phi",   hnjstr + " phi",                  100,        -3.5,  3.5 ) );
+	h_nj_m     .push_back( book( name, hnj + "_m",     hnjstr + " invariant mass [GeV]", 100, njetht_xmin, 7500 ) );
+	h_nj_sumPt .push_back( book( name, hnj + "_sumPt", hnjstr + " sum-p_{T} [GeV]",      100, njetht_xmin, 5500 ) );
+	// --> event-level jet-matched tracks
+	std::vector<TH1F*> h_nj_ntrack;
+	std::vector<TH1F*> h_nj_ntrack_pt;
+	std::vector<TH1F*> h_nj_ntrack_eta;
+	std::vector<TH1F*> h_nj_ntrack_phi;
+	std::vector<TH1F*> h_nj_ntrack_m;
+	std::vector<TH1F*> h_nj_ntrack_sumPt;
+	std::vector<int>   njnt_nbin    = {   100,   100,  125,  15,  30 };
+	std::vector<float> njnt_x2      = {  1500,   750,  250,  15,  30 };
+	std::vector<float> njntpt_x2    = {  7500,  3750, 1250,  50, 200 };
+	std::vector<float> njntm_x2     = { 15000, 10000, 2500,  25, 250 };
+	std::vector<float> njntsumpt_x2 = { 15000, 10000, 2500,  50, 250 };
+	for ( size_t j = 0; j != hTrk.size(); ++j ) {
+	  std::string htsubstr = "matched";
+	  if ( !hTrkstr[j].empty() ) htsubstr += " ";
+	  std::string ht       = hTrk[j] + "trk";
+	  std::string hnt      = "n" + ht;
+	  std::string hntstr   = htsubstr + hTrkstr[j] + " n-track";
+	  std::string hnjnt    = hnj + "_" + hnt;
+	  std::string hnjntstr = hnjstr + " " + hntstr;
+	  h_nj_ntrack         .push_back( book( name, hnjnt,            hntstr + "s per " + hnjstr, njnt_nbin[j], 0, njnt_x2  [j] ) );
+	  if ( m_histoInfoSwitch->m_jetTrks ) {
+	    h_nj_ntrack_pt    .push_back( book( name, hnjnt + "_pt",    hnjntstr+ " p_{T} [GeV]",     100,    0, njntpt_x2    [j] ) );
+	    h_nj_ntrack_eta   .push_back( book( name, hnjnt + "_eta",   hnjntstr+ " eta",             100,   -5,                5 ) );
+	    h_nj_ntrack_phi   .push_back( book( name, hnjnt + "_phi",   hnjntstr+ " phi",             100, -3.5,              3.5 ) );
+	    h_nj_ntrack_m     .push_back( book( name, hnjnt + "_m",     hnjntstr+ " mass [GeV]",      100,    0, njntm_x2     [j] ) );
+	    h_nj_ntrack_sumPt .push_back( book( name, hnjnt + "_sumPt", hnjntstr+ " sum-p_{T} [GeV]", 100,    0, njntsumpt_x2 [j] ) );
+	  }
+	}
+	h_nj_ntrk         .push_back( h_nj_ntrack       );
+	if ( m_histoInfoSwitch->m_jetTrks ) {
+	  h_nj_ntrk_pt    .push_back( h_nj_ntrack_pt    );
+	  h_nj_ntrk_eta   .push_back( h_nj_ntrack_eta   );
+	  h_nj_ntrk_phi   .push_back( h_nj_ntrack_phi   );
+	  h_nj_ntrk_m     .push_back( h_nj_ntrack_m     );
+	  h_nj_ntrk_sumPt .push_back( h_nj_ntrack_sumPt );
+	}
+	// --> event-level jet-matched secondary vertices
+	std::vector<TH1F*> h_nj_nsecvtx;
+	std::vector<TH1F*> h_nj_nsecvtx_pt;
+	std::vector<TH1F*> h_nj_nsecvtx_eta;
+	std::vector<TH1F*> h_nj_nsecvtx_phi;
+	std::vector<TH1F*> h_nj_nsecvtx_m;
+	std::vector<TH1F*> h_nj_nsecvtx_sumPt;
+	for ( size_t k = 0; k != hJDV.size(); ++k ) {
+	  std::string hv       = hJDV[k] + "SV"; hv[0] = tolower(hv[0]);
+	  std::string hdvstr   = hJDVstr[k];     hdvstr.pop_back();
+	  std::string hnv      = "n" + hv;
+	  std::string hnvstr   = "matched " + hdvstr + " n-SV";
+	  std::string hnjnv    = hnj    + "_" + hnv;
+	  std::string hnjnvstr = hnjstr + " " + hnvstr;
+	  h_nj_nsecvtx         .push_back( book( name, hnjnv,            hnvstr + "s per " + hnjstr,         20,    0,   20 ) );
+	  if ( m_histoInfoSwitch->m_jetVerts ) {
+	    h_nj_nsecvtx_pt    .push_back( book( name, hnjnv + "_pt",    hnjnvstr+ " p_{T} [GeV]",          100,    0,  250 ) );
+	    h_nj_nsecvtx_eta   .push_back( book( name, hnjnv + "_eta",   hnjnvstr+ " eta",                  100,   -5,    5 ) );
+	    h_nj_nsecvtx_phi   .push_back( book( name, hnjnv + "_phi",   hnjnvstr+ " phi",                  100, -3.5,  3.5 ) );
+	    h_nj_nsecvtx_m     .push_back( book( name, hnjnv + "_m",     hnjnvstr+ " invariant mass [GeV]", 100,    0,  250 ) );
+	    h_nj_nsecvtx_sumPt .push_back( book( name, hnjnv + "_sumPt", hnjnvstr+ " sum-p_{T} [GeV]",      100,    0,  300 ) );
+	  }
+	}
+	h_nj_nsv         .push_back( h_nj_nsecvtx       );
+	if ( m_histoInfoSwitch->m_jetVerts ) {
+	  h_nj_nsv_pt    .push_back( h_nj_nsecvtx_pt    );
+	  h_nj_nsv_eta   .push_back( h_nj_nsecvtx_eta   );
+	  h_nj_nsv_phi   .push_back( h_nj_nsecvtx_phi   );
+	  h_nj_nsv_m     .push_back( h_nj_nsecvtx_m     );
+	  h_nj_nsv_sumPt .push_back( h_nj_nsecvtx_sumPt );
+	}
+      }
     } // end loop over jet types
     
     h_jet_n         .push_back( h_j_n         );
@@ -1720,16 +2800,14 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       h_jet_JVF           .push_back( h_j_JVF           );
     }
     if ( m_mc )
-      h_jet_partonID    .push_back( h_j_partonID      );
-    h_jet_ntrk          .push_back( h_j_ntrk   );
+      h_jet_partonID      .push_back( h_j_partonID      );
+    
+    h_jet_ntrk               .push_back( h_j_ntrk             );
     if ( m_histoInfoSwitch->m_jetTrks ) {
       h_jet_trk_dR           .push_back( h_j_trk_dR           );
       h_jet_trk_minDR        .push_back( h_j_trk_minDR        );
       h_jet_trk_maxDR        .push_back( h_j_trk_maxDR        );
       h_jet_trk_pt           .push_back( h_j_trk_pt           );
-      h_jet_trk_minpt        .push_back( h_j_trk_minpt        );
-      h_jet_trk_maxpt        .push_back( h_j_trk_maxpt        );
-      h_jet_trk_sumpt        .push_back( h_j_trk_sumpt        );
       h_jet_trk_d0           .push_back( h_j_trk_d0           );
       h_jet_trk_mind0        .push_back( h_j_trk_mind0        );
       h_jet_trk_maxd0        .push_back( h_j_trk_maxd0        );
@@ -1747,233 +2825,354 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       h_jet_trk_maxErrz0     .push_back( h_j_trk_maxErrz0     );
       h_jet_trk_sumErrz0     .push_back( h_j_trk_sumErrz0     );
       h_jet_trk_sqrtpt       .push_back( h_j_trk_sqrtpt       );
-      h_jet_trk_minsqrtpt    .push_back( h_j_trk_minsqrtpt    );
-      h_jet_trk_maxsqrtpt    .push_back( h_j_trk_maxsqrtpt    );
-      h_jet_trk_sumsqrtpt    .push_back( h_j_trk_sumsqrtpt    );
       h_jet_trk_sqrtd0       .push_back( h_j_trk_sqrtd0       );
-      h_jet_trk_minsqrtd0    .push_back( h_j_trk_minsqrtd0    );
-      h_jet_trk_maxsqrtd0    .push_back( h_j_trk_maxsqrtd0    );
-      h_jet_trk_sumsqrtd0    .push_back( h_j_trk_sumsqrtd0    );
+      h_jet_trk_sqrtmind0    .push_back( h_j_trk_sqrtmind0    );
+      h_jet_trk_sqrtmaxd0    .push_back( h_j_trk_sqrtmaxd0    );
+      h_jet_trk_sqrtsumd0    .push_back( h_j_trk_sqrtsumd0    );
       h_jet_trk_sqrtz0       .push_back( h_j_trk_sqrtz0       );
-      h_jet_trk_minsqrtz0    .push_back( h_j_trk_minsqrtz0    );
-      h_jet_trk_maxsqrtz0    .push_back( h_j_trk_maxsqrtz0    );
-      h_jet_trk_sumsqrtz0    .push_back( h_j_trk_sumsqrtz0    );
+      h_jet_trk_sqrtminz0    .push_back( h_j_trk_sqrtminz0    );
+      h_jet_trk_sqrtmaxz0    .push_back( h_j_trk_sqrtmaxz0    );
+      h_jet_trk_sqrtsumz0    .push_back( h_j_trk_sqrtsumz0    );
       h_jet_trk_sqrterrd0    .push_back( h_j_trk_sqrterrd0    );
-      h_jet_trk_minSqrterrd0 .push_back( h_j_trk_minSqrterrd0 );
-      h_jet_trk_maxSqrterrd0 .push_back( h_j_trk_maxSqrterrd0 );
-      h_jet_trk_sumSqrterrd0 .push_back( h_j_trk_sumSqrterrd0 );
+      h_jet_trk_sqrtminErrd0 .push_back( h_j_trk_sqrtminErrd0 );
+      h_jet_trk_sqrtmaxErrd0 .push_back( h_j_trk_sqrtmaxErrd0 );
+      h_jet_trk_sqrtsumErrd0 .push_back( h_j_trk_sqrtsumErrd0 );
       h_jet_trk_sqrterrz0    .push_back( h_j_trk_sqrterrz0    );
-      h_jet_trk_minSqrterrz0 .push_back( h_j_trk_minSqrterrz0 );
-      h_jet_trk_maxSqrterrz0 .push_back( h_j_trk_maxSqrterrz0 );
-      h_jet_trk_sumSqrterrz0 .push_back( h_j_trk_sumSqrterrz0 );
+      h_jet_trk_sqrtminErrz0 .push_back( h_j_trk_sqrtminErrz0 );
+      h_jet_trk_sqrtmaxErrz0 .push_back( h_j_trk_sqrtmaxErrz0 );
+      h_jet_trk_sqrtsumErrz0 .push_back( h_j_trk_sqrtsumErrz0 );
       h_jet_trk_nSCT         .push_back( h_j_trk_nSCT         );
       h_jet_trk_nPixel       .push_back( h_j_trk_nPixel       );
       h_jet_trk_nSi          .push_back( h_j_trk_nSi          );
       h_jet_trk_nTRT         .push_back( h_j_trk_nTRT         );
+      h_jet_ntrk_pt          .push_back( h_j_ntrk_pt          );
+      h_jet_ntrk_eta         .push_back( h_j_ntrk_eta         );
+      h_jet_ntrk_phi         .push_back( h_j_ntrk_phi         );
+      h_jet_ntrk_m           .push_back( h_j_ntrk_m           );
+      h_jet_ntrk_sumPt       .push_back( h_j_ntrk_sumPt       );
+      h_jet_ntrk_sqrtsumPt   .push_back( h_j_ntrk_sqrtsumPt   );
     }
-    h_jet_nsv .push_back( h_j_nsv );
-    // h_jet_nsv      .push_back( h_j_nsv    );
-    // if ( m_histoInfoSwitch->m_jetVerts ) {
-    //   h_jet_sv_dR  .push_back( h_j_sv_dR  );
-    // }
-
     
+    h_jet_nsv             .push_back( h_j_nsv           );
+    if ( m_histoInfoSwitch->m_jetVerts ) {
+      h_jet_sv_dR         .push_back( h_j_sv_dR         );
+      h_jet_sv_minDR      .push_back( h_j_sv_minDR      );
+      h_jet_sv_maxDR      .push_back( h_j_sv_maxDR      );
+      h_jet_sv_pt         .push_back( h_j_sv_pt         );
+      h_jet_sv_Ht         .push_back( h_j_sv_Ht         );
+      h_jet_sv_H          .push_back( h_j_sv_H          );
+      h_jet_sv_sqrtpt     .push_back( h_j_sv_sqrtpt     );
+      h_jet_sv_sqrtHt     .push_back( h_j_sv_sqrtHt     );
+      h_jet_sv_sqrtH      .push_back( h_j_sv_sqrtH      );
+      h_jet_sv_mass       .push_back( h_j_sv_mass       );
+      h_jet_sv_mass_s     .push_back( h_j_sv_mass_s     );
+      h_jet_sv_ntrk       .push_back( h_j_sv_ntrk       );
+      h_jet_sv_njtrk      .push_back( h_j_sv_njtrk      );
+      h_jet_sv_z          .push_back( h_j_sv_z          );
+      h_jet_sv_minz       .push_back( h_j_sv_minz       );
+      h_jet_sv_maxz       .push_back( h_j_sv_maxz       );
+      h_jet_sv_sumz       .push_back( h_j_sv_sumz       );
+      h_jet_sv_r          .push_back( h_j_sv_r          );
+      h_jet_sv_minr       .push_back( h_j_sv_minr       );
+      h_jet_sv_maxr       .push_back( h_j_sv_maxr       );
+      h_jet_sv_sumr       .push_back( h_j_sv_sumr       );
+      h_jet_sv_chi2       .push_back( h_j_sv_chi2       );
+      h_jet_nsv_pt        .push_back( h_j_nsv_pt        );
+      h_jet_nsv_eta       .push_back( h_j_nsv_eta       );
+      h_jet_nsv_phi       .push_back( h_j_nsv_phi       );
+      h_jet_nsv_m         .push_back( h_j_nsv_m         );
+      h_jet_nsv_sumPt     .push_back( h_j_nsv_sumPt     );
+      h_jet_nsv_sumHt     .push_back( h_j_nsv_sumHt     );
+      h_jet_nsv_sumH      .push_back( h_j_nsv_sumH      );
+      h_jet_nsv_sqrtsumPt .push_back( h_j_nsv_sqrtsumPt );
+      h_jet_nsv_sqrtsumHt .push_back( h_j_nsv_sqrtsumHt );
+      h_jet_nsv_sqrtsumH  .push_back( h_j_nsv_sqrtsumH  );
+      h_jet_nsv_sumMass   .push_back( h_j_nsv_sumMass   );
+      h_jet_nsv_sumMass_s .push_back( h_j_nsv_sumMass_s );
+      h_jet_nsv_ntrk      .push_back( h_j_nsv_ntrk      );
+      h_jet_nsv_njtrk     .push_back( h_j_nsv_njtrk     );
+    }
 
-    // N leading jets
     if ( m_numLeadJets ) {
-      std::vector<TH1F*> h_nleadj_pt;
-      std::vector<TH1F*> h_nleadj_pt_s;
-      std::vector<TH1F*> h_nleadj_eta;
-      std::vector<TH1F*> h_nleadj_phi;
-      std::vector<TH1F*> h_nleadj_E;
-      std::vector<TH1F*> h_nleadj_M;
-      std::vector<TH1F*> h_nleadj_rapid;
-      std::vector<TH1F*> h_nleadj_Et;
-      std::vector<TH1F*> h_nleadj_Et_s;
-      std::vector<TH1F*> h_nleadj_ntrk;
-      std::vector<TH1F*> h_nleadj_trk_dR;
-      std::vector<TH1F*> h_nleadj_nsv;
-      std::vector<TH1F*> h_nleadj_sv_dR;
-      for ( int i = 0; i != m_numLeadJets; ++i ) {
-	std::string njet     = std::to_string(i);
-	std::string hnjet    = jetHistName + njet;
-	std::string hnjetStr = m_jetStr + " jet" + "-" + njet;
-	h_nleadj_pt     .push_back( book( name, hnjet + "_pt",     hnjetStr + " p_{T} [GeV]",                      100,    0, 1500 ) );
-	h_nleadj_pt_s   .push_back( book( name, hnjet + "_pt_s",   hnjetStr + " p_{T} [GeV]",                      100,    0,  500 ) );
-	h_nleadj_eta    .push_back( book( name, hnjet + "_eta",    hnjetStr + " eta",                              100,   -5,    5 ) );
-	h_nleadj_phi    .push_back( book( name, hnjet + "_phi",    hnjetStr + " phi",                              100, -3.5,  3.5 ) );
-	h_nleadj_E      .push_back( book( name, hnjet + "_E",      hnjetStr + " energy [GeV]",                     100,    0, 2500 ) );
-	h_nleadj_M      .push_back( book( name, hnjet + "_M",      hnjetStr + " mass [GeV]",                       100,    0,  250 ) );
-	h_nleadj_rapid  .push_back( book( name, hnjet + "_rapid",  hnjetStr + " rapidity",                         100,   -5,    5 ) );
-	h_nleadj_Et     .push_back( book( name, hnjet + "_Et",     hnjetStr + " E_{T} [GeV]",                      100,    0, 1500 ) );
-	h_nleadj_Et_s   .push_back( book( name, hnjet + "_Et_s",   hnjetStr + " E_{T} [GeV]",                      100,    0,  500 ) );
-	h_nleadj_ntrk   .push_back( book( name, hnjet + "_ntrk",   "n matched tracks per " + hnjetStr,             100,    0,  200 ) );
-	h_nleadj_trk_dR .push_back( book( name, hnjet + "_trk_dR", hnjetStr + " - track dR",                       100,    0,  0.6 ) );
-	h_nleadj_nsv    .push_back( book( name, hnjet + "_nsv",    "n matched secondary vertices per " + hnjetStr,  10,    0,   10 ) );
-	h_nleadj_sv_dR  .push_back( book( name, hnjet + "_sv_dR",  hnjetStr + " - secondary vertex dR",            100,    0,  0.6 ) );
-      }
-      h_jetN_pt     .push_back( h_nleadj_pt    );
-      h_jetN_pt_s   .push_back( h_nleadj_pt_s  );
-      h_jetN_eta    .push_back( h_nleadj_eta   );
-      h_jetN_phi    .push_back( h_nleadj_phi   );
-      h_jetN_E      .push_back( h_nleadj_E     );
-      h_jetN_M      .push_back( h_nleadj_M     );
-      h_jetN_rapid  .push_back( h_nleadj_rapid );
+      h_jetN_pt        .push_back( h_nlj_pt        );
+      h_jetN_pt_s      .push_back( h_nlj_pt_s      );
+      h_jetN_eta       .push_back( h_nlj_eta       );
+      h_jetN_phi       .push_back( h_nlj_phi       );
+      h_jetN_E         .push_back( h_nlj_E         );
+      h_jetN_M         .push_back( h_nlj_M         );
+      h_jetN_rapid     .push_back( h_nlj_rapid     );
+      h_jetN_nConstits .push_back( h_nlj_nConstits );
       if ( m_histoInfoSwitch->m_kinematics || m_histoInfoSwitch->m_kinematics_jet ) {
-	h_jetN_Et   .push_back( h_nleadj_Et    );
-	h_jetN_Et_s .push_back( h_nleadj_Et_s  );
+	h_jetN_Et      .push_back( h_nlj_Et        );
+	h_jetN_Et_s    .push_back( h_nlj_Et_s      );
       }
-      h_jetN_ntrk     .push_back( h_nleadj_ntrk   );
+      h_jetN_ntrk      .push_back( h_nlj_ntrk      );
       if ( m_histoInfoSwitch->m_jetTrks ) {
-	h_jetN_trk_dR .push_back( h_nleadj_trk_dR );
+	h_jetN_trk_minDR        .push_back( h_nlj_trk_minDR        );
+	h_jetN_trk_maxDR        .push_back( h_nlj_trk_maxDR        );
+	h_jetN_trk_mind0        .push_back( h_nlj_trk_mind0        );
+	h_jetN_trk_maxd0        .push_back( h_nlj_trk_maxd0        );
+	h_jetN_trk_sumd0        .push_back( h_nlj_trk_sumd0        );
+	h_jetN_trk_minz0        .push_back( h_nlj_trk_minz0        );
+	h_jetN_trk_maxz0        .push_back( h_nlj_trk_maxz0        );
+	h_jetN_trk_sumz0        .push_back( h_nlj_trk_sumz0        );
+	h_jetN_trk_minErrd0     .push_back( h_nlj_trk_minErrd0     );
+	h_jetN_trk_maxErrd0     .push_back( h_nlj_trk_maxErrd0     );
+	h_jetN_trk_sumErrd0     .push_back( h_nlj_trk_sumErrd0     );
+	h_jetN_trk_minErrz0     .push_back( h_nlj_trk_minErrz0     );
+	h_jetN_trk_maxErrz0     .push_back( h_nlj_trk_maxErrz0     );
+	h_jetN_trk_sumErrz0     .push_back( h_nlj_trk_sumErrz0     );
+	h_jetN_trk_sqrtmind0    .push_back( h_nlj_trk_sqrtmind0    );
+	h_jetN_trk_sqrtmaxd0    .push_back( h_nlj_trk_sqrtmaxd0    );
+	h_jetN_trk_sqrtsumd0    .push_back( h_nlj_trk_sqrtsumd0    );
+	h_jetN_trk_sqrtminz0    .push_back( h_nlj_trk_sqrtminz0    );
+	h_jetN_trk_sqrtmaxz0    .push_back( h_nlj_trk_sqrtmaxz0    );
+	h_jetN_trk_sqrtsumz0    .push_back( h_nlj_trk_sqrtsumz0    );
+	h_jetN_trk_sqrtminErrd0 .push_back( h_nlj_trk_sqrtminErrd0 );
+	h_jetN_trk_sqrtmaxErrd0 .push_back( h_nlj_trk_sqrtmaxErrd0 );
+	h_jetN_trk_sqrtsumErrd0 .push_back( h_nlj_trk_sqrtsumErrd0 );
+	h_jetN_trk_sqrtminErrz0 .push_back( h_nlj_trk_sqrtminErrz0 );
+	h_jetN_trk_sqrtmaxErrz0 .push_back( h_nlj_trk_sqrtmaxErrz0 );
+	h_jetN_trk_sqrtsumErrz0 .push_back( h_nlj_trk_sqrtsumErrz0 );
+	h_jetN_ntrk_pt          .push_back( h_nlj_ntrk_pt          );
+	h_jetN_ntrk_eta         .push_back( h_nlj_ntrk_eta         );
+	h_jetN_ntrk_phi         .push_back( h_nlj_ntrk_phi         );
+	h_jetN_ntrk_m           .push_back( h_nlj_ntrk_m           );
+	h_jetN_ntrk_sumPt       .push_back( h_nlj_ntrk_sumPt       );
+	h_jetN_ntrk_sqrtsumPt   .push_back( h_nlj_ntrk_sqrtsumPt   );
       }
-      h_jetN_nsv      .push_back( h_nleadj_nsv    );
+      h_jetN_nsv             .push_back( h_nlj_nsv           );
       if ( m_histoInfoSwitch->m_jetVerts ) {
-	h_jetN_sv_dR  .push_back( h_nleadj_sv_dR   );
+	h_jetN_sv_minDR      .push_back( h_nlj_sv_minDR      );
+	h_jetN_sv_maxDR      .push_back( h_nlj_sv_maxDR      );
+	h_jetN_sv_minz       .push_back( h_nlj_sv_minz       );
+	h_jetN_sv_maxz       .push_back( h_nlj_sv_maxz       );
+	h_jetN_sv_sumz       .push_back( h_nlj_sv_sumz       );
+	h_jetN_sv_minr       .push_back( h_nlj_sv_minr       );
+	h_jetN_sv_maxr       .push_back( h_nlj_sv_maxr       );
+	h_jetN_sv_sumr       .push_back( h_nlj_sv_sumr       );
+	h_jetN_nsv_pt        .push_back( h_nlj_nsv_pt        );
+	h_jetN_nsv_eta       .push_back( h_nlj_nsv_eta       );
+	h_jetN_nsv_phi       .push_back( h_nlj_nsv_phi       );
+	h_jetN_nsv_m         .push_back( h_nlj_nsv_m         );
+	h_jetN_nsv_sumPt     .push_back( h_nlj_nsv_sumPt     );
+	h_jetN_nsv_sumHt     .push_back( h_nlj_nsv_sumHt     );
+	h_jetN_nsv_sumH      .push_back( h_nlj_nsv_sumH      );
+	h_jetN_nsv_sqrtsumPt .push_back( h_nlj_nsv_sqrtsumPt );
+	h_jetN_nsv_sqrtsumHt .push_back( h_nlj_nsv_sqrtsumHt );
+	h_jetN_nsv_sqrtsumH  .push_back( h_nlj_nsv_sqrtsumH  );
+	h_jetN_nsv_sumMass   .push_back( h_nlj_nsv_sumMass   );
+	h_jetN_nsv_sumMass_s .push_back( h_nlj_nsv_sumMass_s );
+	h_jetN_nsv_ntrk      .push_back( h_nlj_nsv_ntrk      );
+	h_jetN_nsv_njtrk     .push_back( h_nlj_nsv_njtrk     );
       }
-    } // end if N leading jets info switch
+    }
     
     if ( m_histoInfoSwitch->m_dijets ) {
-      h_dijet_n           .push_back( h_jj_n         );
-      h_dijet_pt          .push_back( h_jj_pt        );
-      h_dijet_eta         .push_back( h_jj_eta       );
-      h_dijet_phi         .push_back( h_jj_phi       );
-      h_dijet_m           .push_back( h_jj_m         );
-      h_dijet_sumPt       .push_back( h_jj_sumPt     );
-      h_dijet_dR          .push_back( h_jj_dR        );
-      h_dijet_maxp4_pt    .push_back( h_jj_max_pt    );
-      h_dijet_maxp4_eta   .push_back( h_jj_max_eta   );
-      h_dijet_maxp4_phi   .push_back( h_jj_max_phi   );
-      h_dijet_maxp4_m     .push_back( h_jj_max_m     );
-      h_dijet_maxp4_sumPt .push_back( h_jj_max_sumPt );
-      h_dijet_maxp4_dR    .push_back( h_jj_max_dR    );
-      h_dijet_minp4_pt    .push_back( h_jj_min_pt    );
-      h_dijet_minp4_eta   .push_back( h_jj_min_eta   );
-      h_dijet_minp4_phi   .push_back( h_jj_min_phi   );
-      h_dijet_minp4_m     .push_back( h_jj_min_m     );
-      h_dijet_minp4_sumPt .push_back( h_jj_min_sumPt );
-      h_dijet_minp4_dR    .push_back( h_jj_min_dR    );
-      h_dijet_avgp4_pt    .push_back( h_jj_avg_pt    );
-      h_dijet_avgp4_eta   .push_back( h_jj_avg_eta   );
-      h_dijet_avgp4_phi   .push_back( h_jj_avg_phi   );
-      h_dijet_avgp4_m     .push_back( h_jj_avg_m     );
-      h_dijet_avgp4_sumPt .push_back( h_jj_avg_sumPt );
-      h_dijet_avgp4_dR    .push_back( h_jj_avg_dR    );
+      h_dijet_n                  .push_back( h_jj_n                );
+      h_dijet_pt                 .push_back( h_jj_pt               );
+      h_dijet_eta                .push_back( h_jj_eta              );
+      h_dijet_phi                .push_back( h_jj_phi              );
+      h_dijet_m                  .push_back( h_jj_m                );
+      h_dijet_sumPt              .push_back( h_jj_sumPt            );
+      h_dijet_dR                 .push_back( h_jj_dR               );
+      h_dijet_avgp4_pt           .push_back( h_jj_avg_pt           );
+      h_dijet_avgp4_eta          .push_back( h_jj_avg_eta          );
+      h_dijet_avgp4_phi          .push_back( h_jj_avg_phi          );
+      h_dijet_avgp4_m            .push_back( h_jj_avg_m            );
+      h_dijet_avgp4_sumPt        .push_back( h_jj_avg_sumPt        );
+      h_dijet_avgp4_dR           .push_back( h_jj_avg_dR           );
+      h_dijet_maxp4_pt           .push_back( h_jj_max_pt           );
+      h_dijet_maxp4_eta          .push_back( h_jj_max_eta          );
+      h_dijet_maxp4_phi          .push_back( h_jj_max_phi          );
+      h_dijet_maxp4_m            .push_back( h_jj_max_m            );
+      h_dijet_maxp4_sumPt        .push_back( h_jj_max_sumPt        );
+      h_dijet_maxp4_dR           .push_back( h_jj_max_dR           );
+      h_dijet_minp4_pt           .push_back( h_jj_min_pt           );
+      h_dijet_minp4_eta          .push_back( h_jj_min_eta          );
+      h_dijet_minp4_phi          .push_back( h_jj_min_phi          );
+      h_dijet_minp4_m            .push_back( h_jj_min_m            );
+      h_dijet_minp4_sumPt        .push_back( h_jj_min_sumPt        );
+      h_dijet_minp4_dR           .push_back( h_jj_min_dR           );
+      h_dijet_maxp4_ntrk         .push_back( h_jj_max_ntrk         );
+      h_dijet_minp4_ntrk         .push_back( h_jj_min_ntrk         );
+      if ( m_histoInfoSwitch->m_jetTrks   ) {
+      	h_dijet_maxp4_ntrk_pt    .push_back( h_jj_max_ntrk_pt      );
+      	h_dijet_maxp4_ntrk_eta   .push_back( h_jj_max_ntrk_eta     );
+      	h_dijet_maxp4_ntrk_phi   .push_back( h_jj_max_ntrk_phi     );
+      	h_dijet_maxp4_ntrk_m     .push_back( h_jj_max_ntrk_m       );
+      	h_dijet_maxp4_ntrk_sumPt .push_back( h_jj_max_ntrk_sumPt   );
+      	h_dijet_minp4_ntrk_pt    .push_back( h_jj_min_ntrk_pt      );
+      	h_dijet_minp4_ntrk_eta   .push_back( h_jj_min_ntrk_eta     );
+      	h_dijet_minp4_ntrk_phi   .push_back( h_jj_min_ntrk_phi     );
+      	h_dijet_minp4_ntrk_m     .push_back( h_jj_min_ntrk_m       );
+      	h_dijet_minp4_ntrk_sumPt .push_back( h_jj_min_ntrk_sumPt   );
+      }
+      h_dijet_maxp4_nsv          .push_back( h_jj_max_nsv          );
+      h_dijet_minp4_nsv          .push_back( h_jj_min_nsv          );
+      if ( m_histoInfoSwitch->m_jetVerts ) {
+      	h_dijet_maxp4_nsv_pt     .push_back( h_jj_max_nsv_pt       );
+      	h_dijet_maxp4_nsv_eta    .push_back( h_jj_max_nsv_eta      );
+      	h_dijet_maxp4_nsv_phi    .push_back( h_jj_max_nsv_phi      );
+      	h_dijet_maxp4_nsv_m      .push_back( h_jj_max_nsv_m        );
+      	h_dijet_maxp4_nsv_sumPt  .push_back( h_jj_max_nsv_sumPt    );
+      	h_dijet_minp4_nsv_pt     .push_back( h_jj_min_nsv_pt       );
+      	h_dijet_minp4_nsv_eta    .push_back( h_jj_min_nsv_eta      );
+      	h_dijet_minp4_nsv_phi    .push_back( h_jj_min_nsv_phi      );
+      	h_dijet_minp4_nsv_m      .push_back( h_jj_min_nsv_m        );
+      	h_dijet_minp4_nsv_sumPt  .push_back( h_jj_min_nsv_sumPt    );
+      }
+      h_dijet_maxpt_pt           .push_back( h_jj_maxpt_pt         );
+      h_dijet_maxpt_eta          .push_back( h_jj_maxpt_eta        );
+      h_dijet_maxpt_phi          .push_back( h_jj_maxpt_phi        );
+      h_dijet_maxpt_m            .push_back( h_jj_maxpt_m          );
+      h_dijet_maxpt_sumPt        .push_back( h_jj_maxpt_sumPt      );
+      h_dijet_maxpt_dR           .push_back( h_jj_maxpt_dR         );
+      h_dijet_minpt_pt           .push_back( h_jj_minpt_pt         );
+      h_dijet_minpt_eta          .push_back( h_jj_minpt_eta        );
+      h_dijet_minpt_phi          .push_back( h_jj_minpt_phi        );
+      h_dijet_minpt_m            .push_back( h_jj_minpt_m          );
+      h_dijet_minpt_sumPt        .push_back( h_jj_minpt_sumPt      );
+      h_dijet_minpt_dR           .push_back( h_jj_minpt_dR         );
+      h_dijet_maxpt_ntrk         .push_back( h_jj_maxpt_ntrk       );
+      h_dijet_minpt_ntrk         .push_back( h_jj_minpt_ntrk       );
+      if ( m_histoInfoSwitch->m_jetTrks   ) {
+      	h_dijet_maxpt_ntrk_pt    .push_back( h_jj_maxpt_ntrk_pt    );
+      	h_dijet_maxpt_ntrk_eta   .push_back( h_jj_maxpt_ntrk_eta   );
+      	h_dijet_maxpt_ntrk_phi   .push_back( h_jj_maxpt_ntrk_phi   );
+      	h_dijet_maxpt_ntrk_m     .push_back( h_jj_maxpt_ntrk_m     );
+      	h_dijet_maxpt_ntrk_sumPt .push_back( h_jj_maxpt_ntrk_sumPt );
+      	h_dijet_minpt_ntrk_pt    .push_back( h_jj_minpt_ntrk_pt    );
+      	h_dijet_minpt_ntrk_eta   .push_back( h_jj_minpt_ntrk_eta   );
+      	h_dijet_minpt_ntrk_phi   .push_back( h_jj_minpt_ntrk_phi   );
+      	h_dijet_minpt_ntrk_m     .push_back( h_jj_minpt_ntrk_m     );
+      	h_dijet_minpt_ntrk_sumPt .push_back( h_jj_minpt_ntrk_sumPt );
+      }
+      h_dijet_maxpt_nsv          .push_back( h_jj_maxpt_nsv        );
+      h_dijet_minpt_nsv          .push_back( h_jj_minpt_nsv        );
+      if ( m_histoInfoSwitch->m_jetVerts ) {
+      	h_dijet_maxpt_nsv_pt     .push_back( h_jj_maxpt_nsv_pt     );
+      	h_dijet_maxpt_nsv_eta    .push_back( h_jj_maxpt_nsv_eta    );
+      	h_dijet_maxpt_nsv_phi    .push_back( h_jj_maxpt_nsv_phi    );
+      	h_dijet_maxpt_nsv_m      .push_back( h_jj_maxpt_nsv_m      );
+      	h_dijet_maxpt_nsv_sumPt  .push_back( h_jj_maxpt_nsv_sumPt  );
+      	h_dijet_minpt_nsv_pt     .push_back( h_jj_minpt_nsv_pt     );
+      	h_dijet_minpt_nsv_eta    .push_back( h_jj_minpt_nsv_eta    );
+      	h_dijet_minpt_nsv_phi    .push_back( h_jj_minpt_nsv_phi    );
+      	h_dijet_minpt_nsv_m      .push_back( h_jj_minpt_nsv_m      );
+      	h_dijet_minpt_nsv_sumPt  .push_back( h_jj_minpt_nsv_sumPt  );
+      }
     }
-    h_njet_pt    .push_back( h_nj_pt    );
-    h_njet_eta   .push_back( h_nj_eta   );
-    h_njet_phi   .push_back( h_nj_phi   );
-    h_njet_m     .push_back( h_nj_m     );
-    h_njet_sumPt .push_back( h_nj_sumPt );
-
+    if ( m_histoInfoSwitch->m_njets ) {
+      h_njet_pt           .push_back( h_nj_pt         );
+      h_njet_eta          .push_back( h_nj_eta        );
+      h_njet_phi          .push_back( h_nj_phi        );
+      h_njet_m            .push_back( h_nj_m          );
+      h_njet_sumPt        .push_back( h_nj_sumPt      );
+      h_njet_ntrk         .push_back( h_nj_ntrk       );
+      if ( m_histoInfoSwitch->m_jetTrks   ) {
+	h_njet_ntrk_pt    .push_back( h_nj_ntrk_pt    );
+	h_njet_ntrk_eta   .push_back( h_nj_ntrk_eta   );
+	h_njet_ntrk_phi   .push_back( h_nj_ntrk_phi   );
+	h_njet_ntrk_m     .push_back( h_nj_ntrk_m     );
+	h_njet_ntrk_sumPt .push_back( h_nj_ntrk_sumPt );
+      }
+      h_njet_nsv          .push_back( h_nj_nsv        );
+      if ( m_histoInfoSwitch->m_jetVerts ) {
+	h_njet_nsv_pt     .push_back( h_nj_nsv_pt     );
+	h_njet_nsv_eta    .push_back( h_nj_nsv_eta    );
+	h_njet_nsv_phi    .push_back( h_nj_nsv_phi    );
+	h_njet_nsv_m      .push_back( h_nj_nsv_m      );
+	h_njet_nsv_sumPt  .push_back( h_nj_nsv_sumPt  );
+      }
+    }
+      
     // average of dijet pair with minimum invariant mass difference
-    h_NJetMjj          .push_back( book( name, "h_NJetMjj",       "leading N " + m_jetStr +
-					 " dijet invariant mass [GeV]",                             100,    0, 3000 ) );
-    h_NJetMjjDiff      .push_back( book( name, "h_NJetMjjDiff",   "leading N " + m_jetStr +
-					 " dijet invariant mass difference [GeV]",                  100,    0, 1500 ) );
-    h_NJetPtjj         .push_back( book( name, "h_NJetPtjj",      "leading N " + m_jetStr +
-					 " dijet p_{T} [GeV]",                                      100,    0, 3000 ) );
-    h_NJetPtjjDiff     .push_back( book( name, "h_NJetPtjjDiff",  "leading N " + m_jetStr +
-					 " dijet p_{T} difference [GeV]",                           100,    0, 1000 ) );
-    h_NJetEtajj        .push_back( book( name, "h_NJetEtajj",     "leading N " + m_jetStr +
-					 " dijet eta",                                              100,   -5,    5 ) );
-    h_NJetEtajjDiff    .push_back( book( name, "h_NJetEtajjDiff", "leading N " + m_jetStr +
-					 " dijet eta difference",                                   100,    0,  7.5 ) );
-    h_NJetPhijj        .push_back( book( name, "h_NJetPhijj",     "leading N " + m_jetStr +
-					 " dijet phi",                                              100, -3.5,  3.5 ) );
-    h_NJetPhijjDiff    .push_back( book( name, "h_NJetPhijjDiff", "leading N " + m_jetStr +
-					 " dijet phi difference",                                   100,    0,  6.5 ) );
-    h_NJetSumPtjj      .push_back( book( name, "h_NJetSumPtjj",   "leading N " + m_jetStr +
-					 " dijet sum-p_{T} [GeV]",                                  100,    0, 5500 ) );
-    h_NJetDRjj         .push_back( book( name, "h_NJetDRjj",      "leading N " + m_jetStr +
-					 " dijet dR",                                               100,    0,    7 ) );
+    h_NJetMjj           .push_back( book( name, "NJetMjj",       "leading N " + m_jetStr +
+					  " dijet invariant mass [GeV]",                             100,    0, 3000 ) );
+    h_NJetMjjDiff       .push_back( book( name, "NJetMjjDiff",   "leading N " + m_jetStr +
+					  " dijet invariant mass difference [GeV]",                  100,    0, 1500 ) );
+    h_NJetPtjj          .push_back( book( name, "NJetPtjj",      "leading N " + m_jetStr +
+					  " dijet p_{T} [GeV]",                                      100,    0, 3000 ) );
+    h_NJetPtjjDiff      .push_back( book( name, "NJetPtjjDiff",  "leading N " + m_jetStr +
+					  " dijet p_{T} difference [GeV]",                           100,    0, 1000 ) );
+    h_NJetEtajj         .push_back( book( name, "NJetEtajj",     "leading N " + m_jetStr +
+					  " dijet eta",                                              100,   -5,    5 ) );
+    h_NJetEtajjDiff     .push_back( book( name, "NJetEtajjDiff", "leading N " + m_jetStr +
+					  " dijet eta difference",                                   100,    0,  7.5 ) );
+    h_NJetPhijj         .push_back( book( name, "NJetPhijj",     "leading N " + m_jetStr +
+					  " dijet phi",                                              100, -3.5,  3.5 ) );
+    h_NJetPhijjDiff     .push_back( book( name, "NJetPhijjDiff", "leading N " + m_jetStr +
+					  " dijet phi difference",                                   100,    0,  6.5 ) );
+    h_NJetSumPtjj       .push_back( book( name, "NJetSumPtjj",   "leading N " + m_jetStr +
+					  " dijet sum-p_{T} [GeV]",                                  100,    0, 5500 ) );
+    h_NJetDRjj          .push_back( book( name, "NJetDRjj",      "leading N " + m_jetStr +
+					  " dijet dR",                                               100,    0,    7 ) );
     // average of dijet pair with minimum invariant mass difference < half the average invariant mass
-    h_NJetMjj_hlf      .push_back( book( name, "h_NJetMjj_hlf",       "leading N " + m_jetStr +
-					 " dijet invariant mass [GeV] (mindiff-M < M/2)",           100,    0, 3000 ) );
-    h_NJetMjjDiff_hlf  .push_back( book( name, "h_NJetMjjDiff_hlf",   "leading N " + m_jetStr +
-					 " dijet invariant mass difference [GeV] (mindiff-M < M/2)",100,    0, 1000 ) );
-    h_NJetPtjj_hlf     .push_back( book( name, "h_NJetPtjj_hlf",      "leading N " + m_jetStr +
-					 " dijet p_{T} [GeV] (mindiff-M < M/2)",                    100,    0, 3000 ) );
-    h_NJetPtjjDiff_hlf .push_back( book( name, "h_NJetPtjjDiff_hlf",  "leading N " + m_jetStr +
-					 " dijet p_{T} difference [GeV] (mindiff-M < M/2)",         100,    0, 1000 ) );
-    h_NJetEtajj_hlf    .push_back( book( name, "h_NJetEtajj_hlf",     "leading N " + m_jetStr +
-					 " dijet eta (mindiff-M < M/2)",                            100,   -5,    5 ) );
-    h_NJetEtajjDiff_hlf.push_back( book( name, "h_NJetEtajjDiff_hlf", "leading N " + m_jetStr +
-					 " dijet eta difference (mindiff-M < M/2)",                 100,    0,  7.5 ) );
-    h_NJetPhijj_hlf    .push_back( book( name, "h_NJetPhijj_hlf",     "leading N " + m_jetStr +
-					 " dijet phi (mindiff-M < M/2)",                            100, -3.5,  3.5 ) );
-    h_NJetPhijjDiff_hlf.push_back( book( name, "h_NJetPhijjDiff_hlf", "leading N " + m_jetStr +
-					 " dijet phi difference (mindiff-M < M/2)",                 100,    0,  6.5 ) );
-    h_NJetSumPtjj_hlf  .push_back( book( name, "h_NJetSumPtjj_hlf",   "leading N " + m_jetStr +
-					 " dijet sum-p_{T} [GeV] (mindiff-M < M/2)",                100,    0, 5500 ) );
-    h_NJetDRjj_hlf     .push_back( book( name, "h_NJetDRjj_hlf",      "leading N " + m_jetStr +
-					 " dijet dR (mindiff-M < M/2)",                             100,    0,    7 ) );
+    h_NJetMjj_0p5       .push_back( book( name, "NJetMjj_0p5",       "leading N " + m_jetStr +
+					  " dijet invariant mass [GeV] (mindiff-M < M/2)",           100,    0, 3000 ) );
+    h_NJetMjjDiff_0p5   .push_back( book( name, "NJetMjjDiff_0p5",   "leading N " + m_jetStr +
+					  " dijet invariant mass difference [GeV] (mindiff-M < M/2)",100,    0, 1000 ) );
+    h_NJetPtjj_0p5      .push_back( book( name, "NJetPtjj_0p5",      "leading N " + m_jetStr +
+					  " dijet p_{T} [GeV] (mindiff-M < M/2)",                    100,    0, 3000 ) );
+    h_NJetPtjjDiff_0p5  .push_back( book( name, "NJetPtjjDiff_0p5",  "leading N " + m_jetStr +
+					  " dijet p_{T} difference [GeV] (mindiff-M < M/2)",         100,    0, 1000 ) );
+    h_NJetEtajj_0p5     .push_back( book( name, "NJetEtajj_0p5",     "leading N " + m_jetStr +
+					  " dijet eta (mindiff-M < M/2)",                            100,   -5,    5 ) );
+    h_NJetEtajjDiff_0p5 .push_back( book( name, "NJetEtajjDiff_0p5", "leading N " + m_jetStr +
+					  " dijet eta difference (mindiff-M < M/2)",                 100,    0,  7.5 ) );
+    h_NJetPhijj_0p5     .push_back( book( name, "NJetPhijj_0p5",     "leading N " + m_jetStr +
+					  " dijet phi (mindiff-M < M/2)",                            100, -3.5,  3.5 ) );
+    h_NJetPhijjDiff_0p5 .push_back( book( name, "NJetPhijjDiff_0p5", "leading N " + m_jetStr +
+					  " dijet phi difference (mindiff-M < M/2)",                 100,    0,  6.5 ) );
+    h_NJetSumPtjj_0p5   .push_back( book( name, "NJetSumPtjj_0p5",   "leading N " + m_jetStr +
+					  " dijet sum-p_{T} [GeV] (mindiff-M < M/2)",                100,    0, 5500 ) );
+    h_NJetDRjj_0p5      .push_back( book( name, "NJetDRjj_0p5",      "leading N " + m_jetStr +
+					  " dijet dR (mindiff-M < M/2)",                             100,    0,    7 ) );
     // average of dijet pair with minimum invariant mass difference < quarter the average invariant mass
-    h_NJetMjj_qrt      .push_back( book( name, "h_NJetMjj_qrt",       "leading N " + m_jetStr +
-					 " dijet invariant mass [GeV] (mindiff-M < M/4)",           100,    0, 2500 ) );
-    h_NJetMjjDiff_qrt  .push_back( book( name, "h_NJetMjjDiff_qrt",   "leading N " + m_jetStr +
-					 " dijet invariant mass difference [GeV] (mindiff-M < M/4)",100,    0,  500 ) );
-    h_NJetPtjj_qrt     .push_back( book( name, "h_NJetPtjj_qrt",      "leading N " + m_jetStr +
-					 " dijet p_{T} [GeV] (mindiff-M < M/4)",                    100,    0, 3000 ) );
-    h_NJetPtjjDiff_qrt .push_back( book( name, "h_NJetPtjjDiff_qrt",  "leading N " + m_jetStr +
-					 " dijet p_{T} difference [GeV] (mindiff-M < M/4)",         100,    0, 1000 ) );
-    h_NJetEtajj_qrt    .push_back( book( name, "h_NJetEtajj_qrt",     "leading N " + m_jetStr +
-					 " dijet eta (mindiff-M < M/4)",                            100,   -5,    5 ) );
-    h_NJetEtajjDiff_qrt.push_back( book( name, "h_NJetEtajjDiff_qrt", "leading N " + m_jetStr +
-					 " dijet eta difference (mindiff-M < M/4)",                 100,    0,  7.5 ) );
-    h_NJetPhijj_qrt    .push_back( book( name, "h_NJetPhijj_qrt",     "leading N " + m_jetStr +
-					 " dijet phi (mindiff-M < M/4)",                            100, -3.5,  3.5 ) );
-    h_NJetPhijjDiff_qrt.push_back( book( name, "h_NJetPhijjDiff_qrt", "leading N " + m_jetStr +
-					 " dijet phi difference (mindiff-M < M/4)",                 100,    0,  6.5 ) );
-    h_NJetSumPtjj_qrt  .push_back( book( name, "h_NJetSumPtjj_qrt",   "leading N " + m_jetStr +
-					 " dijet sum-p_{T} [GeV] (mindiff-M < M/4)",                100,    0, 5500 ) );
-    h_NJetDRjj_qrt     .push_back( book( name, "h_NJetDRjj_qrt",      "leading N " + m_jetStr +
-					 " dijet dR (mindiff-M < M/4)",                             100,    0,    7 ) );
+    h_NJetMjj_0p25      .push_back( book( name, "NJetMjj_0p25",       "leading N " + m_jetStr +
+					  " dijet invariant mass [GeV] (mindiff-M < M/4)",           100,    0, 2500 ) );
+    h_NJetMjjDiff_0p25  .push_back( book( name, "NJetMjjDiff_0p25",   "leading N " + m_jetStr +
+					  " dijet invariant mass difference [GeV] (mindiff-M < M/4)",100,    0,  500 ) );
+    h_NJetPtjj_0p25     .push_back( book( name, "NJetPtjj_0p25",      "leading N " + m_jetStr +
+					  " dijet p_{T} [GeV] (mindiff-M < M/4)",                    100,    0, 3000 ) );
+    h_NJetPtjjDiff_0p25 .push_back( book( name, "NJetPtjjDiff_0p25",  "leading N " + m_jetStr +
+					  " dijet p_{T} difference [GeV] (mindiff-M < M/4)",         100,    0, 1000 ) );
+    h_NJetEtajj_0p25    .push_back( book( name, "NJetEtajj_0p25",     "leading N " + m_jetStr +
+					  " dijet eta (mindiff-M < M/4)",                            100,   -5,    5 ) );
+    h_NJetEtajjDiff_0p25.push_back( book( name, "NJetEtajjDiff_0p25", "leading N " + m_jetStr +
+					  " dijet eta difference (mindiff-M < M/4)",                 100,    0,  7.5 ) );
+    h_NJetPhijj_0p25    .push_back( book( name, "NJetPhijj_0p25",     "leading N " + m_jetStr +
+					  " dijet phi (mindiff-M < M/4)",                            100, -3.5,  3.5 ) );
+    h_NJetPhijjDiff_0p25.push_back( book( name, "NJetPhijjDiff_0p25", "leading N " + m_jetStr +
+					  " dijet phi difference (mindiff-M < M/4)",                 100,    0,  6.5 ) );
+    h_NJetSumPtjj_0p25  .push_back( book( name, "NJetSumPtjj_0p25",   "leading N " + m_jetStr +
+					  " dijet sum-p_{T} [GeV] (mindiff-M < M/4)",                100,    0, 5500 ) );
+    h_NJetDRjj_0p25     .push_back( book( name, "NJetDRjj_0p25",      "leading N " + m_jetStr +
+					  " dijet dR (mindiff-M < M/4)",                             100,    0,    7 ) );
     // average of dijet pair with minimum invariant mass difference < fifth the average invariant mass
-    h_NJetMjj_fth      .push_back( book( name, "h_NJetMjj_fth",       "leading N " + m_jetStr +
-					 " dijet invariant mass [GeV] (mindiff-M < M/5)",           100,    0, 2500 ) );
-    h_NJetMjjDiff_fth  .push_back( book( name, "h_NJetMjjDiff_fth",   "leading N " + m_jetStr +
-					 " dijet invariant mass difference [GeV] (mindiff-M < M/5)",100,    0,  350 ) );
-    h_NJetPtjj_fth     .push_back( book( name, "h_NJetPtjj_fth",      "leading N " + m_jetStr +
-					 " dijet p_{T} [GeV] (mindiff-M < M/5)",                    100,    0, 3000 ) );
-    h_NJetPtjjDiff_fth .push_back( book( name, "h_NJetPtjjDiff_fth",  "leading N " + m_jetStr +
-					 " dijet p_{T} difference [GeV] (mindiff-M < M/5)",         100,    0, 1000 ) );
-    h_NJetEtajj_fth    .push_back( book( name, "h_NJetEtajj_fth",     "leading N " + m_jetStr +
-					 " dijet eta (mindiff-M < M/5)",                            100,   -5,    5 ) );
-    h_NJetEtajjDiff_fth.push_back( book( name, "h_NJetEtajjDiff_fth", "leading N " + m_jetStr +
-					 " dijet eta difference (mindiff-M < M/5)",                 100,    0,   10 ) );
-    h_NJetPhijj_fth    .push_back( book( name, "h_NJetPhijj_fth",     "leading N " + m_jetStr +
-					 " dijet phi (mindiff-M < M/5)",                            100, -3.5,  3.5 ) );
-    h_NJetPhijjDiff_fth.push_back( book( name, "h_NJetPhijjDiff_fth", "leading N " + m_jetStr +
-					 " dijet phi difference (mindiff-M < M/5)",                 100,    0,  6.5 ) );
-    h_NJetSumPtjj_fth  .push_back( book( name, "h_NJetSumPtjj_fth",   "leading N " + m_jetStr +
-					 " dijet sum-p_{T} [GeV] (mindiff-M < M/5)",                100,    0, 5500 ) );
-    h_NJetDRjj_fth     .push_back( book( name, "h_NJetDRjj_fth",      "leading N " + m_jetStr +
-					 " dijet dR (mindiff-M < M/5)",                             100,    0,    7 ) );
-    // all averages of dijet pair combinations
-    h_NJetMjj_all      .push_back( book( name, "h_NJetMjj_all",       "leading N " + m_jetStr +
-					 " dijet invariant mass [GeV] (all pairs)",                 100,    0, 3000 ) );
-    h_NJetMjjDiff_all  .push_back( book( name, "h_NJetMjjDiff_all",   "leading N " + m_jetStr +
-					 " dijet invariant mass difference [GeV] (all pairs)",      100,    0, 3000 ) );
-    h_NJetPtjj_all     .push_back( book( name, "h_NJetPtjj_all",      "leading N " + m_jetStr +
-					 " dijet p_{T} [GeV] (all pairs)",                          100,    0, 3000 ) );
-    h_NJetPtjjDiff_all .push_back( book( name, "h_NJetPtjjDiff_all",  "leading N " + m_jetStr +
-					 " dijet p_{T} difference [GeV] (all pairs)",               100,    0, 1000 ) );
-    h_NJetEtajj_all    .push_back( book( name, "h_NJetEtajj_all",     "leading N " + m_jetStr +
-					 " dijet eta (all pairs)",                                  100,   -5,    5 ) );
-    h_NJetEtajjDiff_all.push_back( book( name, "h_NJetEtajjDiff_all", "leading N " + m_jetStr +
-					 " dijet eta difference (all pairs)",                       100,    0,  7.5 ) );
-    h_NJetPhijj_all    .push_back( book( name, "h_NJetPhijj_all",     "leading N " + m_jetStr +
-					 " dijet phi (all pairs)",                                  100, -3.5,  3.5 ) );
-    h_NJetPhijjDiff_all.push_back( book( name, "h_NJetPhijjDiff_all", "leading N " + m_jetStr +
-					 " dijet phi difference (all pairs)",                       100,    0,  6.5 ) );
-    h_NJetSumPtjj_all  .push_back( book( name, "h_NJetSumPtjj_all",   "leading N " + m_jetStr +
-					 " dijet sum-p_{T} [GeV] (all pairs)",                      100,    0, 5500 ) );
-    h_NJetDRjj_all     .push_back( book( name, "h_NJetDRjj_all",      "leading N " + m_jetStr +
-					 " dijet dR (all pairs)",                                   100,    0,    7 ) );
+    h_NJetMjj_0p2       .push_back( book( name, "NJetMjj_0p2",       "leading N " + m_jetStr +
+					  " dijet invariant mass [GeV] (mindiff-M < M/5)",           100,    0, 2500 ) );
+    h_NJetMjjDiff_0p2   .push_back( book( name, "NJetMjjDiff_0p2",   "leading N " + m_jetStr +
+					  " dijet invariant mass difference [GeV] (mindiff-M < M/5)",100,    0,  350 ) );
+    h_NJetPtjj_0p2      .push_back( book( name, "NJetPtjj_0p2",      "leading N " + m_jetStr +
+					  " dijet p_{T} [GeV] (mindiff-M < M/5)",                    100,    0, 3000 ) );
+    h_NJetPtjjDiff_0p2  .push_back( book( name, "NJetPtjjDiff_0p2",  "leading N " + m_jetStr +
+					  " dijet p_{T} difference [GeV] (mindiff-M < M/5)",         100,    0, 1000 ) );
+    h_NJetEtajj_0p2     .push_back( book( name, "NJetEtajj_0p2",     "leading N " + m_jetStr +
+					  " dijet eta (mindiff-M < M/5)",                            100,   -5,    5 ) );
+    h_NJetEtajjDiff_0p2 .push_back( book( name, "NJetEtajjDiff_0p2", "leading N " + m_jetStr +
+					  " dijet eta difference (mindiff-M < M/5)",                 100,    0,   10 ) );
+    h_NJetPhijj_0p2     .push_back( book( name, "NJetPhijj_0p2",     "leading N " + m_jetStr +
+					  " dijet phi (mindiff-M < M/5)",                            100, -3.5,  3.5 ) );
+    h_NJetPhijjDiff_0p2 .push_back( book( name, "NJetPhijjDiff_0p2", "leading N " + m_jetStr +
+					  " dijet phi difference (mindiff-M < M/5)",                 100,    0,  6.5 ) );
+    h_NJetSumPtjj_0p2   .push_back( book( name, "NJetSumPtjj_0p2",   "leading N " + m_jetStr +
+					  " dijet sum-p_{T} [GeV] (mindiff-M < M/5)",                100,    0, 5500 ) );
+    h_NJetDRjj_0p2      .push_back( book( name, "NJetDRjj_0p2",      "leading N " + m_jetStr +
+					  " dijet dR (mindiff-M < M/5)",                             100,    0,    7 ) );
     
 
-    
     // --- TRACKS --- //
     // tracks: basics / kinematics
     std::vector<int>   ntrk_x2 = { 5000, 4000, 500, 20, 50, 50, 50, 50 };
@@ -2079,8 +3278,6 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     std::vector<TH1F*> h_dv_ntrk_sel;
     std::vector<TH1F*> h_dv_ntrk_assoc;
     std::vector<TH1F*> h_dv_ntrk_lrt;
-    std::vector<TH1F*> h_dv_ntrk_d0;
-    std::vector<TH1F*> h_dv_ntrk_seld0;
     std::vector<TH1F*> h_dv_errx;
     std::vector<TH1F*> h_dv_erry;
     std::vector<TH1F*> h_dv_errz;
@@ -2419,66 +3616,64 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       // vertex basics
       std::string hdv    = hDV   [i] + "DV"; hdv[0] = tolower(hdv[0]);
       std::string hdvstr = hDVstr[i];        hdvstr.pop_back(); hdvstr += " DV";
-      h_dv_n            .push_back( book( name, hdv + "_n",          "n " + hdvstr + "s",                   15,    0,  15 ) );
-      h_dv_x            .push_back( book( name, hdv + "_x",          hdvstr + " x-pos [mm]",               100, -400,  400 ) );
-      h_dv_y            .push_back( book( name, hdv + "_y",          hdvstr + " y-pos [mm]",               100, -400,  400 ) );
-      h_dv_z            .push_back( book( name, hdv + "_z",          hdvstr + " z-pos [mm]",               100, -800,  800 ) );
-      h_dv_r            .push_back( book( name, hdv + "_r",          hdvstr + " r-pos [mm]",               100,    0,  400 ) );
-      h_dv_x_s          .push_back( book( name, hdv + "_x_s",        hdvstr + " x-pos [mm]",               100, -300,  300 ) );
-      h_dv_y_s          .push_back( book( name, hdv + "_y_s",        hdvstr + " y-pos [mm]",               100, -300,  300 ) );
-      h_dv_z_s          .push_back( book( name, hdv + "_z_s",        hdvstr + " z-pos [mm]",               100, -300,  300 ) );
-      h_dv_r_s          .push_back( book( name, hdv + "_r_s",        hdvstr + " r-pos [mm]",               100,    0,  300 ) );
-      h_dv_phipos       .push_back( book( name, hdv + "_phipos",     hdvstr + " phi-pos",                  100, -3.5,  3.5 ) );
-      h_dv_pt           .push_back( book( name, hdv + "_pt",         hdvstr + " p_{T} [GeV]",              100,    0,  100 ) );
-      h_dv_pt_s         .push_back( book( name, hdv + "_pt_s",       hdvstr + " p_{T} [GeV]",              100,    0,   50 ) );
-      h_dv_pt_xs        .push_back( book( name, hdv + "_pt_xs",      hdvstr + " p_{T} [GeV]",              100,    0,   10 ) );
-      h_dv_eta          .push_back( book( name, hdv + "_eta",        hdvstr + " eta",                      100,   -5,    5 ) );
-      h_dv_phi          .push_back( book( name, hdv + "_phi",        hdvstr + " phi",                      100, -3.5,  3.5 ) );
-      h_dv_mass         .push_back( book( name, hdv + "_mass",       hdvstr + " mass [GeV]",               100,    0,   50 ) );
-      h_dv_mass_l       .push_back( book( name, hdv + "_mass_l",     hdvstr + " mass [GeV]",               100,    0,  100 ) );
-      h_dv_mass_s       .push_back( book( name, hdv + "_mass_s",     hdvstr + " mass [GeV]",               100,    0,   25 ) );
-      h_dv_mass_xs      .push_back( book( name, hdv + "_mass_xs",    hdvstr + " mass [GeV]",               100,    0,    5 ) );
-      h_dv_massNA       .push_back( book( name, hdv + "_massNA",     hdvstr + " non-assoc. mass [GeV]",    100,    0,   50 ) );
-      h_dv_massNA_l     .push_back( book( name, hdv + "_massNA_l",   hdvstr + " non-assoc. mass [GeV]",    100,    0,  100 ) );
-      h_dv_massNA_s     .push_back( book( name, hdv + "_massNA_s",   hdvstr + " non-assoc. mass [GeV]",    100,    0,   25 ) );
-      h_dv_massNA_xs    .push_back( book( name, hdv + "_massNA_xs",  hdvstr + " non-assoc. mass [GeV]",    100,    0,    5 ) );
-      h_dv_direction    .push_back( book( name, hdv + "_direction",  hdvstr + " direction",                100, -1.1,  1.1 ) );
-      h_dv_minOpAng     .push_back( book( name, hdv + "_minOpAng",   hdvstr + " cos min opening angle",    100, -1.1,  1.1 ) );
-      h_dv_maxOpAng     .push_back( book( name, hdv + "_maxOpAng",   hdvstr + " cos max opening angle",    100, -1.1,  1.1 ) );
-      h_dv_chi2         .push_back( book( name, hdv + "_chi2",       hdvstr + " chi2 / nDoF",              100,    0,   10 ) );
-      h_dv_chi2_s       .push_back( book( name, hdv + "_chi2_s",     hdvstr + " chi2 / nDoF",              100,    0,    5 ) );
-      h_dv_ntrk         .push_back( book( name, hdv + "_ntrk",       "n " + hdvstr + " tracks",             10,    2,   12 ) );
-      h_dv_ntrk_final   .push_back( book( name, hdv + "_ntrk_final", "n " + hdvstr + " final tracks",       10,    2,   12 ) );
-      h_dv_ntrk_sel     .push_back( book( name, hdv + "_ntrk_sel",   "n " + hdvstr + " selected tracks",    10,    2,   12 ) );
-      h_dv_ntrk_assoc   .push_back( book( name, hdv + "_ntrk_assoc", "n " + hdvstr + " associated tracks",  10,    2,   12 ) );
-      h_dv_ntrk_lrt     .push_back( book( name, hdv + "_ntrk_lrt",   "n " + hdvstr + " large-radius tracks",10,    2,   12 ) );
-      h_dv_ntrk_d0      .push_back( book( name, hdv + "_ntrk_d0",    "n " + hdvstr + " |d0| > 2.0 tracks",  10,    0,   10 ) );
-      h_dv_ntrk_seld0   .push_back( book( name, hdv + "_ntrk_seld0", "n " + hdvstr + " |d0| > 2.0 selected tracks",10,0,10 ) );
+      h_dv_n            .push_back( book( name, hdv + "_n",           "n " + hdvstr + "s",                     15,    0,   15 ) );
+      h_dv_x            .push_back( book( name, hdv + "_x",           hdvstr + " x-pos [mm]",                 100, -400,  400 ) );
+      h_dv_y            .push_back( book( name, hdv + "_y",           hdvstr + " y-pos [mm]",                 100, -400,  400 ) );
+      h_dv_z            .push_back( book( name, hdv + "_z",           hdvstr + " z-pos [mm]",                 100, -800,  800 ) );
+      h_dv_r            .push_back( book( name, hdv + "_r",           hdvstr + " r-pos [mm]",                 100,    0,  400 ) );
+      h_dv_x_s          .push_back( book( name, hdv + "_x_s",         hdvstr + " x-pos [mm]",                 100, -300,  300 ) );
+      h_dv_y_s          .push_back( book( name, hdv + "_y_s",         hdvstr + " y-pos [mm]",                 100, -300,  300 ) );
+      h_dv_z_s          .push_back( book( name, hdv + "_z_s",         hdvstr + " z-pos [mm]",                 100, -300,  300 ) );
+      h_dv_r_s          .push_back( book( name, hdv + "_r_s",         hdvstr + " r-pos [mm]",                 100,    0,  300 ) );
+      h_dv_phipos       .push_back( book( name, hdv + "_phipos",      hdvstr + " phi-pos",                    100, -3.5,  3.5 ) );
+      h_dv_pt           .push_back( book( name, hdv + "_pt",          hdvstr + " p_{T} [GeV]",                100,    0,  100 ) );
+      h_dv_pt_s         .push_back( book( name, hdv + "_pt_s",        hdvstr + " p_{T} [GeV]",                100,    0,   50 ) );
+      h_dv_pt_xs        .push_back( book( name, hdv + "_pt_xs",       hdvstr + " p_{T} [GeV]",                100,    0,   10 ) );
+      h_dv_eta          .push_back( book( name, hdv + "_eta",         hdvstr + " eta",                        100,   -5,    5 ) );
+      h_dv_phi          .push_back( book( name, hdv + "_phi",         hdvstr + " phi",                        100, -3.5,  3.5 ) );
+      h_dv_mass         .push_back( book( name, hdv + "_mass",        hdvstr + " mass [GeV]",                 100,    0,   50 ) );
+      h_dv_mass_l       .push_back( book( name, hdv + "_mass_l",      hdvstr + " mass [GeV]",                 100,    0,  100 ) );
+      h_dv_mass_s       .push_back( book( name, hdv + "_mass_s",      hdvstr + " mass [GeV]",                 100,    0,   25 ) );
+      h_dv_mass_xs      .push_back( book( name, hdv + "_mass_xs",     hdvstr + " mass [GeV]",                 100,    0,    5 ) );
+      h_dv_massNA       .push_back( book( name, hdv + "_massNA",      hdvstr + " non-assoc. mass [GeV]",      100,    0,   50 ) );
+      h_dv_massNA_l     .push_back( book( name, hdv + "_massNA_l",    hdvstr + " non-assoc. mass [GeV]",      100,    0,  100 ) );
+      h_dv_massNA_s     .push_back( book( name, hdv + "_massNA_s",    hdvstr + " non-assoc. mass [GeV]",      100,    0,   25 ) );
+      h_dv_massNA_xs    .push_back( book( name, hdv + "_massNA_xs",   hdvstr + " non-assoc. mass [GeV]",      100,    0,    5 ) );
+      h_dv_direction    .push_back( book( name, hdv + "_direction",   hdvstr + " direction",                  100, -1.1,  1.1 ) );
+      h_dv_minOpAng     .push_back( book( name, hdv + "_minOpAng",    hdvstr + " cos min opening angle",      100, -1.1,  1.1 ) );
+      h_dv_maxOpAng     .push_back( book( name, hdv + "_maxOpAng",    hdvstr + " cos max opening angle",      100, -1.1,  1.1 ) );
+      h_dv_chi2         .push_back( book( name, hdv + "_chi2",        hdvstr + " chi2 / nDoF",                100,    0,   10 ) );
+      h_dv_chi2_s       .push_back( book( name, hdv + "_chi2_s",      hdvstr + " chi2 / nDoF",                100,    0,    5 ) );
+      h_dv_ntrk         .push_back( book( name, hdv + "_ntrk",        "n " + hdvstr + " tracks",               10,    2,   12 ) );
+      h_dv_ntrk_final   .push_back( book( name, hdv + "_ntrk_final",  "n " + hdvstr + " final tracks",         10,    2,   12 ) );
+      h_dv_ntrk_sel     .push_back( book( name, hdv + "_ntrk_sel",    "n " + hdvstr + " selected tracks",      10,    2,   12 ) );
+      h_dv_ntrk_assoc   .push_back( book( name, hdv + "_ntrk_assoc",  "n " + hdvstr + " associated tracks",    10,    2,   12 ) );
+      h_dv_ntrk_lrt     .push_back( book( name, hdv + "_ntrk_lrt",    "n " + hdvstr + " large-radius tracks",  10,    2,   12 ) );
       if ( m_histoInfoSwitch->m_vtxErrors ) {
-	h_dv_errx       .push_back( book( name, hdv + "_errx",       hdvstr + " x-pos uncert.",            100,    0,   25 ) );
-	h_dv_erry       .push_back( book( name, hdv + "_erry",       hdvstr + " y-pos uncert.",            100,    0,   25 ) );
-	h_dv_errz       .push_back( book( name, hdv + "_errz",       hdvstr + " z-pos uncert.",            100,    0,   25 ) );
-	h_dv_errr       .push_back( book( name, hdv + "_errr",       hdvstr + " r-pos uncert.",            100,    0,   25 ) );
-	h_dv_errphi     .push_back( book( name, hdv + "_errphi",     hdvstr + " phi uncert.",              100,    0, 0.15 ) );
-	h_dv_sqrterrx   .push_back( book( name, hdv + "_sqrterrx",   hdvstr + " x-pos sqrt-uncert.",       100,    0,    5 ) );
-	h_dv_sqrterry   .push_back( book( name, hdv + "_sqrterry",   hdvstr + " y-pos sqrt-uncert.",       100,    0,    5 ) );
-	h_dv_sqrterrz   .push_back( book( name, hdv + "_sqrterrz",   hdvstr + " z-pos sqrt-uncert.",       100,    0,    5 ) );
-	h_dv_sqrterrr   .push_back( book( name, hdv + "_sqrterrr",   hdvstr + " r-pos sqrt-uncert.",       100,    0,    5 ) );
-	h_dv_sqrterrphi .push_back( book( name, hdv + "_sqrterrphi", hdvstr + " phi sqrt-uncert.",         100,    0,  0.4 ) );
-	h_dv_fracerrx   .push_back( book( name, hdv + "_fracerrx",   hdvstr + " x-pos fractional uncert.", 100,    0,  0.1 ) );
-	h_dv_fracerry   .push_back( book( name, hdv + "_fracerry",   hdvstr + " y-pos fractional uncert.", 100,    0,  0.1 ) );
-	h_dv_fracerrz   .push_back( book( name, hdv + "_fracerrz",   hdvstr + " z-pos fractional uncert.", 100,    0,  0.1 ) );
-	h_dv_fracerrr   .push_back( book( name, hdv + "_fracerrr",   hdvstr + " r-pos fractional uncert.", 100,    0,  0.1 ) );
-	h_dv_fracerrphi .push_back( book( name, hdv + "_fracerrphi", hdvstr + " phi fractional uncert.",   100,    0,  0.1 ) );
-	h_dv_signifx    .push_back( book( name, hdv + "_signifx",    hdvstr + " x-pos significance",       100,    0, 1000 ) );
-	h_dv_signify    .push_back( book( name, hdv + "_signify",    hdvstr + " y-pos significance",       100,    0, 1000 ) );
-	h_dv_signifz    .push_back( book( name, hdv + "_signifz",    hdvstr + " z-pos significance",       100,    0, 1000 ) );
-	h_dv_signifr    .push_back( book( name, hdv + "_signifr",    hdvstr + " r-pos significance",       100,    0, 1000 ) );
-	h_dv_signifphi  .push_back( book( name, hdv + "_signifphi",  hdvstr + " phi-pos significance",     100,    0, 1000 ) );
+	h_dv_errx       .push_back( book( name, hdv + "_errx",        hdvstr + " x-pos uncert.",              100,    0,   25 ) );
+	h_dv_erry       .push_back( book( name, hdv + "_erry",        hdvstr + " y-pos uncert.",              100,    0,   25 ) );
+	h_dv_errz       .push_back( book( name, hdv + "_errz",        hdvstr + " z-pos uncert.",              100,    0,   25 ) );
+	h_dv_errr       .push_back( book( name, hdv + "_errr",        hdvstr + " r-pos uncert.",              100,    0,   25 ) );
+	h_dv_errphi     .push_back( book( name, hdv + "_errphi",      hdvstr + " phi uncert.",                100,    0, 0.15 ) );
+	h_dv_sqrterrx   .push_back( book( name, hdv + "_sqrterrx",    hdvstr + " x-pos sqrt-uncert.",         100,    0,    5 ) );
+	h_dv_sqrterry   .push_back( book( name, hdv + "_sqrterry",    hdvstr + " y-pos sqrt-uncert.",         100,    0,    5 ) );
+	h_dv_sqrterrz   .push_back( book( name, hdv + "_sqrterrz",    hdvstr + " z-pos sqrt-uncert.",         100,    0,    5 ) );
+	h_dv_sqrterrr   .push_back( book( name, hdv + "_sqrterrr",    hdvstr + " r-pos sqrt-uncert.",         100,    0,    5 ) );
+	h_dv_sqrterrphi .push_back( book( name, hdv + "_sqrterrphi",  hdvstr + " phi sqrt-uncert.",           100,    0,  0.4 ) );
+	h_dv_fracerrx   .push_back( book( name, hdv + "_fracerrx",    hdvstr + " x-pos fractional uncert.",   100,    0,  0.1 ) );
+	h_dv_fracerry   .push_back( book( name, hdv + "_fracerry",    hdvstr + " y-pos fractional uncert.",   100,    0,  0.1 ) );
+	h_dv_fracerrz   .push_back( book( name, hdv + "_fracerrz",    hdvstr + " z-pos fractional uncert.",   100,    0,  0.1 ) );
+	h_dv_fracerrr   .push_back( book( name, hdv + "_fracerrr",    hdvstr + " r-pos fractional uncert.",   100,    0,  0.1 ) );
+	h_dv_fracerrphi .push_back( book( name, hdv + "_fracerrphi",  hdvstr + " phi fractional uncert.",     100,    0,  0.1 ) );
+	h_dv_signifx    .push_back( book( name, hdv + "_signifx",     hdvstr + " x-pos significance",         100,    0, 1000 ) );
+	h_dv_signify    .push_back( book( name, hdv + "_signify",     hdvstr + " y-pos significance",         100,    0, 1000 ) );
+	h_dv_signifz    .push_back( book( name, hdv + "_signifz",     hdvstr + " z-pos significance",         100,    0, 1000 ) );
+	h_dv_signifr    .push_back( book( name, hdv + "_signifr",     hdvstr + " r-pos significance",         100,    0, 1000 ) );
+	h_dv_signifphi  .push_back( book( name, hdv + "_signifphi",   hdvstr + " phi-pos significance",       100,    0, 1000 ) );
       }
       // vertex nearby jets
-      h_dv_jetDR        .push_back( book( name, hdv + "_jetDR",      hdvstr + " - jet dR",                 100,    0,  0.6 ) );
-      h_dv_leadJetDR    .push_back( book( name, hdv + "_leadJetDR",  hdvstr + " - lead jet dR",            100,    0,  0.6 ) );
+      h_dv_jetDR        .push_back( book( name, hdv + "_jetDR",       hdvstr + " - jet dR",                   100,    0,  0.6 ) );
+      h_dv_leadJetDR    .push_back( book( name, hdv + "_leadJetDR",   hdvstr + " - lead jet dR",              100,    0,  0.6 ) );
 
       // vertex tracks
       std::string hDVtrk       = hdv    + "_trk";
@@ -3112,8 +4307,6 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     h_DV_ntrk_sel                 .push_back( h_dv_ntrk_sel               );
     h_DV_ntrk_assoc               .push_back( h_dv_ntrk_assoc             );
     h_DV_ntrk_lrt                 .push_back( h_dv_ntrk_lrt               );
-    h_DV_ntrk_d0                  .push_back( h_dv_ntrk_d0                );
-    h_DV_ntrk_seld0               .push_back( h_dv_ntrk_seld0             );
     if ( m_histoInfoSwitch->m_vtxErrors ) {
       h_DV_errx                   .push_back( h_dv_errx                   );
       h_DV_erry                   .push_back( h_dv_erry                   );
@@ -3469,6 +4662,138 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     }
 
 
+    // --- CUTFLOWS --- //
+    // --> jet cutflow
+    // --> DV cutflow
+    std::vector<TH1F*> h_evt_testcutflow_dv;
+    std::vector<TH1F*> h_evt_testcutfloweff_dv;
+    std::vector<TH1F*> h_evt_cutflow_dv;
+    std::vector<TH1F*> h_evt_cutfloweff_dv;
+    std::vector<std::string> cdv;
+    std::vector<std::string> cdvstr;
+    //std::string hdv0    = hDV   [0]; hdv0[0] = std::tolower(hdv0[0]);
+    //std::string hdv0str = hDVstr[0]; hdv0str.pop_back();
+    //cdv   .push_back( hdv0    + "DV" );
+    //cdvstr.push_back( hdv0str + "DV" );
+    std::string bdv    = baseDV;    bdv[0] = std::tolower(bdv[0]);
+    std::string bdvstr = baseDVstr; bdvstr.pop_back();
+    cdv    .push_back( bdv    +  "DV" );
+    cdvstr .push_back( bdvstr + " DV" );
+    if ( m_mc && m_histoInfoSwitch->m_vtxTruth ) {
+      //std::vector<std::string> mDV     = { "darkPion",  "kshort",  "nomatch"   };
+      //std::vector<std::string> mDVstr  = { "dark pion", "k-short", "unmatched" };
+      std::vector<std::string> mDV     = { "darkPion"  };
+      std::vector<std::string> mDVstr  = { "dark pion" };
+      for ( size_t imdv = 0; imdv != mDV.size(); ++imdv ) {
+    	cdv    .push_back( mDV    [imdv] +  "DV" );
+    	cdvstr .push_back( mDVstr [imdv] + " DV" );
+      }
+    }
+    for ( size_t icdv = 0; icdv != cdv.size(); ++icdv ) {
+      if ( m_nType1DVs ) {
+    	h_evt_testcutflow_dv
+    	  .push_back( book( name, "evt_testCutflow_"          +cdv[icdv], cdvstr[icdv]+" test cutflow",            m_nType1DVs, 0, m_nType1DVs ) );
+    	h_evt_testcutfloweff_dv
+    	  .push_back( book( name, "evt_testCutflowEfficiency_"+cdv[icdv], cdvstr[icdv]+" test cutflow efficiency", m_nType1DVs, 0, m_nType1DVs ) );
+      }
+      h_evt_cutflow_dv
+       	.push_back( book( name, "evt_cutflow_"          +cdv[icdv], cdvstr[icdv]+" cutflow",            hGDVstr.size(), 0, hGDVstr.size() ) );
+      h_evt_cutfloweff_dv
+      	.push_back( book( name, "evt_cutflowEfficiency_"+cdv[icdv], cdvstr[icdv]+" cutflow efficiency", hGDVstr.size(), 0, hGDVstr.size() ) );
+      for ( unsigned i1dv = 0; i1dv != m_nType1DVs; ++i1dv ) {
+    	std::string tmpdvstr = hDVstr[ i1dv ]; tmpdvstr.pop_back();
+    	h_evt_testcutflow_dv    [icdv] ->GetXaxis()->FindBin( ( tmpdvstr ).c_str() );
+    	h_evt_testcutfloweff_dv [icdv] ->GetXaxis()->FindBin( ( tmpdvstr ).c_str() );
+      }
+      for ( const auto& gdv : hGDVstr ) {
+	std::string tmpdvstr = gdv; tmpdvstr.pop_back();
+      	h_evt_cutflow_dv        [icdv] ->GetXaxis()->FindBin( ( tmpdvstr ).c_str() );
+      	h_evt_cutfloweff_dv     [icdv] ->GetXaxis()->FindBin( ( tmpdvstr ).c_str() );
+      }
+    }
+    if ( m_nType1DVs ) {
+      h_evt_testCutflow_DV           .push_back( h_evt_testcutflow_dv    );
+      h_evt_testCutflowEfficiency_DV .push_back( h_evt_testcutfloweff_dv );
+    }
+    h_evt_cutflow_DV               .push_back( h_evt_cutflow_dv        );
+    h_evt_cutflowEfficiency_DV     .push_back( h_evt_cutfloweff_dv     );
+    
+    // --> event-level cutflows
+    std::vector<TH1F*> h_evt_cutflow_ndv;
+    std::vector<TH1F*> h_evt_cutfloweff_ndv;
+    std::vector<TH1F*> h_evt_cutflowtoteff_ndv;
+    std::vector<std::vector<TH1F*>> h_evt_cutflow_ntrkndv;
+    std::vector<std::vector<TH1F*>> h_evt_cutfloweff_ntrkndv;
+    std::vector<std::vector<TH1F*>> h_evt_cutflowtoteff_ntrkndv;
+    for ( size_t ibdv = 0; ibdv != m_nTypeBDVs; ++ibdv ) { // skip truth-matched DVs
+      std::string hdv    = hDV   [ibdv] + "DV";
+      std::string hdvstr = hDVstr[ibdv]; hdvstr.pop_back(); hdvstr += " DV";
+      h_evt_cutflow_ndv
+	.push_back( book( name, "evt_cutflow_N"                + hdv, "N-" + hdvstr + " cutflow",                  m_ndv, 0, m_ndv ) );
+      h_evt_cutfloweff_ndv
+	.push_back( book( name, "evt_cutflowEfficiency_N"      + hdv, "N-" + hdvstr + " cutflow efficiency",       m_ndv, 0, m_ndv ) );
+      h_evt_cutflowtoteff_ndv
+	.push_back( book( name, "evt_cutflowTotalEfficiency_N" + hdv, "N-" + hdvstr + " cutflow total efficiency", m_ndv, 0, m_ndv ) );
+      for ( int indv = 0; indv != m_ndv; ++indv ) {
+	h_evt_cutflow_ndv       [ibdv] ->GetXaxis()->FindBin( ( "NDV = " + std::to_string(indv+1) ).c_str() );
+	h_evt_cutfloweff_ndv    [ibdv] ->GetXaxis()->FindBin( ( "NDV = " + std::to_string(indv+1) ).c_str() );
+	h_evt_cutflowtoteff_ndv [ibdv] ->GetXaxis()->FindBin( ( "NDV = " + std::to_string(indv+1) ).c_str() );
+      }
+      if ( m_numVtxTrks ) {
+	std::vector<TH1F*> h_evt_cutflow_njtrkndv;
+	std::vector<TH1F*> h_evt_cutfloweff_njtrkndv;
+	std::vector<TH1F*> h_evt_cutflowtoteff_njtrkndv;
+	for ( int j = 1; j != m_numVtxTrks; ++j ) {
+	  std::string ntrk      = std::to_string(j+1);
+	  std::string jdv       = hdv; jdv[0] = std::toupper(jdv[0]);
+	  std::string ntrkndv    = ntrk + "trkN" + jdv;
+	  std::string ntrkndvstr = ntrk + "-track N-" + hdvstr;
+	  h_evt_cutflow_njtrkndv
+	    .push_back( book( name, "evt_cutflow_"                + ntrkndv, ntrkndvstr + " cutflow",                  m_ndv, 0, m_ndv ) );
+	  h_evt_cutfloweff_njtrkndv
+	    .push_back( book( name, "evt_cutflowEfficiency_"      + ntrkndv, ntrkndvstr + " cutflow efficiency",       m_ndv, 0, m_ndv ) );
+	  h_evt_cutflowtoteff_njtrkndv
+	    .push_back( book( name, "evt_cutflowTotalEfficiency_" + ntrkndv, ntrkndvstr + " cutflow total efficiency", m_ndv, 0, m_ndv ) );
+	  for ( int jndv = 0; jndv != m_ndv; ++jndv ) {
+	    h_evt_cutflow_njtrkndv       [j-1] ->GetXaxis()->FindBin( ( "NDV = " + std::to_string(jndv+1) ).c_str() );
+	    h_evt_cutfloweff_njtrkndv    [j-1] ->GetXaxis()->FindBin( ( "NDV = " + std::to_string(jndv+1) ).c_str() );
+	    h_evt_cutflowtoteff_njtrkndv [j-1] ->GetXaxis()->FindBin( ( "NDV = " + std::to_string(jndv+1) ).c_str() );
+	  }
+	}
+	h_evt_cutflow_ntrkndv       .push_back( h_evt_cutflow_njtrkndv       );
+	h_evt_cutfloweff_ntrkndv    .push_back( h_evt_cutfloweff_njtrkndv    );
+	h_evt_cutflowtoteff_ntrkndv .push_back( h_evt_cutflowtoteff_njtrkndv );
+      }
+    }
+    h_evt_cutflow_NDV                    .push_back( h_evt_cutflow_ndv           );
+    h_evt_cutflowEfficiency_NDV          .push_back( h_evt_cutfloweff_ndv        );
+    h_evt_cutflowTotalEfficiency_NDV     .push_back( h_evt_cutflowtoteff_ndv     );
+    if ( m_numVtxTrks ) {
+      h_evt_cutflow_ntrkNDV                .push_back( h_evt_cutflow_ntrkndv       );
+      h_evt_cutflowEfficiency_ntrkNDV      .push_back( h_evt_cutfloweff_ntrkndv    );
+      h_evt_cutflowTotalEfficiency_ntrkNDV .push_back( h_evt_cutflowtoteff_ntrkndv );
+    }
+
+
+    // --- OVERALL EFFICIENCIES --- //
+    std::vector<TH1F*> h_evt_count_dv;
+    std::vector<TH1F*> h_evt_cuteff_dv;
+    std::vector<TH1F*> h_evt_matchcuteff_dv;
+    for ( size_t i = 0; i != hDV.size(); ++i ) {
+      std::string hdv    = hDV   [i] + "DV"; hdv[0] = tolower(hdv[0]);
+      std::string hdvstr = hDVstr[i];        hdvstr.pop_back(); hdvstr += " DV";
+      h_evt_count_dv
+	.push_back( book( name, "evt_count_"              + hdv, "overall " + hdvstr + " count",                      1, 0, 1 ) );
+      h_evt_cuteff_dv
+	.push_back( book( name, "evt_cutEfficiency_"      + hdv, "overall " + hdvstr + " cut efficiency",             1, 0, 1 ) );
+      h_evt_matchcuteff_dv
+	.push_back( book( name, "evt_matchcutEfficiency_" + hdv, "overall " + hdvstr + " truth-match cut efficiency", 1, 0, 1 ) );
+    }
+    h_evt_count_DV              .push_back( h_evt_count_dv       );
+    h_evt_cutEfficiency_DV      .push_back( h_evt_cuteff_dv      );
+    h_evt_matchcutEfficiency_DV .push_back( h_evt_matchcuteff_dv );
+
+
     // --- ABCD HISTOS --- //
     // --> add ntrack vertices (i.e. 3+, 4+, 5+ for each vertex type)
     if ( m_histoInfoSwitch->m_abcd ) {
@@ -3492,10 +4817,10 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 						     "Leading N " + m_jetStr + " Jet H_{T} [GeV] (VR-shift)",
 						     100, njetht_xmin, 3000, "n " + hdvstr + "s", 16, -1, 15 ) );
       }
-      h_abcd_nDV_njetHt          .push_back( h_abcd_ndv_njetHt          );
-      h_abcd_nDV_njetHt_vrsh     .push_back( h_abcd_ndv_njetHt_vrsh     );
-      h_abcd_raw_nDV_njetHt      .push_back( h_abcd_raw_ndv_njetHt      );
-      h_abcd_raw_nDV_njetHt_vrsh .push_back( h_abcd_raw_ndv_njetHt_vrsh );
+      h_abcd_nDV_NJetHt          .push_back( h_abcd_ndv_njetHt          );
+      h_abcd_nDV_NJetHt_vrsh     .push_back( h_abcd_ndv_njetHt_vrsh     );
+      h_abcd_raw_nDV_NJetHt      .push_back( h_abcd_raw_ndv_njetHt      );
+      h_abcd_raw_nDV_NJetHt_vrsh .push_back( h_abcd_raw_ndv_njetHt_vrsh );
     }
 
 
@@ -3596,7 +4921,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 
   tree->GetEntry( treeEntry );
 
-  if ( treeEntry % 1000 == 0 ) Info( "EJsHistogramManager::execute()", "tree entry: %u", treeEntry );
+  if ( treeEntry % 5000 == 0 ) Info( "EJsHistogramManager::execute()", "tree entry: %llu", treeEntry );
 
   // set weights
   if ( m_mc ) weight = m_mcEventWeight * m_filteff * m_xsec * 1e6 * lumi / m_sumw_init; // --> include pileup? k-factor? branching ratio?
@@ -3642,8 +4967,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	h_pv_ntrk [ireg] ->Fill( m_pv_ntrk, weight );
       }
       // leading N-jet Ht
-      h_njetHt      [ireg] ->Fill( m_njetHt,                    weight );
-      h_njetHt_vrsh [ireg] ->Fill( m_njetHt * m_VRShift_njetHt, weight );
+      h_NJetHt      [ireg] ->Fill( m_njetHt,                    weight );
+      h_NJetHt_vrsh [ireg] ->Fill( m_njetHt * m_VRshift_njetHt, weight );
     }
 
 
@@ -3651,12 +4976,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // ----------------- //
     // --- RECO JETS --- //
     // ----------------- //
-    // set vector of nJet
-    std::vector<int> n_jet ( m_nTypeJs, 0 );
-
-    // set vector of booleans to test for first dijet of given type
-    std::vector<int> firstDijet ( m_nTypeJs, 1 );
-
+    
+    // --> DIJETS
     // set vectors of dijet four-vectors
     TLorentzVector p4jj_max;
     TLorentzVector p4jj_min;
@@ -3670,6 +4991,18 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     std::vector<std::pair<int,int>> p4_dijet_max_ix ( m_nTypeJs, p4jj_max_ix );
     std::vector<std::pair<int,int>> p4_dijet_min_ix ( m_nTypeJs, p4jj_min_ix );
 
+    TLorentzVector p4jj_maxpt;
+    TLorentzVector p4jj_minpt;
+    p4jj_maxpt.SetPtEtaPhiM( 0, 0, 0, 0 );
+    p4jj_minpt.SetPtEtaPhiM( 0, 0, 0, 0 );
+    std::vector<TLorentzVector> p4_dijet_maxpt ( m_nTypeJs, p4jj_maxpt );
+    std::vector<TLorentzVector> p4_dijet_minpt ( m_nTypeJs, p4jj_minpt );
+    
+    std::pair<int, int> p4jj_maxpt_ix = std::make_pair( -1, -1 );
+    std::pair<int, int> p4jj_minpt_ix = std::make_pair( -1, -1 );
+    std::vector<std::pair<int,int>> p4_dijet_maxpt_ix ( m_nTypeJs, p4jj_maxpt_ix );
+    std::vector<std::pair<int,int>> p4_dijet_minpt_ix ( m_nTypeJs, p4jj_minpt_ix );
+
     std::vector<float> p4_dijet_sum_pt    ( m_nTypeJs, 0 );
     std::vector<float> p4_dijet_sum_eta   ( m_nTypeJs, 0 );
     std::vector<float> p4_dijet_sum_phi   ( m_nTypeJs, 0 );
@@ -3678,96 +5011,30 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     std::vector<float> p4_dijet_sum_dr    ( m_nTypeJs, 0 );
     std::vector<int>   p4_dijet_sum_count ( m_nTypeJs, 0 );
 
-    // set vectors of all-jet sums
-    TLorentzVector jp4sum;
-    jp4sum.SetPtEtaPhiM( 0, 0, 0, 0 );
-    std::vector<TLorentzVector> jet_p4_sum   ( m_nTypeJs, jp4sum );
-    std::vector<float>          jet_p4_sumPt ( m_nTypeJs, 0      );
-  
-    // loop over jets
+    std::vector<int> firstDijet ( m_nTypeJs, 1 ); // test for first dijet of given type
+
+    // double loop over jets to calculate di-jet systems
     for ( int i = 0; i != m_jet_n; ++i ) {
 
       // get jet four-momentum
       TLorentzVector jet_p4;
       jet_p4.SetPtEtaPhiM( m_jet_pt->at(i), m_jet_eta->at(i), m_jet_phi->at(i), m_jet_M->at(i) );
-
+      
       // set vector of jet types
       std::vector<int> jet;
-
-      // --> base jets (always true)
-      jet .push_back( true );
-      // --> leading jets
-      bool leadJ = false;
-      if ( m_jet_index ->at(i) < m_nJets ) leadJ = true;
-      jet .push_back( leadJ );
-
-      // truth-matching (to dark jets)
-      // --> avg 3/4 lead jets dark-matched; look for further discrimination to get avg closer to 2/4...
-      bool darkJ    = false;
-      bool nomatchJ = false;
-      if ( m_mc ) {
-	// require dark + truth jet match
-	if ( m_jet_isDark ->at(i) && m_jet_isTruth ->at(i) ) {
-	  int truthIx = m_jet_truthIndex ->at(i);
-	  // require matched dark + truth jet also matched to one another
-	  if ( m_jet_darkID ->at(i) == m_truthJet_darkID ->at(truthIx) )
-	    // require lead parton = down quark
-	    if ( m_jet_partonID ->at(i) == 1 )
-	      darkJ = true;
-	}
-	if ( !darkJ ) nomatchJ = true;
-	if ( m_histoInfoSwitch->m_jetTruth ) {
-	  std::vector<int> mJ = { darkJ, nomatchJ };
-	  std::vector<int> miJ;
-	  for ( size_t ij = 0; ij != jet.size(); ++ij )
-	    miJ .push_back( jet[ij] );
-	  for ( size_t ii = 0; ii != mJ.size(); ++ii )
-	    for ( size_t jj = 0; jj != miJ.size(); ++jj )
-	      jet .push_back( mJ[ii] && miJ[jj] );
-	}
-      }
+      getJetTypes( i, jet );
       
       // loop over jet types and fill histograms
       for ( size_t ij = 0; ij != jet.size(); ++ij ) {
-	
 	if ( !jet[ij] ) continue; // --> skip jet failing ijth jet type selection
-	++n_jet[ij];
 
-	// double loop over jets to calculate di-jet parameters
+	// double loop
 	if ( m_histoInfoSwitch->m_dijets ) {
 	  for ( int i2 = i+1; i2 != m_jet_n; ++i2 ) {
 	    
 	    // set vector of jet2 types
 	    std::vector<int> jet2;
-	
-	    // --> base jets (always true)
-	    jet2 .push_back( true );
-	    // --> leading jets
-	    bool leadJ2 = false;
-	    if ( m_jet_index ->at(i2) < m_nJets ) leadJ2 = true;
-	    jet2 .push_back( leadJ2 );
-	    // --> truth-matching (to dark jets)
-	    bool darkJ2    = false;
-	    bool nomatchJ2 = false;
-	    if ( m_mc ) {
-	      if ( m_jet_isDark ->at(i2) && m_jet_isTruth ->at(i2) ) {
-		int truthIx2 = m_jet_truthIndex ->at(i2);
-		  if ( m_jet_darkID ->at(i2) == m_truthJet_darkID ->at(truthIx2) )
-		    if ( m_jet_partonID ->at(i2) == 1 )
-		      darkJ2 = true;
-	      }
-	      if ( !darkJ2 ) nomatchJ2 = true;
-	      if ( m_histoInfoSwitch->m_jetTruth ) {
-		std::vector<int> mJ2 = { darkJ2, nomatchJ2 };
-		std::vector<int> miJ2;
-		for ( size_t ij2 = 0; ij2 != jet2.size(); ++ij2 )
-		  miJ2 .push_back( jet2[ij2] );
-		for ( size_t ii2 = 0; ii2 != mJ2.size(); ++ii2 )
-		  for ( size_t jj2 = 0; jj2 != miJ2.size(); ++jj2 )
-		    jet2 .push_back( mJ2[ii2] && miJ2[jj2] );
-	      }
-	    }
-	    
+	    getJetTypes( i2, jet2 );    
 	    if ( !jet2[ij] ) continue; // --> skip jet2 if not passing ijth jet type cut from above
 	    
 	    // get jet2 four-momentum
@@ -3791,13 +5058,22 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    }
 	    
 	    // get max/min dijet four-momentum
-	    if ( jj_p4.M() > p4_dijet_max[ij].M() ) {
-	      p4_dijet_max    [ij] = jj_p4;
-	      p4_dijet_max_ix [ij] = std::make_pair( i, i2 );
+	    if ( jj_p4.M()  > p4_dijet_max[ij].M()    ) {
+	      p4_dijet_max      [ij] = jj_p4;
+	      p4_dijet_max_ix   [ij] = std::make_pair( i, i2 );
 	    }
-	    if ( jj_p4.M() < p4_dijet_min[ij].M() || firstDijet[ij] ) { // save first pair as initial min
-	      p4_dijet_min    [ij] = jj_p4;
-	      p4_dijet_min_ix [ij] = std::make_pair( i, i2 );
+	    if ( jj_p4.M()  < p4_dijet_min[ij].M()    || firstDijet[ij] ) { // save first pair as initial min
+	      p4_dijet_min      [ij] = jj_p4;
+	      p4_dijet_min_ix   [ij] = std::make_pair( i, i2 );
+	    }
+	    // get max/min-pt dijet four-momentum
+	    if ( jj_p4.Pt() > p4_dijet_maxpt[ij].Pt() ) {
+	      p4_dijet_maxpt    [ij] = jj_p4;
+	      p4_dijet_maxpt_ix [ij] = std::make_pair( i, i2 );
+	    }
+	    if ( jj_p4.Pt() < p4_dijet_minpt[ij].Pt() || firstDijet[ij] ) { // save first pair as initial min
+	      p4_dijet_minpt    [ij] = jj_p4;
+	      p4_dijet_minpt_ix [ij] = std::make_pair( i, i2 );
 	    }
 	    firstDijet[ij] = false;
 	    
@@ -3812,6 +5088,99 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    
 	  } // end loop over dijets
 	} // end if m_dijets info switch
+      } // end loop over jet types
+    } // end double loop over jets
+
+
+    // ---> (N)JETS
+    // set vectors of n-jet sum-p4
+    std::vector<int> n_jet ( m_nTypeJs, 0 );
+    TLorentzVector jp4sum;
+    jp4sum.SetPtEtaPhiM( 0, 0, 0, 0 );
+    std::vector<TLorentzVector> jet_p4_sum   ( m_nTypeJs, jp4sum );
+    std::vector<float>          jet_p4_sumPt ( m_nTypeJs, 0      );
+    // --> tracks
+    TLorentzVector jp4sum_trk;
+    jp4sum_trk.SetPtEtaPhiM( 0, 0, 0, 0 );
+    std::vector<std::vector<TLorentzVector>> jetTracks_p4_sum
+      ( m_nTypeJs, std::vector<TLorentzVector> ( m_nTypeTrks, jp4sum_trk ) );
+    std::vector<std::vector<float>> jetTracks_p4_sumPt   ( m_nTypeJs, std::vector<float> ( m_nTypeTrks, 0 ) );
+    std::vector<std::vector<int>>   jetTracks_n          ( m_nTypeJs, std::vector<int>   ( m_nTypeTrks, 0 ) );
+    TLorentzVector jjp4max_trk;
+    TLorentzVector jjp4min_trk;
+    jjp4max_trk.SetPtEtaPhiM( 0, 0, 0, 0 );
+    jjp4min_trk.SetPtEtaPhiM( 0, 0, 0, 0 );
+    std::vector<std::vector<TLorentzVector>> dijetTracks_p4_max
+      ( m_nTypeJs, std::vector<TLorentzVector> ( m_nTypeTrks, jjp4max_trk ) );
+    std::vector<std::vector<TLorentzVector>> dijetTracks_p4_min
+      ( m_nTypeJs, std::vector<TLorentzVector> ( m_nTypeTrks, jjp4min_trk ) );
+    std::vector<std::vector<int>> dijetTracks_p4_max_sumPt ( m_nTypeJs, std::vector<int> ( m_nTypeTrks, 0 ) );
+    std::vector<std::vector<int>> dijetTracks_p4_min_sumPt ( m_nTypeJs, std::vector<int> ( m_nTypeTrks, 0 ) );
+    std::vector<std::vector<int>> dijetTracks_p4_max_n     ( m_nTypeJs, std::vector<int> ( m_nTypeTrks, 0 ) );
+    std::vector<std::vector<int>> dijetTracks_p4_min_n     ( m_nTypeJs, std::vector<int> ( m_nTypeTrks, 0 ) );
+    TLorentzVector jjp4maxpt_trk;
+    TLorentzVector jjp4minpt_trk;
+    jjp4maxpt_trk.SetPtEtaPhiM( 0, 0, 0, 0 );
+    jjp4minpt_trk.SetPtEtaPhiM( 0, 0, 0, 0 );
+    std::vector<std::vector<TLorentzVector>> dijetTracks_p4_maxpt
+      ( m_nTypeJs, std::vector<TLorentzVector> ( m_nTypeTrks, jjp4maxpt_trk ) );
+    std::vector<std::vector<TLorentzVector>> dijetTracks_p4_minpt
+      ( m_nTypeJs, std::vector<TLorentzVector> ( m_nTypeTrks, jjp4minpt_trk ) );
+    std::vector<std::vector<int>> dijetTracks_p4_maxpt_sumPt ( m_nTypeJs, std::vector<int> ( m_nTypeTrks, 0 ) );
+    std::vector<std::vector<int>> dijetTracks_p4_minpt_sumPt ( m_nTypeJs, std::vector<int> ( m_nTypeTrks, 0 ) );
+    std::vector<std::vector<int>> dijetTracks_p4_maxpt_n     ( m_nTypeJs, std::vector<int> ( m_nTypeTrks, 0 ) );
+    std::vector<std::vector<int>> dijetTracks_p4_minpt_n     ( m_nTypeJs, std::vector<int> ( m_nTypeTrks, 0 ) );
+    // --> secondary vertices
+    TLorentzVector jp4sum_sv;
+    jp4sum_sv.SetPtEtaPhiM( 0, 0, 0, 0 );
+    std::vector<std::vector<TLorentzVector>> jetSecVerts_p4_sum
+      ( m_nTypeJs, std::vector<TLorentzVector> ( m_nTypeJDVs, jp4sum_sv  ) );
+    std::vector<std::vector<float>> jetSecVerts_p4_sumPt ( m_nTypeJs, std::vector<float> ( m_nTypeJDVs, 0 ) );
+    std::vector<std::vector<int>>   jetSecVerts_n        ( m_nTypeJs, std::vector<int>   ( m_nTypeJDVs, 0 ) );
+    TLorentzVector jjp4max_sv;
+    TLorentzVector jjp4min_sv;
+    jjp4max_sv.SetPtEtaPhiM( 0, 0, 0, 0 );
+    jjp4min_sv.SetPtEtaPhiM( 0, 0, 0, 0 );
+    std::vector<std::vector<TLorentzVector>> dijetSecVerts_p4_max
+      ( m_nTypeJs, std::vector<TLorentzVector> ( m_nTypeJDVs, jjp4max_sv ) );
+    std::vector<std::vector<TLorentzVector>> dijetSecVerts_p4_min
+      ( m_nTypeJs, std::vector<TLorentzVector> ( m_nTypeJDVs, jjp4min_sv ) );
+    std::vector<std::vector<int>> dijetSecVerts_p4_max_sumPt ( m_nTypeJs, std::vector<int> ( m_nTypeJDVs, 0 ) );
+    std::vector<std::vector<int>> dijetSecVerts_p4_min_sumPt ( m_nTypeJs, std::vector<int> ( m_nTypeJDVs, 0 ) );
+    std::vector<std::vector<int>> dijetSecVerts_p4_max_n     ( m_nTypeJs, std::vector<int> ( m_nTypeJDVs, 0 ) );
+    std::vector<std::vector<int>> dijetSecVerts_p4_min_n     ( m_nTypeJs, std::vector<int> ( m_nTypeJDVs, 0 ) );
+    TLorentzVector jjp4maxpt_sv;
+    TLorentzVector jjp4minpt_sv;
+    jjp4maxpt_sv.SetPtEtaPhiM( 0, 0, 0, 0 );
+    jjp4minpt_sv.SetPtEtaPhiM( 0, 0, 0, 0 );
+    std::vector<std::vector<TLorentzVector>> dijetSecVerts_p4_maxpt
+      ( m_nTypeJs, std::vector<TLorentzVector> ( m_nTypeJDVs, jjp4maxpt_sv ) );
+    std::vector<std::vector<TLorentzVector>> dijetSecVerts_p4_minpt
+      ( m_nTypeJs, std::vector<TLorentzVector> ( m_nTypeJDVs, jjp4minpt_sv ) );
+    std::vector<std::vector<int>> dijetSecVerts_p4_maxpt_sumPt ( m_nTypeJs, std::vector<int> ( m_nTypeJDVs, 0 ) );
+    std::vector<std::vector<int>> dijetSecVerts_p4_minpt_sumPt ( m_nTypeJs, std::vector<int> ( m_nTypeJDVs, 0 ) );
+    std::vector<std::vector<int>> dijetSecVerts_p4_maxpt_n     ( m_nTypeJs, std::vector<int> ( m_nTypeJDVs, 0 ) );
+    std::vector<std::vector<int>> dijetSecVerts_p4_minpt_n     ( m_nTypeJs, std::vector<int> ( m_nTypeJDVs, 0 ) );
+    
+    // loop over jets
+    for ( int i = 0; i != m_jet_n; ++i ) {
+
+      // get jet four-momentum
+      TLorentzVector jet_p4;
+      jet_p4.SetPtEtaPhiM( m_jet_pt->at(i), m_jet_eta->at(i), m_jet_phi->at(i), m_jet_M->at(i) );
+      
+      // set vector of jet types
+      std::vector<int> jet;
+      getJetTypes( i, jet );
+      
+      // loop over jet types and fill histograms
+      for ( size_t ij = 0; ij != jet.size(); ++ij ) {
+	if ( !jet[ij] ) continue; // --> skip jet failing ijth jet type selection
+	++n_jet[ij];
+
+	// keep track of lead jet types
+	int inj  = ij / m_LJix;                // index of lead jet type in jet type vector
+	int ilbj = n_jet[ij % m_nTypeBJs] - 1; // index of lead jet base jet container
 
 	// sum p4 for all jets in event
 	jet_p4_sum   [ij] += jet_p4;
@@ -3835,6 +5204,23 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  h_jet_Et   [ireg][ij] ->Fill( jet_p4.Et(), weight );
 	  h_jet_Et_s [ireg][ij] ->Fill( jet_p4.Et(), weight );
 	}
+
+	// leading jets
+	if ( m_numLeadJets && ilbj < m_numLeadJets ) {
+	  h_jetN_pt        [ireg][inj][ilbj] ->Fill( m_jet_pt ->at(i), weight );
+	  h_jetN_pt_s      [ireg][inj][ilbj] ->Fill( m_jet_pt        ->at(i), weight );
+	  h_jetN_eta       [ireg][inj][ilbj] ->Fill( m_jet_eta       ->at(i), weight );
+	  h_jetN_phi       [ireg][inj][ilbj] ->Fill( m_jet_phi       ->at(i), weight );
+	  h_jetN_E         [ireg][inj][ilbj] ->Fill( m_jet_E         ->at(i), weight );
+	  h_jetN_M         [ireg][inj][ilbj] ->Fill( m_jet_M         ->at(i), weight );
+	  h_jetN_rapid     [ireg][inj][ilbj] ->Fill( m_jet_rapid     ->at(i), weight );
+	  h_jetN_nConstits [ireg][inj][ilbj] ->Fill( m_jet_nConstits ->at(i), weight );
+	  if ( m_histoInfoSwitch->m_kinematics || m_histoInfoSwitch->m_kinematics_jet ) {
+	    h_jetN_Et      [ireg][inj][ilbj] ->Fill( jet_p4.Et(),             weight );
+	    h_jetN_Et_s    [ireg][inj][ilbj] ->Fill( jet_p4.Et(),             weight );
+	  }
+	}
+	
 	// jet calo / cluster (quality) info
 	if ( m_histoInfoSwitch->m_jetCalo ) {
 	  // timing = energy-squared weighted average cell time (signal peaking time wrt BC)
@@ -3900,13 +5286,10 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 
 	// ghost tracks
 	
-	// matched tracks --> protect against filling histo with zero when really just doesn't exist...
+	// matched tracks
 	std::vector<int>    n_jettrk        ( m_nTypeTrks, 0                   );
 	std::vector<double> jettrk_minDR    ( m_nTypeTrks, AlgConsts::maxValue );
 	std::vector<double> jettrk_maxDR    ( m_nTypeTrks, 0                   );
-	std::vector<double> jettrk_minpt    ( m_nTypeTrks, AlgConsts::maxValue );
-	std::vector<double> jettrk_maxpt    ( m_nTypeTrks, 0                   );
-	std::vector<double> jettrk_sumpt    ( m_nTypeTrks, 0                   );
 	std::vector<double> jettrk_mind0    ( m_nTypeTrks, AlgConsts::maxValue );
 	std::vector<double> jettrk_maxd0    ( m_nTypeTrks, 0                   );
 	std::vector<double> jettrk_sumd0    ( m_nTypeTrks, 0                   );
@@ -3919,78 +5302,93 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	std::vector<double> jettrk_minerrz0 ( m_nTypeTrks, AlgConsts::maxValue );
 	std::vector<double> jettrk_maxerrz0 ( m_nTypeTrks, 0                   );
 	std::vector<double> jettrk_sumerrz0 ( m_nTypeTrks, 0                   );
+	TLorentzVector jtp4sum;
+	jtp4sum.SetPtEtaPhiM( 0, 0, 0, 0 );
+	std::vector<TLorentzVector> jettrk_p4_sum   ( m_nTypeTrks, jtp4sum );
+	std::vector<double>         jettrk_p4_sumPt ( m_nTypeTrks, 0       );
 	// loop over matched tracks
 	for ( int jtrk = 0; jtrk != m_jet_trk_n ->at(i); ++jtrk ) {
-	  int jetTrkIx = m_jet_trk_index ->at(i)[jtrk];
+	  int    jetTrkIx = m_jet_trk_index ->at(i)[jtrk];
+	  double dR       = m_jet_trk_dR    ->at(i)[jtrk];
+	  double pt       = m_trk_pt        ->at(jetTrkIx);
+	  double eta      = m_trk_eta       ->at(jetTrkIx);
+	  double phi      = m_trk_phi       ->at(jetTrkIx);
+	  double M        = m_trk_M         ->at(jetTrkIx);
+	  double d0       = fabs( m_trk_d0  ->at(jetTrkIx) );
+	  double z0       = fabs( m_trk_z0  ->at(jetTrkIx) );
+	  double errd0    = m_trk_errd0     ->at(jetTrkIx);
+	  double errz0    = m_trk_errz0     ->at(jetTrkIx);
+	  int    nSCT     = m_trk_nSCT      ->at(jetTrkIx);
+	  int    nPixel   = m_trk_nPixel    ->at(jetTrkIx);
+	  int    nTRT     = m_trk_nTRT      ->at(jetTrkIx);
+
+	  // get matched track four-momentum
+	  TLorentzVector jettrk_p4;
+	  jettrk_p4.SetPtEtaPhiM( pt, eta, phi, M );
+	  
 	  // set vector of matched track types
 	  std::vector<int> jettrk;
-	  getTrkTypes( jetTrkIx, jettrk );
+	  getTrkTypes( jetTrkIx, jettrk, base_dv );
 	  // loop over matched track types
-	  for ( size_t jt = 0; jt != jettrk.size(); ++jt ) {
+	  for ( unsigned jt = 0; jt != m_nTypeTrks; ++jt ) {
 	    if ( !jettrk[jt] ) continue;
 	    ++n_jettrk[jt];
+	    
 	    if ( doHists && m_histoInfoSwitch->m_jetTrks ) {
-	      double dR = m_jet_trk_dR ->at(i)[jtrk];
+	      // dR b/w jet and track
 	      h_jet_trk_dR [ireg][ij][jt] ->Fill( dR, weight );
 	      if ( dR < jettrk_minDR[jt] ) jettrk_minDR[jt] = dR;
 	      if ( dR > jettrk_maxDR[jt] ) jettrk_maxDR[jt] = dR;
-	      
-	      double pt = m_trk_pt ->at(jetTrkIx);
+	      // pt
 	      h_jet_trk_pt     [ireg][ij][jt] ->Fill( pt,       weight );
 	      h_jet_trk_sqrtpt [ireg][ij][jt] ->Fill( sqrt(pt), weight );
-	      if ( pt < jettrk_minpt[jt] ) jettrk_minpt[jt] = pt;
-	      if ( pt > jettrk_maxpt[jt] ) jettrk_maxpt[jt] = pt;
-	      jettrk_sumpt[jt] += pt;
-	      
-	      double d0 = fabs( m_trk_d0 ->at(jetTrkIx) );
+	      // d0
 	      h_jet_trk_d0     [ireg][ij][jt] ->Fill( d0,       weight );
 	      h_jet_trk_sqrtd0 [ireg][ij][jt] ->Fill( sqrt(d0), weight );
 	      if ( d0 < jettrk_mind0[jt] ) jettrk_mind0[jt] = d0;
 	      if ( d0 > jettrk_maxd0[jt] ) jettrk_maxd0[jt] = d0;
 	      jettrk_sumd0[jt] += d0;
-	      
-	      double z0 = fabs( m_trk_z0 ->at(jetTrkIx) );
+	      // z0
 	      h_jet_trk_z0     [ireg][ij][jt] ->Fill( z0,       weight );
 	      h_jet_trk_sqrtz0 [ireg][ij][jt] ->Fill( sqrt(z0), weight );
 	      if ( z0 < jettrk_minz0[jt] ) jettrk_minz0[jt] = z0;
 	      if ( z0 > jettrk_maxz0[jt] ) jettrk_maxz0[jt] = z0;
 	      jettrk_sumz0[jt] += z0;
-
-	      double errd0 = m_trk_errd0 ->at(jetTrkIx);
+	      // d0 uncertainty
 	      h_jet_trk_errd0     [ireg][ij][jt] ->Fill( sqrt(errd0),       weight );
 	      h_jet_trk_sqrterrd0 [ireg][ij][jt] ->Fill( sqrt(sqrt(errd0)), weight );
 	      if ( errd0 < jettrk_minerrd0[jt] ) jettrk_minerrd0[jt] = errd0;
 	      if ( errd0 > jettrk_maxerrd0[jt] ) jettrk_maxerrd0[jt] = errd0;
 	      jettrk_sumerrd0[jt] += errd0;
-
-	      double errz0 = m_trk_errz0 ->at(jetTrkIx);
+	      // z0 uncertainty
 	      h_jet_trk_errz0     [ireg][ij][jt] ->Fill( sqrt(errz0),       weight );
 	      h_jet_trk_sqrterrz0 [ireg][ij][jt] ->Fill( sqrt(sqrt(errz0)), weight );
 	      if ( errz0 < jettrk_minerrz0[jt] ) jettrk_minerrz0[jt] = errz0;
 	      if ( errz0 > jettrk_maxerrz0[jt] ) jettrk_maxerrz0[jt] = errz0;
 	      jettrk_sumerrz0[jt] += errz0;
-
-	      int nSCT   = m_trk_nSCT   ->at(jetTrkIx);
-	      int nPixel = m_trk_nPixel ->at(jetTrkIx);
-	      int nTRT   = m_trk_nTRT   ->at(jetTrkIx);
+	      // hits
 	      h_jet_trk_nSCT   [ireg][ij][jt] ->Fill( nSCT,          weight );
 	      h_jet_trk_nPixel [ireg][ij][jt] ->Fill( nPixel,        weight );
 	      h_jet_trk_nSi    [ireg][ij][jt] ->Fill( nSCT + nPixel, weight );
 	      h_jet_trk_nTRT   [ireg][ij][jt] ->Fill( nTRT,          weight );
+
+	      // sum p4 for all matched tracks in jet
+	      jettrk_p4_sum   [jt] += jettrk_p4;
+	      jettrk_p4_sumPt [jt] += pt;
 	    }
 	  } // end loop over matched track types
 	} // end loop over matched tracks
 	
-	// fill matched track count, min/max/sum/avg histograms
+	// fill matched track count, min/max/sum, n-track-p4 histograms
 	if ( doHists )
-	  for ( size_t jt = 0; jt != n_jettrk.size(); ++jt ) {
-	    h_jet_ntrk          [ireg][ij][jt] ->Fill( n_jettrk    [jt], weight );
+	  for ( unsigned jt = 0; jt != m_nTypeTrks; ++jt ) {
+	    h_jet_ntrk    [ireg][ij][jt]    ->Fill( n_jettrk [jt], weight );
+	    if ( m_numLeadJets && ilbj < m_numLeadJets )
+	      h_jetN_ntrk [ireg][inj][ilbj][jt] ->Fill( n_jettrk [jt], weight );
+	    
 	    if ( m_histoInfoSwitch->m_jetTrks && n_jettrk[jt] ) {
 	      h_jet_trk_minDR        [ireg][ij][jt] ->Fill( jettrk_minDR[jt],                weight );
 	      h_jet_trk_maxDR        [ireg][ij][jt] ->Fill( jettrk_maxDR[jt],                weight );
-	      h_jet_trk_minpt        [ireg][ij][jt] ->Fill( jettrk_minpt[jt],                weight );
-	      h_jet_trk_maxpt        [ireg][ij][jt] ->Fill( jettrk_maxpt[jt],                weight );
-	      h_jet_trk_sumpt        [ireg][ij][jt] ->Fill( jettrk_sumpt[jt],                weight );
 	      h_jet_trk_mind0        [ireg][ij][jt] ->Fill( jettrk_mind0[jt],                weight );
 	      h_jet_trk_maxd0        [ireg][ij][jt] ->Fill( jettrk_maxd0[jt],                weight );
 	      h_jet_trk_sumd0        [ireg][ij][jt] ->Fill( jettrk_sumd0[jt],                weight );
@@ -4003,68 +5401,315 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	      h_jet_trk_minErrz0     [ireg][ij][jt] ->Fill( sqrt(jettrk_minerrz0[jt]),       weight );
 	      h_jet_trk_maxErrz0     [ireg][ij][jt] ->Fill( sqrt(jettrk_maxerrz0[jt]),       weight );
 	      h_jet_trk_sumErrz0     [ireg][ij][jt] ->Fill( sqrt(jettrk_sumerrz0[jt]),       weight );
-	      h_jet_trk_minsqrtpt    [ireg][ij][jt] ->Fill( sqrt(jettrk_minpt[jt]),          weight );
-	      h_jet_trk_maxsqrtpt    [ireg][ij][jt] ->Fill( sqrt(jettrk_maxpt[jt]),          weight );
-	      h_jet_trk_sumsqrtpt    [ireg][ij][jt] ->Fill( sqrt(jettrk_sumpt[jt]),          weight );
-	      h_jet_trk_minsqrtd0    [ireg][ij][jt] ->Fill( sqrt(jettrk_mind0[jt]),          weight );
-	      h_jet_trk_maxsqrtd0    [ireg][ij][jt] ->Fill( sqrt(jettrk_maxd0[jt]),          weight );
-	      h_jet_trk_sumsqrtd0    [ireg][ij][jt] ->Fill( sqrt(jettrk_sumd0[jt]),          weight );
-	      h_jet_trk_minsqrtz0    [ireg][ij][jt] ->Fill( sqrt(jettrk_minz0[jt]),          weight );
-	      h_jet_trk_maxsqrtz0    [ireg][ij][jt] ->Fill( sqrt(jettrk_maxz0[jt]),          weight );
-	      h_jet_trk_sumsqrtz0    [ireg][ij][jt] ->Fill( sqrt(jettrk_sumz0[jt]),          weight );
-	      h_jet_trk_minSqrterrd0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_minerrd0[jt])), weight );
-	      h_jet_trk_maxSqrterrd0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_maxerrd0[jt])), weight );
-	      h_jet_trk_sumSqrterrd0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_sumerrd0[jt])), weight );
-	      h_jet_trk_minSqrterrz0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_minerrz0[jt])), weight );
-	      h_jet_trk_maxSqrterrz0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_maxerrz0[jt])), weight );
-	      h_jet_trk_sumSqrterrz0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_sumerrz0[jt])), weight );
+	      h_jet_trk_sqrtmind0    [ireg][ij][jt] ->Fill( sqrt(jettrk_mind0[jt]),          weight );
+	      h_jet_trk_sqrtmaxd0    [ireg][ij][jt] ->Fill( sqrt(jettrk_maxd0[jt]),          weight );
+	      h_jet_trk_sqrtsumd0    [ireg][ij][jt] ->Fill( sqrt(jettrk_sumd0[jt]),          weight );
+	      h_jet_trk_sqrtminz0    [ireg][ij][jt] ->Fill( sqrt(jettrk_minz0[jt]),          weight );
+	      h_jet_trk_sqrtmaxz0    [ireg][ij][jt] ->Fill( sqrt(jettrk_maxz0[jt]),          weight );
+	      h_jet_trk_sqrtsumz0    [ireg][ij][jt] ->Fill( sqrt(jettrk_sumz0[jt]),          weight );
+	      h_jet_trk_sqrtminErrd0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_minerrd0[jt])), weight );
+	      h_jet_trk_sqrtmaxErrd0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_maxerrd0[jt])), weight );
+	      h_jet_trk_sqrtsumErrd0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_sumerrd0[jt])), weight );
+	      h_jet_trk_sqrtminErrz0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_minerrz0[jt])), weight );
+	      h_jet_trk_sqrtmaxErrz0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_maxerrz0[jt])), weight );
+	      h_jet_trk_sqrtsumErrz0 [ireg][ij][jt] ->Fill( sqrt(sqrt(jettrk_sumerrz0[jt])), weight );
+	      h_jet_ntrk_pt          [ireg][ij][jt] ->Fill( jettrk_p4_sum  [jt].Pt(),        weight );
+	      h_jet_ntrk_eta         [ireg][ij][jt] ->Fill( jettrk_p4_sum  [jt].Eta(),       weight );
+	      h_jet_ntrk_phi         [ireg][ij][jt] ->Fill( jettrk_p4_sum  [jt].Phi(),       weight );
+	      h_jet_ntrk_m           [ireg][ij][jt] ->Fill( jettrk_p4_sum  [jt].M(),         weight ); 
+	      h_jet_ntrk_sumPt       [ireg][ij][jt] ->Fill( jettrk_p4_sumPt[jt],             weight );
+	      h_jet_ntrk_sqrtsumPt   [ireg][ij][jt] ->Fill( sqrt(jettrk_p4_sumPt[jt]),       weight );
+
+	      if ( m_numLeadJets && ilbj < m_numLeadJets ) {
+	      	h_jetN_trk_minDR        [ireg][inj][ilbj][jt] ->Fill( jettrk_minDR[jt],                weight );
+	      	h_jetN_trk_maxDR        [ireg][inj][ilbj][jt] ->Fill( jettrk_maxDR[jt],                weight );
+	      	h_jetN_trk_mind0        [ireg][inj][ilbj][jt] ->Fill( jettrk_mind0[jt],                weight );
+	      	h_jetN_trk_maxd0        [ireg][inj][ilbj][jt] ->Fill( jettrk_maxd0[jt],                weight );
+	      	h_jetN_trk_sumd0        [ireg][inj][ilbj][jt] ->Fill( jettrk_sumd0[jt],                weight );
+	      	h_jetN_trk_minz0        [ireg][inj][ilbj][jt] ->Fill( jettrk_minz0[jt],                weight );
+	      	h_jetN_trk_maxz0        [ireg][inj][ilbj][jt] ->Fill( jettrk_maxz0[jt],                weight );
+	      	h_jetN_trk_sumz0        [ireg][inj][ilbj][jt] ->Fill( jettrk_sumz0[jt],                weight );
+	      	h_jetN_trk_minErrd0     [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_minerrd0[jt]),       weight );
+	      	h_jetN_trk_maxErrd0     [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_maxerrd0[jt]),       weight );
+	      	h_jetN_trk_sumErrd0     [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_sumerrd0[jt]),       weight );
+	      	h_jetN_trk_minErrz0     [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_minerrz0[jt]),       weight );
+	      	h_jetN_trk_maxErrz0     [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_maxerrz0[jt]),       weight );
+	      	h_jetN_trk_sumErrz0     [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_sumerrz0[jt]),       weight );
+	      	h_jetN_trk_sqrtmind0    [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_mind0[jt]),          weight );
+	      	h_jetN_trk_sqrtmaxd0    [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_maxd0[jt]),          weight );
+	      	h_jetN_trk_sqrtsumd0    [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_sumd0[jt]),          weight );
+	      	h_jetN_trk_sqrtminz0    [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_minz0[jt]),          weight );
+	      	h_jetN_trk_sqrtmaxz0    [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_maxz0[jt]),          weight );
+	      	h_jetN_trk_sqrtsumz0    [ireg][inj][ilbj][jt] ->Fill( sqrt(jettrk_sumz0[jt]),          weight );
+	      	h_jetN_trk_sqrtminErrd0 [ireg][inj][ilbj][jt] ->Fill( sqrt(sqrt(jettrk_minerrd0[jt])), weight );
+	      	h_jetN_trk_sqrtmaxErrd0 [ireg][inj][ilbj][jt] ->Fill( sqrt(sqrt(jettrk_maxerrd0[jt])), weight );
+	      	h_jetN_trk_sqrtsumErrd0 [ireg][inj][ilbj][jt] ->Fill( sqrt(sqrt(jettrk_sumerrd0[jt])), weight );
+	      	h_jetN_trk_sqrtminErrz0 [ireg][inj][ilbj][jt] ->Fill( sqrt(sqrt(jettrk_minerrz0[jt])), weight );
+	      	h_jetN_trk_sqrtmaxErrz0 [ireg][inj][ilbj][jt] ->Fill( sqrt(sqrt(jettrk_maxerrz0[jt])), weight );
+	      	h_jetN_trk_sqrtsumErrz0 [ireg][inj][ilbj][jt] ->Fill( sqrt(sqrt(jettrk_sumerrz0[jt])), weight );
+	      	h_jetN_ntrk_pt          [ireg][inj][ilbj][jt] ->Fill ( jettrk_p4_sum  [jt].Pt(),       weight );
+	      	h_jetN_ntrk_eta         [ireg][inj][ilbj][jt] ->Fill ( jettrk_p4_sum  [jt].Eta(),      weight );
+	      	h_jetN_ntrk_phi         [ireg][inj][ilbj][jt] ->Fill ( jettrk_p4_sum  [jt].Phi(),      weight );
+	      	h_jetN_ntrk_m           [ireg][inj][ilbj][jt] ->Fill ( jettrk_p4_sum  [jt].M(),        weight );
+	      	h_jetN_ntrk_sumPt       [ireg][inj][ilbj][jt] ->Fill ( jettrk_p4_sumPt[jt],            weight );
+	      	h_jetN_ntrk_sqrtsumPt   [ireg][inj][ilbj][jt] ->Fill ( sqrt(jettrk_p4_sumPt[jt]),      weight );
+	      }
+
+	      // sum p4 for all matched tracks in all jets in event
+	      jetTracks_n        [ij][jt] += n_jettrk        [jt];
+	      jetTracks_p4_sum   [ij][jt] += jettrk_p4_sum   [jt];
+	      jetTracks_p4_sumPt [ij][jt] += jettrk_p4_sumPt [jt];
+	      // sum p4 for all matched tracks in min/max dijets
+	      if ( m_histoInfoSwitch->m_dijets ) {
+	      	int maxix1 = p4_dijet_max_ix[ij].first; int maxix2 = p4_dijet_max_ix[ij].second;
+		int minix1 = p4_dijet_min_ix[ij].first; int minix2 = p4_dijet_min_ix[ij].second;
+	       	if ( m_jet_index ->at(i) == maxix1   || m_jet_index ->at(i) == maxix2   ) {
+		  dijetTracks_p4_max         [ij][jt] += jettrk_p4_sum   [jt];
+		  dijetTracks_p4_max_sumPt   [ij][jt] += jettrk_p4_sumPt [jt];
+		  dijetTracks_p4_max_n       [ij][jt] += n_jettrk        [jt];
+	      	}
+		if ( m_jet_index ->at(i) == minix1   || m_jet_index ->at(i) == minix2   ) {
+		  dijetTracks_p4_min         [ij][jt] += jettrk_p4_sum   [jt];
+		  dijetTracks_p4_min_sumPt   [ij][jt] += jettrk_p4_sumPt [jt];
+		  dijetTracks_p4_min_n       [ij][jt] += n_jettrk        [jt];
+		}
+		int maxptix1 = p4_dijet_maxpt_ix[ij].first; int maxptix2 = p4_dijet_maxpt_ix[ij].second;
+		int minptix1 = p4_dijet_minpt_ix[ij].first; int minptix2 = p4_dijet_minpt_ix[ij].second;
+		if ( m_jet_index ->at(i) == maxptix1 || m_jet_index ->at(i) == maxptix2 ) {
+		  dijetTracks_p4_maxpt       [ij][jt] += jettrk_p4_sum   [jt];
+		  dijetTracks_p4_maxpt_sumPt [ij][jt] += jettrk_p4_sumPt [jt];
+		  dijetTracks_p4_maxpt_n     [ij][jt] += n_jettrk        [jt];
+		}
+		if ( m_jet_index ->at(i) == minptix1 || m_jet_index ->at(i) == minptix2 ) {
+		  dijetTracks_p4_minpt       [ij][jt] += jettrk_p4_sum   [jt];
+		  dijetTracks_p4_minpt_sumPt [ij][jt] += jettrk_p4_sumPt [jt];
+		  dijetTracks_p4_minpt_n     [ij][jt] += n_jettrk        [jt];
+		}
+	      }
 	    }
 	  }
 
-	// // matched secondary vertices
-	// int nJetSV = m_jet_secVtx_n ->at(i);
-	// h_jet_nsv [ireg][ij] ->Fill( nJetSV, weight );
-	// // loop over matched svs
-	// if ( m_histoInfoSwitch->m_jetVerts ) {
-	//   for ( int jsv = 0; jsv != nJetSV; ++jsv ) {
-	//     double dR = m_jet_secVtx_dR ->at(i)[jsv];
-	//     h_jet_sv_dR [ireg][ij] ->Fill( dR, weight );
-	//   }
-	// }
 	
-      } // end loop over jet types
+	// matched secondary vertices
+	std::vector<int>    n_jetsv       ( m_nTypeJDVs, 0                   );
+	std::vector<double> jetsv_minDR   ( m_nTypeJDVs, AlgConsts::maxValue );
+	std::vector<double> jetsv_maxDR   ( m_nTypeJDVs, 0                   );
+	std::vector<double> jetsv_minz    ( m_nTypeJDVs, AlgConsts::maxValue );
+	std::vector<double> jetsv_maxz    ( m_nTypeJDVs, 0                   );
+	std::vector<double> jetsv_sumz    ( m_nTypeJDVs, 0                   );
+	std::vector<double> jetsv_minr    ( m_nTypeJDVs, AlgConsts::maxValue );
+	std::vector<double> jetsv_maxr    ( m_nTypeJDVs, 0                   );
+	std::vector<double> jetsv_sumr    ( m_nTypeJDVs, 0                   );
+	TLorentzVector jvp4sum;
+	jvp4sum.SetPtEtaPhiM( 0, 0, 0, 0 );
+	std::vector<TLorentzVector> jetsv_p4_sum   ( m_nTypeJDVs, jvp4sum );
+	std::vector<double>         jetsv_p4_sumPt ( m_nTypeJDVs, 0       );
+	std::vector<double>         jetsv_p4_sumHt ( m_nTypeJDVs, 0       );
+	std::vector<double>         jetsv_p4_sumH  ( m_nTypeJDVs, 0       );
+	std::vector<double>         jetsv_p4_sumM  ( m_nTypeJDVs, 0       );
+	std::vector<double>         jetsv_p4_ntrk  ( m_nTypeJDVs, 0       );
+	std::vector<double>         jetsv_p4_njtrk ( m_nTypeJDVs, 0       );
+	// loop over matched secondary vertices
+	for ( int jsv = 0; jsv != m_jet_secVtx_n ->at(i); ++jsv ) {
+	  int   jetSvIx = m_jet_secVtx_index ->at(i)[jsv];
+	  float pt      = 0;
+	  float ht      = 0; 
+	  float h       = 0;
+	  float eta     = 0;
+	  float phi     = 0;
+	  float mass    = 0;
+	  int   ntrk    = 0;
+	  if      ( base_dv.type == EJsHelper::BARE     ) {
+	    pt    = m_secVtx_pt_bare    ->at(jetSvIx);
+	    ht    = m_secVtx_Ht_bare    ->at(jetSvIx);
+	    h     = m_secVtx_H_bare     ->at(jetSvIx);
+	    eta   = m_secVtx_eta_bare   ->at(jetSvIx);
+	    phi   = m_secVtx_phi_bare   ->at(jetSvIx);
+	    mass  = m_secVtx_mass_bare  ->at(jetSvIx);
+	    ntrk  = m_secVtx_ntrk       ->at(jetSvIx);
+	  }
+	  else if ( base_dv.type == EJsHelper::CLEAN    ) {
+	    pt    = m_secVtx_pt_clean   ->at(jetSvIx);
+	    ht    = m_secVtx_Ht_clean   ->at(jetSvIx);
+	    h     = m_secVtx_H_clean    ->at(jetSvIx);
+	    eta   = m_secVtx_eta_clean  ->at(jetSvIx);
+	    phi   = m_secVtx_phi_clean  ->at(jetSvIx);
+	    mass  = m_secVtx_mass_clean ->at(jetSvIx);
+	    ntrk  = m_secVtx_ntrk_clean ->at(jetSvIx);
+	  }
+	  else if ( base_dv.type == EJsHelper::FILTERED ) {
+	    pt    = m_secVtx_pt         ->at(jetSvIx);
+	    ht    = m_secVtx_Ht         ->at(jetSvIx);
+	    h     = m_secVtx_H          ->at(jetSvIx);
+	    eta   = m_secVtx_eta        ->at(jetSvIx);
+	    phi   = m_secVtx_phi        ->at(jetSvIx);
+	    mass  = m_secVtx_mass       ->at(jetSvIx);
+	    ntrk  = m_secVtx_ntrk_filt  ->at(jetSvIx);
+	  }
+	  float z       = fabs( m_secVtx_z   ->at(jetSvIx) );
+	  float r       = m_secVtx_r         ->at(jetSvIx);
+	  float chi2    = m_secVtx_chi2      ->at(jetSvIx);
 
-      // leading jets
-      if ( m_numLeadJets && doHists ) {
-	if ( i < m_numLeadJets ) {
-	  h_jetN_pt     [ireg][i] ->Fill( m_jet_pt    ->at(i), weight );
-	  h_jetN_pt_s   [ireg][i] ->Fill( m_jet_pt    ->at(i), weight );
-	  h_jetN_eta    [ireg][i] ->Fill( m_jet_eta   ->at(i), weight );
-      	  h_jetN_phi    [ireg][i] ->Fill( m_jet_phi   ->at(i), weight );
-      	  h_jetN_E      [ireg][i] ->Fill( m_jet_E     ->at(i), weight );
-       	  h_jetN_M      [ireg][i] ->Fill( m_jet_M     ->at(i), weight );
-       	  h_jetN_rapid  [ireg][i] ->Fill( m_jet_rapid ->at(i), weight );
-	  if ( m_histoInfoSwitch->m_kinematics || m_histoInfoSwitch->m_kinematics_jet ) {
-      	    h_jetN_Et   [ireg][i] ->Fill( jet_p4.Et(),         weight );
-      	    h_jetN_Et_s [ireg][i] ->Fill( jet_p4.Et(),         weight );
-      	  }
-	  h_jetN_ntrk [ireg][i] ->Fill( m_jet_trk_n ->at(i), weight );
-	  if ( m_histoInfoSwitch->m_jetTrks ) {
-	    for ( int jtrk = 0; jtrk != m_jet_trk_n ->at(i); ++jtrk ) {
-	      double dR = m_jet_trk_dR ->at(i)[jtrk];
-	      h_jetN_trk_dR [ireg][i] ->Fill( dR, weight );
-	    }
-	  }
-	  h_jetN_nsv [ireg][i] ->Fill( m_jet_secVtx_n ->at(i), weight );
-	  if ( m_histoInfoSwitch->m_jetVerts ) {
-	    for ( int jsv = 0; jsv != m_jet_secVtx_n ->at(i); ++jsv ) {
+	  // get matched secondary vertex four-momentum
+	  TLorentzVector jetsv_p4;
+	  jetsv_p4.SetPtEtaPhiM( pt, eta, phi, mass );
+
+	  // set vector of matched secondary vertex types
+	  std::vector<int> jetsv;
+	  getDVTypes( jetSvIx, jetsv, base_dv, true );
+	  // loop over matched secondary vertex types
+	  for ( size_t jv = 0; jv != jetsv.size(); ++jv ) {
+	    if ( !jetsv[jv] ) continue;
+	    ++n_jetsv[jv];
+	    
+	    if ( doHists && m_histoInfoSwitch->m_jetVerts ) {
+	      // dR b/w jet and SV
 	      double dR = m_jet_secVtx_dR ->at(i)[jsv];
-	      h_jetN_sv_dR [ireg][i] ->Fill( dR, weight );
+	      h_jet_sv_dR [ireg][ij][jv] ->Fill( dR, weight );
+	      if ( dR < jetsv_minDR[jv] ) jetsv_minDR[jv] = dR;
+	      if ( dR > jetsv_maxDR[jv] ) jetsv_maxDR[jv] = dR;
+	      // pt (system of dv tracks)
+	      h_jet_sv_pt     [ireg][ij][jv] ->Fill( pt,       weight );
+	      h_jet_sv_sqrtpt [ireg][ij][jv] ->Fill( sqrt(pt), weight );
+	      // sum-pt (dv tracks)
+	      h_jet_sv_Ht     [ireg][ij][jv] ->Fill( ht,       weight );
+	      h_jet_sv_sqrtHt [ireg][ij][jv] ->Fill( sqrt(ht), weight );
+	      // sum-p (sum-p4-mag dv tracks)
+	      h_jet_sv_H      [ireg][ij][jv] ->Fill( h,        weight );
+	      h_jet_sv_sqrtH  [ireg][ij][jv] ->Fill( sqrt(h),  weight );
+	      // mass (mag-sum-p4 dv tracks)
+	      h_jet_sv_mass   [ireg][ij][jv] ->Fill( mass,     weight );
+	      h_jet_sv_mass_s [ireg][ij][jv] ->Fill( mass,     weight );
+	      // n-trk
+	      h_jet_sv_ntrk   [ireg][ij][jv] ->Fill( ntrk,     weight );
+	      // n-jettrk
+	      int njtrk = 0;
+	      for ( int svtrk = 0; svtrk != ntrk; ++svtrk ) {
+		if ( base_dv.type == EJsHelper::CLEAN    && !m_secVtx_trk_isClean ->at(jetSvIx)[svtrk] ) continue;
+		if ( base_dv.type == EJsHelper::FILTERED && !m_secVtx_trk_isFilt  ->at(jetSvIx)[svtrk] ) continue;
+		// if ( base_dv.type == EJsHelper::TRIMMED && *track fails trimming cuts* ) continue;
+		int svtrkIx = m_secVtx_trk_index ->at(jetSvIx)[svtrk];
+		if ( m_trk_jetMatch    ->at(svtrkIx) &&
+		     m_trk_jetMatch_ID ->at(svtrkIx) == m_jet_ID ->at(i) ) ++njtrk;
+	      }
+	      h_jet_sv_njtrk  [ireg][ij][jv] ->Fill( njtrk,    weight );
+
+	      // z-position
+	      h_jet_sv_z [ireg][ij][jv] ->Fill( z, weight );
+	      if ( z < jetsv_minz[jv] ) jetsv_minz[jv] = z;
+	      if ( z > jetsv_maxz[jv] ) jetsv_maxz[jv] = z;
+	      jetsv_sumz[jv] += z;
+	      // r-position
+	      h_jet_sv_r [ireg][ij][jv] ->Fill( r, weight );
+	      if ( r < jetsv_minr[jv] ) jetsv_minr[jv] = r;
+	      if ( r > jetsv_maxr[jv] ) jetsv_maxr[jv] = r;
+	      jetsv_sumr[jv] += r;
+	      // chi-squared
+	      h_jet_sv_chi2 [ireg][ij][jv] ->Fill( chi2, weight );
+
+	      // sum p4 for all matched secondary vertices in jet
+	      jetsv_p4_sum   [jv] += jetsv_p4; 
+	      jetsv_p4_sumPt [jv] += pt;
+	      jetsv_p4_sumHt [jv] += ht;
+	      jetsv_p4_sumH  [jv] += h;
+	      jetsv_p4_sumM  [jv] += mass;
+	      jetsv_p4_ntrk  [jv] += ntrk;
+	      jetsv_p4_njtrk [jv] += njtrk;
+	    }
+	  } // end loop over matched secondary vertex types
+	} // end loop over matched secondary vertices
+
+	// fill matched secondary vertex count, min/max/sum/avg histograms
+	if ( doHists )
+	  for ( size_t jv = 0; jv != n_jetsv.size(); ++jv ) {
+	    h_jet_nsv    [ireg][ij][jv]    ->Fill( n_jetsv [jv], weight );
+	    if ( m_numLeadJets && ilbj < m_numLeadJets )
+	      h_jetN_nsv [ireg][inj][ilbj][jv] ->Fill( n_jetsv [jv], weight );
+	    
+	    if ( m_histoInfoSwitch->m_jetVerts && n_jetsv[jv] ) {
+	      h_jet_sv_minDR      [ireg][ij][jv] ->Fill( jetsv_minDR        [jv],       weight );
+	      h_jet_sv_maxDR      [ireg][ij][jv] ->Fill( jetsv_maxDR        [jv],       weight );
+	      h_jet_sv_minz       [ireg][ij][jv] ->Fill( jetsv_minz         [jv],       weight );
+	      h_jet_sv_maxz       [ireg][ij][jv] ->Fill( jetsv_maxz         [jv],       weight );
+	      h_jet_sv_sumz       [ireg][ij][jv] ->Fill( jetsv_sumz         [jv],       weight );
+	      h_jet_sv_minr       [ireg][ij][jv] ->Fill( jetsv_minr         [jv],       weight );
+	      h_jet_sv_maxr       [ireg][ij][jv] ->Fill( jetsv_maxr         [jv],       weight );
+	      h_jet_sv_sumr       [ireg][ij][jv] ->Fill( jetsv_sumr         [jv],       weight );
+	      h_jet_nsv_pt        [ireg][ij][jv] ->Fill( jetsv_p4_sum       [jv].Pt(),  weight );
+	      h_jet_nsv_eta       [ireg][ij][jv] ->Fill( jetsv_p4_sum       [jv].Eta(), weight );
+	      h_jet_nsv_phi       [ireg][ij][jv] ->Fill( jetsv_p4_sum       [jv].Phi(), weight );
+	      h_jet_nsv_m         [ireg][ij][jv] ->Fill( jetsv_p4_sum       [jv].M(),   weight );
+	      h_jet_nsv_sumPt     [ireg][ij][jv] ->Fill( jetsv_p4_sumPt     [jv],       weight );
+	      h_jet_nsv_sumHt     [ireg][ij][jv] ->Fill( jetsv_p4_sumHt     [jv],       weight );
+	      h_jet_nsv_sumH      [ireg][ij][jv] ->Fill( jetsv_p4_sumH      [jv],       weight );
+	      h_jet_nsv_sqrtsumPt [ireg][ij][jv] ->Fill( sqrt(jetsv_p4_sumPt[jv]),      weight );
+	      h_jet_nsv_sqrtsumHt [ireg][ij][jv] ->Fill( sqrt(jetsv_p4_sumHt[jv]),      weight );
+	      h_jet_nsv_sqrtsumH  [ireg][ij][jv] ->Fill( sqrt(jetsv_p4_sumH [jv]),      weight );
+	      h_jet_nsv_sumMass   [ireg][ij][jv] ->Fill( jetsv_p4_sumM      [jv],       weight );
+	      h_jet_nsv_sumMass_s [ireg][ij][jv] ->Fill( jetsv_p4_sumM      [jv],       weight );
+	      h_jet_nsv_ntrk      [ireg][ij][jv] ->Fill( jetsv_p4_ntrk      [jv],       weight );
+	      h_jet_nsv_njtrk     [ireg][ij][jv] ->Fill( jetsv_p4_njtrk     [jv],       weight );
+
+	      if ( m_numLeadJets && ilbj < m_numLeadJets ) {
+	      	h_jetN_sv_minDR      [ireg][inj][ilbj][jv] ->Fill( jetsv_minDR        [jv],       weight );
+	      	h_jetN_sv_maxDR      [ireg][inj][ilbj][jv] ->Fill( jetsv_maxDR        [jv],       weight );
+	      	h_jetN_sv_minz       [ireg][inj][ilbj][jv] ->Fill( jetsv_minz         [jv],       weight );
+	      	h_jetN_sv_maxz       [ireg][inj][ilbj][jv] ->Fill( jetsv_maxz         [jv],       weight );
+	      	h_jetN_sv_sumz       [ireg][inj][ilbj][jv] ->Fill( jetsv_sumz         [jv],       weight );
+	      	h_jetN_sv_minr       [ireg][inj][ilbj][jv] ->Fill( jetsv_minr         [jv],       weight );
+	      	h_jetN_sv_maxr       [ireg][inj][ilbj][jv] ->Fill( jetsv_maxr         [jv],       weight );
+	      	h_jetN_sv_sumr       [ireg][inj][ilbj][jv] ->Fill( jetsv_sumr         [jv],       weight );
+	      	h_jetN_nsv_pt        [ireg][inj][ilbj][jv] ->Fill( jetsv_p4_sum       [jv].Pt(),  weight );
+	      	h_jetN_nsv_eta       [ireg][inj][ilbj][jv] ->Fill( jetsv_p4_sum       [jv].Eta(), weight );
+	      	h_jetN_nsv_phi       [ireg][inj][ilbj][jv] ->Fill( jetsv_p4_sum       [jv].Phi(), weight );
+	      	h_jetN_nsv_m         [ireg][inj][ilbj][jv] ->Fill( jetsv_p4_sum       [jv].M(),   weight );
+	      	h_jetN_nsv_sumPt     [ireg][inj][ilbj][jv] ->Fill( jetsv_p4_sumPt     [jv],       weight );
+	      	h_jetN_nsv_sumHt     [ireg][inj][ilbj][jv] ->Fill( jetsv_p4_sumHt     [jv],       weight );
+	      	h_jetN_nsv_sumH      [ireg][inj][ilbj][jv] ->Fill( jetsv_p4_sumH      [jv],       weight );
+	      	h_jetN_nsv_sqrtsumPt [ireg][inj][ilbj][jv] ->Fill( sqrt(jetsv_p4_sumPt[jv]),      weight );
+	      	h_jetN_nsv_sqrtsumHt [ireg][inj][ilbj][jv] ->Fill( sqrt(jetsv_p4_sumHt[jv]),      weight );
+	      	h_jetN_nsv_sqrtsumH  [ireg][inj][ilbj][jv] ->Fill( sqrt(jetsv_p4_sumH [jv]),      weight );
+	      	h_jetN_nsv_sumMass   [ireg][inj][ilbj][jv] ->Fill( jetsv_p4_sumM      [jv],       weight );
+	      	h_jetN_nsv_sumMass_s [ireg][inj][ilbj][jv] ->Fill( jetsv_p4_sumM      [jv],       weight );
+	      	h_jetN_nsv_ntrk      [ireg][inj][ilbj][jv] ->Fill( jetsv_p4_ntrk      [jv],       weight );
+	      	h_jetN_nsv_njtrk     [ireg][inj][ilbj][jv] ->Fill( jetsv_p4_njtrk     [jv],       weight );
+	      }
+
+	      // sum p4 for all matched secondary vertices in all jets in event
+	      jetSecVerts_n        [ij][jv] += n_jetsv        [jv];
+	      jetSecVerts_p4_sum   [ij][jv] += jetsv_p4_sum   [jv];
+	      jetSecVerts_p4_sumPt [ij][jv] += jetsv_p4_sumPt [jv];
+	      // sum p4 for all matched secondary vertices in min/max dijets
+	      if ( m_histoInfoSwitch->m_dijets ) {
+	      	int maxix1 = p4_dijet_max_ix[ij].first; int maxix2 = p4_dijet_max_ix[ij].second;
+	      	int minix1 = p4_dijet_min_ix[ij].first; int minix2 = p4_dijet_min_ix[ij].second;
+	      	if ( m_jet_index ->at(i) == maxix1   || m_jet_index ->at(i) == maxix2   ) {
+	      	  dijetSecVerts_p4_max         [ij][jv] += jetsv_p4_sum   [jv];
+	      	  dijetSecVerts_p4_max_sumPt   [ij][jv] += jetsv_p4_sumPt [jv];
+		  dijetSecVerts_p4_max_n       [ij][jv] += n_jetsv        [jv];
+	      	}
+	      	if ( m_jet_index ->at(i) == minix1   || m_jet_index ->at(i) == minix2   ) {
+	      	  dijetSecVerts_p4_min         [ij][jv] += jetsv_p4_sum   [jv];
+	      	  dijetSecVerts_p4_min_sumPt   [ij][jv] += jetsv_p4_sumPt [jv];
+		  dijetSecVerts_p4_min_n       [ij][jv] += n_jetsv        [jv];
+	      	}
+		int maxptix1 = p4_dijet_maxpt_ix[ij].first; int maxptix2 = p4_dijet_maxpt_ix[ij].second;
+	      	int minptix1 = p4_dijet_minpt_ix[ij].first; int minptix2 = p4_dijet_minpt_ix[ij].second;
+	      	if ( m_jet_index ->at(i) == maxptix1 || m_jet_index ->at(i) == maxptix2 ) {
+	      	  dijetSecVerts_p4_maxpt       [ij][jv] += jetsv_p4_sum   [jv];
+	      	  dijetSecVerts_p4_maxpt_sumPt [ij][jv] += jetsv_p4_sumPt [jv];
+		  dijetSecVerts_p4_maxpt_n     [ij][jv] += n_jetsv        [jv];
+	      	}
+	      	if ( m_jet_index ->at(i) == minptix1 || m_jet_index ->at(i) == minptix2 ) {
+	      	  dijetSecVerts_p4_minpt       [ij][jv] += jetsv_p4_sum   [jv];
+	      	  dijetSecVerts_p4_minpt_sumPt [ij][jv] += jetsv_p4_sumPt [jv];
+		  dijetSecVerts_p4_minpt_n     [ij][jv] += n_jetsv        [jv];
+	      	}
+	      } 
 	    }
 	  }
-	}
-      } // end if leading jets
-      
+	
+      } // end loop over jet types   
     } // end loop over jets
 
     // fill jet-count, min/max/avg-dijet, njet histograms
@@ -4072,11 +5717,10 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
       for ( size_t ij = 0; ij != n_jet.size(); ++ij ) {
 	h_jet_n [ireg][ij] ->Fill( n_jet[ij], weight );
 
-	// add counts
 	if ( m_histoInfoSwitch->m_dijets ) {
 	  int sum_ct = p4_dijet_sum_count [ij];
 	  h_dijet_n [ireg][ij] ->Fill( sum_ct, weight );
-	  
+
 	  if ( sum_ct ) {
 	    h_dijet_avgp4_pt    [ireg][ij] ->Fill( p4_dijet_sum_pt   [ij]/sum_ct, weight );
 	    h_dijet_avgp4_eta   [ireg][ij] ->Fill( p4_dijet_sum_eta  [ij]/sum_ct, weight );
@@ -4099,6 +5743,26 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    h_dijet_maxp4_m     [ireg][ij] ->Fill( p4_dijet_max[ij].M(),   weight );
 	    h_dijet_maxp4_sumPt [ireg][ij] ->Fill( max_sumpt,              weight );
 	    h_dijet_maxp4_dR    [ireg][ij] ->Fill( max_dr,                 weight );
+	    for ( unsigned ijtrk = 0; ijtrk != m_nTypeTrks; ++ijtrk ) {
+	      h_dijet_maxp4_ntrk         [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_max_n       [ij][ijtrk],       weight );
+	      if ( m_histoInfoSwitch->m_jetTrks  && dijetTracks_p4_max_n   [ij][ijtrk] ) {
+		h_dijet_maxp4_ntrk_pt    [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_max         [ij][ijtrk].Pt(),  weight );
+	    	h_dijet_maxp4_ntrk_eta   [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_max         [ij][ijtrk].Eta(), weight );
+	    	h_dijet_maxp4_ntrk_phi   [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_max         [ij][ijtrk].Phi(), weight );
+	    	h_dijet_maxp4_ntrk_m     [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_max         [ij][ijtrk].M(),   weight );
+	    	h_dijet_maxp4_ntrk_sumPt [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_max_sumPt   [ij][ijtrk],       weight );
+	      }
+	    }
+	    for ( unsigned ijsv = 0;  ijsv != m_nTypeJDVs;  ++ijsv ) {
+	      h_dijet_maxp4_nsv          [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_max_n     [ij][ijsv],        weight );
+	      if ( m_histoInfoSwitch->m_jetVerts && dijetSecVerts_p4_max_n [ij][ijsv] ) {
+	    	h_dijet_maxp4_nsv_pt     [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_max       [ij][ijsv].Pt(),   weight );
+	    	h_dijet_maxp4_nsv_eta    [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_max       [ij][ijsv].Eta(),  weight );
+	    	h_dijet_maxp4_nsv_phi    [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_max       [ij][ijsv].Phi(),  weight );
+	    	h_dijet_maxp4_nsv_m      [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_max       [ij][ijsv].M(),    weight );
+	    	h_dijet_maxp4_nsv_sumPt  [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_max_sumPt [ij][ijsv],        weight );
+	      }
+	    }
 	    
 	    int   min_ix1   = p4_dijet_min_ix[ij].first;
 	    int   min_ix2   = p4_dijet_min_ix[ij].second;
@@ -4114,16 +5778,130 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    h_dijet_minp4_m     [ireg][ij] ->Fill( p4_dijet_min[ij].M(),   weight );
 	    h_dijet_minp4_sumPt [ireg][ij] ->Fill( min_sumpt,              weight );
 	    h_dijet_minp4_dR    [ireg][ij] ->Fill( min_dr,                 weight );
-	  }
-	}
+	    for ( unsigned ijtrk = 0; ijtrk != m_nTypeTrks; ++ijtrk ) {
+	      h_dijet_minp4_ntrk         [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_min_n       [ij][ijtrk],       weight );
+	      if ( m_histoInfoSwitch->m_jetTrks  && dijetTracks_p4_min_n   [ij][ijtrk] ) {
+	    	h_dijet_minp4_ntrk_pt    [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_min         [ij][ijtrk].Pt(),  weight );
+	    	h_dijet_minp4_ntrk_eta   [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_min         [ij][ijtrk].Eta(), weight );
+	    	h_dijet_minp4_ntrk_phi   [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_min         [ij][ijtrk].Phi(), weight );
+	    	h_dijet_minp4_ntrk_m     [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_min         [ij][ijtrk].M(),   weight );
+	    	h_dijet_minp4_ntrk_sumPt [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_min_sumPt   [ij][ijtrk],       weight );
+	      }
+	    }
+	    for ( unsigned ijsv = 0;  ijsv != m_nTypeJDVs;  ++ijsv ) {
+	      h_dijet_minp4_nsv          [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_min_n     [ij][ijsv],        weight );
+	      if ( m_histoInfoSwitch->m_jetVerts && dijetSecVerts_p4_min_n [ij][ijsv] ) {
+	    	h_dijet_minp4_nsv_pt     [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_min       [ij][ijsv].Pt(),   weight );
+	    	h_dijet_minp4_nsv_eta    [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_min       [ij][ijsv].Eta(),  weight );
+	    	h_dijet_minp4_nsv_phi    [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_min       [ij][ijsv].Phi(),  weight );
+	    	h_dijet_minp4_nsv_m      [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_min       [ij][ijsv].M(),    weight );
+	    	h_dijet_minp4_nsv_sumPt  [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_min_sumPt [ij][ijsv],        weight );
+	      }
+	    }
+
+	    int   maxpt_ix1   = p4_dijet_maxpt_ix[ij].first;
+	    int   maxpt_ix2   = p4_dijet_maxpt_ix[ij].second;
+	    float maxpt_sumpt = 0;
+	    float maxpt_dr    = 0;
+	    if ( maxpt_ix1 != -1 && maxpt_ix2 != -1 ) {
+	      maxpt_sumpt = m_jet_pt->at(maxpt_ix1) + m_jet_pt->at(maxpt_ix2);
+	      maxpt_dr    = EJsHelper::deltaR( m_jet_eta->at(maxpt_ix1), m_jet_eta->at(maxpt_ix2),
+					       m_jet_phi->at(maxpt_ix1), m_jet_phi->at(maxpt_ix2) );
+	    }
+	    h_dijet_maxpt_pt    [ireg][ij] ->Fill( p4_dijet_maxpt[ij].Pt(),  weight );
+	    h_dijet_maxpt_eta   [ireg][ij] ->Fill( p4_dijet_maxpt[ij].Eta(), weight );
+	    h_dijet_maxpt_phi   [ireg][ij] ->Fill( p4_dijet_maxpt[ij].Phi(), weight );
+	    h_dijet_maxpt_m     [ireg][ij] ->Fill( p4_dijet_maxpt[ij].M(),   weight );
+	    h_dijet_maxpt_sumPt [ireg][ij] ->Fill( maxpt_sumpt,              weight );
+	    h_dijet_maxpt_dR    [ireg][ij] ->Fill( maxpt_dr,                 weight );
+	    for ( unsigned ijtrk = 0; ijtrk != m_nTypeTrks; ++ijtrk ) {
+	      h_dijet_maxpt_ntrk         [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_maxpt_n       [ij][ijtrk],       weight );
+	      if ( m_histoInfoSwitch->m_jetTrks  && dijetTracks_p4_maxpt_n   [ij][ijtrk] ) {
+		h_dijet_maxpt_ntrk_pt    [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_maxpt         [ij][ijtrk].Pt(),  weight );
+	    	h_dijet_maxpt_ntrk_eta   [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_maxpt         [ij][ijtrk].Eta(), weight );
+	    	h_dijet_maxpt_ntrk_phi   [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_maxpt         [ij][ijtrk].Phi(), weight );
+	    	h_dijet_maxpt_ntrk_m     [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_maxpt         [ij][ijtrk].M(),   weight );
+	    	h_dijet_maxpt_ntrk_sumPt [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_maxpt_sumPt   [ij][ijtrk],       weight );
+	      }
+	    }
+	    for ( unsigned ijsv = 0;  ijsv != m_nTypeJDVs;  ++ijsv  ) {
+	      h_dijet_maxpt_nsv          [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_maxpt_n     [ij][ijsv],        weight );
+	      if ( m_histoInfoSwitch->m_jetVerts && dijetSecVerts_p4_maxpt_n [ij][ijsv] ) {
+	    	h_dijet_maxpt_nsv_pt     [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_maxpt       [ij][ijsv].Pt(),   weight );
+	    	h_dijet_maxpt_nsv_eta    [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_maxpt       [ij][ijsv].Eta(),  weight );
+	    	h_dijet_maxpt_nsv_phi    [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_maxpt       [ij][ijsv].Phi(),  weight );
+	    	h_dijet_maxpt_nsv_m      [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_maxpt       [ij][ijsv].M(),    weight );
+	    	h_dijet_maxpt_nsv_sumPt  [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_maxpt_sumPt [ij][ijsv],        weight );
+	      }
+	    }
+
+	    int   minpt_ix1   = p4_dijet_minpt_ix[ij].first;
+	    int   minpt_ix2   = p4_dijet_minpt_ix[ij].second;
+	    float minpt_sumpt = 0;
+	    float minpt_dr    = 0;
+	    if ( minpt_ix1 != -1 && minpt_ix2 != -1 ) {
+	      minpt_sumpt = m_jet_pt->at(minpt_ix1) + m_jet_pt->at(minpt_ix2);
+	      minpt_dr    = EJsHelper::deltaR( m_jet_eta->at(minpt_ix1), m_jet_eta->at(minpt_ix2),
+					       m_jet_phi->at(minpt_ix1), m_jet_phi->at(minpt_ix2) );
+	    }
+	    h_dijet_minpt_pt    [ireg][ij] ->Fill( p4_dijet_minpt[ij].Pt(),  weight );
+	    h_dijet_minpt_eta   [ireg][ij] ->Fill( p4_dijet_minpt[ij].Eta(), weight );
+	    h_dijet_minpt_phi   [ireg][ij] ->Fill( p4_dijet_minpt[ij].Phi(), weight );
+	    h_dijet_minpt_m     [ireg][ij] ->Fill( p4_dijet_minpt[ij].M(),   weight );
+	    h_dijet_minpt_sumPt [ireg][ij] ->Fill( minpt_sumpt,              weight );
+	    h_dijet_minpt_dR    [ireg][ij] ->Fill( minpt_dr,                 weight );
+	    for ( unsigned ijtrk = 0; ijtrk != m_nTypeTrks; ++ijtrk ) {
+	      h_dijet_minpt_ntrk         [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_minpt_n       [ij][ijtrk],       weight );
+	      if ( m_histoInfoSwitch->m_jetTrks  && dijetTracks_p4_minpt_n   [ij][ijtrk] ) {
+		h_dijet_minpt_ntrk_pt    [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_minpt         [ij][ijtrk].Pt(),  weight );
+	    	h_dijet_minpt_ntrk_eta   [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_minpt         [ij][ijtrk].Eta(), weight );
+	    	h_dijet_minpt_ntrk_phi   [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_minpt         [ij][ijtrk].Phi(), weight );
+	    	h_dijet_minpt_ntrk_m     [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_minpt         [ij][ijtrk].M(),   weight );
+	    	h_dijet_minpt_ntrk_sumPt [ireg][ij][ijtrk] ->Fill( dijetTracks_p4_minpt_sumPt   [ij][ijtrk],       weight );
+	      }
+	    }
+	    for ( unsigned ijsv = 0;  ijsv != m_nTypeJDVs;  ++ijsv  ) {
+	      h_dijet_minpt_nsv          [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_minpt_n     [ij][ijsv],        weight );
+	      if ( m_histoInfoSwitch->m_jetVerts && dijetSecVerts_p4_minpt_n [ij][ijsv] ) {
+	    	h_dijet_minpt_nsv_pt     [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_minpt       [ij][ijsv].Pt(),   weight );
+	    	h_dijet_minpt_nsv_eta    [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_minpt       [ij][ijsv].Eta(),  weight );
+	    	h_dijet_minpt_nsv_phi    [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_minpt       [ij][ijsv].Phi(),  weight );
+	    	h_dijet_minpt_nsv_m      [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_minpt       [ij][ijsv].M(),    weight );
+	    	h_dijet_minpt_nsv_sumPt  [ireg][ij][ijsv]  ->Fill( dijetSecVerts_p4_minpt_sumPt [ij][ijsv],        weight );
+	      }
+	    }
+	  } // end if sum_ct
+	} // end if dijets
 
 	// event level jet variables
-	h_njet_pt    [ireg][ij] ->Fill( jet_p4_sum  [ij].Pt(),  weight );
-	h_njet_eta   [ireg][ij] ->Fill( jet_p4_sum  [ij].Eta(), weight );
-	h_njet_phi   [ireg][ij] ->Fill( jet_p4_sum  [ij].Phi(), weight );
-	h_njet_m     [ireg][ij] ->Fill( jet_p4_sum  [ij].M(),   weight );
-	h_njet_sumPt [ireg][ij] ->Fill( jet_p4_sumPt[ij],       weight );
-      }
+	if ( m_histoInfoSwitch->m_njets && n_jet[ij] ) {
+	  h_njet_pt    [ireg][ij] ->Fill( jet_p4_sum  [ij].Pt(),  weight );
+	  h_njet_eta   [ireg][ij] ->Fill( jet_p4_sum  [ij].Eta(), weight );
+	  h_njet_phi   [ireg][ij] ->Fill( jet_p4_sum  [ij].Phi(), weight );
+	  h_njet_m     [ireg][ij] ->Fill( jet_p4_sum  [ij].M(),   weight );
+	  h_njet_sumPt [ireg][ij] ->Fill( jet_p4_sumPt[ij],       weight );
+	  for ( unsigned ijtrk = 0; ijtrk != m_nTypeTrks; ++ijtrk ) {
+	    h_njet_ntrk         [ireg][ij][ijtrk] ->Fill( jetTracks_n          [ij][ijtrk],       weight );
+	    if ( m_histoInfoSwitch->m_jetTrks && jetTracks_n [ij][ijtrk] ) {
+	      h_njet_ntrk_pt    [ireg][ij][ijtrk] ->Fill( jetTracks_p4_sum     [ij][ijtrk].Pt(),  weight );
+	      h_njet_ntrk_eta   [ireg][ij][ijtrk] ->Fill( jetTracks_p4_sum     [ij][ijtrk].Eta(), weight );
+	      h_njet_ntrk_phi   [ireg][ij][ijtrk] ->Fill( jetTracks_p4_sum     [ij][ijtrk].Phi(), weight );
+	      h_njet_ntrk_m     [ireg][ij][ijtrk] ->Fill( jetTracks_p4_sum     [ij][ijtrk].M(),   weight );
+	      h_njet_ntrk_sumPt [ireg][ij][ijtrk] ->Fill( jetTracks_p4_sumPt   [ij][ijtrk],       weight );
+	    }
+	  }
+	  for ( unsigned ijsv = 0; ijsv != m_nTypeJDVs; ++ijsv ) {
+	    h_njet_nsv          [ireg][ij][ijsv]  ->Fill( jetSecVerts_n        [ij][ijsv],        weight );
+	    if ( m_histoInfoSwitch->m_jetVerts && jetSecVerts_n [ij][ijsv] ) {
+	      h_njet_nsv_pt     [ireg][ij][ijsv]  ->Fill( jetSecVerts_p4_sum   [ij][ijsv] .Pt(),  weight );
+	      h_njet_nsv_eta    [ireg][ij][ijsv]  ->Fill( jetSecVerts_p4_sum   [ij][ijsv] .Eta(), weight );
+	      h_njet_nsv_phi    [ireg][ij][ijsv]  ->Fill( jetSecVerts_p4_sum   [ij][ijsv] .Phi(), weight );
+	      h_njet_nsv_m      [ireg][ij][ijsv]  ->Fill( jetSecVerts_p4_sum   [ij][ijsv] .M(),   weight );
+	      h_njet_nsv_sumPt  [ireg][ij][ijsv]  ->Fill( jetSecVerts_p4_sumPt [ij][ijsv],        weight );
+	    }
+	  }
+	} // end if njets
+      } // end loop over jet types
     } // end if doHists
 
     // find singular dijet invariant mass (average of dijet pairs of leading four jets with smallest difference between them)
@@ -4145,8 +5923,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     float mindiff_phidiff = 0;
     float mindiff_sumpt   = 0;
     float mindiff_dR      = 0;
-    for ( int i = 0; i != dijet_indices.size(); ++i ) {
-      for ( int j = i+1; j != dijet_indices.size(); ++j ) {
+    for ( size_t i = 0; i != dijet_indices.size(); ++i ) {
+      for ( size_t j = i+1; j != dijet_indices.size(); ++j ) {
 	if ( dijet_indices[i].first  == dijet_indices[j].first  ||
 	     dijet_indices[i].first  == dijet_indices[j].second ||
 	     dijet_indices[i].second == dijet_indices[j].first  ||
@@ -4172,16 +5950,6 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	float diff_invM = fabs( p4_j12.M()   - p4_j34.M()   );
 	float avg_sumPt =       p4_j12.Pt()  + p4_j34.Pt();
 	float avg_dR    = EJsHelper::deltaR(   p4_j12.Eta(), p4_j34.Eta(), p4_j12.Phi(), p4_j34.Phi() );
-	h_NJetPtjj_all      [ireg] ->Fill( avg_pt,    weight );
-	h_NJetPtjjDiff_all  [ireg] ->Fill( diff_pt,   weight );
-	h_NJetEtajj_all     [ireg] ->Fill( avg_eta,   weight );
-	h_NJetEtajjDiff_all [ireg] ->Fill( diff_eta,  weight );
-	h_NJetPhijj_all     [ireg] ->Fill( avg_phi,   weight );
-	h_NJetPhijjDiff_all [ireg] ->Fill( diff_phi,  weight );
-	h_NJetMjj_all       [ireg] ->Fill( avg_invM,  weight );
-	h_NJetMjjDiff_all   [ireg] ->Fill( diff_invM, weight );
-	h_NJetSumPtjj_all   [ireg] ->Fill( avg_sumPt, weight );
-	h_NJetDRjj_all      [ireg] ->Fill( avg_dR,    weight );
 	if ( diff_invM < mindiff ) {
 	  mindiff         = diff_invM;
 	  mindiff_invM    = avg_invM;
@@ -4196,51 +5964,51 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	}
       }
     } // end double loop over dijet pairs
-    h_NJetMjj              [ireg] ->Fill( mindiff_invM,    weight );
-    h_NJetMjjDiff          [ireg] ->Fill( mindiff,         weight );
-    h_NJetPtjj             [ireg] ->Fill( mindiff_pt,      weight );
-    h_NJetPtjjDiff         [ireg] ->Fill( mindiff_ptdiff,  weight );
-    h_NJetEtajj            [ireg] ->Fill( mindiff_eta,     weight );
-    h_NJetEtajjDiff        [ireg] ->Fill( mindiff_etadiff, weight );
-    h_NJetPhijj            [ireg] ->Fill( mindiff_phi,     weight );
-    h_NJetPhijjDiff        [ireg] ->Fill( mindiff_phidiff, weight );
-    h_NJetSumPtjj          [ireg] ->Fill( mindiff_sumpt,   weight );
-    h_NJetDRjj             [ireg] ->Fill( mindiff_dR,      weight );
+    h_NJetMjj               [ireg] ->Fill( mindiff_invM,    weight );
+    h_NJetMjjDiff           [ireg] ->Fill( mindiff,         weight );
+    h_NJetPtjj              [ireg] ->Fill( mindiff_pt,      weight );
+    h_NJetPtjjDiff          [ireg] ->Fill( mindiff_ptdiff,  weight );
+    h_NJetEtajj             [ireg] ->Fill( mindiff_eta,     weight );
+    h_NJetEtajjDiff         [ireg] ->Fill( mindiff_etadiff, weight );
+    h_NJetPhijj             [ireg] ->Fill( mindiff_phi,     weight );
+    h_NJetPhijjDiff         [ireg] ->Fill( mindiff_phidiff, weight );
+    h_NJetSumPtjj           [ireg] ->Fill( mindiff_sumpt,   weight );
+    h_NJetDRjj              [ireg] ->Fill( mindiff_dR,      weight );
     if ( mindiff < mindiff_invM * 0.50 ) {
-       h_NJetMjj_hlf       [ireg] ->Fill( mindiff_invM,    weight );
-       h_NJetMjjDiff_hlf   [ireg] ->Fill( mindiff,         weight );
-       h_NJetPtjj_hlf      [ireg] ->Fill( mindiff_pt,      weight );
-       h_NJetPtjjDiff_hlf  [ireg] ->Fill( mindiff_ptdiff,  weight );
-       h_NJetEtajj_hlf     [ireg] ->Fill( mindiff_eta,     weight );
-       h_NJetEtajjDiff_hlf [ireg] ->Fill( mindiff_etadiff, weight );
-       h_NJetPhijj_hlf     [ireg] ->Fill( mindiff_phi,     weight );
-       h_NJetPhijjDiff_hlf [ireg] ->Fill( mindiff_phidiff, weight );
-       h_NJetSumPtjj_hlf   [ireg] ->Fill( mindiff_sumpt,   weight );
-       h_NJetDRjj_hlf      [ireg] ->Fill( mindiff_dR,      weight );
+       h_NJetMjj_0p5        [ireg] ->Fill( mindiff_invM,    weight );
+       h_NJetMjjDiff_0p5    [ireg] ->Fill( mindiff,         weight );
+       h_NJetPtjj_0p5       [ireg] ->Fill( mindiff_pt,      weight );
+       h_NJetPtjjDiff_0p5   [ireg] ->Fill( mindiff_ptdiff,  weight );
+       h_NJetEtajj_0p5      [ireg] ->Fill( mindiff_eta,     weight );
+       h_NJetEtajjDiff_0p5  [ireg] ->Fill( mindiff_etadiff, weight );
+       h_NJetPhijj_0p5      [ireg] ->Fill( mindiff_phi,     weight );
+       h_NJetPhijjDiff_0p5  [ireg] ->Fill( mindiff_phidiff, weight );
+       h_NJetSumPtjj_0p5    [ireg] ->Fill( mindiff_sumpt,   weight );
+       h_NJetDRjj_0p5       [ireg] ->Fill( mindiff_dR,      weight );
     }
     if ( mindiff < mindiff_invM * 0.25 ) {
-       h_NJetMjj_qrt       [ireg] ->Fill( mindiff_invM,    weight );
-       h_NJetMjjDiff_qrt   [ireg] ->Fill( mindiff,         weight );
-       h_NJetPtjj_qrt      [ireg] ->Fill( mindiff_pt,      weight );
-       h_NJetPtjjDiff_qrt  [ireg] ->Fill( mindiff_ptdiff,  weight );
-       h_NJetEtajj_qrt     [ireg] ->Fill( mindiff_eta,     weight );
-       h_NJetEtajjDiff_qrt [ireg] ->Fill( mindiff_etadiff, weight );
-       h_NJetPhijj_qrt     [ireg] ->Fill( mindiff_phi,     weight );
-       h_NJetPhijjDiff_qrt [ireg] ->Fill( mindiff_phidiff, weight );
-       h_NJetSumPtjj_qrt   [ireg] ->Fill( mindiff_sumpt,   weight );
-       h_NJetDRjj_qrt      [ireg] ->Fill( mindiff_dR,      weight );
+       h_NJetMjj_0p25       [ireg] ->Fill( mindiff_invM,    weight );
+       h_NJetMjjDiff_0p25   [ireg] ->Fill( mindiff,         weight );
+       h_NJetPtjj_0p25      [ireg] ->Fill( mindiff_pt,      weight );
+       h_NJetPtjjDiff_0p25  [ireg] ->Fill( mindiff_ptdiff,  weight );
+       h_NJetEtajj_0p25     [ireg] ->Fill( mindiff_eta,     weight );
+       h_NJetEtajjDiff_0p25 [ireg] ->Fill( mindiff_etadiff, weight );
+       h_NJetPhijj_0p25     [ireg] ->Fill( mindiff_phi,     weight );
+       h_NJetPhijjDiff_0p25 [ireg] ->Fill( mindiff_phidiff, weight );
+       h_NJetSumPtjj_0p25   [ireg] ->Fill( mindiff_sumpt,   weight );
+       h_NJetDRjj_0p25      [ireg] ->Fill( mindiff_dR,      weight );
     }
     if ( mindiff < mindiff_invM * 0.20 ) {
-       h_NJetMjj_fth       [ireg] ->Fill( mindiff_invM,    weight );
-       h_NJetMjjDiff_fth   [ireg] ->Fill( mindiff,         weight );
-       h_NJetPtjj_fth      [ireg] ->Fill( mindiff_pt,      weight );
-       h_NJetPtjjDiff_fth  [ireg] ->Fill( mindiff_ptdiff,  weight );
-       h_NJetEtajj_fth     [ireg] ->Fill( mindiff_eta,     weight );
-       h_NJetEtajjDiff_fth [ireg] ->Fill( mindiff_etadiff, weight );
-       h_NJetPhijj_fth     [ireg] ->Fill( mindiff_phi,     weight );
-       h_NJetPhijjDiff_fth [ireg] ->Fill( mindiff_phidiff, weight );
-       h_NJetSumPtjj_fth   [ireg] ->Fill( mindiff_sumpt,   weight );
-       h_NJetDRjj_fth      [ireg] ->Fill( mindiff_dR,      weight );
+       h_NJetMjj_0p2        [ireg] ->Fill( mindiff_invM,    weight );
+       h_NJetMjjDiff_0p2    [ireg] ->Fill( mindiff,         weight );
+       h_NJetPtjj_0p2       [ireg] ->Fill( mindiff_pt,      weight );
+       h_NJetPtjjDiff_0p2   [ireg] ->Fill( mindiff_ptdiff,  weight );
+       h_NJetEtajj_0p2      [ireg] ->Fill( mindiff_eta,     weight );
+       h_NJetEtajjDiff_0p2  [ireg] ->Fill( mindiff_etadiff, weight );
+       h_NJetPhijj_0p2      [ireg] ->Fill( mindiff_phi,     weight );
+       h_NJetPhijjDiff_0p2  [ireg] ->Fill( mindiff_phidiff, weight );
+       h_NJetSumPtjj_0p2    [ireg] ->Fill( mindiff_sumpt,   weight );
+       h_NJetDRjj_0p2       [ireg] ->Fill( mindiff_dR,      weight );
     }
     
 
@@ -4250,15 +6018,12 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // -------------- //
     // set vector of ntrk counters
     std::vector<int> n_trk ( m_nTypeTrks, 0 );
-
-    int n_svTrks = 0;
     
     // loop over tracks
     for ( int i = 0; i != m_trk_n; ++i ) {
-      if ( m_trk_isSV ->at(i) ) ++n_svTrks;
       // set vector of track types
       std::vector<int> trk;
-      getTrkTypes( i, trk );
+      getTrkTypes( i, trk, base_dv );
       // loop over track types and fill histograms
       for ( size_t it = 0; it != trk.size(); ++it ) {
 	if ( !trk[it] ) continue;
@@ -4454,12 +6219,6 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
       float secVtx_maxsignifz0_sv  = 0;
       float secVtx_maxsignifP_sv   = 0;
       int   secVtx_ntrk            = 0;
-      int   secVtx_ntrk_final      = 0;
-      int   secVtx_ntrk_sel        = 0;
-      int   secVtx_ntrk_assoc      = 0;
-      int   secVtx_ntrk_lrt        = 0;
-      int   secVtx_ntrk_d0         = 0;
-      int   secVtx_ntrk_seld0      = 0;
       if      ( base_dv.type == EJsHelper::BARE     ) {
 	secVtx_pt       = m_secVtx_pt_bare         ->at(i);
 	secVtx_eta      = m_secVtx_eta_bare        ->at(i);
@@ -4518,6 +6277,9 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	
       	if ( !DV[idv] ) continue;
 	++n_DV[idv];
+
+	// total DV count
+	h_evt_count_DV [ireg][idv] ->Fill( int(0), weight );
 
 	int ntrk = secVtx_ntrk;
 	if ( m_numVtxTrks ) {
@@ -4629,6 +6391,10 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  }
 	}
 
+	int secVtx_ntrk_final = 0;
+	int secVtx_ntrk_sel   = 0;
+	int secVtx_ntrk_assoc = 0;
+	int secVtx_ntrk_lrt   = 0;
 	// loop over vertex tracks
 	for ( int j = 0; j != m_secVtx_ntrk ->at(i); ++j ) {
 	  if ( base_dv.type == EJsHelper::CLEAN    && !m_secVtx_trk_isClean ->at(i)[j] ) continue;
@@ -4641,7 +6407,6 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  if ( m_secVtx_trk_isSel   ->at(i)[j]         ) ++secVtx_ntrk_sel;
 	  if ( m_secVtx_trk_isAssoc ->at(i)[j]         ) ++secVtx_ntrk_assoc;
 	  if ( m_trk_isLRT          ->at(trkIx)        ) ++secVtx_ntrk_lrt;
-	  if ( m_trk_d0             ->at(trkIx) >= 2.0 ) ++secVtx_ntrk_d0;
 
 	  float trk_theta_sv  = 2 * atan( exp( -1 * m_secVtx_trk_eta_sv ->at(i)[j] ) ); // eta = -ln(tan(theta/2))
 	  float trk_p_sv      = m_secVtx_trk_pt_sv ->at(i)[j] / sin( trk_theta_sv );    // pt  =  p*sin(theta)
@@ -4836,8 +6601,6 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	h_DV_ntrk_sel   [ireg][idv] ->Fill( secVtx_ntrk_sel,   weight );
 	h_DV_ntrk_assoc [ireg][idv] ->Fill( secVtx_ntrk_assoc, weight );
 	h_DV_ntrk_lrt   [ireg][idv] ->Fill( secVtx_ntrk_lrt,   weight );
-	h_DV_ntrk_d0    [ireg][idv] ->Fill( secVtx_ntrk_d0,    weight );
-	h_DV_ntrk_seld0 [ireg][idv] ->Fill( secVtx_ntrk_seld0, weight );
 
 	if ( m_histoInfoSwitch->m_vtxOverallTrk ) {
 	  h_DV_sumd0           [ireg][idv] ->Fill( secVtx_sumd0,                   weight );
@@ -5077,6 +6840,30 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	
       } // end loop over DV types
 
+      // do DV cutflows
+      // --> test cuts
+      if ( m_nType1DVs ) {
+      	std::vector<int> DV_testCut;
+      	getDVTypes( i, DV_testCut, base_dv, false, false, false );
+      	std::vector<int> dvTestCut ( DV_testCut.size() / m_nType1DVs, 0 );
+      	for ( size_t idvc = 0; idvc != DV_testCut.size(); ++idvc ) {
+      	  dvTestCut[idvc / m_nType1DVs] += DV_testCut[idvc];
+      	  h_evt_testCutflow_DV [ireg][idvc / m_nType1DVs]
+      	    ->Fill( idvc % m_nType1DVs, ( dvTestCut[idvc/m_nType1DVs] / ( idvc % m_nType1DVs + 1 ) ) * weight );
+      	}
+      }
+      // --> "good" cuts
+      std::vector<int> DV_cut;
+      getDVTypes( i, DV_cut, base_dv, false, false, false, true );
+      int n_goodCuts = DV_cut.size() / h_evt_cutflow_DV [ireg].size();
+      std::vector<int> dvCut ( h_evt_cutflow_DV [ireg].size(), 0 );
+      for ( size_t idvc = 0; idvc != DV_cut.size(); ++idvc ) {
+      	dvCut[idvc / n_goodCuts] += DV_cut[idvc];
+      	h_evt_cutflow_DV [ireg][idvc / n_goodCuts]
+      	  ->Fill( idvc % n_goodCuts, ( dvCut[idvc/n_goodCuts] / ( idvc % n_goodCuts + 1 ) ) * weight );
+      }
+      
+
     } // end loop over vertices
 
     // fill DV count histograms
@@ -5087,6 +6874,18 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  for ( const auto& ntrkDV : n_ntrkDV[idv] )
 	    h_ntrkDV_n [ireg][idv][ntrkDV.first-2] ->Fill( ntrkDV.second, weight );
 	}
+	// NDV cutflow
+	if ( idv >= m_nTypeBDVs ) continue;
+	for ( int indv = 0; indv != m_ndv; ++indv )
+	  if ( n_DV[idv] > indv )
+	    h_evt_cutflow_NDV [ireg][idv] ->Fill( indv, weight );
+	// ntrk-NDV cutflow
+	if ( m_numVtxTrks ) {
+	  for ( const auto& ntrkDV : n_ntrkDV[idv] )
+	    for ( int intrkndv = 0; intrkndv != m_ndv; ++intrkndv )
+	      if ( ntrkDV.second > intrkndv )
+		h_evt_cutflow_ntrkNDV [ireg][idv][ntrkDV.first-2] ->Fill( intrkndv, weight );
+	}
       }
     }
 
@@ -5096,10 +6895,10 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // -- tentative ABCD variables
     if ( m_histoInfoSwitch->m_abcd ) {
       for ( size_t idv = 0; idv != n_DV.size(); ++idv ) {
-	h_abcd_nDV_njetHt          [ireg][idv] ->Fill( m_njetHt,                    n_DV[idv], weight );
-	h_abcd_nDV_njetHt_vrsh     [ireg][idv] ->Fill( m_njetHt * m_VRShift_njetHt, n_DV[idv], weight );
-	h_abcd_raw_nDV_njetHt      [ireg][idv] ->Fill( m_njetHt,                    n_DV[idv], 1.0    );
-	h_abcd_raw_nDV_njetHt_vrsh [ireg][idv] ->Fill( m_njetHt * m_VRShift_njetHt, n_DV[idv], 1.0    );
+	h_abcd_nDV_NJetHt          [ireg][idv] ->Fill( m_njetHt,                    n_DV[idv], weight );
+	h_abcd_nDV_NJetHt_vrsh     [ireg][idv] ->Fill( m_njetHt * m_VRshift_njetHt, n_DV[idv], weight );
+	h_abcd_raw_nDV_NJetHt      [ireg][idv] ->Fill( m_njetHt,                    n_DV[idv], 1.0    );
+	h_abcd_raw_nDV_NJetHt_vrsh [ireg][idv] ->Fill( m_njetHt * m_VRshift_njetHt, n_DV[idv], 1.0    );
 	// --> ADD OTHER ABCD PLOTS WITH EVENT LEVEL VARIABLES
       }
     }
@@ -5210,6 +7009,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     } // end trigger test
 
     ++m_nEntries [ireg];
+    m_nWeightedEntries [ireg] += weight;
     
   } // end loop over regions
 
@@ -5221,7 +7021,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 StatusCode EJsHistogramManager :: finalize ( const std::vector<EJsHelper::Region>& regions )
 {
   
-  for ( int ireg = 0; ireg != regions.size(); ++ireg ) {
+  for ( size_t ireg = 0; ireg != regions.size(); ++ireg ) {
 
     // fill metadata histograms
     h_MetaData_EventCount [ireg] ->Fill( 1, m_nEvents_init );
@@ -5234,6 +7034,48 @@ StatusCode EJsHistogramManager :: finalize ( const std::vector<EJsHelper::Region
     h_MetaData_Weights    [ireg] ->Fill( 2, m_kfactor      );
     h_MetaData_Weights    [ireg] ->Fill( 3, m_filteff      );
     h_MetaData_Weights    [ireg] ->Fill( 4, m_lumi         ); // [ifb]
+
+    float reg_count  = m_nWeightedEntries [ireg];
+    // cutflow efficiency histograms
+    for ( size_t icdv = 0; icdv != h_evt_cutflow_DV [ireg].size(); ++icdv ) {
+      float count = h_evt_cutflow_DV [ireg][icdv] ->GetBinContent(1);
+      // --> test DV cuts
+      if ( m_nType1DVs ) {
+    	for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_DV [ireg][icdv] ->GetNbinsX(); ++ibin ) {
+    	  float ibin_cut = h_evt_testCutflow_DV [ireg][icdv] ->GetBinContent(ibin+1);
+    	  h_evt_testCutflowEfficiency_DV        [ireg][icdv] ->Fill( ibin, ibin_cut / count );
+    	}
+      }
+      // --> good DV cuts
+      for ( int ibin = 0; ibin != h_evt_cutflowEfficiency_DV [ireg][icdv] ->GetNbinsX(); ++ibin ) {
+	float ibin_cut = h_evt_cutflow_DV       [ireg][icdv] ->GetBinContent(ibin+1);
+	h_evt_cutflowEfficiency_DV              [ireg][icdv] ->Fill( ibin, ibin_cut / count );
+      }
+    }
+    // --> N-DV cuts
+    for ( size_t icndv = 0; icndv != h_evt_cutflow_NDV        [ireg].size(); ++icndv ) {
+      for ( int ibin = 0; ibin != h_evt_cutflowEfficiency_NDV [ireg][icndv] ->GetNbinsX(); ++ibin ) {
+    	float ibin_cut   = h_evt_cutflow_NDV  [ireg][icndv] ->GetBinContent(ibin+1);
+    	h_evt_cutflowEfficiency_NDV      [ireg][icndv] ->Fill( ibin, ibin_cut / reg_count   );
+    	h_evt_cutflowTotalEfficiency_NDV [ireg][icndv] ->Fill( ibin, ibin_cut / m_sumw_init );
+      }
+      // --> n-trk N-DV cuts
+      if ( m_numVtxTrks ) {
+      	for ( size_t itrk = 0; itrk != h_evt_cutflow_ntrkNDV [ireg][icndv].size(); ++itrk ) {
+      	  for ( int itrkbin = 0; itrkbin != h_evt_cutflowEfficiency_ntrkNDV [ireg][icndv][itrk] ->GetNbinsX(); ++itrkbin ) {
+      	    float itrkbin_cut = h_evt_cutflow_ntrkNDV [ireg][icndv][itrk] ->GetBinContent(itrkbin+1);
+      	    h_evt_cutflowEfficiency_ntrkNDV      [ireg][icndv][itrk] ->Fill( itrkbin, itrkbin_cut / reg_count   );
+      	    h_evt_cutflowTotalEfficiency_ntrkNDV [ireg][icndv][itrk] ->Fill( itrkbin, itrkbin_cut / m_sumw_init );
+      	  }
+      	}
+      }
+    }
+
+    // overall count / efficiency histograms
+    for ( size_t ihdv = 0; ihdv != h_evt_count_DV [ireg].size(); ++ihdv ) {
+      h_evt_cutEfficiency_DV      [ireg][ihdv] ->Divide( h_evt_count_DV [ireg][ihdv], h_evt_count_DV [ireg][0]                            );
+      h_evt_matchcutEfficiency_DV [ireg][ihdv] ->Divide( h_evt_count_DV [ireg][ihdv], h_evt_count_DV [ireg][ihdv/m_nTypeBDVs*m_nTypeBDVs] );
+    }
     
     if ( m_histoInfoSwitch->m_trigTest ) {
       // trigger efficiency as function of nth leading jet pt
@@ -5279,43 +7121,81 @@ StatusCode EJsHistogramManager :: finalize ( const std::vector<EJsHelper::Region
 
 
 
-void EJsHistogramManager :: getTrkTypes ( int trk_index, std::vector<int>& trk )
+void EJsHistogramManager :: getJetTypes ( int jet_index, std::vector<int>& jet )
+{
+  
+  bool leadJet = false;
+  //int ilbj = n_jet[ij % m_nTypeBJs] - 1;
+  if ( m_jet_index ->at(jet_index) < m_nJets ) leadJet = true;
+  jet .push_back( true    ); // all jets
+  jet .push_back( leadJet );
+
+  // truth matching (to dark jets)
+  bool darkJet    = false;
+  bool nomatchJet = false;
+  if ( m_mc ) {
+    // require dark + truth jet match
+    if ( m_jet_isDark ->at(jet_index) && m_jet_isTruth ->at(jet_index) ) {
+      int truthIx = m_jet_truthIndex ->at(jet_index);
+      // require matched dark + truth jet also matched to one another
+      if ( m_jet_darkID ->at(jet_index) == m_truthJet_darkID ->at(truthIx) )
+	// require lead parton = down quark
+	if ( m_jet_partonID ->at(jet_index) == 1 )
+	  darkJet = true;
+    }
+    if ( !darkJet ) nomatchJet = true;
+    if ( m_histoInfoSwitch->m_jetTruth ) {
+      std::vector<int> mJ = { darkJet, nomatchJet };
+      std::vector<int> miJ;
+      for ( size_t ij = 0; ij != jet.size(); ++ij )
+	miJ .push_back( jet[ij] );
+      for ( size_t ii = 0; ii != mJ.size(); ++ii )
+	for ( size_t jj = 0; jj != miJ.size(); ++jj )
+	  jet .push_back( mJ[ii] && miJ[jj] );
+    }
+  }
+  
+}
+
+
+
+void EJsHistogramManager :: getTrkTypes ( int trk_index, std::vector<int>& trk, const EJsHelper::BaseDV& base_dv )
 {
   
   bool lrtTrk   = false;
   bool selTrk   = false;
   bool assocTrk = false;
   bool svTrk    = false;
-  // bool cleanTrk = false;
-  // bool filtTrk  = false;
-  // bool finalTrk = false;
   if ( m_trk_isLRT     ->at(trk_index) ) lrtTrk   = true;
   if ( m_trk_isSel     ->at(trk_index) ) selTrk   = true;
   if ( m_trk_isAssoc   ->at(trk_index) ) assocTrk = true;
-  if ( m_trk_isSV      ->at(trk_index) ) svTrk    = true;
-  // if ( m_trk_isCleanSV ->at(trk_index) ) cleanTrk = true;
-  // if ( m_trk_isFiltSV  ->at(trk_index) ) filtTrk  = true;
-  // if ( m_trk_isFinalSV ->at(trk_index) ) finalTrk = true;
+  if      ( base_dv.type == EJsHelper::BARE     ) {
+    if ( m_trk_isSV      ->at(trk_index) ) svTrk = true;
+  }
+  else if ( base_dv.type == EJsHelper::CLEAN    ) {
+    if ( m_trk_isCleanSV ->at(trk_index) ) svTrk = true;
+  }
+  else if ( base_dv.type == EJsHelper::FILTERED ) {
+    if ( m_trk_isFiltSV  ->at(trk_index) ) svTrk = true;
+  }
+  // else if trimmed ...
   trk .push_back( true     ); // all tracks
   trk .push_back( lrtTrk   );
   trk .push_back( selTrk   );
   trk .push_back( assocTrk );
   trk .push_back( svTrk    );
-  // trk .push_back( cleanTrk );
-  // trk .push_back( filtTrk  );
-  // trk .push_back( finalTrk );
   
 } // end getTrkTypes
 
 
 
-void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, const EJsHelper::BaseDV& base_dv )
+void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, const EJsHelper::BaseDV& base_dv,
+					 bool jetDV, bool doCombos, bool doGood, bool doGoodCuts )
 {
-
+  // get kinematic variables
   float secVtx_pt    = 0;
   float secVtx_mass  = 0;
   float secVtx_mind0 = 0;
-  
   int   secVtx_ntrk  = 0;
   if      ( base_dv.type == EJsHelper::BARE     ) {
     secVtx_pt    = m_secVtx_pt_bare     ->at(dv_index);
@@ -5354,7 +7234,8 @@ void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, con
     if ( trk_errd0 < secVtx_minerrd0 ) secVtx_minerrd0 = trk_errd0;
     if ( trk_errz0 < secVtx_minerrz0 ) secVtx_minerrz0 = trk_errz0;
   }
-  
+
+  // test if DV passes cuts
   // --> base vertices (bare, clean, filtered, or trimmed)
   bool baseDV = false;
   if ( secVtx_ntrk > 1 ) baseDV = true;
@@ -5386,48 +7267,50 @@ void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, con
   if ( sqrt(sqrt(secVtx_minerrd0)) < 0.5 ) minsqerrd0DV = true;
   if ( sqrt(sqrt(secVtx_minerrz0)) < 1.5 ) minsqerrz0DV = true;
 
-  dv   .push_back( baseDV );
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_byJetVerts ) {
+  // fill (jet) DV pass/fail cut vector
+  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_baseVerts     ) ) ||
+       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_baseJetVerts  ) ) ||
+       (  doGoodCuts ) )
+    dv .push_back( baseDV );
+  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_byJetVerts    ) ) ||
+       (  doGoodCuts ) ) {
     dv .push_back( baseDV && byJetDV  );
     dv .push_back( baseDV && byNJetDV );
   }
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_fiducVerts )
+  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_fiducVerts      ) ) ||
+       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_fiducJetVerts   ) ) ||
+       (  doGoodCuts ) )
     dv .push_back( baseDV && fiducDV );
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ksmVerts )
+  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ksmVerts        ) ) ||
+       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_ksmJetVerts     ) ) ||
+       (  doGoodCuts ) )
     dv .push_back( baseDV && ksmDV   );
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_ptVerts )
-    dv .push_back( baseDV && ptDV    ); 
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_d0Verts )
+  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ptVerts         ) ) ||
+       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_ptJetVerts      ) ) ||
+       (  doGoodCuts ) )
+    dv .push_back( baseDV && ptDV    );
+  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0Verts         ) ) ||
+       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_d0JetVerts      ) ) ||
+       (  doGoodCuts ) )
     dv .push_back( baseDV && mind0DV );
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_z0Verts )
+  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_z0Verts         ) ) ||
+       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_z0JetVerts      ) ) ||
+       (  doGoodCuts ) )
     dv .push_back( baseDV && minz0DV );
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_d0z0ErrVerts ) {
+  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0z0ErrVerts    ) ) ||
+       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_d0z0ErrJetVerts ) ) ||
+       (  doGoodCuts ) ) {
     dv .push_back( baseDV && minsqerrd0DV );
     dv .push_back( baseDV && minsqerrz0DV );
   }
   
-  // --> combination cuts
-  if ( m_numVtxCutCombos || !m_numVtxCutCombosVec.empty() ) {
-    std::vector<std::string> dvTypeCombos;
-    std::vector<int>         dvTypeIntCombos;
-    if ( m_numVtxCutCombos ) {
-      size_t nc = m_numVtxCutCombos;
-      if ( m_numVtxCutCombos == -1 ) nc = dv.size()-1;
-      for ( size_t ic = 2; ic != nc+1; ++ic )
-	getTypeCombos ( dv, dvTypeIntCombos, ic );
-    }
-    else if ( !m_numVtxCutCombosVec.empty() ) {
-      for ( size_t ic = 0; ic != m_numVtxCutCombosVec.size(); ++ic )
-	getTypeCombos ( dv, dvTypeIntCombos, m_numVtxCutCombosVec[ic] );
-    }
-    if ( m_histoInfoSwitch->m_vtxCombos )
-      dv .clear();
-    for ( size_t idc = 0; idc != m_dvTypeCombos.size(); ++idc ) {
-      if ( m_dvTypeCombos[idc].find("Bare")   != std::string::npos ) continue;
-      if ( m_dvTypeCombos[idc].find("ByJet")  != std::string::npos &&
-	   m_dvTypeCombos[idc].find("ByNJet") != std::string::npos ) continue;
-      dv .push_back( baseDV && dvTypeIntCombos[idc] );
-    }
+  // --> combination cuts --> make new function to combine promising cuts (see plots first)
+
+  // --> "good" DVs (combo of all cuts)
+  bool baseGoodDV = baseDV && fiducDV && ksmDV && ptDV && mind0DV && minz0DV && minsqerrd0DV && minsqerrz0DV;
+  if ( doGood ) {
+    if      ( !jetDV ) dv .push_back( baseGoodDV && byNJetDV );
+    else if (  jetDV ) dv .push_back( baseGoodDV );
   }
   
   // --> truth matching --> test truth-matching criteria
@@ -5456,7 +7339,7 @@ void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, con
       }
     }
     if ( !darkPionDV && !kshortDV ) nomatchDV = true;
-    if ( m_histoInfoSwitch->m_vtxTruth ) {
+    if ( ( !jetDV && m_histoInfoSwitch->m_vtxTruth ) || ( jetDV && m_histoInfoSwitch->m_jetVtxTruth ) ) {
       //std::vector<int> mdv = { darkPionDV,  kshortDV, nomatchDV };
       std::vector<int> mdv = { darkPionDV };
       std::vector<int> midv;
@@ -5469,49 +7352,4 @@ void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, con
   }
   
 } // end getDVTypes
-
-
-
-template <typename TV> void EJsHistogramManager :: getTypeCombos ( const std::vector<TV>& types, std::vector<TV>& combos,
-								   unsigned int combo_len )
-{
-  if ( combo_len <= 0 || combo_len > types.size() ) return;
-  std::vector<unsigned int> type_positions ( combo_len, 0 );
-  doCombinations ( types, combos, type_positions, combo_len, 0, 0 );
-  return;
-}
-
-template <typename TV> void EJsHistogramManager :: doCombinations ( const std::vector<TV>& elements, std::vector<TV>& combinations,
-								    std::vector<unsigned int>& positions,
-								    unsigned int combo_len, unsigned int start, unsigned int index )
-{
-  // return combination if desired number of elements selected
-  if ( index == combo_len ) {
-    TV combo = TV();
-    for ( size_t i = 0; i != positions.size(); ++i )
-      combo += elements[positions[i]];
-    pushCombos( combinations, combo, combo_len );
-    return;
-  }
-
-  // look for new elements to right of last selected one
-  for ( size_t i = start; i != elements.size() && elements.size()-i+1 >= combo_len-index; ++i ) {
-    positions[index] = i;
-    doCombinations( elements, combinations, positions, combo_len, i+1, index+1 );
-  }
-  
-  return;
-}
-
-template <typename TV> void EJsHistogramManager :: pushCombos ( std::vector<TV>& combinations, TV combo, unsigned int combo_len )
-{
-  combinations.push_back( combo );
-  return;
-}
-
-void EJsHistogramManager :: pushCombos ( std::vector<int>& combinations, int combo, unsigned int combo_len )
-{
-  combinations.push_back( combo / combo_len );
-  return;
-}
 

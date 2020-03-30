@@ -162,6 +162,9 @@ class varType( Enum ):
     JET     = 3
 
 
+### SKIP NORM FOR CUTFLOWS AND/OR EFFICIENCIES ?? ###
+### AVERAGE EFFICIENCY HISTS WHEN COMBINING (divide by number of files) ###
+
 
 ## --- RETRIEVE HISTOGRAM INFORMATION --- ##
 def getSampleHistos():
@@ -274,8 +277,6 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, histNames, hists ):
                                 #plotSOverB( hists, sampleTypes )
                                 plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, False, True )
                                 plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, True,  True ) # log-y
-                                plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, False, True, False ) # unnorm
-                                plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, True,  True, False ) # log-y unnorm
                         # --> eventually want to add "doRatio" option to other plotting functions...
                 
 
@@ -300,7 +301,9 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
         hist.SetLineColorAlpha( sampleDicts[iH]["lcolor"], sampleDicts[iH]["lalpha"] )
         hist.SetLineStyle( sampleDicts[iH]["lstyle"] )
         hist.SetLineWidth( plotHelpers.setLineWidth( sampleDicts[iH]["lstyle"] ) )
-        hist.Scale( 1 / hist.Integral() )
+        # normalize
+        if hist.Integral():
+            plotHelpers.doNorm( hist )
         
         # set maximum --> may want to play around with scale factors...
         maxy = hist.GetMaximum()
@@ -340,13 +343,19 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     outName = args.outName
     if outName and not outName.endswith('.'):
         outName += "."
-    outName = tname + "." + outName + args.regionDir
-    cname = "1d." + histName + "." + outName
+    outName = tname + "." + outName
+    rOutName = outName + args.regionDir
+    if args.histVars:
+        bname = args.histVars.split(',')[0] + "."
+    else:
+        bname = ""
+    cname = "1d." + histName + "." + rOutName
     if doLogy:
         ROOT.gPad.SetLogy()
         cname += "_logy"
     # --> set output subdirectory
-    coutDir = os.path.join( outDir, outName )
+    poutDir = os.path.join(  outDir, rOutName )
+    coutDir = os.path.join( poutDir, outName + bname + args.regionDir )
     if not os.path.exists( coutDir ):
         os.makedirs( coutDir )
     # --> save
@@ -443,7 +452,7 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
         
         # normalize
         if hist.Integral():
-            hist.Scale( 1 / hist.Integral() )
+            plotHelpers.doNorm( hist )
 
         # set maximum
         maxy = hist.GetMaximum()
@@ -511,7 +520,7 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
 
 
 ## --- DRAW 1D MULTI-VARIATE - MULTI-SAMPLE STACK PLOTS --- ##
-def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle, doLogy = False, doSOverB = False, doNorm = True ):
+def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle, doLogy = False, doSOverB = False ):
 
     iBkgd  = -1
     isbd_b = -1
@@ -545,6 +554,7 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
 
     hslen = 0
     for iH, hist in enumerate( hists ):
+        
         # skip empty histograms
         if not hist.GetEntries():
             continue
@@ -553,7 +563,8 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
         sampleHistMatch = False
         for iSBD, sbd in enumerate( sbdVars.split(',') ):
             if sampleTypes[iH/len(args.histVars.split(','))] == iSBD+1:
-                if sbd and sbd.lower() in hist.GetName().lower():
+                #if sbd and sbd.lower() in hist.GetName().lower():
+                if sbd and sbd in hist.GetName(): # --> check this works! may have to change back or make sure sbd case sensitive
                     sampleHistMatch = True
         if not sampleHistMatch: continue
 
@@ -572,8 +583,8 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
                 hist.Divide( hist, bkgdHist )
 
         # normalize
-        if doNorm and hist.Integral():
-            hist.Scale( 1 / hist.Integral() )
+        if hist.Integral():
+            plotHelpers.doNorm( hist )
 
         # skip background histograms for S/B plots
         if doSOverB and iH/len(args.histVars.split(',')) == iBkgd:
@@ -650,11 +661,17 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
                         sbd_tname.append( args.baseDV )
                 elif varType( args.varEnum ) == varType.JET:
                     if "darkMatch".lower() in sbd.lower():
-                        sbd_bname.append( re.split( 'darkMatch', sbd, flags=re.IGNORECASE )[0] )
-                        sbd_tname.append( 'darkMatchJet' )
+                        sbd_jet_bname = re.split( 'darkMatch', sbd, flags=re.IGNORECASE )[0]
+                        sbd_jet_tname = "darkMatchJet"
                     else:
-                        sbd_bname.append( re.split( 'jet',       sbd, flags=re.IGNORECASE )[0] )
-                        sbd_tname.append( 'jet' )
+                        sbd_jet_bname = re.split( 'jet', sbd, flags=re.IGNORECASE )[0]
+                        sbd_jet_tname = "jet"
+                    if   "0" in sbd: sbd_jet_bname += "0"
+                    elif "1" in sbd: sbd_jet_bname += "1"
+                    elif "2" in sbd: sbd_jet_bname += "2"
+                    elif "3" in sbd: sbd_jet_bname += "3"
+                    sbd_tname .append( sbd_jet_tname )
+                    sbd_bname .append( sbd_jet_bname )
         bname_tmp = sbd_bname[0]
         bname += bname_tmp
         if bname: bname += "."
@@ -679,10 +696,8 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
     if doLogy:
         ROOT.gPad.SetLogy()
         cname += "_logy"
-    if not doNorm:
-        cname += "_unnorm"
     # --> set output directory
-    poutDir = os.path.join( outDir, rOutName )
+    poutDir = os.path.join(  outDir, rOutName )
     coutDir = os.path.join( poutDir, outName + bname + args.regionDir )
     if not os.path.exists( coutDir ):
         os.makedirs( coutDir )

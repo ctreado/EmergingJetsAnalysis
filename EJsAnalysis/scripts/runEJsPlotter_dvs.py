@@ -16,9 +16,9 @@ def main():
     
     ## --- initialize plotting commands --- ##
     # --> change when needed
-    #inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-01_n1/EJsNtupToHistOutput/"
+    inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-01_n1/EJsNtupToHistOutput/"
     #inDir   = os.getenv('EJ_PATH') + "/../output/localOutput/tmp_search-minus-one/EJsNtupToHistOutput/"
-    inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
+    #inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
     pscript = os.getenv('EJ_PATH') + "/EJsAnalysis/scripts/plotting/plotEJsHistograms.py"
     command = "python " + pscript + " --inDir " + inDir
 
@@ -40,8 +40,8 @@ def main():
     command_b   += b
 
     # data
-    d            = " --dataType data --scaleData " + \
-      " --metadataDir ../../output/gridOutput/v0_2020-01_full/metadata/" # --> for ab test; give path from parent of inDir
+    d            = " --dataType data --scaleData " \
+      #+ " --metadataDir ../../output/gridOutput/v0_2020-01_full/metadata/" # --> for ab test; give path from parent of inDir
     command_d    = command
     command_d   += d
 
@@ -85,24 +85,18 @@ def main():
     # --> set base case
     baseDV = "bare"
     # --> set number of tracks
-    Ntrk = 3
-    # --> set cut-combination DV types
-    #cuts = [ "ByJet", "ByNJet", "Fiduc", "Ksm", "Pt", "Mind0", "Minz0", "Minsqerrd0", "Minsqerrz0" ]
-    cuts = [ "ByJet", "ByNJet", "Fiduc", "Ksm" ]
-    cutCombos = []
-    #for icut in range ( 1, len(cuts) ): getTypeCombos( cuts, cutCombos, icut ) # to run over all possible available combos
-    getTypeCombos( cuts, cutCombos, 3 )
+    Ntrk = 5
+    # --> set DV-cut types
+    cuts = [ "ByJet", "ByNJet", "Fiduc", "Ksm", "Pt", "Mind0", "Minz0", "Minsqerrd0", "Minsqerrz0", "Good" ]
     dvTypes = []
-    for combo in cutCombos:
-        if "ByJet" in combo and "ByNJet" in combo: continue
-        # require "Fiduc" and "Ksm" ??
-        lowCombo = combo[0].lower() + combo[1:]
-        dvTypes.append( lowCombo )
+    for cut in cuts:
+        lowcut = cut[0].lower() + cut[1:]
+        dvTypes.append( lowcut )
 
 
     # 1d plots -- comparing same DV histos over different samples
-    histList_1d   = "byNJetFiducKsm+mass_s"
-    command_1d    = " --draw1D --outSubdir 1d_dv --legLenEnum 5 --histList " + histList_1d
+    histList_1d   = "cutflow=count=efficiency:darkPion=kshort=nomatch"
+    command_1d    = " --draw1D --outSubdir 1d_dv --legLenEnum 5 --histList DV+" + histList_1d
     command_1d_l1 = " --lxint 0.006 --lyint 0.025" # for s vs b
     command_1d_l2 = " --lxint 0.015 --lyint 0.040" # for b vs d
     # --> AB benchmark test
@@ -127,7 +121,7 @@ def main():
 
 
     # 2d plots -- one DV histo per plot
-    histList_2d = "byNJetFiducKsm+mass_r_s" # --> skip dark pions for background; add different hist lists for signal and background?
+    histList_2d = "" # --> skip dark pions for background; add different hist lists for signal and background?
     command_2d  = " --draw2D --outSubdir 2d_dv --histList " + histList_2d
     # --> signal
     command_s_ab_2d_S  = command_s_ab + command_2d + command_S
@@ -147,7 +141,7 @@ def main():
 
 
     # multi-hist 1d plots -- comparing truth-matched to unmatched DVs in same sample
-    histList_multi = "_mass"
+    histList_multi = ""
     command_multi  = []
     command_multi1d = " --drawMulti1D --doTruthSvB --outSubdir multi_dv --legLenEnum 5 --lxint 0.007 --lyint 0.027"
     # --> set hist vars for given DV types
@@ -226,17 +220,20 @@ def main():
     
 
     # multi-hist multi-sample 1d plots -- comparing truth-matched signal vs background DVs
-    histList_multismpl  = "_mass"
+    histList_multismpl  = ""
     command_multismpl   = []
     command_multismpl1d = " --drawMulti1D --doMultiSmpl --doTruthSvB --outSubdir multismpl_dv --legLenEnum 3 --lxint 0.007 --lyint 0.027"
     # --> set hist vars, titles for given DV types
     hvars, httls = [], []
     hvars.append( "darkPionDV," + baseDV + "DV" )
     httls.append( "'dark pion matched signal vs all background'" + "' (" + baseDV + " DVs)'" )
-    for dvType in dvTypes:
-        htitle = "'" + dvType + "'"
-        hvars.append( dvType + "DarkPionDV," + dvType + "DV" ) # cut combos
-        httls.append( htitle + "' dark pion matched signal vs background'" + "' (" + baseDV + " DVs)'" )
+    # --> add all DV types to list
+    #for dvType in dvTypes:
+    #    htitle = "'" + dvType + "'"
+    #    hvars.append( dvType + "DarkPionDV," + dvType + "DV" )
+    #    httls.append( htitle + "' dark pion matched signal vs background'" + "' (" + baseDV + " DVs)'" )
+    hvars.append( "goodDarkPionDV,goodDV" )
+    httls.append( "'good dark pion matched signal vs all background'" + "' (" + baseDV + " DVs)'" )
     # --> loop over hist vars and configure plotting script
     for iVar, var in enumerate( hvars ):
         histList = var
@@ -280,16 +277,16 @@ def main():
 
     # --> add other signal/sample types, regions for each plot type as needed
 
-    ### 1d: signal vs background
+    ## 1d: signal vs background
     #os.system( command_sb_ab_1d_S  ) # ab benchmark test
-    ##os.system( command_sb_ab_1d_S1 )
+    #os.system( command_sb_ab_1d_S1 )
     ##os.system( command_sb_14_1d_S  ) # xdm-1400
-    ##os.system( command_sb_14_1d_S1 )
+    #os.system( command_sb_14_1d_S1 )
     ##os.system( command_sb_10_1d_S  ) # xdm-1000
-    ##os.system( command_sb_10_1d_S1 )
+    #os.system( command_sb_10_1d_S1 )
     ##os.system( command_sb_06_1d_S  ) # xdm-600
-    ##os.system( command_sb_06_1d_S1 )
-    ### 1d: background vs data
+    #os.system( command_sb_06_1d_S1 )
+    ## 1d: background vs data
     #os.system( command_bd_1d_V     )
 
     ### 2d: signal
@@ -331,46 +328,22 @@ def main():
     ##    os.system( cm_bS1   )
         
     ## multi-sample 1d
-    for cms_sbabS  in command_sb_ab_multismpl_S:
-        os.system( cms_sbabS  )
+    #for cms_sbabS  in command_sb_ab_multismpl_S:
+    #    os.system( cms_sbabS  )
     #for cms_sbabS1 in command_sb_ab_multismpl_S1:
     #    os.system( cms_sbabS1 )
     #for cms_sb14S  in command_sb_14_multismpl_S:
     #    os.system( cms_sb14S  )
     #for cms_sb14S1 in command_sb_14_multismpl_S1:
     #    os.system( cms_sb14S1 )
-    #for cms_sb10S  in command_sb_10_multismpl_S:
-    #    os.system( cms_sb10S  )
+    for cms_sb10S  in command_sb_10_multismpl_S:
+        os.system( cms_sb10S  )
     #for cms_sb10S1 in command_sb_10_multismpl_S1:
     #    os.system( cms_sb10S1 )
     #for cms_sb06S  in command_sb_06_multismpl_S:
     #    os.system( cms_sb06S  )
     #for cms_sb06S1 in command_sb_06_multismpl_S1:
     #    os.system( cms_sb06S1 )
-
-
-
-# cut combination functions
-def getTypeCombos( typeList, comboList, comboLength ):
-    if comboLength <= 0 or comboLength > len(typeList): return
-    typePos = [0] * comboLength
-    doCombinations( typeList, comboList, typePos, comboLength, 0, 0 )
-    return
-
-def doCombinations( elements, combinations, positions, comboLength, start, index ):
-    # return combo if desired number of elements selected
-    if index == comboLength:
-        combo = ""
-        for pos in positions:
-            combo += elements[pos]
-        combinations.append( combo )
-        return
-    # look for new elements to right of last selected one
-    for iE in range( start, len(elements) ):
-        if len(elements) - iE + 1 < comboLength - index: continue
-        positions[index] = iE
-        doCombinations( elements, combinations, positions, comboLength, iE+1, index+1 )
-    return
    
 
 

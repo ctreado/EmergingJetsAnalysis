@@ -50,17 +50,10 @@ class EJsHistogramManager : public HistogramManager
   using HistogramManager::execute;    // overload
   using HistogramManager::finalize;   // overload
 
-  void getTrkTypes ( int trk_index, std::vector<int>& trk );
-  void getDVTypes  ( int dv_index,  std::vector<int>& dv, const EJsHelper::BaseDV& base_dv );
-  
-  template <typename TV> void getTypeCombos  ( const std::vector<TV>& types, std::vector<TV>& combos, unsigned int combo_len );
-  template <typename TV> void doCombinations ( const std::vector<TV>& elements, std::vector<TV>& combinations,
-					       std::vector<unsigned int>& positions,
-					       unsigned int combo_len, unsigned int start, unsigned int index );
-  template <typename TV> void pushCombos     ( std::vector<TV>& combinations,  TV combo,  unsigned int combo_len );
-  void pushCombos                            ( std::vector<int>& combinations, int combo, unsigned int combo_len );
-
-
+  void getJetTypes ( int jet_index, std::vector<int>& jet );
+  void getTrkTypes ( int trk_index, std::vector<int>& trk, const EJsHelper::BaseDV& base_dv );
+  void getDVTypes  ( int dv_index,  std::vector<int>& dv,  const EJsHelper::BaseDV& base_dv,
+		     bool jetDV = false, bool doCombos = true, bool doGood = true, bool doGoodCuts = false );
 
 
  protected:
@@ -85,16 +78,21 @@ class EJsHistogramManager : public HistogramManager
   bool             m_unblind; // un-blind analysis -- default = False to blind signal events in data
   int              m_numLeadJets;
   int              m_numVtxTrks;
-  int              m_numVtxCutCombos;
-  std::vector<int> m_numVtxCutCombosVec;
 
   float weight = 1.0;
   float lumi   = 139.; // [fb-1]  
 
   // counters
-  int m_nTypeJs   = 0;
-  int m_nTypeTrks = 0;
-  int m_nTypeDVs  = 0;
+  unsigned m_LJix       = 0;
+  unsigned m_nTypeJs    = 0;
+  unsigned m_nTypeBJs   = 0;
+  unsigned m_nTypeTrks  = 0;
+  unsigned m_nTypeDVs   = 0;
+  unsigned m_nType1DVs  = 0;
+  unsigned m_nTypeBDVs  = 0;
+  unsigned m_nTypeJDVs  = 0;
+  unsigned m_nType1JDVs = 0;
+  unsigned m_nTypeBJDVs = 0;
   std::vector<int>   m_nEntries;
   std::vector<float> m_nWeightedEntries;
   std::vector<int>   m_nFourJets;
@@ -115,9 +113,6 @@ class EJsHistogramManager : public HistogramManager
   std::vector<int>   m_nOffTrigJVT_search;
   std::vector<int>   m_nOthOffTrigJVT_search;
 
-  // dv type combinations (to keep track of combinations of cuts applied)
-  std::vector<std::string> m_dvTypeCombos;
-
   // analysis selections
   int    m_nJets      = 4;
   double m_jetPt      = 120.;
@@ -127,8 +122,9 @@ class EJsHistogramManager : public HistogramManager
   double m_trigJetPt  = 120.;
   double m_trigJetEta = 3.1;
   // ABCD VR shift values
-  double m_VRShift_njetHt = 4./3;
-  
+  double m_VRshift_njetHt = 4./3;
+  // nDV test cuts
+  int m_ndv = 7;
 
 
   // --- BRANCHES --- //
@@ -269,35 +265,39 @@ class EJsHistogramManager : public HistogramManager
 
   // TRACK BRANCHES
   // tracks: basics / kinematics
-  int m_trk_n;                           //!
-  std::vector<int>*     m_trk_ID;        //!
-  std::vector<int>*     m_trk_index;     //!
-  std::vector<float>*   m_trk_qOverP;    //!
-  std::vector<float>*   m_trk_theta;     //!
-  std::vector<float>*   m_trk_pt;        //!
-  std::vector<float>*   m_trk_eta;       //!
-  std::vector<float>*   m_trk_phi;       //!
-  std::vector<float>*   m_trk_E;         //!
-  std::vector<float>*   m_trk_M;         //!
-  std::vector<float>*   m_trk_d0;        //!
-  std::vector<float>*   m_trk_z0;        //!
-  std::vector<float>*   m_trk_errd0;     //!
-  std::vector<float>*   m_trk_errz0;     //!
-  std::vector<float>*   m_trk_errP;      //!
-  std::vector<float>*   m_trk_chi2;      //!
-  std::vector<float>*   m_trk_chiSq;     //!
-  std::vector<int>*     m_trk_ndof;      //!
-  std::vector<float>*   m_trk_charge;    //!
-  std::vector<uint8_t>* m_trk_isLRT;     //!
-  std::vector<uint8_t>* m_trk_isSel;     //!
-  std::vector<uint8_t>* m_trk_isAssoc;   //!
-  std::vector<uint8_t>* m_trk_isSV;      //!
-  std::vector<uint8_t>* m_trk_isCleanSV; //!
-  std::vector<uint8_t>* m_trk_isFiltSV;  //!
-  std::vector<uint8_t>* m_trk_isFinalSV; //!
-  std::vector<uint8_t>* m_trk_nSCT;      //!
-  std::vector<uint8_t>* m_trk_nPixel;    //!
-  std::vector<uint8_t>* m_trk_nTRT;      //!				
+  int m_trk_n;                                //!
+  std::vector<int>*     m_trk_ID;             //!
+  std::vector<int>*     m_trk_index;          //!
+  std::vector<float>*   m_trk_qOverP;         //!
+  std::vector<float>*   m_trk_theta;          //!
+  std::vector<float>*   m_trk_pt;             //!
+  std::vector<float>*   m_trk_eta;            //!
+  std::vector<float>*   m_trk_phi;            //!
+  std::vector<float>*   m_trk_E;              //!
+  std::vector<float>*   m_trk_M;              //!
+  std::vector<float>*   m_trk_d0;             //!
+  std::vector<float>*   m_trk_z0;             //!
+  std::vector<float>*   m_trk_errd0;          //!
+  std::vector<float>*   m_trk_errz0;          //!
+  std::vector<float>*   m_trk_errP;           //!
+  std::vector<float>*   m_trk_chi2;           //!
+  std::vector<float>*   m_trk_chiSq;          //!
+  std::vector<int>*     m_trk_ndof;           //!
+  std::vector<float>*   m_trk_charge;         //!
+  std::vector<uint8_t>* m_trk_isLRT;          //!
+  std::vector<uint8_t>* m_trk_isSel;          //!
+  std::vector<uint8_t>* m_trk_isAssoc;        //!
+  std::vector<uint8_t>* m_trk_isSV;           //!
+  std::vector<uint8_t>* m_trk_isCleanSV;      //!
+  std::vector<uint8_t>* m_trk_isFiltSV;       //!
+  std::vector<uint8_t>* m_trk_isFinalSV;      //!
+  std::vector<uint8_t>* m_trk_nSCT;           //!
+  std::vector<uint8_t>* m_trk_nPixel;         //!
+  std::vector<uint8_t>* m_trk_nTRT;           //!
+  std::vector<uint8_t>* m_trk_jetMatch;       //!
+  std::vector<int>*     m_trk_jetMatch_ID;    //!
+  std::vector<int>*     m_trk_jetMatch_index; //!
+  std::vector<float>*   m_trk_jetMatch_dR;    //!
 
   // TRUTH VERTEX BRANCHES
   // truth vertices: basics / kinematics
@@ -441,19 +441,9 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_pv_phi;  //!
   std::vector<TH1F*> h_pv_ntrk; //!
   // leading N-jet Ht
-  std::vector<TH1F*> h_njetHt;      //!
-  std::vector<TH1F*> h_njetHt_vrsh; //!
+  std::vector<TH1F*> h_NJetHt;      //!
+  std::vector<TH1F*> h_NJetHt_vrsh; //!
 
-  // 2D EVENT HISTOS -- ABCD PLANE TESTS
-  // --> weighted standard
-  std::vector<std::vector<TH2F*>> h_abcd_nDV_njetHt;          //!
-  std::vector<std::vector<TH2F*>> h_abcd_nDV_njetMjj;         //!
-  // --> weighted shifted
-  std::vector<std::vector<TH2F*>> h_abcd_nDV_njetHt_vrsh;     //!
-  // --> raw standard
-  std::vector<std::vector<TH2F*>> h_abcd_raw_nDV_njetHt;      //!
-  // --> raw shifteed
-  std::vector<std::vector<TH2F*>> h_abcd_raw_nDV_njetHt_vrsh; //!
 
   // JET HISTOS
   // basics
@@ -518,15 +508,13 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_jet_partonID; //!
   // ghost tracks
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_nghosttrk; //!
+  
   // matched tracks
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_ntrk;             //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_dR;           //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_minDR;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_maxDR;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_pt;           //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_minpt;        //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_maxpt;        //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sumpt;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_d0;           //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_mind0;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_maxd0;        //!
@@ -544,62 +532,150 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_maxErrz0;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sumErrz0;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtpt;       //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_minsqrtpt;    //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_maxsqrtpt;    //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sumsqrtpt;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtd0;       //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_minsqrtd0;    //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_maxsqrtd0;    //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sumsqrtd0;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtmind0;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtmaxd0;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtsumd0;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtz0;       //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_minsqrtz0;    //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_maxsqrtz0;    //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sumsqrtz0;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtminz0;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtmaxz0;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtsumz0;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrterrd0;    //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_minSqrterrd0; //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_maxSqrterrd0; //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sumSqrterrd0; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtminErrd0; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtmaxErrd0; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtsumErrd0; //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrterrz0;    //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_minSqrterrz0; //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_maxSqrterrz0; //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sumSqrterrz0; //!
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_nSCT;         //! --> look at min/max nHits ??
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtminErrz0; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtmaxErrz0; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_sqrtsumErrz0; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_nSCT;         //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_nPixel;       //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_nSi;          //!
   std::vector<std::vector<std::vector<TH1F*>> > h_jet_trk_nTRT;         //!
-  // matched secondary vertices --> look at min/max dR, ntrks
-  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv; //!
-  //std::vector<std::vector<TH1F*>> h_jet_nsv;    //!
-  //std::vector<std::vector<TH1F*>> h_jet_sv_dR;  //!
-  // --> investigate further (like number of "good" vertices) after vertex studies / finalized DV cuts...
+  // --> system of matched tracks as single entity
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_ntrk_pt;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_ntrk_eta;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_ntrk_phi;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_ntrk_m;           //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_ntrk_sumPt;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_ntrk_sqrtsumPt;   //!
+  
+  // matched secondary vertices
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv;              //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_dR;            //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_minDR;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_maxDR;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_pt;            //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_Ht;            //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_H;             //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_sqrtpt;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_sqrtHt;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_sqrtH;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_mass;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_mass_s;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_ntrk;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_njtrk;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_z;             //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_minz;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_maxz;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_sumz;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_r;             //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_minr;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_maxr;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_sumr;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_sv_chi2;          //!
+  // --> system of matched secondary vertices as single entity
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_pt;           //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_eta;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_phi;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_m;            //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_sumPt;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_sumHt;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_sumH;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_sqrtsumPt;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_sqrtsumHt;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_sqrtsumH;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_sumMass;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_sumMass_s;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_ntrk;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jet_nsv_njtrk;        //!
+  // --> look at "good" vertices after vertex studies / finalized DV cuts...
 
-  // --> count number of jets with some number of associated vertices, (selected/lrt/vtx,etc.) tracks
+  // --> calculate matched track, sv sum-p4 per N-jet dijet system (?)
+
+  // --> count number of jets with some number of associated vertices, tracks w/ certain criteria
   // --> --> i.e. want to know per event how many jets have at least one associated DV...
+  // --> --> LOOK AT PLOTS FIRST TO GET IDEA OF WHERE TO CUT
 
   // --> look at other jet variables (see tree, old code)
 
-  // --> DO TRACK CLEANING STUDIES
-  // --> --> look at tracks matched to LLP descendants and compare to fakes (no matching truth)
-
   // leading jets
-  std::vector<std::vector<TH1F*>> h_jetN_pt;    //!
-  std::vector<std::vector<TH1F*>> h_jetN_pt_l;  //!
-  std::vector<std::vector<TH1F*>> h_jetN_pt_m;  //!
-  std::vector<std::vector<TH1F*>> h_jetN_pt_s;  //!
-  std::vector<std::vector<TH1F*>> h_jetN_eta;   //!
-  std::vector<std::vector<TH1F*>> h_jetN_phi;   //!
-  std::vector<std::vector<TH1F*>> h_jetN_E;     //!
-  std::vector<std::vector<TH1F*>> h_jetN_M;     //!
-  std::vector<std::vector<TH1F*>> h_jetN_rapid; //!
-  // leading jet extra kinematics
-  std::vector<std::vector<TH1F*>> h_jetN_Et;    //!
-  std::vector<std::vector<TH1F*>> h_jetN_Et_s;  //!
-  // leading jet matched tracks
-  std::vector<std::vector<TH1F*>> h_jetN_ntrk;   //!
-  std::vector<std::vector<TH1F*>> h_jetN_trk_dR; //!
-  // leading jet matched secondary vertices
-  std::vector<std::vector<TH1F*>> h_jetN_nsv;    //!
-  std::vector<std::vector<TH1F*>> h_jetN_sv_dR;  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jetN_pt;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jetN_pt_s;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jetN_eta;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jetN_phi;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jetN_E;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jetN_M;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jetN_rapid;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jetN_nConstits; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jetN_Et;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_jetN_Et_s;      //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_ntrk;             //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_minDR;        //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_maxDR;        //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_mind0;        //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_maxd0;        //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sumd0;        //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_minz0;        //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_maxz0;        //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sumz0;        //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_minErrd0;     //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_maxErrd0;     //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sumErrd0;     //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_minErrz0;     //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_maxErrz0;     //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sumErrz0;     //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtmind0;    //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtmaxd0;    //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtsumd0;    //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtminz0;    //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtmaxz0;    //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtsumz0;    //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtminErrd0; //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtmaxErrd0; //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtsumErrd0; //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtminErrz0; //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtmaxErrz0; //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_trk_sqrtsumErrz0; //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_ntrk_pt;          //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_ntrk_eta;         //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_ntrk_phi;         //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_ntrk_m;           //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_ntrk_sumPt;       //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_ntrk_sqrtsumPt;   //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv;              //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_sv_minDR;         //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_sv_maxDR;         //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_sv_minz;          //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_sv_maxz;          //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_sv_sumz;          //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_sv_minr;          //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_sv_maxr;          //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_sv_sumr;          //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_pt;           //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_eta;          //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_phi;          //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_m;            //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_sumPt;        //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_sumHt;        //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_sumH;         //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_sqrtsumPt;    //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_sqrtsumHt;    //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_sqrtsumH;     //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_sumMass;      //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_sumMass_s;    //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_ntrk;         //!
+  std::vector<std::vector<std::vector<std::vector<TH1F*>> >> h_jetN_nsv_njtrk;        //!
   
   // dijets
   std::vector<std::vector<TH1F*>> h_dijet_n;           //!
@@ -609,6 +685,12 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_dijet_m;           //!
   std::vector<std::vector<TH1F*>> h_dijet_sumPt;       //!
   std::vector<std::vector<TH1F*>> h_dijet_dR;          //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_pt;    //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_eta;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_phi;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_m;     //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_sumPt; //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_dR;    //!
   std::vector<std::vector<TH1F*>> h_dijet_maxp4_pt;    //!
   std::vector<std::vector<TH1F*>> h_dijet_maxp4_eta;   //!
   std::vector<std::vector<TH1F*>> h_dijet_maxp4_phi;   //!
@@ -621,75 +703,137 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_dijet_minp4_m;     //!
   std::vector<std::vector<TH1F*>> h_dijet_minp4_sumPt; //!
   std::vector<std::vector<TH1F*>> h_dijet_minp4_dR;    //!
-  std::vector<std::vector<TH1F*>> h_dijet_avgp4_pt;    //!
-  std::vector<std::vector<TH1F*>> h_dijet_avgp4_eta;   //!
-  std::vector<std::vector<TH1F*>> h_dijet_avgp4_phi;   //!
-  std::vector<std::vector<TH1F*>> h_dijet_avgp4_m;     //!
-  std::vector<std::vector<TH1F*>> h_dijet_avgp4_sumPt; //!
-  std::vector<std::vector<TH1F*>> h_dijet_avgp4_dR;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk_pt;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk_eta;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk_phi;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk_m;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk_sumPt; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk_pt;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk_eta;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk_phi;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk_m;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk_sumPt; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv_pt;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv_eta;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv_phi;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv_m;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv_sumPt;  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv_pt;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv_eta;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv_phi;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv_m;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv_sumPt;  //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxpt_pt;    //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxpt_eta;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxpt_phi;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxpt_m;     //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxpt_sumPt; //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxpt_dR;    //!
+  std::vector<std::vector<TH1F*>> h_dijet_minpt_pt;    //!
+  std::vector<std::vector<TH1F*>> h_dijet_minpt_eta;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_minpt_phi;   //!
+  std::vector<std::vector<TH1F*>> h_dijet_minpt_m;     //!
+  std::vector<std::vector<TH1F*>> h_dijet_minpt_sumPt; //!
+  std::vector<std::vector<TH1F*>> h_dijet_minpt_dR;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk_pt;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk_eta;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk_phi;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk_m;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk_sumPt; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk_pt;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk_eta;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk_phi;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk_m;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk_sumPt; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv_pt;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv_eta;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv_phi;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv_m;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv_sumPt;  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv_pt;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv_eta;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv_phi;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv_m;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv_sumPt;  //!
+  
   // N jets (all jets in event)
   std::vector<std::vector<TH1F*>> h_njet_pt;    //!
   std::vector<std::vector<TH1F*>> h_njet_eta;   //!
   std::vector<std::vector<TH1F*>> h_njet_phi;   //!
   std::vector<std::vector<TH1F*>> h_njet_m;     //!
   std::vector<std::vector<TH1F*>> h_njet_sumPt; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk_pt;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk_eta;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk_phi;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk_m;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk_sumPt; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_pt;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_eta;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_phi;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_m;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_sumPt;  //!
 
   // leading N-jet dijet invariant mass (avg of dijet pairs w/ min diff invM b/w them)
-  std::vector<TH1F*> h_NJetMjj;           //!
-  std::vector<TH1F*> h_NJetMjjDiff;       //!
-  std::vector<TH1F*> h_NJetPtjj;          //!
-  std::vector<TH1F*> h_NJetPtjjDiff;      //!
-  std::vector<TH1F*> h_NJetEtajj;         //!
-  std::vector<TH1F*> h_NJetEtajjDiff;     //!
-  std::vector<TH1F*> h_NJetPhijj;         //!
-  std::vector<TH1F*> h_NJetPhijjDiff;     //!
-  std::vector<TH1F*> h_NJetSumPtjj;       //!
-  std::vector<TH1F*> h_NJetDRjj;          //!
-  std::vector<TH1F*> h_NJetMjj_hlf;       //!
-  std::vector<TH1F*> h_NJetMjjDiff_hlf;   //!
-  std::vector<TH1F*> h_NJetPtjj_hlf;      //!
-  std::vector<TH1F*> h_NJetPtjjDiff_hlf;  //!
-  std::vector<TH1F*> h_NJetEtajj_hlf;     //!
-  std::vector<TH1F*> h_NJetEtajjDiff_hlf; //!
-  std::vector<TH1F*> h_NJetPhijj_hlf;     //!
-  std::vector<TH1F*> h_NJetPhijjDiff_hlf; //!
-  std::vector<TH1F*> h_NJetSumPtjj_hlf;   //!
-  std::vector<TH1F*> h_NJetDRjj_hlf;      //!
-  std::vector<TH1F*> h_NJetMjj_qrt;       //!
-  std::vector<TH1F*> h_NJetMjjDiff_qrt;   //!
-  std::vector<TH1F*> h_NJetPtjj_qrt;      //!
-  std::vector<TH1F*> h_NJetPtjjDiff_qrt;  //!
-  std::vector<TH1F*> h_NJetEtajj_qrt;     //!
-  std::vector<TH1F*> h_NJetEtajjDiff_qrt; //!
-  std::vector<TH1F*> h_NJetPhijj_qrt;     //!
-  std::vector<TH1F*> h_NJetPhijjDiff_qrt; //!
-  std::vector<TH1F*> h_NJetSumPtjj_qrt;   //!
-  std::vector<TH1F*> h_NJetDRjj_qrt;      //!
-  std::vector<TH1F*> h_NJetMjj_fth;       //!
-  std::vector<TH1F*> h_NJetMjjDiff_fth;   //!
-  std::vector<TH1F*> h_NJetPtjj_fth;      //!
-  std::vector<TH1F*> h_NJetPtjjDiff_fth;  //!
-  std::vector<TH1F*> h_NJetEtajj_fth;     //!
-  std::vector<TH1F*> h_NJetEtajjDiff_fth; //!
-  std::vector<TH1F*> h_NJetPhijj_fth;     //!
-  std::vector<TH1F*> h_NJetPhijjDiff_fth; //!
-  std::vector<TH1F*> h_NJetSumPtjj_fth;   //!
-  std::vector<TH1F*> h_NJetDRjj_fth;      //!
-  std::vector<TH1F*> h_NJetMjj_all;       //!
-  std::vector<TH1F*> h_NJetMjjDiff_all;   //!
-  std::vector<TH1F*> h_NJetPtjj_all;      //!
-  std::vector<TH1F*> h_NJetPtjjDiff_all;  //!
-  std::vector<TH1F*> h_NJetEtajj_all;     //!
-  std::vector<TH1F*> h_NJetEtajjDiff_all; //!
-  std::vector<TH1F*> h_NJetPhijj_all;     //!
-  std::vector<TH1F*> h_NJetPhijjDiff_all; //!
-  std::vector<TH1F*> h_NJetSumPtjj_all;   //!
-  std::vector<TH1F*> h_NJetDRjj_all;      //!
+  std::vector<TH1F*> h_NJetMjj;            //!
+  std::vector<TH1F*> h_NJetMjjDiff;        //!
+  std::vector<TH1F*> h_NJetPtjj;           //!
+  std::vector<TH1F*> h_NJetPtjjDiff;       //!
+  std::vector<TH1F*> h_NJetEtajj;          //!
+  std::vector<TH1F*> h_NJetEtajjDiff;      //!
+  std::vector<TH1F*> h_NJetPhijj;          //!
+  std::vector<TH1F*> h_NJetPhijjDiff;      //!
+  std::vector<TH1F*> h_NJetSumPtjj;        //!
+  std::vector<TH1F*> h_NJetDRjj;           //!
+  std::vector<TH1F*> h_NJetMjj_0p5;        //!
+  std::vector<TH1F*> h_NJetMjjDiff_0p5;    //!
+  std::vector<TH1F*> h_NJetPtjj_0p5;       //!
+  std::vector<TH1F*> h_NJetPtjjDiff_0p5;   //!
+  std::vector<TH1F*> h_NJetEtajj_0p5;      //!
+  std::vector<TH1F*> h_NJetEtajjDiff_0p5;  //!
+  std::vector<TH1F*> h_NJetPhijj_0p5;      //!
+  std::vector<TH1F*> h_NJetPhijjDiff_0p5;  //!
+  std::vector<TH1F*> h_NJetSumPtjj_0p5;    //!
+  std::vector<TH1F*> h_NJetDRjj_0p5;       //!
+  std::vector<TH1F*> h_NJetMjj_0p25;       //!
+  std::vector<TH1F*> h_NJetMjjDiff_0p25;   //!
+  std::vector<TH1F*> h_NJetPtjj_0p25;      //!
+  std::vector<TH1F*> h_NJetPtjjDiff_0p25;  //!
+  std::vector<TH1F*> h_NJetEtajj_0p25;     //!
+  std::vector<TH1F*> h_NJetEtajjDiff_0p25; //!
+  std::vector<TH1F*> h_NJetPhijj_0p25;     //!
+  std::vector<TH1F*> h_NJetPhijjDiff_0p25; //!
+  std::vector<TH1F*> h_NJetSumPtjj_0p25;   //!
+  std::vector<TH1F*> h_NJetDRjj_0p25;      //!
+  std::vector<TH1F*> h_NJetMjj_0p2;        //!
+  std::vector<TH1F*> h_NJetMjjDiff_0p2;    //!
+  std::vector<TH1F*> h_NJetPtjj_0p2;       //!
+  std::vector<TH1F*> h_NJetPtjjDiff_0p2;   //!
+  std::vector<TH1F*> h_NJetEtajj_0p2;      //!
+  std::vector<TH1F*> h_NJetEtajjDiff_0p2;  //!
+  std::vector<TH1F*> h_NJetPhijj_0p2;      //!
+  std::vector<TH1F*> h_NJetPhijjDiff_0p2;  //!
+  std::vector<TH1F*> h_NJetSumPtjj_0p2;    //!
+  std::vector<TH1F*> h_NJetDRjj_0p2;       //!
+
   
   // TRACK HISTOS
   // basics
   std::vector<std::vector<TH1F*>> h_trk_n; //!
 
+  // --> DO TRACK CLEANING STUDIES
+  // --> --> look at tracks matched to LLP descendants and compare to fakes (no matching truth)
+
+  
   // TRUTH VERTEX HISTOS
   std::vector<TH1F*> h_truthVtx_n; //!
   // --> CHANGE TO VECTOR OF VECTOR FOR ANY LLP TRUTH VERTEX
@@ -724,66 +868,66 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_truthKshortDecay_nSelDesc;  //!
   std::vector<TH1F*> h_truthKshortDecay_nPos;      //!
 
+  
   // SECONDARY VERTEX HISTOS
-  // basics
-  std::vector<std::vector<TH1F*>> h_DV_n;          //!
-  std::vector<std::vector<TH1F*>> h_DV_x;          //!
-  std::vector<std::vector<TH1F*>> h_DV_y;          //!
-  std::vector<std::vector<TH1F*>> h_DV_z;          //!
-  std::vector<std::vector<TH1F*>> h_DV_r;          //!
-  std::vector<std::vector<TH1F*>> h_DV_x_s;        //!
-  std::vector<std::vector<TH1F*>> h_DV_y_s;        //!
-  std::vector<std::vector<TH1F*>> h_DV_z_s;        //!
-  std::vector<std::vector<TH1F*>> h_DV_r_s;        //!
-  std::vector<std::vector<TH1F*>> h_DV_phipos;     //!
-  std::vector<std::vector<TH1F*>> h_DV_pt;         //!
-  std::vector<std::vector<TH1F*>> h_DV_pt_s;       //!
-  std::vector<std::vector<TH1F*>> h_DV_pt_xs;      //!
-  std::vector<std::vector<TH1F*>> h_DV_eta;        //!
-  std::vector<std::vector<TH1F*>> h_DV_phi;        //!
-  std::vector<std::vector<TH1F*>> h_DV_mass;       //!
-  std::vector<std::vector<TH1F*>> h_DV_mass_l;     //!
-  std::vector<std::vector<TH1F*>> h_DV_mass_s;     //!
-  std::vector<std::vector<TH1F*>> h_DV_mass_xs;    //!
-  std::vector<std::vector<TH1F*>> h_DV_massNA;     //!
-  std::vector<std::vector<TH1F*>> h_DV_massNA_l;   //!
-  std::vector<std::vector<TH1F*>> h_DV_massNA_s;   //!
-  std::vector<std::vector<TH1F*>> h_DV_massNA_xs;  //!
-  std::vector<std::vector<TH1F*>> h_DV_direction;  //!
-  std::vector<std::vector<TH1F*>> h_DV_minOpAng;   //!
-  std::vector<std::vector<TH1F*>> h_DV_maxOpAng;   //!
-  std::vector<std::vector<TH1F*>> h_DV_chi2;       //!
-  std::vector<std::vector<TH1F*>> h_DV_chi2_s;     //!
-  std::vector<std::vector<TH1F*>> h_DV_ntrk;       //!
-  std::vector<std::vector<TH1F*>> h_DV_ntrk_final; //!
-  std::vector<std::vector<TH1F*>> h_DV_ntrk_sel;   //!
-  std::vector<std::vector<TH1F*>> h_DV_ntrk_assoc; //!
-  std::vector<std::vector<TH1F*>> h_DV_ntrk_lrt;   //!
-  std::vector<std::vector<TH1F*>> h_DV_ntrk_d0;    //!
-  std::vector<std::vector<TH1F*>> h_DV_ntrk_seld0; //!
-  std::vector<std::vector<TH1F*>> h_DV_errx;       //!
-  std::vector<std::vector<TH1F*>> h_DV_erry;       //!
-  std::vector<std::vector<TH1F*>> h_DV_errz;       //!
-  std::vector<std::vector<TH1F*>> h_DV_errr;       //!
-  std::vector<std::vector<TH1F*>> h_DV_errphi;     //!
-  std::vector<std::vector<TH1F*>> h_DV_sqrterrx;   //!
-  std::vector<std::vector<TH1F*>> h_DV_sqrterry;   //!
-  std::vector<std::vector<TH1F*>> h_DV_sqrterrz;   //!
-  std::vector<std::vector<TH1F*>> h_DV_sqrterrr;   //!
-  std::vector<std::vector<TH1F*>> h_DV_sqrterrphi; //!
-  std::vector<std::vector<TH1F*>> h_DV_fracerrx;   //!
-  std::vector<std::vector<TH1F*>> h_DV_fracerry;   //!
-  std::vector<std::vector<TH1F*>> h_DV_fracerrz;   //!
-  std::vector<std::vector<TH1F*>> h_DV_fracerrr;   //!
-  std::vector<std::vector<TH1F*>> h_DV_fracerrphi; //!
-  std::vector<std::vector<TH1F*>> h_DV_signifx;    //!
-  std::vector<std::vector<TH1F*>> h_DV_signify;    //!
-  std::vector<std::vector<TH1F*>> h_DV_signifz;    //!
-  std::vector<std::vector<TH1F*>> h_DV_signifr;    //!
-  std::vector<std::vector<TH1F*>> h_DV_signifphi;  //!
-  std::vector<std::vector<TH1F*>> h_DV_jetDR;      //!
-  std::vector<std::vector<TH1F*>> h_DV_leadJetDR;  //!
+  // basics --> add h/ht histos ??
+  std::vector<std::vector<TH1F*>> h_DV_n;           //!
+  std::vector<std::vector<TH1F*>> h_DV_x;           //!
+  std::vector<std::vector<TH1F*>> h_DV_y;           //!
+  std::vector<std::vector<TH1F*>> h_DV_z;           //!
+  std::vector<std::vector<TH1F*>> h_DV_r;           //!
+  std::vector<std::vector<TH1F*>> h_DV_x_s;         //!
+  std::vector<std::vector<TH1F*>> h_DV_y_s;         //!
+  std::vector<std::vector<TH1F*>> h_DV_z_s;         //!
+  std::vector<std::vector<TH1F*>> h_DV_r_s;         //!
+  std::vector<std::vector<TH1F*>> h_DV_phipos;      //!
+  std::vector<std::vector<TH1F*>> h_DV_pt;          //!
+  std::vector<std::vector<TH1F*>> h_DV_pt_s;        //!
+  std::vector<std::vector<TH1F*>> h_DV_pt_xs;       //!
+  std::vector<std::vector<TH1F*>> h_DV_eta;         //!
+  std::vector<std::vector<TH1F*>> h_DV_phi;         //!
+  std::vector<std::vector<TH1F*>> h_DV_mass;        //!
+  std::vector<std::vector<TH1F*>> h_DV_mass_l;      //!
+  std::vector<std::vector<TH1F*>> h_DV_mass_s;      //!
+  std::vector<std::vector<TH1F*>> h_DV_mass_xs;     //!
+  std::vector<std::vector<TH1F*>> h_DV_massNA;      //!
+  std::vector<std::vector<TH1F*>> h_DV_massNA_l;    //!
+  std::vector<std::vector<TH1F*>> h_DV_massNA_s;    //!
+  std::vector<std::vector<TH1F*>> h_DV_massNA_xs;   //!
+  std::vector<std::vector<TH1F*>> h_DV_direction;   //!
+  std::vector<std::vector<TH1F*>> h_DV_minOpAng;    //!
+  std::vector<std::vector<TH1F*>> h_DV_maxOpAng;    //!
+  std::vector<std::vector<TH1F*>> h_DV_chi2;        //!
+  std::vector<std::vector<TH1F*>> h_DV_chi2_s;      //!
+  std::vector<std::vector<TH1F*>> h_DV_ntrk;        //!
+  std::vector<std::vector<TH1F*>> h_DV_ntrk_final;  //!
+  std::vector<std::vector<TH1F*>> h_DV_ntrk_sel;    //!
+  std::vector<std::vector<TH1F*>> h_DV_ntrk_assoc;  //!
+  std::vector<std::vector<TH1F*>> h_DV_ntrk_lrt;    //!
+  std::vector<std::vector<TH1F*>> h_DV_errx;        //!
+  std::vector<std::vector<TH1F*>> h_DV_erry;        //!
+  std::vector<std::vector<TH1F*>> h_DV_errz;        //!
+  std::vector<std::vector<TH1F*>> h_DV_errr;        //!
+  std::vector<std::vector<TH1F*>> h_DV_errphi;      //!
+  std::vector<std::vector<TH1F*>> h_DV_sqrterrx;    //!
+  std::vector<std::vector<TH1F*>> h_DV_sqrterry;    //!
+  std::vector<std::vector<TH1F*>> h_DV_sqrterrz;    //!
+  std::vector<std::vector<TH1F*>> h_DV_sqrterrr;    //!
+  std::vector<std::vector<TH1F*>> h_DV_sqrterrphi;  //!
+  std::vector<std::vector<TH1F*>> h_DV_fracerrx;    //!
+  std::vector<std::vector<TH1F*>> h_DV_fracerry;    //!
+  std::vector<std::vector<TH1F*>> h_DV_fracerrz;    //!
+  std::vector<std::vector<TH1F*>> h_DV_fracerrr;    //!
+  std::vector<std::vector<TH1F*>> h_DV_fracerrphi;  //!
+  std::vector<std::vector<TH1F*>> h_DV_signifx;     //!
+  std::vector<std::vector<TH1F*>> h_DV_signify;     //!
+  std::vector<std::vector<TH1F*>> h_DV_signifz;     //!
+  std::vector<std::vector<TH1F*>> h_DV_signifr;     //!
+  std::vector<std::vector<TH1F*>> h_DV_signifphi;   //!
+  std::vector<std::vector<TH1F*>> h_DV_jetDR;       //!
+  std::vector<std::vector<TH1F*>> h_DV_leadJetDR;   //!
   // --> for truth-matched DVs, look at match score, distance to truth, visible mass/mult fraction, etc; make 2d plots
+  
   // tracks
   // --> track parameters wrt PV
   std::vector<std::vector<TH1F*>> h_DV_trk_qOverP;     //!
@@ -834,6 +978,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_seltrk_d0;    //!
   std::vector<std::vector<TH1F*>> h_DV_seltrk_d0_xs; //!
   // --> look at final, selected, associated (and combo) tracks, ...
+  
   // --> combined track parameters
   std::vector<std::vector<TH1F*>> h_DV_sumd0;           //!
   std::vector<std::vector<TH1F*>> h_DV_sumz0;           //!
@@ -945,6 +1090,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_maxSignifd0_sv;  //!
   std::vector<std::vector<TH1F*>> h_DV_maxSignifz0_sv;  //!
   std::vector<std::vector<TH1F*>> h_DV_maxSignifP_sv;   //!
+  
   // --> 2d histos: track/vertex vs track/vertex parameters
   std::vector<std::vector<TH2F*>> h_DV_z_r;                    //!
   std::vector<std::vector<TH2F*>> h_DV_mass_r;                 //!
@@ -1033,6 +1179,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH2F*>> h_DV_trkSqrterrd0sv_trkd0sv; //!
   std::vector<std::vector<TH2F*>> h_DV_trkSqrterrz0sv_trkz0sv; //!
   std::vector<std::vector<TH2F*>> h_DV_trkSqrterrPsv_trkPsv;   //!
+  
   // n-track vertices
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_n;               //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_z;               //!
@@ -1106,6 +1253,51 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxSqrterrd0_sv; //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxSqrterrz0_sv; //!
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_maxSqrterrP_sv;  //!
+
+
+  // CUTFLOWS
+  std::vector<std::vector<TH1F*>> h_evt_testCutflow_DV;             //!
+  std::vector<std::vector<TH1F*>> h_evt_testCutflowEfficiency_DV;   //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflow_DV;                 //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflowEfficiency_DV;       //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflow_NDV;                //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflowEfficiency_NDV;      //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflowTotalEfficiency_NDV; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflow_ntrkNDV;                //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflowEfficiency_ntrkNDV;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflowTotalEfficiency_ntrkNDV; //!
+  // *** run over individual DV cuts to identify promising ones to combine (also combine all, N-1)
+  // *** --> run with all vertex, jet info switches and sift through plots to find potential discriminating variables / event-level jet/DV cuts
+  // *** apply potential jet, DV-combo, event-level cuts
+  // *** --> add jet cutflow, jet efficiency, full event cutflow (for various potential DV, jet cuts) histos ***
+  
+  // *** update plotting scripts to accomodate cutflow / efficiency plots (i.e. not normalize where necessary; divide efficiency combined histos by number of files added together) ***
+
+  // --> add JET cutflow / efficiency histos for potential jet cuts (per event and overall)
+  
+  // ADD CUTFLOWS FOR EVENT-LEVEL CUTS AFTER NOMINAL SEARCH REGION SELECTION !!!!
+  // --> test out number of potential cuts (i.e. nDV, nJet with some DV/track requirement, etc.)
+  // --> will want different cutflow for each DV, jet type (excluding truth)
+  // --> also want jet, dv cutflows (count all jet, dv in all events after each jet, dv cut)
+
+
+  // OVERALL COUNTS / EFFICIENCIES
+  std::vector<std::vector<TH1F*>> h_evt_count_DV;              //!
+  std::vector<std::vector<TH1F*>> h_evt_cutEfficiency_DV;      //!
+  std::vector<std::vector<TH1F*>> h_evt_matchcutEfficiency_DV; //!
+
+
+  // 2D EVENT HISTOS -- ABCD PLANE TESTS
+  // --> weighted standard
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetHt;          //!
+  //std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetPt;          //!
+  //std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetMjj;         //!
+  // --> weighted shifted
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetHt_vrsh;     //!
+  // --> raw standard
+  std::vector<std::vector<TH2F*>> h_abcd_raw_nDV_NJetHt;      //!
+  // --> raw shifteed
+  std::vector<std::vector<TH2F*>> h_abcd_raw_nDV_NJetHt_vrsh; //!
 
   
   // TRIGGER STUDY HISTOS

@@ -10,12 +10,10 @@ metadataPath = "EJsAnalysis/"
 Dict_EJsNtupleToHists = {
     "m_name"                      : "EJsHists",
     "m_msgLevel"                  : "info",
-    #"m_regionName"                : "search search-minus-one valid", # must all be lowercase
-    "m_regionName"                : "search valid",
+    "m_regionName"                : "search valid", # must all be lowercase [search-minus-one]
     "m_baseDVName"                : "bare",
-    #"m_detailStr"                 : "kinematics jetCalo jetTrkMom jetTruth jetTrks jetVerts dijets NLeadJets4 vertices NVtxCutCombosV2",
-    #"m_detailStr"                 : "vertices vtxTruth vtxErrors vtx2D vtxOverallTrk vtxTrks NVtxTrks3 NVtxCutCombos-1 abcd", # [pileup pv]
-    "m_detailStr"                 : "vertices vtxTruth vtxErrors vtxTrks vtxOverallTrk NVtxCutCombosV8",
+    #"m_detailStr"                 : "kinematics jetCalo jetTrkMom jetTruth jetTrks jetVerts baseJetVerts dijets njets NLeadJets4 vertices vtxTruth vtxErrors vtxTrks vtxOverallTrk NVtxTrks5", # [pileup pv abcd]
+    "m_detailStr"                 : "jetTruth NLeadJets4 baseVerts abcd",
     "m_jetBranchName"             : "jet",
     "m_otherJetBranchName"        : "pflowJet",
     "m_truthJetBranchName"        : "truthJet",
