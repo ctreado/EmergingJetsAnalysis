@@ -16,9 +16,9 @@ def main():
     
     ## --- initialize plotting commands --- ##
     # --> change when needed
-    inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-01_n1/EJsNtupToHistOutput/"
+    #inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-01_n1/EJsNtupToHistOutput/"
     #inDir   = os.getenv('EJ_PATH') + "/../output/localOutput/tmp_search-minus-one/EJsNtupToHistOutput/"
-    #inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
+    inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
     pscript = os.getenv('EJ_PATH') + "/EJsAnalysis/scripts/plotting/plotEJsHistograms.py"
     command = "python " + pscript + " --inDir " + inDir
 
@@ -81,23 +81,47 @@ def main():
     command_S1 = " --regionDir search-minus-one"
     command_V  = " --regionDir valid"
 
+
+    # initialize jets
+    # --> set jet-cut types
+    #cuts      = [ "TightPt",  "TightEta",  "TightMass",  "Tight", "Emerging" ]
+    #jetTitles = [ "tight-pt", "tight-eta", "tight-mass", "tight", "emerging" ]
+    cuts         = [ "TightPt",  "TightEta",  "TightMass",  "TightPtEta",   "Tight" ]
+    jetTitles    = [ "tight-pt", "tight-eta", "tight-mass", "tight-pt-eta", "tight" ]
+    exclcuts     = [ "TightPt",  "TightEta",  "TightMass",  "TightPtEta",   "Tight", "Emerging" ]
+    jetTypes     = []
+    exclJetTypes = []
+    for iC, cut in enumerate( cuts ):
+        lowcut     = cut[0].lower() + cut[1:]
+        lowexclcut = exclcuts[iC][0].lower() + exclcuts[iC][1:]
+        jetTypes     .append( lowcut     )
+        exclJetTypes .append( lowexclcut )
+
     
     # 1d plots -- comparing same jet histos over different samples
-    histList_1d   = "jet:DV=darkMatch=nomatch"
+    histList_1d   = "jet+cutflow=_jj_=_Nj_=NJet:DV=darkMatch=nomatch=jet0=jet1=jet1=jet3"
     command_1d_j  = []
     command_1d    = " --draw1D --outSubdir 1d_jet --legLenEnum 5"
     command_1d_l1 = " --lxint 0.006 --lyint 0.025" # for s vs b
     command_1d_l2 = " --lxint 0.015 --lyint 0.040" # for b vs d
     # --> loop over jet types and configure plotting script
-    jtype = [ "jet", "leadJet" ]
+    #jtype = [ "jet", "leadJet" ]
+    jtype = [ "leadJet" ]
+    for jt, jett in enumerate(jetTypes):
+        #jtype.append( jett + "Jet" )
+        jtype.append( "lead" + cuts[jt] + "Jet" )
+    jtype.append( "jet" ) # replace w/ above
     for ij, j in enumerate( jtype ):
         hlist = j
         if histList_1d:
             hlist += "+" + histList_1d
-        if j == "jet":
+        if "lead" not in j:
             if ':' not in hlist: hlist += ':'
             else:                hlist += '='
             hlist += "lead"
+            if j == "jet":
+                for ejt in exclJetTypes:
+                    hlist += "=" + ejt
         command_1d_j.append( command_1d + " --histList " + hlist + " --histVars " + j )
     # --> complete commands
     command_sb_ab_1d_S, command_sb_ab_1d_S1 = [], [] # --> AB benchmark test
@@ -142,25 +166,23 @@ def main():
     command_multi  = []
     command_multi1d = " --drawMulti1D --outSubdir multi_jet --legLenEnum 5 --lxint 0.007 --lyint 0.027 --lxl 0.700"
     # --> set hist vars for given jet types
+    jet1   = [ "darkMatchJet" ]
+    jet2   = [ "nomatchJet"   ]
+    jetout = [ "match"        ]
     histvars, histttls, outnames = [], [], []
-    histvars.append( "darkMatchJet,nomatchJet"           )
-    histvars.append( "leadDarkMatchJet,leadNomatchJet"   )
-    histvars.append( "leadDarkMatchJet0,leadNomatchJet0" )
-    histvars.append( "leadDarkMatchJet1,leadNomatchJet1" )
-    histvars.append( "leadDarkMatchJet2,leadNomatchJet2" )
-    histvars.append( "leadDarkMatchJet3,leadNomatchJet3" )
-    histttls.append( "''"         )
-    histttls.append( "'lead'"     )
-    histttls.append( "'lead-0'"   )
-    histttls.append( "'lead-1'"   )
-    histttls.append( "'lead-2'"   )
-    histttls.append( "'lead-3'"   )
-    outnames.append( "match"      )
-    outnames.append( "leadMatch"  )
-    outnames.append( "leadMatch0" )
-    outnames.append( "leadMatch1" )
-    outnames.append( "leadMatch2" )
-    outnames.append( "leadMatch3" )
+    for ij in range( len(jet1) ):
+        histvars.append( jet1[ij] + "," + jet2[ij] )
+        histttls.append( "''"       )
+        outnames.append( jetout[ij] )
+        getLeadMulti( jet1[ij], jet2[ij], jetout[ij], histvars, histttls, outnames )
+        for jetType in jetTypes:
+            upjet1   = jet1  [ij][0].upper() + jet1  [ij][1:]
+            upjet2   = jet2  [ij][0].upper() + jet2  [ij][1:]
+            upjetout = jetout[ij][0].upper() + jetout[ij][1:]
+            histvars.append( jetType + upjet1 + "," + jetType + upjet2 )
+            histttls.append( "'" + jetType + "'" )
+            outnames.append( jetType + upjetout  )
+            getLeadMulti( jetType + upjet1, jetType + upjet2, jetType + upjetout, histvars, histttls, outnames )
     # --> loop over hist vars and configure plotting script
     for iVar, var in enumerate( histvars ):
         histList = var
@@ -193,23 +215,31 @@ def main():
     
     
     # multi-hist multi-sample 1d plots -- comparing different jet-type histos over different samples
-    histList_multismpl  = "jet:DV"
+    histList_multismpl  = "jet:DV=_jj_=_Nj_=assoctrk=seltrk=LRTtrk"
     command_multismpl   = []
     command_multismpl1d = " --drawMulti1D --doMultiSmpl --doTruthSvB --outSubdir multismpl_jet --legLenEnum 3 --lxint 0.007 --lyint 0.027"
     # --> set hist vars, titles for given jet types
+    j1  = [ "darkMatchJet" ]
+    j2  = [ "jet"          ]
+    jt1 = [ "dark-matched" ]
+    jt2 = [ ""             ]
     hvars, httls = [], []
-    hvars.append( "darkMatchJet,jet"           )
-    hvars.append( "leadDarkMatchJet,leadJet"   )
-    hvars.append( "leadDarkMatchJet0,leadJet0" )
-    hvars.append( "leadDarkMatchJet1,leadJet1" )
-    hvars.append( "leadDarkMatchJet2,leadJet2" )
-    hvars.append( "leadDarkMatchJet3,leadJet3" )
-    httls.append( "'dark-matched signal vs background'"             )
-    httls.append( "'leading dark-matched signal vs background'"     )
-    httls.append( "'1st leading dark-matched signal vs background'" )
-    httls.append( "'2nd leading dark-matched signal vs background'" )
-    httls.append( "'3rd leading dark-matched signal vs background'" )
-    httls.append( "'4th leading dark-matched signal vs background'" )
+    for ij in range( len(j1) ):
+        #hvars.append( j1[ij] + "," + j2[ij] )
+        if jt1[ij]: jt1[ij] += " "
+        if jt2[ij]: jt2[ij] += " "
+        #httls.append( "'" + jt1[ij] + "signal vs " + jt2[ij] + "background'" )
+        getLeadMultiSmpl( j1[ij], j2[ij], jt1[ij], jt2[ij], hvars, httls )
+        for jt, jetType in enumerate( jetTypes ):
+            upj1 = j1[ij][0].upper() + j1[ij][1:]
+            upj2 = j2[ij][0].upper() + j2[ij][1:]
+            #hvars.append( jetType + upj1 + "," + jetType + upj2 )
+            jttl1 = jetTitles[jt] + " "
+            jttl2 = jetTitles[jt] + " "
+            if jt1[ij]: jttl1 += jt1[ij]
+            if jt2[ij]: jttl2 += jt2[ij]
+            #httls.append( "'" + jttl1 + "signal vs " + jttl2 + "background'" )
+            getLeadMultiSmpl( jetType + upj1, jetType + upj2, jttl1, jttl2, hvars, httls )
     # --> loop over hist vars and configure plotting script
     for iVar, var in enumerate( hvars ):
         histList = var
@@ -236,14 +266,13 @@ def main():
         command_sb_10_multismpl_S1 .append( command_sb_10 + command + command_S1 )
         command_sb_06_multismpl_S  .append( command_sb_06 + command + command_S  )
         command_sb_06_multismpl_S1 .append( command_sb_06 + command + command_S1 )
-    # --> fix issues: missing Njet plotsl; some multismpl plots filled with dark-matched and all bkgd histos
 
 
     ## --- run plotting jobs --- ##
 
     ## 1d: signal vs background
-    #for c_sbabS  in command_sb_ab_1d_S: # ab benchmark test
-    #    os.system( c_sbabS  )
+    for c_sbabS  in command_sb_ab_1d_S: # ab benchmark test
+        os.system( c_sbabS  )
     #for c_sbabS1 in command_sb_ab_1d_S1:
     #    os.system( c_sbabS1 )
     #for c_sb14S  in command_sb_14_1d_S: # xdm-1400
@@ -283,16 +312,16 @@ def main():
     #    os.system( cm_sabS  )
     #for cm_sabS1 in command_s_ab_multi_S1:
     #    os.system( cm_sabS1 )
-    for cm_s14S  in command_s_14_multi_S: # xdm-1400
-        os.system( cm_s14S  )
+    #for cm_s14S  in command_s_14_multi_S: # xdm-1400
+    #    os.system( cm_s14S  )
     #for cm_s14S1 in command_s_14_multi_S1:
     #    os.system( cm_s14S1 )
-    for cm_s10S  in command_s_10_multi_S: # xdm-1000
-        os.system( cm_s10S  )
+    #for cm_s10S  in command_s_10_multi_S: # xdm-1000
+    #    os.system( cm_s10S  )
     #for cm_s10S1 in command_s_10_multi_S1:
     #    os.system( cm_s10S1 )
-    for cm_s06S  in command_s_06_multi_S: # xdm-600
-        os.system( cm_s06S  )
+    #for cm_s06S  in command_s_06_multi_S: # xdm-600
+    #    os.system( cm_s06S  )
     #for cm_s06S1 in command_s_06_multi_S1:
     #    os.system( cm_s06S1 )
     #for cm_bS    in command_b_multi_S:    # background
@@ -301,8 +330,8 @@ def main():
     #    os.system( cm_bS1   )
         
     ## multi-sample 1d
-    #for cms_sbabS  in command_sb_ab_multismpl_S:
-    #    os.system( cms_sbabS  )
+    for cms_sbabS  in command_sb_ab_multismpl_S:
+        os.system( cms_sbabS  )
     #for cms_sbabS1 in command_sb_ab_multismpl_S1:
     #    os.system( cms_sbabS1 )
     #for cms_sb14S  in command_sb_14_multismpl_S:
@@ -317,6 +346,42 @@ def main():
     #    os.system( cms_sb06S  )
     #for cms_sb06S1 in command_sb_06_multismpl_S1:
     #    os.system( cms_sb06S1 )
+
+
+
+def getLeadMulti( jet1, jet2, jetout, hvars, httls, onames ):
+    upjet1   = jet1  [0].upper() + jet1  [1:]
+    upjet2   = jet2  [0].upper() + jet2  [1:]
+    upjetout = jetout[0].upper() + jetout[1:]
+    for ijet in range(5):
+        njet = str(ijet-1)
+        if njet == "-1": njet = ""
+        htitle = "'lead"
+        if njet: htitle += "-"
+        htitle += njet + "'"
+        hvars .append( "lead" + upjet1 + njet + ",lead" + upjet2 + njet )
+        httls .append( htitle                   )
+        onames.append( "lead" + upjetout + njet )
+
+def getLeadMultiSmpl( jet1, jet2, jetTitle1, jetTitle2, hvars, httls ):
+    upjet1 = jet1[0].upper() + jet1[1:]
+    upjet2 = jet2[0].upper() + jet2[1:]
+    #for ijet in range(5):
+    for ijet in range(1):
+        njet = str(ijet-1)
+        if njet == "-1": njet = ""
+        htitle = "'"
+        if njet:
+            hnjet = njet
+            if   njet == "0": hnjet = "1st"
+            elif njet == "1": hnjet = "2nd"
+            elif njet == "2": hnjet = "3rd"
+            elif njet == "3": hnjet = "4th"
+            htitle += hnjet + " "
+        htitle += "leading "
+        htitle += jetTitle1 + "signal vs " + jetTitle2 + "background'"
+        hvars.append( "lead" + upjet1 + njet + ",lead" + upjet2 + njet )
+        httls.append( htitle )
 
     
 

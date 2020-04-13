@@ -50,7 +50,8 @@ class EJsHistogramManager : public HistogramManager
   using HistogramManager::execute;    // overload
   using HistogramManager::finalize;   // overload
 
-  void getJetTypes ( int jet_index, std::vector<int>& jet );
+  void getJetTypes ( int jet_index, std::vector<int>& jet, const EJsHelper::BaseDV& base_dv,
+		                         bool doCombos = true, bool doEJ   = true, bool doEJCuts   = false );
   void getTrkTypes ( int trk_index, std::vector<int>& trk, const EJsHelper::BaseDV& base_dv );
   void getDVTypes  ( int dv_index,  std::vector<int>& dv,  const EJsHelper::BaseDV& base_dv,
 		     bool jetDV = false, bool doCombos = true, bool doGood = true, bool doGoodCuts = false );
@@ -83,16 +84,22 @@ class EJsHistogramManager : public HistogramManager
   float lumi   = 139.; // [fb-1]  
 
   // counters
-  unsigned m_LJix       = 0;
-  unsigned m_nTypeJs    = 0;
-  unsigned m_nTypeBJs   = 0;
-  unsigned m_nTypeTrks  = 0;
-  unsigned m_nTypeDVs   = 0;
-  unsigned m_nType1DVs  = 0;
-  unsigned m_nTypeBDVs  = 0;
-  unsigned m_nTypeJDVs  = 0;
-  unsigned m_nType1JDVs = 0;
-  unsigned m_nTypeBJDVs = 0;
+  unsigned m_LJix        = 0;
+  unsigned m_nTypeJs     = 0;
+  unsigned m_nType1Js    = 0;
+  unsigned m_nType1SVJs  = 0;
+  unsigned m_nTypeBJs    = 0;
+  unsigned m_svNtrkJ_ix  = 0;
+  unsigned m_svNjtrkJ_ix = 0;
+  unsigned m_svTrkJ_ix   = 0;
+  unsigned m_svNJ_ix     = 0;
+  unsigned m_nTypeTrks   = 0;
+  unsigned m_nTypeDVs    = 0;
+  unsigned m_nType1DVs   = 0;
+  unsigned m_nTypeBDVs   = 0;
+  unsigned m_nTypeJDVs   = 0;
+  unsigned m_nType1JDVs  = 0;
+  unsigned m_nTypeBJDVs  = 0;
   std::vector<int>   m_nEntries;
   std::vector<float> m_nWeightedEntries;
   std::vector<int>   m_nFourJets;
@@ -117,14 +124,21 @@ class EJsHistogramManager : public HistogramManager
   int    m_nJets      = 4;
   double m_jetPt      = 120.;
   double m_jetEta     = 2.5;
+  
   // trigger selections
   int    m_nTrigJets  = 4;
   double m_trigJetPt  = 120.;
   double m_trigJetEta = 3.1;
+  
   // ABCD VR shift values
   double m_VRshift_njetHt = 4./3;
+  
   // nDV test cuts
   int m_ndv = 7;
+
+  // jet n-sv (trk) cuts
+  std::vector<int> m_nJSVtrk = { 2, 4, 6, 8 };
+  std::vector<int> m_nJSV    = { 1, 2 };
 
 
   // --- BRANCHES --- //
@@ -291,6 +305,8 @@ class EJsHistogramManager : public HistogramManager
   std::vector<uint8_t>* m_trk_isCleanSV;      //!
   std::vector<uint8_t>* m_trk_isFiltSV;       //!
   std::vector<uint8_t>* m_trk_isFinalSV;      //!
+  std::vector<int>*     m_trk_SV_ID;          //!
+  std::vector<int>*     m_trk_SV_index;       //!
   std::vector<uint8_t>* m_trk_nSCT;           //!
   std::vector<uint8_t>* m_trk_nPixel;         //!
   std::vector<uint8_t>* m_trk_nTRT;           //!
@@ -784,46 +800,16 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_sumPt;  //!
 
   // leading N-jet dijet invariant mass (avg of dijet pairs w/ min diff invM b/w them)
-  std::vector<TH1F*> h_NJetMjj;            //!
-  std::vector<TH1F*> h_NJetMjjDiff;        //!
-  std::vector<TH1F*> h_NJetPtjj;           //!
-  std::vector<TH1F*> h_NJetPtjjDiff;       //!
-  std::vector<TH1F*> h_NJetEtajj;          //!
-  std::vector<TH1F*> h_NJetEtajjDiff;      //!
-  std::vector<TH1F*> h_NJetPhijj;          //!
-  std::vector<TH1F*> h_NJetPhijjDiff;      //!
-  std::vector<TH1F*> h_NJetSumPtjj;        //!
-  std::vector<TH1F*> h_NJetDRjj;           //!
-  std::vector<TH1F*> h_NJetMjj_0p5;        //!
-  std::vector<TH1F*> h_NJetMjjDiff_0p5;    //!
-  std::vector<TH1F*> h_NJetPtjj_0p5;       //!
-  std::vector<TH1F*> h_NJetPtjjDiff_0p5;   //!
-  std::vector<TH1F*> h_NJetEtajj_0p5;      //!
-  std::vector<TH1F*> h_NJetEtajjDiff_0p5;  //!
-  std::vector<TH1F*> h_NJetPhijj_0p5;      //!
-  std::vector<TH1F*> h_NJetPhijjDiff_0p5;  //!
-  std::vector<TH1F*> h_NJetSumPtjj_0p5;    //!
-  std::vector<TH1F*> h_NJetDRjj_0p5;       //!
-  std::vector<TH1F*> h_NJetMjj_0p25;       //!
-  std::vector<TH1F*> h_NJetMjjDiff_0p25;   //!
-  std::vector<TH1F*> h_NJetPtjj_0p25;      //!
-  std::vector<TH1F*> h_NJetPtjjDiff_0p25;  //!
-  std::vector<TH1F*> h_NJetEtajj_0p25;     //!
-  std::vector<TH1F*> h_NJetEtajjDiff_0p25; //!
-  std::vector<TH1F*> h_NJetPhijj_0p25;     //!
-  std::vector<TH1F*> h_NJetPhijjDiff_0p25; //!
-  std::vector<TH1F*> h_NJetSumPtjj_0p25;   //!
-  std::vector<TH1F*> h_NJetDRjj_0p25;      //!
-  std::vector<TH1F*> h_NJetMjj_0p2;        //!
-  std::vector<TH1F*> h_NJetMjjDiff_0p2;    //!
-  std::vector<TH1F*> h_NJetPtjj_0p2;       //!
-  std::vector<TH1F*> h_NJetPtjjDiff_0p2;   //!
-  std::vector<TH1F*> h_NJetEtajj_0p2;      //!
-  std::vector<TH1F*> h_NJetEtajjDiff_0p2;  //!
-  std::vector<TH1F*> h_NJetPhijj_0p2;      //!
-  std::vector<TH1F*> h_NJetPhijjDiff_0p2;  //!
-  std::vector<TH1F*> h_NJetSumPtjj_0p2;    //!
-  std::vector<TH1F*> h_NJetDRjj_0p2;       //!
+  std::vector<TH1F*> h_NJetJJ_pt;         //!
+  std::vector<TH1F*> h_NJetJJ_eta;        //!
+  std::vector<TH1F*> h_NJetJJ_phi;        //!
+  std::vector<TH1F*> h_NJetJJ_m;          //!
+  std::vector<TH1F*> h_NJetJJ_ptDiff;     //!
+  std::vector<TH1F*> h_NJetJJ_etaDiff;    //!
+  std::vector<TH1F*> h_NJetJJ_phiDiff;    //!
+  std::vector<TH1F*> h_NJetJJ_mDiff;      //!
+  std::vector<TH1F*> h_NJetJJ_sumPt;      //!
+  std::vector<TH1F*> h_NJetJJ_dR;         //!
 
   
   // TRACK HISTOS
@@ -870,7 +856,7 @@ class EJsHistogramManager : public HistogramManager
 
   
   // SECONDARY VERTEX HISTOS
-  // basics --> add h/ht histos ??
+  // basics --> add h/ht histos !!
   std::vector<std::vector<TH1F*>> h_DV_n;           //!
   std::vector<std::vector<TH1F*>> h_DV_x;           //!
   std::vector<std::vector<TH1F*>> h_DV_y;           //!
@@ -895,6 +881,12 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_massNA_s;    //!
   std::vector<std::vector<TH1F*>> h_DV_massNA_xs;   //!
   std::vector<std::vector<TH1F*>> h_DV_direction;   //!
+  std::vector<std::vector<TH1F*>> h_DV_H;           //!
+  std::vector<std::vector<TH1F*>> h_DV_H_s;         //!
+  std::vector<std::vector<TH1F*>> h_DV_H_xs;        //!
+  std::vector<std::vector<TH1F*>> h_DV_Ht;          //!
+  std::vector<std::vector<TH1F*>> h_DV_Ht_s;        //!
+  std::vector<std::vector<TH1F*>> h_DV_Ht_xs;       //!
   std::vector<std::vector<TH1F*>> h_DV_minOpAng;    //!
   std::vector<std::vector<TH1F*>> h_DV_maxOpAng;    //!
   std::vector<std::vector<TH1F*>> h_DV_chi2;        //!
@@ -1256,31 +1248,62 @@ class EJsHistogramManager : public HistogramManager
 
 
   // CUTFLOWS
-  std::vector<std::vector<TH1F*>> h_evt_testCutflow_DV;             //!
-  std::vector<std::vector<TH1F*>> h_evt_testCutflowEfficiency_DV;   //!
-  std::vector<std::vector<TH1F*>> h_evt_cutflow_DV;                 //!
-  std::vector<std::vector<TH1F*>> h_evt_cutflowEfficiency_DV;       //!
-  std::vector<std::vector<TH1F*>> h_evt_cutflow_NDV;                //!
-  std::vector<std::vector<TH1F*>> h_evt_cutflowEfficiency_NDV;      //!
-  std::vector<std::vector<TH1F*>> h_evt_cutflowTotalEfficiency_NDV; //!
+  std::vector<std::vector<TH1F*>>               h_evt_testCutflow_jet;                      //!
+  std::vector<std::vector<TH1F*>>               h_evt_testCutflow_leadjet;                  //!
+  std::vector<std::vector<TH1F*>>               h_evt_testCutflowEfficiency_jet;            //!
+  std::vector<std::vector<TH1F*>>               h_evt_testCutflowEfficiency_leadjet;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svNtrkJet;                //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svNjtrkJet;               //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svTrkJet;                 //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svNJet;                   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvNtrkJet;            //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvNjtrkJet;           //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvTrkJet;             //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvNJet;               //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svNtrkJet;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svNjtrkJet;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svTrkJet;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svNJet;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvNtrkJet;  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvNjtrkJet; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvTrkJet;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvNJet;     //!
+  std::vector<std::vector<TH1F*>>               h_evt_cutflow_jet;                          //!
+  std::vector<std::vector<TH1F*>>               h_evt_cutflow_leadjet;                      //!
+  std::vector<std::vector<TH1F*>>               h_evt_cutflowEfficiency_jet;                //!
+  std::vector<std::vector<TH1F*>>               h_evt_cutflowEfficiency_leadjet;            //!
+  // --> add n base, loose-good SV cuts (add loose-good DVs, too -- w/o (pt), d0/z0 cuts)
+  // --> test cut on matched track min-d0 ??
+  // --> test cuts on n SV tracks ??
+  
+  std::vector<std::vector<TH1F*>> h_evt_testCutflow_DV;                  //!
+  std::vector<std::vector<TH1F*>> h_evt_testCutflowEfficiency_DV;        //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflow_DV;                      //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflowEfficiency_DV;            //!
+  
+  std::vector<std::vector<TH1F*>> h_evt_cutflow_NJet;                    //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflow_NLeadJet;                //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflowEfficiency_NJet;          //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflowEfficiency_NLeadJet;      //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflowTotalEfficiency_NJet;     //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflowTotalEfficiency_NLeadJet; //!
+  
+  std::vector<std::vector<TH1F*>> h_evt_cutflow_NDV;                     //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflowEfficiency_NDV;           //!
+  std::vector<std::vector<TH1F*>> h_evt_cutflowTotalEfficiency_NDV;      //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflow_ntrkNDV;                //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflowEfficiency_ntrkNDV;      //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflowTotalEfficiency_ntrkNDV; //!
-  // *** run over individual DV cuts to identify promising ones to combine (also combine all, N-1)
-  // *** --> run with all vertex, jet info switches and sift through plots to find potential discriminating variables / event-level jet/DV cuts
-  // *** apply potential jet, DV-combo, event-level cuts
-  // *** --> add jet cutflow, jet efficiency, full event cutflow (for various potential DV, jet cuts) histos ***
+  // --> test other potential "good" (n-1, w/o d0/z0, etc.) DV cuts
+  // --> run on vertices with various track cleaning / trimming (need to update code to recalculate kinematic variables)
+
+  // --> add event-level jet cuts + cutflows
+  // --> --> test cut on dR between jets, jet pairs in dijet systems
+  // --> --> tighten invariant mass difference requirement for singular dijet system
+  // --> --> use NJetPt, NJetEta, Mjj variables for ABCD plane; add to cutflow (i.e. N jets w/ some criteria + NJetPt) --> calculate before and after requiring nEJs
+  // ... add full event cutflow (i.e. for nDV > x, nEJ > y, other potential event-level cuts)
   
-  // *** update plotting scripts to accomodate cutflow / efficiency plots (i.e. not normalize where necessary; divide efficiency combined histos by number of files added together) ***
-
-  // --> add JET cutflow / efficiency histos for potential jet cuts (per event and overall)
   
-  // ADD CUTFLOWS FOR EVENT-LEVEL CUTS AFTER NOMINAL SEARCH REGION SELECTION !!!!
-  // --> test out number of potential cuts (i.e. nDV, nJet with some DV/track requirement, etc.)
-  // --> will want different cutflow for each DV, jet type (excluding truth)
-  // --> also want jet, dv cutflows (count all jet, dv in all events after each jet, dv cut)
-
-
   // OVERALL COUNTS / EFFICIENCIES
   std::vector<std::vector<TH1F*>> h_evt_count_DV;              //!
   std::vector<std::vector<TH1F*>> h_evt_cutEfficiency_DV;      //!

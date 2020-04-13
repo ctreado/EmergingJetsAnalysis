@@ -16,9 +16,9 @@ def main():
     
     ## --- initialize plotting commands --- ##
     # --> change when needed
-    inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-01_n1/EJsNtupToHistOutput/"
+    #inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-01_n1/EJsNtupToHistOutput/"
     #inDir   = os.getenv('EJ_PATH') + "/../output/localOutput/tmp_search-minus-one/EJsNtupToHistOutput/"
-    #inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
+    inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
     pscript = os.getenv('EJ_PATH') + "/EJsAnalysis/scripts/plotting/plotEJsHistograms.py"
     command = "python " + pscript + " --inDir " + inDir
 
@@ -81,13 +81,15 @@ def main():
     command_S1 = " --regionDir search-minus-one"
     command_V  = " --regionDir valid"
 
+    
     # initialize DVs
     # --> set base case
     baseDV = "bare"
     # --> set number of tracks
     Ntrk = 5
     # --> set DV-cut types
-    cuts = [ "ByJet", "ByNJet", "Fiduc", "Ksm", "Pt", "Mind0", "Minz0", "Minsqerrd0", "Minsqerrz0", "Good" ]
+    #cuts = [ "ByJet", "ByNJet", "Fiduc", "Ksm", "Pt", "Mind0", "Minz0", "Minsqerrd0", "Minsqerrz0", "Good" ]
+    cuts = [ "Good" ]
     dvTypes = []
     for cut in cuts:
         lowcut = cut[0].lower() + cut[1:]
@@ -228,12 +230,10 @@ def main():
     hvars.append( "darkPionDV," + baseDV + "DV" )
     httls.append( "'dark pion matched signal vs all background'" + "' (" + baseDV + " DVs)'" )
     # --> add all DV types to list
-    #for dvType in dvTypes:
-    #    htitle = "'" + dvType + "'"
-    #    hvars.append( dvType + "DarkPionDV," + dvType + "DV" )
-    #    httls.append( htitle + "' dark pion matched signal vs background'" + "' (" + baseDV + " DVs)'" )
-    hvars.append( "goodDarkPionDV,goodDV" )
-    httls.append( "'good dark pion matched signal vs all background'" + "' (" + baseDV + " DVs)'" )
+    for dvType in dvTypes:
+        htitle = "'" + dvType + "'"
+        hvars.append( dvType + "DarkPionDV," + dvType + "DV" )
+        httls.append( htitle + "' dark pion matched signal vs background'" + "' (" + baseDV + " DVs)'" )
     # --> loop over hist vars and configure plotting script
     for iVar, var in enumerate( hvars ):
         histList = var
@@ -278,7 +278,7 @@ def main():
     # --> add other signal/sample types, regions for each plot type as needed
 
     ## 1d: signal vs background
-    #os.system( command_sb_ab_1d_S  ) # ab benchmark test
+    os.system( command_sb_ab_1d_S  ) # ab benchmark test
     #os.system( command_sb_ab_1d_S1 )
     ##os.system( command_sb_14_1d_S  ) # xdm-1400
     #os.system( command_sb_14_1d_S1 )
@@ -336,8 +336,8 @@ def main():
     #    os.system( cms_sb14S  )
     #for cms_sb14S1 in command_sb_14_multismpl_S1:
     #    os.system( cms_sb14S1 )
-    for cms_sb10S  in command_sb_10_multismpl_S:
-        os.system( cms_sb10S  )
+    #for cms_sb10S  in command_sb_10_multismpl_S:
+    #    os.system( cms_sb10S  )
     #for cms_sb10S1 in command_sb_10_multismpl_S1:
     #    os.system( cms_sb10S1 )
     #for cms_sb06S  in command_sb_06_multismpl_S:

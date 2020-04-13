@@ -110,6 +110,13 @@ namespace EJsHelperClasses {
     bool m_jetVtxTruth;
     bool m_dijets;
     bool m_njets;
+    bool m_typeJets;
+    bool m_tightJets;
+    bool m_nsvNtrkJets;
+    bool m_nsvNjtrkJets;
+    bool m_nsvTrkJets;
+    bool m_nsvJets;
+    bool m_comboJets;
     bool m_vertices;
     bool m_baseVerts;
     bool m_byJetVerts;

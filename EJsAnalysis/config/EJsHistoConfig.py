@@ -13,7 +13,8 @@ Dict_EJsNtupleToHists = {
     "m_regionName"                : "search valid", # must all be lowercase [search-minus-one]
     "m_baseDVName"                : "bare",
     #"m_detailStr"                 : "kinematics jetCalo jetTrkMom jetTruth jetTrks jetVerts baseJetVerts dijets njets NLeadJets4 vertices vtxTruth vtxErrors vtxTrks vtxOverallTrk NVtxTrks5", # [pileup pv abcd]
-    "m_detailStr"                 : "jetTruth NLeadJets4 baseVerts abcd",
+    #"m_detailStr"                 : "jetTruth tightJets nsvJets comboJets baseJetVerts dijets njets NLeadJets4 abcd",
+    "m_detailStr"                 : "tightJets nsvNtrkJets nsvNjtrkJets nsvTrkJets nsvJets comboJets jetVerts baseJetVerts",
     "m_jetBranchName"             : "jet",
     "m_otherJetBranchName"        : "pflowJet",
     "m_truthJetBranchName"        : "truthJet",
