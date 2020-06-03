@@ -14,7 +14,7 @@ Dict_EJsNtupleToHists = {
     "m_baseDVName"                : "bare",
     #"m_detailStr"                 : "kinematics jetCalo jetTrkMom jetTruth jetTrks jetVerts baseJetVerts dijets njets NLeadJets4 vertices vtxTruth vtxErrors vtxTrks vtxOverallTrk NVtxTrks5", # [pileup pv abcd]
     #"m_detailStr"                 : "jetTruth tightJets nsvJets comboJets baseJetVerts dijets njets NLeadJets4 abcd",
-    "m_detailStr"                 : "tightJets nsvNtrkJets nsvNjtrkJets nsvTrkJets nsvJets comboJets jetVerts baseJetVerts",
+    "m_detailStr"                 : "dijets njets nDVs abcdcutOnly", # modify code to do histos for 1d variables used in abcd planes when abcdcutOnly applied (i.e. NJetHt)
     "m_jetBranchName"             : "jet",
     "m_otherJetBranchName"        : "pflowJet",
     "m_truthJetBranchName"        : "truthJet",

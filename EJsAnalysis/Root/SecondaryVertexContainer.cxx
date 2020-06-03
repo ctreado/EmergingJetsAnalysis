@@ -42,6 +42,8 @@ SecondaryVertexContainer :: SecondaryVertexContainer ( const std::string& name, 
   m_mind0                        = new std::vector<float>;
   m_maxd0                        = new std::vector<float>;
   m_distToPV                     = new std::vector<float>;
+  m_passSel                      = new std::vector<int>;
+  m_passMaterialVeto             = new std::vector<uint8_t>;
 
   m_pt_clean                     = new std::vector<float>;
   m_eta_clean                    = new std::vector<float>;
@@ -277,6 +279,8 @@ SecondaryVertexContainer :: ~SecondaryVertexContainer ()
   delete m_mind0;
   delete m_maxd0;
   delete m_distToPV;
+  delete m_passSel;
+  delete m_passMaterialVeto;
 
   delete m_pt_clean;
   delete m_eta_clean;
@@ -513,6 +517,8 @@ void SecondaryVertexContainer :: setTree ( TTree* tree )
   connectBranch<float>              ( tree, "mind0",                        &m_mind0                        );
   connectBranch<float>              ( tree, "maxd0",                        &m_maxd0                        );
   connectBranch<float>              ( tree, "distToPV",                     &m_distToPV                     );
+  connectBranch<int>                ( tree, "passSel",                      &m_passSel                      );
+  connectBranch<uint8_t>            ( tree, "passMaterialVeto",             &m_passMaterialVeto             );
 
   connectBranch<float>              ( tree, "pt_clean",                     &m_pt_clean                     );
   connectBranch<float>              ( tree, "eta_clean",                    &m_eta_clean                    );
@@ -750,6 +756,8 @@ void SecondaryVertexContainer :: setBranches ( TTree* tree )
   setBranch<float>              ( tree, "mind0",                        m_mind0                        );
   setBranch<float>              ( tree, "maxd0",                        m_maxd0                        );
   setBranch<float>              ( tree, "distToPV",                     m_distToPV                     );
+  setBranch<int>                ( tree, "passSel",                      m_passSel                      );
+  setBranch<uint8_t>            ( tree, "passMaterialVeto",             m_passMaterialVeto             );
 
   setBranch<float>              ( tree, "pt_clean",                     m_pt_clean                     );
   setBranch<float>              ( tree, "eta_clean",                    m_eta_clean                    );
@@ -983,6 +991,8 @@ void SecondaryVertexContainer :: clear ()
   m_mind0                        ->clear();
   m_maxd0                        ->clear();
   m_distToPV                     ->clear();
+  m_passSel                      ->clear();
+  m_passMaterialVeto             ->clear();
 
   m_pt_clean                     ->clear();
   m_eta_clean                    ->clear();
@@ -1337,6 +1347,8 @@ void SecondaryVertexContainer :: FillSecondaryVertex ( const xAOD::Vertex* secVt
   m_mind0               ->push_back( mind0                                      );
   m_maxd0               ->push_back( maxd0                                      );
   m_distToPV            ->push_back( dv_distToPV                                );
+  m_passSel             ->push_back( AUXDYN( secVtx, char, "passSel"          ) );
+  m_passMaterialVeto    ->push_back( AUXDYN( secVtx, char, "passMaterialVeto" ) );
 
   m_pt_clean            ->push_back( sumP4_clean.Pt()     / m_units             );
   m_eta_clean           ->push_back( sumP4_clean.Eta()                          );

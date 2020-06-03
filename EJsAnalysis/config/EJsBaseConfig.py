@@ -208,7 +208,7 @@ Dict_SecondaryVertexSelector = {
     "m_createSelectedContainer" : True,
     "m_doTrackTrimming"         : True,  ## --> for now, apply (default) track trimming...
     "m_doFiltTrkCut"            : False, ## --> ...but don't apply filtered-track cuts
-    "m_doMatMapVeto"            : True,
+    "m_doMatMapVeto"            : False,
     "m_matMapInnerFileName"     : matMapPath + "MaterialMap_v3.2_Inner.root",
     "m_matMapInnerHistName"     : "FinalMap_inner",
     "m_matMapInnerMatrixName"   : "FoldingInfo",
@@ -288,7 +288,7 @@ Dict_EJsMiniNtuple = {
     "m_trigDetailStr"                : "basic passTriggers prescales",
     "m_jetDetailStr"                 : "kinematic rapidity clean energy trackAll trackPV allTrack constituent area truth charge ghost match", # add "allTrackDetail", "detail" to regain full ntuple contents
     "m_jetContainerName"             : "AntiKt4EMTopoJets_Calib_Select AntiKt4EMPFlowJets_Calib_Select",
-    "m_jetBranchName"                : "jet pflowJet",
+    "m_jetBranchName"                : "jet pflowJet",                           
     "m_jetSystsVec"                  : "AntiKt4EMTopoJets_Calib_Select_EJsxAODAna_Algo",
     "m_jetSystsContainerIndex"       : 1,
     "m_truthJetDetailStr"            : "kinematic rapidity energyLight constituent constituentAll area truthJets truthVerts truthParts", # add "detail" to regain full ntuple contents
@@ -303,7 +303,7 @@ Dict_EJsMiniNtuple = {
     "m_secondaryVertexDetailStr"     : "tracks truthMatching jetMatched",
     "m_secondaryVertexContainerName" : "VrtSecInclusive_SecondaryVertices_Select",
     "m_secondaryVertexBranchName"    : "secVtx",
-    "m_truthVertexDetailStr"         : "recoMatching jetMatched",
+    "m_truthVertexDetailStr"         : "recoMatching recoMatchDetail jetMatched",
     "m_truthVertexContainerName"     : "TruthVertices_Select",
     "m_truthVertexBranchName"        : "truthVtx",
     "m_truthLLP"                     : "DarkPion Kshort",

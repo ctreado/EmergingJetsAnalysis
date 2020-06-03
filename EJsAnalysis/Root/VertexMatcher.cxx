@@ -306,24 +306,24 @@ EL::StatusCode VertexMatcher :: execute ()
     truthVtx->auxdecor<EJsHelper::VertexLinkVector_t>("closestRecoVertexLinks") = closestRecoVtxLinks;
     truthVtx->auxdecor<std::vector<float>>("closestRecoVertexDistances")        = closestRecoVtxDistances;
 
-    // count number of reconstructed (selected) descendants
-    std::set<const xAOD::TruthParticle*> reconstructedDescendants;
-    std::set<const xAOD::TruthParticle*> reconstructedDescendants_selected;
-    for ( const auto& truth : reconstructibleDescendants ) {
-      bool isReconstructed = m_truthTrackHash.find( truth ) != m_truthTrackHash.end();
-      bool isSelected      = false;
-      if ( isReconstructed ) {
-	reconstructedDescendants .emplace( truth );
-	const auto* track = m_truthTrackHash.at( truth );
-	if ( track->isAvailable<char>("is_selected") )
-	  if ( track->auxdataConst<char>("is_selected") ) isSelected = true;
-      }
-      if ( isSelected )
-	reconstructedDescendants_selected .emplace( truth );
-    }
+    // // count number of reconstructed (selected) descendants
+    // std::set<const xAOD::TruthParticle*> reconstructedDescendants;
+    // std::set<const xAOD::TruthParticle*> reconstructedDescendants_selected;
+    // for ( const auto& truth : reconstructibleDescendants ) {
+    //   bool isReconstructed = m_truthTrackHash.find( truth ) != m_truthTrackHash.end();
+    //   bool isSelected      = false;
+    //   if ( isReconstructed ) {
+    // 	reconstructedDescendants .emplace( truth );
+    // 	const auto* track = m_truthTrackHash.at( truth );
+    // 	if ( track->isAvailable<char>("is_selected") )
+    // 	  if ( track->auxdataConst<char>("is_selected") ) isSelected = true;
+    //   }
+    //   if ( isSelected )
+    // 	reconstructedDescendants_selected .emplace( truth );
+    // }
     
-    // require at least 2 reconstructed selected descendants for truth vertex to be "reconstructible"...
-    if ( reconstructedDescendants_selected.size() < 2 ) continue;
+    // require at least 2 reconstructibleselected descendants for truth vertex to be "reconstructible"...
+    if ( reconstructibleDescendants.size() < 2 ) continue;
     truthVtx->auxdecor<char>("isReconstructible") = true;
 
     // loop over reco vertices + search for matches to truth vertex (positions)

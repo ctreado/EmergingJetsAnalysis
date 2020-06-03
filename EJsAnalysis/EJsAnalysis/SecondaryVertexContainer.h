@@ -65,6 +65,8 @@ namespace EJs {
     std::vector<float>*              m_mind0;
     std::vector<float>*              m_maxd0;
     std::vector<float>*              m_distToPV;
+    std::vector<int>*                m_passSel;
+    std::vector<uint8_t>*            m_passMaterialVeto;
 
     std::vector<float>*              m_pt_clean;
     std::vector<float>*              m_eta_clean;

@@ -51,6 +51,8 @@ namespace EJsHelperClasses {
   void HistogramInfoSwitch::initialize() {
     m_trigTest        = has_exact( "trigTest"        );
     m_abcd            = has_exact( "abcd"            );
+    m_cutflow         = has_exact( "cutflow"         );
+    m_abcdcutOnly     = has_exact( "abcdcutOnly"     );
     m_pileup          = has_exact( "pileup"          );
     m_pv              = has_exact( "pv"              );
     m_kinematics      = has_exact( "kinematics"      );
@@ -74,6 +76,10 @@ namespace EJsHelperClasses {
     m_njets           = has_exact( "njets"           );
     m_typeJets        = has_exact( "typeJets"        );
     m_tightJets       = has_exact( "tightJets"       );
+    m_nsvP4Jets       = has_exact( "nsvP4Jets"       );
+    m_nsvPtJets       = has_exact( "nsvPtJets"       );
+    m_nsvHtJets       = has_exact( "nsvHtJets"       );
+    m_nsvHJets        = has_exact( "nsvHJets"        );
     m_nsvNtrkJets     = has_exact( "nsvNtrkJets"     );
     m_nsvNjtrkJets    = has_exact( "nsvNjtrkJets"    );
     m_nsvTrkJets      = has_exact( "nsvTrkJets"      );
@@ -93,6 +99,7 @@ namespace EJsHelperClasses {
     m_vtxOverallTrk   = has_exact( "vtxOverallTrk"   );
     m_vtxErrors       = has_exact( "vtxErrors"       );
     m_vtx2D           = has_exact( "vtx2D"           );
+    m_nDVs            = has_exact( "nDVs"            );
     m_llps            = has_exact( "llps"            );
     m_darkPions       = has_exact( "darkPions"       );
     m_kshorts         = has_exact( "kshorts"         );

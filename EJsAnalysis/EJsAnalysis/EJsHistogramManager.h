@@ -89,6 +89,10 @@ class EJsHistogramManager : public HistogramManager
   unsigned m_nType1Js    = 0;
   unsigned m_nType1SVJs  = 0;
   unsigned m_nTypeBJs    = 0;
+  unsigned m_svP4J_ix    = 0;
+  unsigned m_svPtJ_ix    = 0;
+  unsigned m_svHtJ_ix    = 0;
+  unsigned m_svHJ_ix     = 0;
   unsigned m_svNtrkJ_ix  = 0;
   unsigned m_svNjtrkJ_ix = 0;
   unsigned m_svTrkJ_ix   = 0;
@@ -97,6 +101,7 @@ class EJsHistogramManager : public HistogramManager
   unsigned m_nTypeDVs    = 0;
   unsigned m_nType1DVs   = 0;
   unsigned m_nTypeBDVs   = 0;
+  unsigned m_nTypeGDVs   = 0;
   unsigned m_nTypeJDVs   = 0;
   unsigned m_nType1JDVs  = 0;
   unsigned m_nTypeBJDVs  = 0;
@@ -136,9 +141,12 @@ class EJsHistogramManager : public HistogramManager
   // nDV test cuts
   int m_ndv = 7;
 
-  // jet n-sv (trk) cuts
-  std::vector<int> m_nJSVtrk = { 2, 4, 6, 8 };
-  std::vector<int> m_nJSV    = { 1, 2 };
+  // jet n-sv (kin/trk) cuts
+  std::vector<std::string> m_nJSVkin = { "low", "mid", "high" };
+  std::vector<double>      m_nJSVpt  = {   5.0,   7.5,   10.0 };
+  std::vector<double>      m_nJSVh   = {   6.5,  10.0,   13.5 };
+  std::vector<int>         m_nJSVtrk = { 2, 4, 6, 8 };
+  std::vector<int>         m_nJSV    = { 1, 2 };
 
 
   // --- BRANCHES --- //
@@ -1252,18 +1260,34 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>>               h_evt_testCutflow_leadjet;                  //!
   std::vector<std::vector<TH1F*>>               h_evt_testCutflowEfficiency_jet;            //!
   std::vector<std::vector<TH1F*>>               h_evt_testCutflowEfficiency_leadjet;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svP4Jet;                  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svPtJet;                  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svHtJet;                  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svHJet;                   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svNtrkJet;                //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svNjtrkJet;               //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svTrkJet;                 //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svNJet;                   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvP4Jet;              //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvPtJet;              //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvHtJet;              //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvHJet;               //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvNtrkJet;            //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvNjtrkJet;           //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvTrkJet;             //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvNJet;               //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svP4Jet;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svPtJet;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svHtJet;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svHJet;         //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svNtrkJet;      //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svNjtrkJet;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svTrkJet;       //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svNJet;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvP4Jet;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvPtJet;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvHtJet;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvHJet;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvNtrkJet;  //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvNjtrkJet; //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvTrkJet;   //!

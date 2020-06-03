@@ -81,36 +81,80 @@ def main():
     command_S1 = " --regionDir search-minus-one"
     command_V  = " --regionDir valid"
 
-
-    # initialize jets
-    # --> set jet-cut types
-    #cuts      = [ "TightPt",  "TightEta",  "TightMass",  "Tight", "Emerging" ]
-    #jetTitles = [ "tight-pt", "tight-eta", "tight-mass", "tight", "emerging" ]
-    cuts         = [ "TightPt",  "TightEta",  "TightMass",  "TightPtEta",   "Tight" ]
-    jetTitles    = [ "tight-pt", "tight-eta", "tight-mass", "tight-pt-eta", "tight" ]
-    exclcuts     = [ "TightPt",  "TightEta",  "TightMass",  "TightPtEta",   "Tight", "Emerging" ]
-    jetTypes     = []
-    exclJetTypes = []
-    for iC, cut in enumerate( cuts ):
-        lowcut     = cut[0].lower() + cut[1:]
-        lowexclcut = exclcuts[iC][0].lower() + exclcuts[iC][1:]
-        jetTypes     .append( lowcut     )
-        exclJetTypes .append( lowexclcut )
+    
 
     
+    
+    # initialize jets
+    # --> tight jets
+    tightJs    = [ "TightPt",  "TightEta",  "TightMass",  "TightPtEta",   "Tight" ]
+    tightJts   = [ "tight-pt", "tight-eta", "tight-mass", "tight-pt-eta", "tight" ]
+    # --> nsv jets
+    baseJSV    = "Bare"
+    baseJSVt   = "bare"
+    jsvs       = [ baseJSV,  "LooseGood",  "MidGood",  "TightGood"  ]
+    jsvts      = [ baseJSVt, "loose-good", "mid-good", "tight-good" ]
+    njsvtrks   = [ "2", "4", "6", "8" ]
+    njsvs      = [ "1", "2" ]
+    ntrkJSVs,  njtrkJSVs,  trkJSVs,  nJSVs  = [], [], [], []
+    ntrkJSVts, njtrkJSVts, trkJSVts, nJSVts = [], [], [], []
+    for ijsv, jsv in enumerate( jsvs ):
+        for njsvtrk in njsvtrks:
+            ntrkJSVs   .append( jsv + "SVNtrk"  + njsvtrk )
+            ntrkJSVts  .append( njsvtrk + "-" + jsvts[ijsv] + "-SV-Ntrk"  )
+    for ijsv, jsv in enumerate( jsvs ):
+        for njsvtrk in njsvtrks:
+            njtrkJSVs  .append( jsv + "SVNjtrk" + njsvtrk )
+            njtrkJSVts .append( njsvtrk + "-" + jsvts[ijsv] + "-SV-Njtrk" )
+    for ijsv, jsv in enumerate( jsvs ):
+        for njsvtrk in njsvtrks:
+            trkJSVs   .append( jsv + "SVTrk"   + njsvtrk )
+            trkJSVts  .append( njsvtrk + "-" + jsvts[ijsv] + "-SV-trk"    )
+    for ijsv, jsv in enumerate( jsvs ):
+        for njsv    in njsvs:
+            nJSVs     .append( jsv + "SV"      + njsv    )
+            nJSVts    .append( njsv    + "-" + jsvts[ijsv] + "-SV"        )
+    # --> nsv tight jets
+    ntrktJSVs,  njtrktJSVs,  trktJSVs,  ntJSVs  = [], [], [], []
+    ntrktJSVts, njtrktJSVts, trktJSVts, ntJSVts = [], [], [], []
+    for intrkjsv,  ntrkjsv  in enumerate( ntrkJSVs  ):
+        ntrktJSVs   .append( ntrkjsv               +  "Tight" )
+        ntrktJSVts  .append( ntrkJSVts [intrkjsv]  + " tight" )
+    for injtrkjsv, njtrkjsv in enumerate( njtrkJSVs ):
+        njtrktJSVs  .append( njtrkjsv              +  "Tight" )
+        njtrktJSVts .append( njtrkJSVts[injtrkjsv] + " tight" )
+    for itrkjsv,   trkjsv   in enumerate( trkJSVs   ):
+        trktJSVs    .append( trkjsv                +  "Tight" )
+        trktJSVts   .append( trkJSVts  [itrkjsv]   + " tight" )
+    for injsv,     njsv     in enumerate( nJSVs     ):
+        ntJSVs      .append( njsv                  +  "Tight" )
+        ntJSVts     .append( nJSVts    [injsv]     + " tight" )
+    # --> emerging jets
+    # --> set jet-cut type, title, exclusion lists
+    jetCuts, jetTitles, exclCuts = [], [], []
+    #jetCuts   = tightJs
+    #jetTitles = tightJts
+    jetCuts   = tightJs  + ntrkJSVs  + njtrkJSVs  + trkJSVs  + nJSVs  + ntrktJSVs  + njtrktJSVs  + trktJSVs  + ntJSVs
+    jetTitles = tightJts + ntrkJSVts + njtrkJSVts + trkJSVts + nJSVts + ntrktJSVts + njtrktJSVts + trktJSVts + ntJSVts
+    exclCuts  = tightJs  + ntrkJSVs  + njtrkJSVs  + trkJSVs  + nJSVs  + ntrktJSVs  + njtrktJSVs  + trktJSVs  + ntJSVs
+    jetTypes, exclJetTypes = [], []
+    for iC, cut in enumerate( jetCuts ):
+        lowcut     = cut         [0].lower() + cut         [1:]
+        lowexclcut = exclCuts[iC][0].lower() + exclCuts[iC][1:]
+        jetTypes     .append( lowcut     )
+        exclJetTypes .append( lowexclcut )
+    
     # 1d plots -- comparing same jet histos over different samples
-    histList_1d   = "jet+cutflow=_jj_=_Nj_=NJet:DV=darkMatch=nomatch=jet0=jet1=jet1=jet3"
+    histList_1d   = "jet+cutflow=_jj_=_Nj_=NJet=SV_maxDR:DV=darkMatch=nomatch=jet0=jet1=jet1=jet3"
     command_1d_j  = []
     command_1d    = " --draw1D --outSubdir 1d_jet --legLenEnum 5"
     command_1d_l1 = " --lxint 0.006 --lyint 0.025" # for s vs b
     command_1d_l2 = " --lxint 0.015 --lyint 0.040" # for b vs d
     # --> loop over jet types and configure plotting script
-    #jtype = [ "jet", "leadJet" ]
-    jtype = [ "leadJet" ]
+    jtype = [ "jet", "leadJet" ]
     for jt, jett in enumerate(jetTypes):
-        #jtype.append( jett + "Jet" )
-        jtype.append( "lead" + cuts[jt] + "Jet" )
-    jtype.append( "jet" ) # replace w/ above
+        jtype.append( jett                 + "Jet" )
+        jtype.append( "lead" + jetCuts[jt] + "Jet" )
     for ij, j in enumerate( jtype ):
         hlist = j
         if histList_1d:
@@ -330,8 +374,8 @@ def main():
     #    os.system( cm_bS1   )
         
     ## multi-sample 1d
-    for cms_sbabS  in command_sb_ab_multismpl_S:
-        os.system( cms_sbabS  )
+    #for cms_sbabS  in command_sb_ab_multismpl_S:
+    #    os.system( cms_sbabS  )
     #for cms_sbabS1 in command_sb_ab_multismpl_S1:
     #    os.system( cms_sbabS1 )
     #for cms_sb14S  in command_sb_14_multismpl_S:

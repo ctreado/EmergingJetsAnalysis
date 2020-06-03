@@ -89,6 +89,8 @@ namespace EJsHelperClasses {
   public:
     bool m_trigTest;
     bool m_abcd;
+    bool m_cutflow;
+    bool m_abcdcutOnly;
     bool m_pileup;
     bool m_pv;
     bool m_kinematics;
@@ -112,6 +114,10 @@ namespace EJsHelperClasses {
     bool m_njets;
     bool m_typeJets;
     bool m_tightJets;
+    bool m_nsvP4Jets;
+    bool m_nsvPtJets;
+    bool m_nsvHtJets;
+    bool m_nsvHJets;
     bool m_nsvNtrkJets;
     bool m_nsvNjtrkJets;
     bool m_nsvTrkJets;
@@ -131,6 +137,7 @@ namespace EJsHelperClasses {
     bool m_vtxOverallTrk;
     bool m_vtxErrors;
     bool m_vtx2D;
+    bool m_nDVs;
     bool m_llps;
     bool m_darkPions;
     bool m_kshorts;

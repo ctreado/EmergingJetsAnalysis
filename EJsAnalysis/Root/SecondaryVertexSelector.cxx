@@ -243,6 +243,7 @@ EL::StatusCode SecondaryVertexSelector :: execute ()
 	const auto* trk = vtx->trackParticle(i);
 	trk->auxdecor<char>( "isFiltered" ) = -1;
       }
+      vtx->auxdecor<char>( "passMaterialVeto" ) = -1;
       vtx->auxdecor<float>( "distToPV" ) = AlgConsts::invalidFloat;
     }
     if ( m_nToProcess > 0 && nObj >= m_nToProcess ) continue;
@@ -406,7 +407,7 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
   if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_filtTrk,  1 );
 
   // material map veto
-  if ( m_doMatMapVeto ) {
+  if ( m_materialMap_Inner && m_materialMap_Outer && m_materialMap_Matrix ) {
     bool passMaterialVeto = false;
     
     // use inner / outer map based on vtx position
@@ -432,7 +433,10 @@ int SecondaryVertexSelector :: PassCuts ( const xAOD::Vertex* vtx, const xAOD::V
 	}
       }
     }
-    if ( !passMaterialVeto ) return 0; 
+    // decorate vertex with material veto decision
+    if ( m_decorateSelectedObjects ) vtx->auxdecor<char>( "passMaterialVeto" ) = passMaterialVeto;
+    // cut on material veto
+    if ( m_doMatMapVeto && !passMaterialVeto ) return 0; 
   }
   if ( m_useCutFlow ) m_secVtx_cutflowHist ->Fill( m_secVtx_cutflow_matVeto, 1 );
 

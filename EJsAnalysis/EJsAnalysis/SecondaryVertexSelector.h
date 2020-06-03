@@ -80,7 +80,7 @@ class SecondaryVertexSelector : public xAH::Algorithm
   bool m_doFiltTrkCut          = false;
 
   // material map veto
-  bool m_doMatMapVeto = true;
+  bool m_doMatMapVeto       = true;
   std::string m_matMapInnerFileName   = "";
   std::string m_matMapInnerHistName   = "";
   std::string m_matMapInnerMatrixName = "";
