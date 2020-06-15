@@ -10,10 +10,6 @@ if ! type lsetup &> /dev/null; then
     setupATLAS
 fi
 
-if ! type rucio &> /dev/null; then
-    lsetup rucio
-fi
-
 if ! type pbook &> /dev/null; then
     lsetup panda
 fi
