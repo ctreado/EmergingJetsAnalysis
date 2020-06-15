@@ -43,7 +43,7 @@ vtag="v1"
 
 ## job steering
 #submitGridEJsJobs.py --inFiles ${input_a36}    --jo ${jo_a} --subDir ${subdir_a36} --outName ${out_sub} --vtag ${vtag} --nFiles -1 --isMC
-#submitGridEJsJobs.py --inFiles ${input_d0}     --jo ${jo_d} --subDir ${subdir_d0}  --outName ${out_sub} --vtag ${vtag} --nFiles -1 --isMC
+submitGridEJsJobs.py --inFiles ${input_d0}     --jo ${jo_d} --subDir ${subdir_d0}  --outName ${out_sub} --vtag ${vtag} --nFiles -1 --isMC
 #submitGridEJsJobs.py --inFiles ${input_d21}    --jo ${jo_d} --subDir ${subdir_d21} --outName ${out_sub} --vtag ${vtag} --nFiles -1 --isMC
 #submitGridEJsJobs.py --inFiles ${input_e36}    --jo ${jo_e} --subDir ${subdir_e36} --outName ${out_sub} --vtag ${vtag} --nFiles -1 --isMC
 #submitGridEJsJobs.py --inFiles ${input_bkgd_a} --jo ${jo_a} --subDir ${subdir_ab}  --outName ${out_bkgd} --vtag ${vtag} --nFiles -1 --isMC
@@ -54,4 +54,4 @@ vtag="v1"
 input_d_test="$EJ_PATH/EJsAnalysis/scripts/sample_lists/samples.mc16d.ejs_sub0.test.txt"
 subdir_d_test="grid.MC16d.EJs.sub0.new.test"
 out_sub_test="sub36.new.TEST"
-submitGridEJsJobs.py --inFiles ${input_d_test} --jo ${jo_d} --subDir ${subdir_d_test} --nFiles 1.0 --outName ${out_sub_test} --vtag "v2" --isMC
+#submitGridEJsJobs.py --inFiles ${input_d_test} --jo ${jo_d} --subDir ${subdir_d_test} --nFiles 1.0 --outName ${out_sub_test} --vtag "v2" --isMC
