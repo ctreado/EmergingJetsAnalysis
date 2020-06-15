@@ -257,10 +257,10 @@ EL::StatusCode EJsMiniNtuple :: addTree ( std::string syst )
   }
 
   if ( !m_truthPartContainerName.empty() && xAH::Algorithm::isMC() )
-    helpTree->AddTruthParts( m_truthPartBranchName, m_truthPartDetailStr );
+    helpTree->AddTruthParts( m_truthPartDetailStr, m_truthPartBranchName );
 
   if ( !m_trackPartContainerName.empty() )
-    helpTree->AddTrackParts( m_trackPartBranchName, m_trackPartDetailStr );
+    helpTree->AddTrackParts( m_trackPartDetailStr, m_trackPartBranchName );
 
   if ( !m_truthVertexContainerName.empty() && xAH::Algorithm::isMC() )
     helpTree->AddTruthVerts( m_truthVertexDetailStr, m_truthVertexBranchName );
@@ -428,7 +428,7 @@ EL::StatusCode EJsMiniNtuple :: execute ()
 	const xAOD::TruthParticleContainer* inTruthParts = 0;
 	ANA_CHECK( HelperFunctions::retrieve( inTruthParts, m_truthPartContainerName, m_event, m_store, msg() ) );
 	ANA_MSG_DEBUG( "Filling '" << m_truthPartBranchName << "' truth particle branches" );
-	helpTree->FillTruth( m_truthPartBranchName, inTruthParts );
+	helpTree->FillTruth( inTruthParts, m_truthPartBranchName );
       }
       // otherwise, skip
       else ANA_MSG_DEBUG( "Truth particle container, '" << m_truthPartContainerName << ", is not available. Skipping..." );
@@ -443,7 +443,7 @@ EL::StatusCode EJsMiniNtuple :: execute ()
 	const xAOD::TrackParticleContainer* inTrackParts = 0;
 	ANA_CHECK( HelperFunctions::retrieve( inTrackParts, m_trackPartContainerName, m_event, m_store, msg() ) );
 	ANA_MSG_DEBUG( "Filling '" << m_trackPartBranchName << "' track particle branches" );
-	helpTree->FillTracks( m_trackPartBranchName, inTrackParts );
+	helpTree->FillTracks( inTrackParts, m_trackPartBranchName );
       }
       // otherwise, skip
       else ANA_MSG_DEBUG( "Track particle container, '" << m_trackPartContainerName << ", is not available. Skipping..." );

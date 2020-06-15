@@ -29,7 +29,7 @@ if [ $(ver ${GIT_VERSION}) -lt $(ver 2.0.0) ]; then
     lsetup git
 fi
 
-ANALYSIS_BASE_VERSION=21.2.90 # latest release before switch to centos7 --> config=x86_64-centos7-gcc8-opt not supported on slc6-like machine --> update CernVM to fix, then switch to latest release
+ANALYSIS_BASE_VERSION=21.2.121
 asetup AnalysisBase,${ANALYSIS_BASE_VERSION}
 
 if [ ! -d ../build/ ]; then

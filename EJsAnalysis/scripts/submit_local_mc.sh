@@ -2,7 +2,9 @@
 # script for submitting local jobs (mc)
 
 
-##### OMIT ASTERISKS IN INPUT FILE PATHS WHEN RUNNING W/ HACKED XAH_RUN (TO RUN OVER MULTIPLE FILES PER SAMPLE) #####
+## NOTE: to run over multiple files per sample, omit asterisk at end of input path and use hacked version of xAH_run.py -->
+## --> replace 'ROOT.SH.scanDir(sh_all, sh_list, fname_base, os.path.basename(sample_dir))' with ...
+## ... 'ROOT.SH.ScanDir().scan(sh_all, fname)'
 
 
 ## single sample test (mc16d)
@@ -28,7 +30,7 @@ jo_e="$EJ_PATH/EJsAnalysis/config/EJsConfig_mc16e.py"
 
 ## tags
 #tag="tmp_search-minus-one"
-tag="tmp_vsi-eff_new"
+tag="tmp_rel-update"
 
 
 ## job steering -- single sample tests

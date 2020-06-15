@@ -54,4 +54,4 @@ vtag="v1"
 input_d_test="$EJ_PATH/EJsAnalysis/scripts/sample_lists/samples.mc16d.ejs_sub0.test.txt"
 subdir_d_test="grid.MC16d.EJs.sub0.new.test"
 out_sub_test="sub36.new.TEST"
-submitGridEJsJobs.py --inFiles ${input_d_test} --jo ${jo_d} --subDir ${subdir_d_test} --nFiles 1.0 --outName ${out_sub_test} --vtag "v1" --isMC
+submitGridEJsJobs.py --inFiles ${input_d_test} --jo ${jo_d} --subDir ${subdir_d_test} --nFiles 1.0 --outName ${out_sub_test} --vtag "v2" --isMC

@@ -161,6 +161,7 @@ Dict_JetSelector_EMTopo = {
     "m_dofJVTVeto"              : False,    # --> keep fJVT-rejected jets + decorate w/ passing status
     "m_WorkingPointfJVT"        : "Medium", # --> R21 EMTopo rec
     "m_SFFilefJVT"              : "JetJvtEfficiency/Moriond2018/fJvtSFFile.root",
+    "m_UseMuSFFormatfJVT"       : False,
     "m_systNamefJVT"            : systName,
     "m_systValfJVT"             : systVal,    
 }
