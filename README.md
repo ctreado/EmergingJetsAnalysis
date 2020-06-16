@@ -62,6 +62,17 @@ source x86*/setup.sh
 Note that "cmake ..." is only necessary when the package structure has been
 changed or new packages have been added.
 
+To pull changes made to the xAODAnaHelpers submodule (i.e. when the
+version has been updated):
+
+```bash
+git pull --recurse-submodules
+```
+
+To update your working area after an update of the AnalysisBase
+release has been pulled, clean out your build directory and, starting from a fresh
+working area, re-run the install script.
+
 
 ## Running the Job:
 
