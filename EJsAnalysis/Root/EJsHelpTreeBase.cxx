@@ -226,7 +226,7 @@ EJsHelpTreeBase :: ~EJsHelpTreeBase()
  * TRUTH VERTICES *
  ******************/
 
-void EJsHelpTreeBase :: AddTruthVerts ( const std::string detailStr, const std::string truthVtxName )
+void EJsHelpTreeBase :: AddTruthVerts ( const std::string& detailStr, const std::string& truthVtxName )
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddTruthVerts()", "adding truth vertex variables" );
 
@@ -236,7 +236,7 @@ void EJsHelpTreeBase :: AddTruthVerts ( const std::string detailStr, const std::
   thisTruthVtx->setBranches( m_tree );
 }
 
-void EJsHelpTreeBase :: FillTruthVerts ( const xAOD::TruthVertexContainer* truthVerts, const std::string truthVtxName )
+void EJsHelpTreeBase :: FillTruthVerts ( const xAOD::TruthVertexContainer* truthVerts, const std::string& truthVtxName )
 {
   this->ClearTruthVerts ( truthVtxName );
 
@@ -244,13 +244,13 @@ void EJsHelpTreeBase :: FillTruthVerts ( const xAOD::TruthVertexContainer* truth
     this->FillTruthVertex( truthVtx, truthVtxName );
 }
 
-void EJsHelpTreeBase :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx, const std::string truthVtxName )
+void EJsHelpTreeBase :: FillTruthVertex ( const xAOD::TruthVertex* truthVtx, const std::string& truthVtxName )
 {
   EJs::TruthVertexContainer* thisTruthVtx = m_truthVerts[ truthVtxName ];
   thisTruthVtx->FillTruthVertex( truthVtx, m_truthVtxLLPs, m_treeName );
 }
 
-void EJsHelpTreeBase :: ClearTruthVerts ( const std::string truthVtxName )
+void EJsHelpTreeBase :: ClearTruthVerts ( const std::string& truthVtxName )
 {
   EJs::TruthVertexContainer* thisTruthVtx = m_truthVerts[ truthVtxName ];
   thisTruthVtx->clear();
@@ -262,7 +262,7 @@ void EJsHelpTreeBase :: ClearTruthVerts ( const std::string truthVtxName )
  * SECONDARY VERTICES *
  **********************/
 
-void EJsHelpTreeBase :: AddSecondaryVerts ( const std::string detailStr, const std::string secVtxName )
+void EJsHelpTreeBase :: AddSecondaryVerts ( const std::string& detailStr, const std::string& secVtxName )
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddSecondaryVerts()", "adding secondary vertex variables" );
 
@@ -271,7 +271,7 @@ void EJsHelpTreeBase :: AddSecondaryVerts ( const std::string detailStr, const s
   thisSecVtx->setBranches( m_tree );
 }
 
-void EJsHelpTreeBase :: FillSecondaryVerts ( const xAOD::VertexContainer* secVerts, const std::string secVtxName,
+void EJsHelpTreeBase :: FillSecondaryVerts ( const xAOD::VertexContainer* secVerts, const std::string& secVtxName,
 					     const xAOD::Vertex* pv )
 {
   this->ClearSecondaryVerts ( secVtxName );
@@ -280,14 +280,14 @@ void EJsHelpTreeBase :: FillSecondaryVerts ( const xAOD::VertexContainer* secVer
     this->FillSecondaryVertex( secVtx, secVtxName, pv );
 }
 
-void EJsHelpTreeBase :: FillSecondaryVertex ( const xAOD::Vertex* secVtx, const std::string secVtxName,
+void EJsHelpTreeBase :: FillSecondaryVertex ( const xAOD::Vertex* secVtx, const std::string& secVtxName,
 					      const xAOD::Vertex* pv )
 {
   EJs::SecondaryVertexContainer* thisSecVtx = m_secVerts[ secVtxName ];
   thisSecVtx->FillSecondaryVertex( secVtx, m_truthVtxLLPs, m_treeName, pv );
 }
 
-void EJsHelpTreeBase :: ClearSecondaryVerts ( const std::string secVtxName )
+void EJsHelpTreeBase :: ClearSecondaryVerts ( const std::string& secVtxName )
 {
   EJs::SecondaryVertexContainer* thisSecVtx = m_secVerts[ secVtxName ];
   thisSecVtx->clear();
@@ -341,7 +341,7 @@ void EJsHelpTreeBase :: ClearPV ( )
  * USER EVENTS *
  **************/
 
-void EJsHelpTreeBase :: AddEventUser ( const std::string detailStr )
+void EJsHelpTreeBase :: AddEventUser ( const std::string& detailStr )
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddEventUser()", "adding EJs-user event variables" );
 
@@ -605,7 +605,7 @@ void EJsHelpTreeBase :: ClearEventUser ( )
  * USER JETS *
  *************/
 
-void EJsHelpTreeBase :: AddJetsUser ( const std::string detailStr, const std::string jetName )
+void EJsHelpTreeBase :: AddJetsUser ( const std::string& detailStr, const std::string& jetName )
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddJetsUser()", "adding EJs-user jet variables" );
 
@@ -614,13 +614,13 @@ void EJsHelpTreeBase :: AddJetsUser ( const std::string detailStr, const std::st
   thisJet->setBranches( m_tree );
 }
 
-void EJsHelpTreeBase :: FillJetsUser ( const xAOD::Jet* jet, const std::string jetName )
+void EJsHelpTreeBase :: FillJetsUser ( const xAOD::Jet* jet, const std::string& jetName )
 {
   EJs::JetContainer* thisJet = m_jets[ jetName ];
   thisJet->FillJet( jet, m_truthVtxLLPs, m_treeName );
 }
 
-void EJsHelpTreeBase :: ClearJetsUser ( const std::string jetName )
+void EJsHelpTreeBase :: ClearJetsUser ( const std::string& jetName )
 {
   EJs::JetContainer* thisJet = m_jets[ jetName ];
   thisJet->clear();
@@ -631,7 +631,7 @@ void EJsHelpTreeBase :: ClearJetsUser ( const std::string jetName )
 /************************
  * USER TRUTH PARTICLES *
  ************************/
-void EJsHelpTreeBase :: AddTruthUser ( const std::string truthName, const std::string detailStr )
+void EJsHelpTreeBase :: AddTruthUser ( const std::string& truthName, const std::string& detailStr )
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddTruthUser()", "adding EJs-user truth particle variables" );
 
@@ -690,7 +690,7 @@ void EJsHelpTreeBase :: AddTruthUser ( const std::string truthName, const std::s
   }
 }
 
-void EJsHelpTreeBase :: FillTruthUser ( const std::string truthName, const xAOD::TruthParticle* truthPart )
+void EJsHelpTreeBase :: FillTruthUser ( const xAOD::TruthParticle* truthPart, const std::string& truthName )
 {
   std::string treeName = m_treeName;
   if ( treeName == "nominal" ) treeName = "";
@@ -858,7 +858,7 @@ void EJsHelpTreeBase :: FillTruthUser ( const std::string truthName, const xAOD:
   }
 }
 
-void EJsHelpTreeBase :: ClearTruthUser ( const std::string truthName )
+void EJsHelpTreeBase :: ClearTruthUser ( const std::string& truthName )
 {
   m_tp_ID                     ->clear();
   m_tp_index                  ->clear();
@@ -920,7 +920,7 @@ void EJsHelpTreeBase :: ClearTruthUser ( const std::string truthName )
 /***************
  * USER TRACKS *
  ***************/
-void EJsHelpTreeBase :: AddTracksUser ( const std::string trackName, const std::string detailStr )
+void EJsHelpTreeBase :: AddTracksUser ( const std::string& trackName, const std::string& detailStr )
 {
   if ( m_debug ) Info( "EJsHelpTreeBase::AddTracksUser()", "adding EJs-user track variables" );
   
@@ -992,7 +992,7 @@ void EJsHelpTreeBase :: AddTracksUser ( const std::string trackName, const std::
   }
 }
 
-void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName, const xAOD::TrackParticle* track )
+void EJsHelpTreeBase :: FillTracksUser ( const xAOD::TrackParticle* track, const std::string& trackName )
 {
   std::string treeName = m_treeName;
   if ( treeName == "nominal" ) treeName = "";
@@ -1191,7 +1191,7 @@ void EJsHelpTreeBase :: FillTracksUser ( const std::string trackName, const xAOD
   }
 }
 
-void EJsHelpTreeBase :: ClearTracksUser ( const std::string trackName )
+void EJsHelpTreeBase :: ClearTracksUser ( const std::string& trackName )
 {
   m_trk_ID                           ->clear();
   m_trk_index                        ->clear();

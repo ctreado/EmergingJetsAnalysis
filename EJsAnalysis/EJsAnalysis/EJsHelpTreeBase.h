@@ -42,34 +42,34 @@ class EJsHelpTreeBase : public HelpTreeBase
   void FillPV  ( const xAOD::Vertex* pv, int pvLocation = -1 );
   void ClearPV ( );
   
-  void AddTruthVerts   ( const std::string detailStr = "",             const std::string truthVtxName = "truthVtx" );
-  void FillTruthVerts  ( const xAOD::TruthVertexContainer* truthVerts, const std::string truthVtxName = "truthVtx" );
-  void FillTruthVertex ( const xAOD::TruthVertex* truthVtx,            const std::string truthVtxName = "truthVtx" );
-  void ClearTruthVerts ( const std::string truthVtxName = "truthVtx"  );
+  void AddTruthVerts   ( const std::string& detailStr = "",            const std::string& truthVtxName = "truthVtx" );
+  void FillTruthVerts  ( const xAOD::TruthVertexContainer* truthVerts, const std::string& truthVtxName = "truthVtx" );
+  void FillTruthVertex ( const xAOD::TruthVertex* truthVtx,            const std::string& truthVtxName = "truthVtx" );
+  void ClearTruthVerts ( const std::string& truthVtxName = "truthVtx" );
 
-  void AddSecondaryVerts   ( const std::string detailStr = "",      const std::string secVtxName = "secVtx" );
-  void FillSecondaryVerts  ( const xAOD::VertexContainer* secVerts, const std::string secVtxName = "secVtx",
+  void AddSecondaryVerts   ( const std::string& detailStr = "",     const std::string& secVtxName = "secVtx" );
+  void FillSecondaryVerts  ( const xAOD::VertexContainer* secVerts, const std::string& secVtxName = "secVtx",
 			     const xAOD::Vertex* pv = 0 );
-  void FillSecondaryVertex ( const xAOD::Vertex* secVtx,            const std::string secVtxName = "secVtx",
+  void FillSecondaryVertex ( const xAOD::Vertex* secVtx,            const std::string& secVtxName = "secVtx",
 			     const xAOD::Vertex* pv = 0 );
-  void ClearSecondaryVerts ( const std::string secVtxName = "secVtx" );
+  void ClearSecondaryVerts ( const std::string& secVtxName = "secVtx" );
 
   // new branches for existing objects
-  void AddEventUser    ( const std::string detailStr = "" );
+  void AddEventUser    ( const std::string& detailStr = "" );
   void FillEventUser   ( const xAOD::EventInfo*           );
   void ClearEventUser  ( );
   
-  void AddJetsUser     ( const std::string detailStr = "", const std::string jetName = "jet" );
-  void FillJetsUser    ( const xAOD::Jet*,                 const std::string jetName = "jet" );
-  void ClearJetsUser   ( const std::string /*jetName = "jet"*/                               );
+  void AddJetsUser     ( const std::string& detailStr = "", const std::string& jetName = "jet" );
+  void FillJetsUser    ( const xAOD::Jet*,                  const std::string& jetName = "jet" );
+  void ClearJetsUser   ( const std::string& /*jetName = "jet"*/                                );
 
-  void AddTruthUser    ( const std::string truthName,     const std::string detailStr = ""   );
-  void FillTruthUser   ( const std::string /*truthName*/, const xAOD::TruthParticle*         );
-  void ClearTruthUser  ( const std::string /*truthName*/                                     );
+  void AddTruthUser    ( const std::string& truthName = "", const std::string& detailStr = ""  );
+  void FillTruthUser   ( const xAOD::TruthParticle*,        const std::string& /*truthName*/   );
+  void ClearTruthUser  ( const std::string& /*truthName*/                                      );
   
-  void AddTracksUser   ( const std::string trackName,     const std::string detailStr = ""   );
-  void FillTracksUser  ( const std::string /*trackName*/, const xAOD::TrackParticle*         );
-  void ClearTracksUser ( const std::string /*trackName*/                                     );
+  void AddTracksUser   ( const std::string& trackName = "",  const std::string& detailStr = "" );
+  void FillTracksUser  ( const xAOD::TrackParticle*,         const std::string& /*trackName*/  );
+  void ClearTracksUser ( const std::string& /*trackName*/                                      );
 
 
  protected:
