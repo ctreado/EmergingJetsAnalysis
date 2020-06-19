@@ -9,7 +9,7 @@ from EJsBaseConfig import *
 c = xAH_config()
 
 
-# --- update configurations for mc16a --- ##
+## --- update configurations for mc16a --- ##
 
 data_path = "EJsAnalysis/"
 data15_path = data_path + "data15/"
@@ -39,6 +39,12 @@ Dict_BasicEventSelection.update ( { "m_GRLxml"            : GRL_config      } )
 Dict_BasicEventSelection.update ( { "m_lumiCalcFileNames" : LumiCalc_config } )
 Dict_BasicEventSelection.update ( { "m_PRWFileNames"      : PRW_config      } )
 
+Dict_EJsxAODAnalysis.update ( { "m_inJetContainerName" : "AntiKt4EMTopoJets_Calib_Select" } )
+Dict_EJsxAODAnalysis.update ( { "m_inJetBinName"       : "EMTopo"                         } )
+
+Dict_EJsMiniNtuple.update ( { "m_jetContainerName" : "AntiKt4EMTopoJets_Calib_Select" } )
+Dict_EJsMiniNtuple.update ( { "m_jetBranchName"    : "jet"                            } )
+
 
 # --- configure algorithms to run --- ##
 
@@ -47,11 +53,11 @@ c.algorithm ( "BasicEventSelection",     Dict_BasicEventSelection     )
 
 # Jet Calibration
 c.algorithm ( "JetCalibrator",           Dict_JetCalibrator_EMTopo    )
-c.algorithm ( "JetCalibrator",           Dict_JetCalibrator_PFlow     )
+#c.algorithm ( "JetCalibrator",           Dict_JetCalibrator_PFlow     )
 
 # Jet Selection
 c.algorithm ( "JetSelector",             Dict_JetSelector_EMTopo      )
-c.algorithm ( "JetSelector",             Dict_JetSelector_PFlow       )
+#c.algorithm ( "JetSelector",             Dict_JetSelector_PFlow       )
 
 # Track Selection
 c.algorithm ( "TrackSelector",           Dict_TrackSelector           )

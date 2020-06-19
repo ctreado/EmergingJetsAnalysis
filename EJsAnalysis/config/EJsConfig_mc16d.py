@@ -23,7 +23,7 @@ LumiCalc_files  = [
     ]
 PRW_files       = [
     data_path   + "prw.EJs.mc16d.root",
-    data_path   + "prw.bkgd.mc16d.root", ## --> not working --> turn off prw for bkgd for now and keep testing...
+    data_path   + "prw.bkgd.mc16d.root",
     data17_path + "physics_25ns_Triggerno17e33prim.actualMu.OflLumi-13TeV-010.root",
     ]
 
