@@ -8,6 +8,7 @@
 #include <xAODAnaHelpers/HelperFunctions.h>
 
 #include "EJsAnalysis/EJsxAODAnalysis.h"
+#include "EJsAnalysis/EJsHelperFunctions.h"
 
 // needed to distribute algorithm to workers
 ClassImp ( EJsxAODAnalysis )
@@ -504,6 +505,22 @@ EL::StatusCode EJsxAODAnalysis :: executeSelection ( const xAOD::EventInfo* even
     }
     
   } // end loop over jet containers
+
+  // calculate truth particle sum-pt
+  const xAOD::TruthParticleContainer* inTruthParts = 0;
+  ANA_MSG_DEBUG( "Getting input truth particle container: " << m_inTruthPartContainerName );
+  ANA_CHECK( HelperFunctions::retrieve( inTruthParts, m_inTruthPartContainerName, m_event, m_store, msg() ) );
+  double truthPart_ptSum     = 0;
+  double truthPartDark_ptSum = 0;
+  for ( const auto& truthPart : *inTruthParts ) {
+    if ( EJsHelper::isStable( truthPart ) ) truthPart_ptSum     += truthPart->pt();
+    if ( EJsHelper::isDark  ( truthPart ) ) {
+      if (( truthPart->hasDecayVtx() && truthPart->child(0)->absPdgId() < 4.9e6 ) ||
+	   !truthPart->hasDecayVtx() )      truthPartDark_ptSum += truthPart->pt();
+    }
+  }
+  eventInfo->auxdecor<double>("truthPartPtSum")     = truthPart_ptSum     / m_units;
+  eventInfo->auxdecor<double>("truthPartDarkPtSum") = truthPartDark_ptSum / m_units;
   
   if ( !passAnySelection ) {
     passSelection = false;
@@ -547,6 +564,20 @@ int EJsxAODAnalysis :: PassSignalCuts ( const xAOD::EventInfo* eventInfo, const 
       eventInfo->auxdecor<char>("passSignalTrigSel") = passTrigSel;
   }
 
+  double signalJet_pt  = 0;
+  double signalJet_eta = 0;
+  double signalNJetHt  = 0;
+  if ( decor_label.find("Truth") != std::string::npos ) {
+    signalJet_pt  = m_signalTruthJetPt;
+    signalJet_eta = m_signalTruthJetEta;
+    signalNJetHt  = m_signalNTruthJetHt;
+  }
+  else {
+    signalJet_pt  = m_signalJetPt;
+    signalJet_eta = m_signalJetEta;
+    signalNJetHt  = m_signalNJetHt;
+  }
+  
   // n-jet selection
   bool passNJetSel = true;
   if ( jets->size() < m_nSignalJets ) passNJetSel = false;
@@ -563,14 +594,14 @@ int EJsxAODAnalysis :: PassSignalCuts ( const xAOD::EventInfo* eventInfo, const 
   unsigned n_ej    = 0;
   for ( const auto& jet : *jets ) {
     if ( njets >= m_nSignalJets ) break;
-    if ( jet->pt() < m_signalJetPt * m_units ) passJetPtSel  = false;
-    if ( fabs( jet->eta() ) > m_signalJetEta ) passJetEtaSel = false;
+    if ( jet->pt() < signalJet_pt * m_units ) passJetPtSel  = false;
+    if ( fabs( jet->eta() ) > signalJet_eta ) passJetEtaSel = false;
     njet_ht += jet->pt();
     if ( jet->auxdataConst<char>("isEmerging") ) ++n_ej;
     ++njets;
   }
-  if ( njet_ht < m_signalNJetHt * m_units ) passNJetHtSel = false;
-  if ( n_ej    < m_nSignalEJs             ) passNEJSel    = false;
+  if ( njet_ht < signalNJetHt * m_units ) passNJetHtSel = false;
+  if ( n_ej    < m_nSignalEJs           ) passNEJSel    = false;
   
   if ( m_decorateSelectedEvents )
     eventInfo->auxdecor<char>("passSignalJetPtSel_"  + decor_label) = passJetPtSel;

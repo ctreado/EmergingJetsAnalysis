@@ -230,26 +230,27 @@ EL::StatusCode ObjectMatcher :: execute ()
 
 
   if ( isMC() ) {
+    // match truth vertices to truth (dark) jets
+    if ( inTruthJets     ) matchTruthVertsToJets( inTruthJets,     inTruthVerts, TRUTH, "" );
+    if ( inTruthDarkJets ) matchTruthVertsToJets( inTruthDarkJets, inTruthVerts, DARK,  "" );
+    // match truth particles to truth (dark) jets
+    if ( inTruthJets     ) matchTruthPartsToJets( inTruthJets,     inTruthParts, TRUTH, "" );
+    if ( inTruthDarkJets ) matchTruthPartsToJets( inTruthDarkJets, inTruthParts, DARK,  "" );
+    // match truth dark jets to truth jets
+    if ( inTruthJets && inTruthDarkJets )
+      matchTruthJets( inTruthJets, inTruthDarkJets, TRUTH, DARK, "" );
+    // do matching of reco objects to truth objects
     if ( !m_truthLevelOnly ) {
       // match tracks to truth particles
       if ( m_doTruthTrackMatching )
 	matchTracksToTruthParts( inTruthParts, inTrackParts );
-      // match truth vertices to truth (dark) jets
-      if ( inTruthJets     ) matchTruthVertsToJets( inTruthJets,     inTruthVerts, TRUTH, "" );
-      if ( inTruthDarkJets ) matchTruthVertsToJets( inTruthDarkJets, inTruthVerts, DARK,  "" );
       // match reco secondary vertices to truth (dark) jets
       if ( inTruthJets     ) matchSecVertsToJets(  inTruthJets,      inSecVerts,   TRUTH, "" );
       if ( inTruthDarkJets ) matchSecVertsToJets(  inTruthDarkJets,  inSecVerts,   DARK,  "" );
-      // match truth particles to truth (dark) jets
-      if ( inTruthJets     ) matchTruthPartsToJets( inTruthJets,     inTruthParts, TRUTH, "" );
-      if ( inTruthDarkJets ) matchTruthPartsToJets( inTruthDarkJets, inTruthParts, DARK,  "" );
       // match tracks to truth (dark) jets
       if ( inTruthJets     ) matchTracksToJets(    inTruthJets,      inTrackParts, TRUTH, "" );
       if ( inTruthDarkJets ) matchTracksToJets(    inTruthDarkJets,  inTrackParts, DARK,  "" );
     }
-    // match truth dark jets to truth jets
-    if ( inTruthJets && inTruthDarkJets )
-      matchTruthJets( inTruthJets, inTruthDarkJets, TRUTH, DARK, "" );
   }
 
 

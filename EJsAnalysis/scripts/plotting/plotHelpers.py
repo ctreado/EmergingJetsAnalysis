@@ -31,7 +31,8 @@ class legStrLen:
     MID2    = 7
     MID2_SM = 8
     MID3    = 9
-    SHORT   = 10
+    MID4    = 10
+    SHORT   = 11
 
 class legSize:
     BIG   = 1
@@ -44,9 +45,14 @@ class histVarType:
     JET     = 3
     # add NONE option ?? would want to update usage in if statements here; would need to update enum in plotEJsHistogram, too...
 
+class lineStyleType:
+    ALL  = 1
+    MOD  = 2
+    CTAU = 3
+
 
 ## --- GET SAMPLES --- ##
-def getSamples( inSgnlDir, inBkgdDir, inDataDir, sgnlType, bkgdType, dataType ):
+def getSamples( inSgnlDir, inBkgdDir, inDataDir, sgnlType, bkgdType, dataType, hlsty = lineStyleType.ALL ):
 
     sampleNames, sampleTypes, sampleDicts, sampleFiles = [], [], [], []
     
@@ -61,7 +67,7 @@ def getSamples( inSgnlDir, inBkgdDir, inDataDir, sgnlType, bkgdType, dataType ):
                 sgnlName = sgnlType
             sampleNames   .append( sgnlName )
             sampleTypes   .append( sampleType.SGNL )
-            sampleDicts   .append( getSampleDict( sgnlName, sampleType.SGNL ) )
+            sampleDicts   .append( getSampleDict( sgnlName, sampleType.SGNL, hlsty ) )
             sampleFiles   .append( getFileList( inSgnlDir, sgnlType.split('+') ) )
 
     ## get background files
@@ -75,7 +81,7 @@ def getSamples( inSgnlDir, inBkgdDir, inDataDir, sgnlType, bkgdType, dataType ):
                 bkgdName = bkgdType
             sampleNames   .append( bkgdName )
             sampleTypes   .append( sampleType.BKGD )
-            sampleDicts   .append( getSampleDict( bkgdName, sampleType.BKGD ) )
+            sampleDicts   .append( getSampleDict( bkgdName, sampleType.BKGD, hlsty ) )
             sampleFiles   .append( getFileList( inBkgdDir, bkgdType.split('+') ) )
 
     ## get data files
@@ -89,7 +95,7 @@ def getSamples( inSgnlDir, inBkgdDir, inDataDir, sgnlType, bkgdType, dataType ):
                 dataName = dataType
             sampleNames   .append( dataName )
             sampleTypes   .append( sampleType.DATA )
-            sampleDicts   .append( getSampleDict( dataName, sampleType.DATA ) )
+            sampleDicts   .append( getSampleDict( dataName, sampleType.DATA, hlsty ) )
             sampleFiles   .append( getFileList( inDataDir, dataType.split('+') ) )
 
     return sampleNames, sampleTypes, sampleDicts, sampleFiles
@@ -381,11 +387,17 @@ def setLegStr( stype, sdict, lslen ):
             legend_string = "Model " + sdict["model"]
         # mid-length strings: xdm, ctau
         elif lslen == legStrLen.MID3:
-            legend_string = "#chi_{dm} " + str(sdict["xdm"]) + " GeV; c#tau = " + str(sdict["ctau"]) + " mm"
+            legend_string = "#chi_{dm} = " + str(sdict["xdm"]) + " GeV; c#tau = " + str(sdict["ctau"]) + " mm"
+        # mid-length strings: ctau
+        elif lslen == legStrLen.MID4:
+            legend_string = "c#tau = " + str(sdict["ctau"]) + " mm"
         # short strings: abbreviated
         elif lslen == legStrLen.SHORT:
             legend_string = "Mod" + sdict["model"] + "_" + str(sdict["pidm"]) + "_" + \
               str(sdict["xdm"]) + "_" + str(sdict["ctau"])
+        ## fixed vs running coupling
+        if sdict["coupling"]:
+            legend_string = sdict["coupling"] + " coupling"
     # --> background samples
     elif stype == sampleType.BKGD:
         if   lslen == legStrLen.LONG or lslen == legStrLen.LONG_SM:
@@ -629,86 +641,270 @@ def getDataNEvents( metadir = None ):
 
 
 ## --- SET SAMPLE INFO DICTIONARIES --- ##
-def getSampleDict( sname, stype ):
+def getSampleDict( sname, stype, hlsty ):
     sampledict = {}
     # signal sample dictionary
     if stype == sampleType.SGNL:
         dictlist = []
-        if   "312004" in sname or "ModelA" in sname and "1400" in sname and "20" in sname:
-            dictlist = [ 312004, "A", 5, 1400, 20 ]
-        elif "312008" in sname or "ModelA" in sname and "1000" in sname and "150" in sname:
-            dictlist = [ 312008, "A", 5, 1000, 150 ]
-        elif "312017" in sname or "ModelA" in sname and "600" in sname and "1" in sname:
-            dictlist = [ 312017, "A", 5, 600, 1 ]
-        elif "312022" in sname or "ModelB" in sname and "1400" in sname and "20" in sname:
-            dictlist = [ 312022, "B", 2, 1400, 20 ]
-        elif "312028" in sname or "ModelB" in sname and "1000" in sname and "5" in sname:
-            dictlist = [ 312028, "B", 2, 1000, 5 ]
-        elif "312031" in sname or "ModelB" in sname and "600" in sname and "300" in sname:
-            dictlist = [ 312031, "B", 2, 600, 300 ]
-        elif "312039" in sname or "ModelC" in sname and "1400" in sname and "75" in sname:
-            dictlist = [ 312039, "C", 10, 1400, 75 ]
-        elif "312046" in sname or "ModelC" in sname and "1000" in sname and "5" in sname:
-            dictlist = [ 312046, "C", 10, 1000, 5 ]
-        elif "312052" in sname or "ModelC" in sname and "600" in sname and "2" in sname:
-            dictlist = [ 312053, "C", 10, 600, 2 ]
-        elif "312060" in sname or "ModelD" in sname and "1400" in sname and "2" in sname:
-            dictlist = [ 312060, "D", 20, 1400, 2 ]
-        elif "312066" in sname or "ModelD" in sname and "1000" in sname and "1" in sname:
-            dictlist = [ 312066, "D", 20, 1000, 1 ]
-        elif "312067" in sname or "ModelD" in sname and "600" in sname and "300" in sname:
-            dictlist = [ 312067, "D", 20, 600, 300 ]
-        elif "312075" in sname or "ModelB" in sname and "1400" in sname and "75" in sname:
-            dictlist = [ 312075, "E", 0.8, 1400, 75 ]
-        elif "312080" in sname or "ModelB" in sname and "1000" in sname and "150" in sname:
+        if   "312001" in sname or "A_1400_300" in sname:
+            dictlist = [ 312001, "A",   5, 1400, 300 ]
+        elif "312002" in sname or "A_1400_150" in sname:
+            dictlist = [ 312002, "A",   5, 1400, 150 ]
+        elif "312003" in sname or "A_1400_75"  in sname:
+            dictlist = [ 312003, "A",   5, 1400,  75 ]
+        elif "312004" in sname or "A_1400_20"  in sname:
+            dictlist = [ 312004, "A",   5, 1400,  20 ]
+        elif "312005" in sname or "A_1400_5"   in sname:
+            dictlist = [ 312005, "A",   5, 1400,   5 ]
+        elif "312006" in sname or "A_1400_2"   in sname and "A_1400_20" not in sname:
+            dictlist = [ 312006, "A",   5, 1400,   2 ]
+        elif "312007" in sname or "A_1000_300" in sname:
+            dictlist = [ 312007, "A",   5, 1000, 300 ]
+        elif "312008" in sname or "A_1000_150" in sname or "ModA_run" in sname or "ModA_fix" in sname:
+            dictlist = [ 312008, "A",   5, 1000, 150 ]
+        elif "312009" in sname or "A_1000_75"  in sname:
+            dictlist = [ 312009, "A",   5, 1000,  75 ]
+        elif "312010" in sname or "A_1000_5"   in sname:
+            dictlist = [ 312010, "A",   5, 1000,   5 ]
+        elif "312011" in sname or "A_1000_2"   in sname and "A_1000_20" not in sname:
+            dictlist = [ 312011, "A",   5, 1000,   2 ]
+        elif "312012" in sname or "A_1000_1"   in sname and "A_1000_150" not in sname:
+            dictlist = [ 312012, "A",   5, 1000,   1 ]
+        elif "312013" in sname or "A_600_300"  in sname:
+            dictlist = [ 312013, "A",   5,  600, 300 ]
+        elif "312014" in sname or "A_600_150"  in sname:
+            dictlist = [ 312014, "A",   5,  600, 150 ]
+        elif "312015" in sname or "A_600_20"   in sname:
+            dictlist = [ 312015, "A",   5,  600,  20 ]
+        elif "312016" in sname or "A_600_2"    in sname and "A_600_20" not in sname:
+            dictlist = [ 312016, "A",   5,  600,   2 ]
+        elif "312017" in sname or "A_600_1"    in sname and "A_600_150" not in sname:
+            dictlist = [ 312017, "A",   5,  600,   1 ]
+        elif "312018" in sname or "A_600_0p5"  in sname:
+            dictlist = [ 312018, "A",   5,  600, 0.5 ]
+        elif "312019" in sname or "B_1400_300" in sname:
+            dictlist = [ 312019, "B",   2, 1400, 300 ]
+        elif "312020" in sname or "B_1400_150" in sname:
+            dictlist = [ 312020, "B",   2, 1400, 150 ]
+        elif "312021" in sname or "B_1400_75"  in sname:
+            dictlist = [ 312021, "B",   2, 1400,  75 ]
+        elif "312022" in sname or "B_1400_20"  in sname:
+            dictlist = [ 312022, "B",   2, 1400,  20 ]
+        elif "312023" in sname or "B_1400_5"   in sname:
+            dictlist = [ 312023, "B",   2, 1400,   5 ]
+        elif "312024" in sname or "B_1400_2"   in sname and "B_1400_20" not in sname:
+            dictlist = [ 312024, "B",   2, 1400,   2 ]
+        elif "312025" in sname or "B_1000_300" in sname:
+            dictlist = [ 312025, "B",   2, 1000, 300 ]
+        elif "312026" in sname or "B_1000_150" in sname:
+            dictlist = [ 312026, "B",   2, 1000, 150 ]
+        elif "312027" in sname or "B_1000_75"  in sname:
+            dictlist = [ 312027, "B",   2, 1000,  75 ]
+        elif "312028" in sname or "B_1000_5"   in sname or "ModB_run" in sname or "ModB_fix" in sname:
+            dictlist = [ 312028, "B",   2, 1000,   5 ]
+        elif "312029" in sname or "B_1000_2"   in sname and "B_1000_20" not in sname:
+            dictlist = [ 312029, "B",   2, 1000,   2 ]
+        elif "312030" in sname or "B_1000_1"   in sname and "B_1000_150" not in sname:
+            dictlist = [ 312030, "B",   2, 1000,   1 ]
+        elif "312031" in sname or "B_600_300"  in sname:
+            dictlist = [ 312031, "B",   2,  600, 300 ]
+        elif "312032" in sname or "B_600_150"  in sname:
+            dictlist = [ 312032, "B",   2,  600, 150 ]
+        elif "312033" in sname or "B_600_20"   in sname:
+            dictlist = [ 312033, "B",   2,  600,  20 ]
+        elif "312034" in sname or "B_600_2"    in sname and "B_600_20" not in sname:
+            dictlist = [ 312034, "B",   2,  600,   2 ]
+        elif "312035" in sname or "B_600_1"    in sname and "B_600_150" not in sname:
+            dictlist = [ 312035, "B",   2,  600,   1 ]
+        elif "312036" in sname or "B_600_0p5"  in sname:
+            dictlist = [ 312036, "B",   2,  600, 0.5 ]
+        elif "312037" in sname or "C_1400_300" in sname:
+            dictlist = [ 312037, "C",  10, 1400, 300 ]
+        elif "312038" in sname or "C_1400_150" in sname:
+            dictlist = [ 312038, "C",  10, 1400, 150 ]
+        elif "312039" in sname or "C_1400_75"  in sname:
+            dictlist = [ 312039, "C",  10, 1400,  75 ]
+        elif "312040" in sname or "C_1400_20"  in sname:
+            dictlist = [ 312040, "C",  10, 1400,  20 ]
+        elif "312041" in sname or "C_1400_5"   in sname:
+            dictlist = [ 312041, "C",  10, 1400,   5 ]
+        elif "312042" in sname or "C_1400_2"   in sname and "C_1400_20" not in sname:
+            dictlist = [ 312042, "C",  10, 1400,   2 ]
+        elif "312043" in sname or "C_1000_300" in sname:
+            dictlist = [ 312043, "C",  10, 1000, 300 ]
+        elif "312044" in sname or "C_1000_150" in sname:
+            dictlist = [ 312044, "C",  10, 1000, 150 ]
+        elif "312045" in sname or "C_1000_75"  in sname:
+            dictlist = [ 312045, "C",  10, 1000,  75 ]
+        elif "312046" in sname or "C_1000_5"   in sname:
+            dictlist = [ 312046, "C",  10, 1000,   5 ]
+        elif "312047" in sname or "C_1000_2"   in sname and "C_1000_20" not in sname:
+            dictlist = [ 312047, "C",  10, 1000,   2 ]
+        elif "312048" in sname or "C_1000_1"   in sname and "C_1000_150" not in sname:
+            dictlist = [ 312048, "C",  10, 1000,   1 ]
+        elif "312049" in sname or "C_600_300"  in sname:
+            dictlist = [ 312049, "C",  10,  600, 300 ]
+        elif "312050" in sname or "C_600_150"  in sname:
+            dictlist = [ 312050, "C",  10,  600, 150 ]
+        elif "312051" in sname or "C_600_20"   in sname:
+            dictlist = [ 312051, "C",  10,  600,  20 ]
+        elif "312052" in sname or "C_600_2"    in sname and "C_600_20" not in sname:
+            dictlist = [ 312052, "C",  10,  600,   2 ]
+        elif "312053" in sname or "C_600_1"    in sname and "C_600_150" not in sname:
+            dictlist = [ 312053, "C",  10,  600,   1 ]
+        elif "312054" in sname or "C_600_0p5"  in sname:
+            dictlist = [ 312054, "C",  10,  600, 0.5 ]
+        elif "312055" in sname or "D_1400_300" in sname:
+            dictlist = [ 312055, "D",  20, 1400, 300 ]
+        elif "312056" in sname or "D_1400_150" in sname:
+            dictlist = [ 312056, "D",  20, 1400, 150 ]
+        elif "312057" in sname or "D_1400_75"  in sname:
+            dictlist = [ 312057, "D",  20, 1400,  75 ]
+        elif "312058" in sname or "D_1400_20"  in sname:
+            dictlist = [ 312058, "D",  20, 1400,  20 ]
+        elif "312059" in sname or "D_1400_5"   in sname:
+            dictlist = [ 312059, "D",  20, 1400,   5 ]
+        elif "312060" in sname or "D_1400_2"   in sname and "D_1400_20" not in sname:
+            dictlist = [ 312060, "D",  20, 1400,   2 ]
+        elif "312061" in sname or "D_1000_300" in sname:
+            dictlist = [ 312061, "D",  20, 1000, 300 ]
+        elif "312062" in sname or "D_1000_150" in sname:
+            dictlist = [ 312062, "D",  20, 1000, 150 ]
+        elif "312063" in sname or "D_1000_75"  in sname:
+            dictlist = [ 312063, "D",  20, 1000,  75 ]
+        elif "312064" in sname or "D_1000_5"   in sname:
+            dictlist = [ 312064, "D",  20, 1000,   5 ]
+        elif "312065" in sname or "D_1000_2"   in sname and "D_1000_20" not in sname:
+            dictlist = [ 312065, "D",  20, 1000,   2 ]
+        elif "312066" in sname or "D_1000_1"   in sname and "D_1000_150" not in sname:
+            dictlist = [ 312066, "D",  20, 1000,   1 ]
+        elif "312067" in sname or "D_600_300"  in sname:
+            dictlist = [ 312067, "D",  20,  600, 300 ]
+        elif "312068" in sname or "D_600_150"  in sname:
+            dictlist = [ 312068, "D",  20,  600, 150 ]
+        elif "312069" in sname or "D_600_20"   in sname:
+            dictlist = [ 312069, "D",  20,  600,  20 ]
+        elif "312070" in sname or "D_600_2"    in sname and "D_600_20" not in sname:
+            dictlist = [ 312070, "D",  20,  600,   2 ]
+        elif "312071" in sname or "D_600_1"    in sname and "D_600_150" not in sname:
+            dictlist = [ 312071, "D",  20,  600,   1 ]
+        elif "312072" in sname or "D_600_0p5"  in sname:
+            dictlist = [ 312072, "D",  20,  600, 0.5 ]
+        elif "312073" in sname or "E_1400_300" in sname:
+            dictlist = [ 312073, "E", 0.8, 1400, 300 ]
+        elif "312074" in sname or "E_1400_150" in sname:
+            dictlist = [ 312074, "E", 0.8, 1400, 150 ]
+        elif "312075" in sname or "E_1400_75"  in sname:
+            dictlist = [ 312075, "E", 0.8, 1400,  75 ]
+        elif "312076" in sname or "E_1400_20"  in sname:
+            dictlist = [ 312076, "E", 0.8, 1400,  20 ]
+        elif "312077" in sname or "E_1400_5"   in sname:
+            dictlist = [ 312077, "E", 0.8, 1400,   5 ]
+        elif "312078" in sname or "E_1400_2"   in sname and "E_1400_20" not in sname:
+            dictlist = [ 312078, "E", 0.8, 1400,   2 ]
+        elif "312079" in sname or "E_1000_300" in sname:
+            dictlist = [ 312079, "E", 0.8, 1000, 300 ]
+        elif "312080" in sname or "E_1000_150" in sname:
             dictlist = [ 312080, "E", 0.8, 1000, 150 ]
-        elif "312090" in sname or "ModelB" in sname and "600" in sname and "0.5" in sname:
-            dictlist = [ 312090, "E", 0.8, 600, 0.5 ]
+        elif "312081" in sname or "E_1000_75"  in sname:
+            dictlist = [ 312081, "E", 0.8, 1000,  75 ]
+        elif "312082" in sname or "E_1000_5"   in sname:
+            dictlist = [ 312082, "E", 0.8, 1000,   5 ]
+        elif "312083" in sname or "E_1000_2"   in sname and "E_1000_20" not in sname:
+            dictlist = [ 312083, "E", 0.8, 1000,   2 ]
+        elif "312084" in sname or "E_1000_1"   in sname and "E_1000_150" not in sname:
+            dictlist = [ 312084, "E", 0.8, 1000,   1 ]
+        elif "312085" in sname or "E_600_300"  in sname:
+            dictlist = [ 312085, "E", 0.8,  600, 300 ]
+        elif "312086" in sname or "E_600_150"  in sname:
+            dictlist = [ 312086, "E", 0.8,  600, 150 ]
+        elif "312087" in sname or "E_600_20"   in sname:
+            dictlist = [ 312087, "E", 0.8,  600,  20 ]
+        elif "312088" in sname or "E_600_2"    in sname and "E_600_20" not in sname:
+            dictlist = [ 312088, "E", 0.8,  600,   2 ]
+        elif "312089" in sname or "E_600_1"    in sname and "E_600_150" not in sname:
+            dictlist = [ 312089, "E", 0.8,  600,   1 ]
+        elif "312090" in sname or "E_600_0.5"  in sname:
+            dictlist = [ 312090, "E", 0.8,  600, 0.5 ]
+            
         # set line attributes and color palettes
         color   = ROOT.kWhite
         palette = texec_default()
-        # set line color / palette by model
-        if   dictlist[1] == "A":
-            color   = sgnlColors()[0]
-            palette = texec_sgnl()[0]
-        elif dictlist[1] == "B":
-            color   = sgnlColors()[1]
-            palette = texec_sgnl()[1]
-        elif dictlist[1] == "C":
-            color   = sgnlColors()[2]
-            palette = texec_sgnl()[2]
-        elif dictlist[1] == "D":
-            color   = sgnlColors()[3]
-            palette = texec_sgnl()[3]
-        elif dictlist[1] == "E":
-            color   = sgnlColors()[4]
-            palette = texec_sgnl()[4]
-        # set line style by mediator mass
+
+        # --> set line style by mediator mass
         if   dictlist[3] == 1400:
             style = 1
         elif dictlist[3] == 1000:
             style = 3
         elif dictlist[3] == 600:
             style = 7
-        ## # vary base colors by lifetime --> TEST COLORS (want one to be base color, so add zero)
-        ## # --> don't need for now, since available samples have singular lifetimes per model-Xdm point
-        ## if args.varyCtauCols:
-        ##     if   dictlist[4] == 300:
-        ##         color = color + 1
-        ##     elif dictlist[4] == 150:
-        ##         color = color + 2
-        ##     elif dictlist[4] == 75:
-        ##         color = color + 3
-        ##     elif dictlist[4] == 20:
-        ##         color = color + 4
-        ##     elif dictlist[4] == 5:
-        ##         color = color + 5
-        ##     elif dictlist[4] == 2:
-        ##         color = color + 6
-        ##     elif dictlist[4] == 1:
-        ##         color = color + 7
-        ##     elif dictlist[4] == 0.5:
-        ##         color = color + 8
+        # --> set color/style of every point or every model - mediator mass point (all lifetimes the same)
+        if hlsty == lineStyleType.ALL or hlsty == lineStyleType.CTAU:
+            # set line color / palette by model
+            if   dictlist[1] == "A":
+                color   = sgnlColors()[0]
+                palette = texec_sgnl()[0]
+            elif dictlist[1] == "B":
+                color   = sgnlColors()[1]
+                palette = texec_sgnl()[1]
+            elif dictlist[1] == "C":
+                color   = sgnlColors()[2]
+                palette = texec_sgnl()[2]
+            elif dictlist[1] == "D":
+                color   = sgnlColors()[3]
+                palette = texec_sgnl()[3]
+            elif dictlist[1] == "E":
+                color   = sgnlColors()[4]
+                palette = texec_sgnl()[4]
+            if  hlsty == lineStyleType.ALL:
+                # vary base colors by lifetime
+                if dictlist[0] % 6 == 0:
+                    color = color
+                elif dictlist[0] % 6 == 1:
+                    color = color + 1
+                elif dictlist[0] % 6 == 2:
+                    color = color + 2
+                elif dictlist[0] % 6 == 3:
+                    color = color +3
+                elif dictlist[0] % 6 == 4:
+                    color = color - 1
+                elif dictlist[0] % 6 == 5:
+                    color = color - 2
+        # --> set color/style of every model point
+        if hlsty == lineStyleType.MOD:
+            if dictlist[0] % 6 == 0:
+                color   = sgnlColors()[0]
+                palette = texec_sgnl()[0]
+            elif dictlist[0] % 6 == 1:
+                color   = sgnlColors()[1]
+                palette = texec_sgnl()[1]
+            elif dictlist[0] % 6 == 2:
+                color   = sgnlColors()[2]
+                palette = texec_sgnl()[2]
+            elif dictlist[0] % 6 == 3:
+                color   = sgnlColors()[3]
+                palette = texec_sgnl()[3]
+            elif dictlist[0] % 6 == 4:
+                color   = sgnlColors()[4]
+                palette = texec_sgnl()[4]
+            elif dictlist[0] % 6 == 5:
+                color   = sgnlColors()[5]
+                palette = texec_sgnl()[5]
+        # --> set specific colors / styles for truth fixed vs running coupling plots
+        coupling = ""
+        if   "ModA_run" in sname or "ModB_run" in sname or "ModA_fix" in sname or "ModB_fix" in sname:
+            if   "run"  in sname:
+                color     = sgnlColors()[0]
+                palette   = texec_sgnl()[0]
+                coupling  = "running"
+            elif "fix"  in sname:
+                color     = sgnlColors()[2]
+                palette   = texec_sgnl()[2]
+                coupling  = "fixed"
+            if   "ModA" in sname:
+                style     = 1
+            elif "ModB" in sname:
+                style     = 3
         sampledict = {
             "dsid"     : dictlist[0], # mc channel number / dsid
             "model"    : dictlist[1], # model (A, B, C, D, or E)
@@ -719,6 +915,7 @@ def getSampleDict( sname, stype ):
             "palette"  : palette,     # color palette
             "lstyle"   : style,       # line style
             "lalpha"   : 1.00,        # line color alpha
+            "coupling" : coupling,    # running or fixed gauge coupling
         }
     # background sample dictionary
     if stype == sampleType.BKGD:
@@ -785,8 +982,10 @@ def getSampleDict( sname, stype ):
 ## --- SET LINE WIDTH --- ##
 def setLineWidth( lstyle ):
     lwidth = 2
-    if lstyle != 1:
+    if   lstyle == 3:
         lwidth = 4
+    #elif lstyle == 7:
+    #    lwidth = 3
 
     return lwidth
 
@@ -794,7 +993,7 @@ def setLineWidth( lstyle ):
 ## --- SET COLORS / PALETTES --- ##
 ## --> colors
 def sgnlColors():
-    return [ ROOT.kRed, ROOT.kGreen + 1, ROOT.kBlue, ROOT.kViolet, ROOT.kOrange + 1 ]
+    return [ ROOT.kRed, ROOT.kGreen + 1, ROOT.kBlue, ROOT.kViolet, ROOT.kOrange + 1, ROOT.kCyan+1 ]
 # one base color per model; one line / marker style per Xdm; one color (close to base) per lifetime
 
 def bkgdColors():
@@ -806,7 +1005,7 @@ def dataColors():
 
 ## --> palettes 
 def sgnlPalette():
-    return [ ROOT.kCherry, ROOT.kAvocado, ROOT.kDeepSea, ROOT.kFuchsia, ROOT.kDarkBodyRadiator ]
+    return [ ROOT.kCherry, ROOT.kAvocado, ROOT.kDeepSea, ROOT.kFuchsia, ROOT.kDarkBodyRadiator, ROOT.kAquamarine ]
 
 def bkgdPalette():
     return [ ROOT.kGreyScale ]

@@ -15,6 +15,7 @@
 
 #include <xAODEventInfo/EventInfo.h>
 #include <xAODJet/JetContainer.h>
+#include <xAODTruth/TruthParticleContainer.h>
 
 #include <xAODAnaHelpers/Algorithm.h>
 
@@ -29,8 +30,9 @@ class EJsxAODAnalysis : public xAH::Algorithm
   bool m_useCutFlow = true;
 
   // input container names
-  std::string m_inJetContainerName      = "";
-  std::string m_inTruthJetContainerName = "AntiKt4TruthJets";
+  std::string m_inJetContainerName       = "";
+  std::string m_inTruthJetContainerName  = "AntiKt4TruthJets";
+  std::string m_inTruthPartContainerName = "TruthParticles";
 
   // output histogram bin names
   std::string m_inJetBinName = "";
@@ -65,6 +67,10 @@ class EJsxAODAnalysis : public xAH::Algorithm
   double   m_signalJetEta = 2.5;
   double   m_signalNJetHt = 1000; // GeV
   unsigned m_nSignalEJs   = 2;
+
+  double   m_signalTruthJetPt  = 100.; // GeV
+  double   m_signalTruthJetEta = 2.7;
+  double   m_signalNTruthJetHt = 800; // GeV
 
   unsigned m_nValidJets  = 2;
   double   m_validJetPt  = 120.; // GeV

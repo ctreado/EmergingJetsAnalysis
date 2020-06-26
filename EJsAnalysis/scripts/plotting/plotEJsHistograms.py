@@ -108,6 +108,13 @@ parser.add_argument( "--lxint", dest = "lxint", type = float, default = 0.008, h
 parser.add_argument( "--lyint", dest = "lyint", type = float, default = 0.030, help = "Legend y-length per entry." )
 parser.add_argument( "--lxl", dest = "lxl", type = float, default = 0.600, help = "Legend left x-pos (override for multivariate plots)." )
 parser.add_argument( "--format", dest = "format", default = "pdf", help = "File format to save plots in." )
+parser.add_argument( "--lstyleEnum", dest = "lstyleEnum", type = int, default = 1,
+                         help = "Enumerator for changing default line colors and styles based on types of signal points being \
+                         plotted against one another. The default (ALL) sets the base color by model and the line style \
+                         by mediator mass and varies the lifetime color around the base color. MOD sets the base color by \
+                         lifetime and keeps the colors the same between models, and CTAU varies the base color by model and \
+                         keeps the colors the same across all lifetimes." )
+# --> add argument to override sampleDict colors -- just grab colors from plotHelpers instead; change legend to print strings in black in this case
 
 args = parser.parse_args()
 
@@ -155,11 +162,16 @@ class legStrLen( Enum ):
     MID2    = 7
     MID2_SM = 8
     MID3    = 9
-    SHORT   = 10
+    MID4    = 10
+    SHORT   = 11
 class varType( Enum ):
     DV      = 1
     DV_NTRK = 2
     JET     = 3
+class lineStyleType( Enum ):
+    ALL  = 1
+    MOD  = 2
+    CTAU = 3
 
 
 ### SKIP NORM FOR CUTFLOWS AND/OR EFFICIENCIES ?? ###
@@ -178,7 +190,7 @@ def getSampleHistos():
 
     # get samples
     sampleNames, sampleTypes, sampleDicts, sampleFiles = plotHelpers.getSamples(
-        args.inSgnlDir, args.inBkgdDir, args.inDataDir, args.sgnlType, args.bkgdType, args.dataType )
+        args.inSgnlDir, args.inBkgdDir, args.inDataDir, args.sgnlType, args.bkgdType, args.dataType, lineStyleType( args.lstyleEnum ).value )
 
     # get histograms
     combOutDir = None

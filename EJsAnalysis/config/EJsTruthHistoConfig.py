@@ -7,8 +7,8 @@ c = xAH_config()
 Dict_EJsNtupleToHists = {
     "m_name"                      : "EJsHists",
     "m_msgLevel"                  : "info",
-    "m_detailStr"                 : "match jetEConstit",
-    "m_regionName"                : "all signal valid ctrl",
+    "m_regionName"                : "all search-minus-one",
+    "m_detailStr"                 : "llps llpDesc tjetVerts djetVerts tjetTrks djetTrks abcd",
     "m_truthJetBranchName"        : "truthJet",
     "m_truthDarkJetBranchName"    : "darkJet",
     "m_truthPartBranchName"       : "truthPart",

@@ -148,6 +148,9 @@ class EJsHelpTreeBase : public HelpTreeBase
   float   m_njetHt_pflow;
   float   m_njetHt_truth;
 
+  float   m_truthPart_ptSum;
+  float   m_truthPartDark_ptSum;
+
   
   // truth particles
   std::vector<int>*                      m_tp_ID;

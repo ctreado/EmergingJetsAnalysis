@@ -91,16 +91,23 @@ namespace EJsHelperClasses {
     bool m_abcd;
     bool m_cutflow;
     bool m_abcdcutOnly;
+    bool m_truthOnly;
     bool m_pileup;
     bool m_pv;
     bool m_kinematics;
     bool m_kinematics_jet;
+    bool m_kinematics_tjet;
+    bool m_kinematics_djet;
     bool m_jetCalo;
     bool m_jetTrkMom;
     bool m_jetTruth;
     bool m_jetTrks;
+    bool m_tjetTrks;
+    bool m_djetTrks;
     bool m_jetTrksDVTypes;
     bool m_jetVerts;
+    bool m_tjetVerts;
+    bool m_djetVerts;
     bool m_jetVertices;
     bool m_baseJetVerts;
     bool m_fiducJetVerts;
@@ -137,10 +144,10 @@ namespace EJsHelperClasses {
     bool m_vtxOverallTrk;
     bool m_vtxErrors;
     bool m_vtx2D;
-    bool m_nDVs;
     bool m_llps;
     bool m_darkPions;
     bool m_kshorts;
+    bool m_llpDesc;
 
     int m_numLeadingJets; // n leading jets
     int m_numVtxTrks;     // n vertex tracks

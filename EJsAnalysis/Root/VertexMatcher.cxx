@@ -92,7 +92,7 @@ EL::StatusCode VertexMatcher :: initialize ()
   m_store = wk()->xaodStore();
 
   // check for input containers
-  if ( m_inSecondaryVertexContainerName.empty() ) {
+  if ( m_inSecondaryVertexContainerName.empty() && !m_truthLevelOnly ) {
     ANA_MSG_ERROR( "No input secondary vertex container provided! Exiting." );
     return EL::StatusCode::FAILURE;
   }
@@ -119,14 +119,14 @@ EL::StatusCode VertexMatcher :: execute ()
 
   ANA_MSG_DEBUG( "Applying Truth-Reco Vertex Matching..." );
 
-  // retrieve truth + track particle containers
+  // retrieve truth particle + vertex containers
   const xAOD::TruthParticleContainer* inTruthParts = 0;
   ANA_MSG_DEBUG( "Getting input truth particle container: " << m_inTruthPartContainerName );
   ANA_CHECK( HelperFunctions::retrieve( inTruthParts, m_inTruthPartContainerName, m_event, m_store, msg() ) );
 
-  const xAOD::TrackParticleContainer* inTrackParts = 0;
-  ANA_MSG_DEBUG( "Getting input track particle container: " << m_inTrackPartContainerName );
-  ANA_CHECK( HelperFunctions::retrieve( inTrackParts, m_inTrackPartContainerName, m_event, m_store, msg() ) );
+  const xAOD::TruthVertexContainer* inTruthVerts = 0;
+  ANA_MSG_DEBUG( "Getting input truth vertex container: " << m_inTruthVertexContainerName );
+  ANA_CHECK( HelperFunctions::retrieve( inTruthVerts, m_inTruthVertexContainerName, m_event, m_store, msg() ) );
 
   // initialize truth particle decorators
   int truthPart_index = 0;
@@ -140,45 +140,48 @@ EL::StatusCode VertexMatcher :: execute ()
       EJsHelper::TruthVertexLinkVector_t();
     ++truthPart_index;
   }
-  
-  // create truth - track hash table
-  m_truthTrackHash.clear();
-  for ( const auto& trk : *inTrackParts ) {
-    const auto* truth = EJsHelper::getTruthPart( trk ); // get track-linked truth particle
-    if ( !truth ) continue;
-    m_truthTrackHash[truth] = trk;
-  }
-  if ( m_doTruthTrackMatching )
-    matchTracksToTruthParts( inTruthParts, inTrackParts );
-  
-  // retrieve truth + reco vertex containers
-  const xAOD::TruthVertexContainer* inTruthVerts = 0;
-  ANA_MSG_DEBUG( "Getting input truth vertex container: " << m_inTruthVertexContainerName );
-  ANA_CHECK( HelperFunctions::retrieve( inTruthVerts, m_inTruthVertexContainerName, m_event, m_store, msg() ) );
 
+
+  // retrieve track + reco vertex containers
+  const xAOD::TrackParticleContainer* inTrackParts = 0;
   const xAOD::VertexContainer* inSecVerts   = 0;
-  ANA_MSG_DEBUG( "Getting input secondary vertex container: " << m_inSecondaryVertexContainerName );
-  ANA_CHECK( HelperFunctions::retrieve( inSecVerts, m_inSecondaryVertexContainerName, m_event, m_store, msg() ) );
-
-  // initialize reco vertex decorators
   int secVtx_index = 0;
-  for ( const auto& secVtx : *inSecVerts ) {
-    if ( m_setObjectIdentifiers ) {
-      secVtx->auxdecor<int>("ID")    = secVtx->index() + 1000;
-      secVtx->auxdecor<int>("index") = secVtx_index;
-    }
-    secVtx->auxdecor<EJsHelper::TruthVertexLink_t>("closestTruthVertexLink")      = EJsHelper::TruthVertexLink_t();
-    secVtx->auxdecor<int>("closestTruthVertexPhysPosID")                          = AlgConsts::invalidInt;
-    secVtx->auxdecor<TVector3>("closestTruthVertexPhysPosition")                  = TVector3();
-    secVtx->auxdecor<float>("closestTruthVertexPhysPosDistance")                  = AlgConsts::invalidFloat;
-    secVtx->auxdecor<EJsHelper::TruthVertexLinkVector_t>("truthVertexMatchLinks") = EJsHelper::TruthVertexLinkVector_t();
-    secVtx->auxdecor<std::vector<float>>("truthVertexMatchScores")                = std::vector<float>();
-    secVtx->auxdecor<std::vector<int>>("truthVertexMatchReprTruthPosIDs")         = std::vector<int>();
-    secVtx->auxdecor<std::vector<TVector3>>("truthVertexMatchReprTruthPositions") = std::vector<TVector3>();
-    secVtx->auxdecor<std::vector<TVector3>>("truthVertexMatchResiduals")          = std::vector<TVector3>();
-    ++secVtx_index;
-  }
+  
+  if ( !m_truthLevelOnly ) {
+    ANA_MSG_DEBUG( "Getting input track particle container: " << m_inTrackPartContainerName );
+    ANA_CHECK( HelperFunctions::retrieve( inTrackParts, m_inTrackPartContainerName, m_event, m_store, msg() ) );
+    ANA_MSG_DEBUG( "Getting input secondary vertex container: " << m_inSecondaryVertexContainerName );
+    ANA_CHECK( HelperFunctions::retrieve( inSecVerts, m_inSecondaryVertexContainerName, m_event, m_store, msg() ) );
 
+    // create truth - track hash table
+    m_truthTrackHash.clear();
+    for ( const auto& trk : *inTrackParts ) {
+      const auto* truth = EJsHelper::getTruthPart( trk ); // get track-linked truth particle
+      if ( !truth ) continue;
+      m_truthTrackHash[truth] = trk;
+    }
+    if ( m_doTruthTrackMatching )
+      matchTracksToTruthParts( inTruthParts, inTrackParts );
+    
+    // initialize reco vertex decorators
+    for ( const auto& secVtx : *inSecVerts ) {
+      if ( m_setObjectIdentifiers ) {
+	secVtx->auxdecor<int>("ID")    = secVtx->index() + 1000;
+	secVtx->auxdecor<int>("index") = secVtx_index;
+      }
+      secVtx->auxdecor<EJsHelper::TruthVertexLink_t>("closestTruthVertexLink")      = EJsHelper::TruthVertexLink_t();
+      secVtx->auxdecor<int>("closestTruthVertexPhysPosID")                          = AlgConsts::invalidInt;
+      secVtx->auxdecor<TVector3>("closestTruthVertexPhysPosition")                  = TVector3();
+      secVtx->auxdecor<float>("closestTruthVertexPhysPosDistance")                  = AlgConsts::invalidFloat;
+      secVtx->auxdecor<EJsHelper::TruthVertexLinkVector_t>("truthVertexMatchLinks") = EJsHelper::TruthVertexLinkVector_t();
+      secVtx->auxdecor<std::vector<float>>("truthVertexMatchScores")                = std::vector<float>();
+      secVtx->auxdecor<std::vector<int>>("truthVertexMatchReprTruthPosIDs")         = std::vector<int>();
+      secVtx->auxdecor<std::vector<TVector3>>("truthVertexMatchReprTruthPositions") = std::vector<TVector3>();
+      secVtx->auxdecor<std::vector<TVector3>>("truthVertexMatchResiduals")          = std::vector<TVector3>();
+      ++secVtx_index;
+    }
+  }
+  
   // initialize matched reco vertex map
   std::map<const xAOD::Vertex*, std::vector<std::pair<EJs::TruthVertexPosition, float>> > matchedRecoVerts;
   // initialize vector for ALL truth vertex physical positions
@@ -273,38 +276,41 @@ EL::StatusCode VertexMatcher :: execute ()
     }
     
     // associate corresponding truth-linked tracks to truth vertex positions
-    for ( auto& pos : truthVtxPhysPositions )
-      pos.storeTracks( m_truthTrackHash );
+    if ( !m_truthLevelOnly ) 
+      for ( auto& pos : truthVtxPhysPositions )
+	pos.storeTracks( m_truthTrackHash );
 
     // save all truth vertex physical positions
     for ( const auto& pos : truthVtxPhysPositions )
       truthVtxPhysPositions_all.emplace_back( pos );
 
     // find closest reco vertex to each truth vertex physical position
-    EJsHelper::VertexLinkVector_t closestRecoVtxLinks;
-    std::vector<float> closestRecoVtxDistances;
-    for ( const auto& pos : truthVtxPhysPositions ) {
+    if ( !m_truthLevelOnly ) {
+      EJsHelper::VertexLinkVector_t closestRecoVtxLinks;
+      std::vector<float> closestRecoVtxDistances;
+      for ( const auto& pos : truthVtxPhysPositions ) {
       
-      const xAOD::Vertex* closestRecoVertex = 0;
-      double closestDistance = AlgConsts::maxValue;
+	const xAOD::Vertex* closestRecoVertex = 0;
+	double closestDistance = AlgConsts::maxValue;
       
-      for ( const auto& secVtx : *inSecVerts ) {
-	TVector3 secVtxPos  ( secVtx->x(), secVtx->y(), secVtx->z() );
-	double   distance = ( pos.position() - secVtxPos ).Mag();
-
-	if ( distance < closestDistance ) {
-	  closestRecoVertex = secVtx;
-	  closestDistance   = distance;
+	for ( const auto& secVtx : *inSecVerts ) {
+	  TVector3 secVtxPos  ( secVtx->x(), secVtx->y(), secVtx->z() );
+	  double   distance = ( pos.position() - secVtxPos ).Mag();
+	  
+	  if ( distance < closestDistance ) {
+	    closestRecoVertex = secVtx;
+	    closestDistance   = distance;
+	  }
+	}
+	if ( closestRecoVertex ) {
+	  EJsHelper::VertexLink_t link( m_inSecondaryVertexContainerName, closestRecoVertex->auxdataConst<int>("index") );
+	  closestRecoVtxLinks     .push_back( link            );
+	  closestRecoVtxDistances .push_back( closestDistance );
 	}
       }
-      if ( closestRecoVertex ) {
-	EJsHelper::VertexLink_t link( m_inSecondaryVertexContainerName, closestRecoVertex->auxdataConst<int>("index") );
-	closestRecoVtxLinks     .push_back( link            );
-	closestRecoVtxDistances .push_back( closestDistance );
-      }
+      truthVtx->auxdecor<EJsHelper::VertexLinkVector_t>("closestRecoVertexLinks") = closestRecoVtxLinks;
+      truthVtx->auxdecor<std::vector<float>>("closestRecoVertexDistances")        = closestRecoVtxDistances;
     }
-    truthVtx->auxdecor<EJsHelper::VertexLinkVector_t>("closestRecoVertexLinks") = closestRecoVtxLinks;
-    truthVtx->auxdecor<std::vector<float>>("closestRecoVertexDistances")        = closestRecoVtxDistances;
 
     // // count number of reconstructed (selected) descendants
     // std::set<const xAOD::TruthParticle*> reconstructedDescendants;
@@ -325,6 +331,8 @@ EL::StatusCode VertexMatcher :: execute ()
     // require at least 2 reconstructibleselected descendants for truth vertex to be "reconstructible"...
     if ( reconstructibleDescendants.size() < 2 ) continue;
     truthVtx->auxdecor<char>("isReconstructible") = true;
+
+    if ( m_truthLevelOnly ) continue;
 
     // loop over reco vertices + search for matches to truth vertex (positions)
     EJsHelper::VertexLinkVector_t matchedRecoVtxLinks;
@@ -398,56 +406,58 @@ EL::StatusCode VertexMatcher :: execute ()
     desc.first->auxdecor<EJsHelper::TruthVertexLinkVector_t>("truthVertexAncestorLinks") = truthVtxAncLinks;
   }
 
-  // decorate matched reco vertices w/ corresponding truth-vertex info
-  for ( const auto& match : matchedRecoVerts ) {
-    EJsHelper::TruthVertexLinkVector_t truthVtxLinks;
-    std::vector<float>    matchScores;
-    std::vector<int>      reprTruthPosIDs;
-    std::vector<TVector3> reprTruthPositions;
-    std::vector<TVector3> residuals;
-    for ( size_t i = 0; i != match.second.size(); ++i ) {
-      
-      TVector3 secVtxPos ( match.first->x(), match.first->y(), match.first->z() );
-      
-      EJsHelper::TruthVertexLink_t truthlink( m_inTruthVertexContainerName,
-					      match.second.at(i).first.truth_vtx()->auxdataConst<int>("index") );
-      truthVtxLinks      .push_back( truthlink                                       );
-      matchScores        .push_back( match.second.at(i).second                       );
-      reprTruthPosIDs    .push_back( match.second.at(i).first.ID()                   );
-      reprTruthPositions .push_back( match.second.at(i).first.position()             );
-      residuals          .push_back( match.second.at(i).first.position() - secVtxPos );
-    }
-    match.first->auxdecor<EJsHelper::TruthVertexLinkVector_t>("truthVertexMatchLinks") = truthVtxLinks;
-    match.first->auxdecor<std::vector<float>>("truthVertexMatchScores")                = matchScores;
-    match.first->auxdecor<std::vector<int>>("truthVertexMatchReprTruthPosIDs")         = reprTruthPosIDs;
-    match.first->auxdecor<std::vector<TVector3>>("truthVertexMatchReprTruthPositions") = reprTruthPositions;
-    match.first->auxdecor<std::vector<TVector3>>("truthVertexMatchResiduals")          = residuals;
-  }
-
-  // find closest truth vertex (physical position) to each reco vertex
-  for ( const auto& secVtx : *inSecVerts ) {
-
-    EJs::TruthVertexPosition closestTruthVtxPhysPos;
-    double closestDistance    = AlgConsts::maxValue;
-    bool   closestTruthVertex = false;
-    
-    TVector3 secVtxPos ( secVtx->x(), secVtx->y(), secVtx->z() );
-
-    for ( const auto& pos : truthVtxPhysPositions_all ) {
-      double distance = ( secVtxPos - pos.position() ).Mag();
-      if ( distance < closestDistance ) {
-    	closestTruthVtxPhysPos = pos;
-    	closestDistance        = distance;
-	closestTruthVertex     = true;
+  if ( !m_truthLevelOnly) {
+    // decorate matched reco vertices w/ corresponding truth-vertex info
+    for ( const auto& match : matchedRecoVerts ) {
+      EJsHelper::TruthVertexLinkVector_t truthVtxLinks;
+      std::vector<float>    matchScores;
+      std::vector<int>      reprTruthPosIDs;
+      std::vector<TVector3> reprTruthPositions;
+      std::vector<TVector3> residuals;
+      for ( size_t i = 0; i != match.second.size(); ++i ) {
+	
+	TVector3 secVtxPos ( match.first->x(), match.first->y(), match.first->z() );
+	
+	EJsHelper::TruthVertexLink_t truthlink( m_inTruthVertexContainerName,
+						match.second.at(i).first.truth_vtx()->auxdataConst<int>("index") );
+	truthVtxLinks      .push_back( truthlink                                       );
+	matchScores        .push_back( match.second.at(i).second                       );
+	reprTruthPosIDs    .push_back( match.second.at(i).first.ID()                   );
+	reprTruthPositions .push_back( match.second.at(i).first.position()             );
+	residuals          .push_back( match.second.at(i).first.position() - secVtxPos );
       }
+      match.first->auxdecor<EJsHelper::TruthVertexLinkVector_t>("truthVertexMatchLinks") = truthVtxLinks;
+      match.first->auxdecor<std::vector<float>>("truthVertexMatchScores")                = matchScores;
+      match.first->auxdecor<std::vector<int>>("truthVertexMatchReprTruthPosIDs")         = reprTruthPosIDs;
+      match.first->auxdecor<std::vector<TVector3>>("truthVertexMatchReprTruthPositions") = reprTruthPositions;
+      match.first->auxdecor<std::vector<TVector3>>("truthVertexMatchResiduals")          = residuals;
     }
-    if ( closestTruthVertex ) {
-      EJsHelper::TruthVertexLink_t truthposlink( m_inTruthVertexContainerName,
-    						 closestTruthVtxPhysPos.truth_vtx()->auxdataConst<int>("index") );
-      secVtx->auxdecor<EJsHelper::TruthVertexLink_t>("closestTruthVertexLink") = truthposlink;
-      secVtx->auxdecor<int>("closestTruthVertexPhysPosID")                     = closestTruthVtxPhysPos.ID();
-      secVtx->auxdecor<TVector3>("closestTruthVertexPhysPosition")             = closestTruthVtxPhysPos.position();
-      secVtx->auxdecor<float>("closestTruthVertexPhysPosDistance")             = closestDistance;
+
+    // find closest truth vertex (physical position) to each reco vertex
+    for ( const auto& secVtx : *inSecVerts ) {
+      
+      EJs::TruthVertexPosition closestTruthVtxPhysPos;
+      double closestDistance    = AlgConsts::maxValue;
+      bool   closestTruthVertex = false;
+      
+      TVector3 secVtxPos ( secVtx->x(), secVtx->y(), secVtx->z() );
+      
+      for ( const auto& pos : truthVtxPhysPositions_all ) {
+	double distance = ( secVtxPos - pos.position() ).Mag();
+	if ( distance < closestDistance ) {
+	  closestTruthVtxPhysPos = pos;
+	  closestDistance        = distance;
+	  closestTruthVertex     = true;
+	}
+      }
+      if ( closestTruthVertex ) {
+	EJsHelper::TruthVertexLink_t truthposlink( m_inTruthVertexContainerName,
+						   closestTruthVtxPhysPos.truth_vtx()->auxdataConst<int>("index") );
+	secVtx->auxdecor<EJsHelper::TruthVertexLink_t>("closestTruthVertexLink") = truthposlink;
+	secVtx->auxdecor<int>("closestTruthVertexPhysPosID")                     = closestTruthVtxPhysPos.ID();
+	secVtx->auxdecor<TVector3>("closestTruthVertexPhysPosition")             = closestTruthVtxPhysPos.position();
+	secVtx->auxdecor<float>("closestTruthVertexPhysPosDistance")             = closestDistance;
+      }
     }
   }
   

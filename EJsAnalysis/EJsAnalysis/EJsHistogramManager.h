@@ -30,7 +30,6 @@ class EJsHistogramManager : public HistogramManager
   StatusCode connectEvents         ( TTree* tree );
   StatusCode connectTriggers       ( TTree* tree );
   StatusCode connectJets           ( TTree* tree, const std::string& jetName       = "jet"       );
-  StatusCode connectOtherJets      ( TTree* tree, const std::string& jetOthName    = "pflowJet"  );
   StatusCode connectTrigJets       ( TTree* tree, const std::string& trigJetName   = "trigJet"   );
   StatusCode connectTracks         ( TTree* tree, const std::string& trackName     = "track"     );
   StatusCode connectSecondaryVerts ( TTree* tree, const std::string& secVtxName    = "secVtx"    );
@@ -50,11 +49,15 @@ class EJsHistogramManager : public HistogramManager
   using HistogramManager::execute;    // overload
   using HistogramManager::finalize;   // overload
 
-  void getJetTypes ( int jet_index, std::vector<int>& jet, const EJsHelper::BaseDV& base_dv,
-		                         bool doCombos = true, bool doEJ   = true, bool doEJCuts   = false );
-  void getTrkTypes ( int trk_index, std::vector<int>& trk, const EJsHelper::BaseDV& base_dv );
-  void getDVTypes  ( int dv_index,  std::vector<int>& dv,  const EJsHelper::BaseDV& base_dv,
-		     bool jetDV = false, bool doCombos = true, bool doGood = true, bool doGoodCuts = false );
+  void getTruthJetTypes ( int truthJet_index, std::vector<int>& truthJet );
+  void getJetTypes      ( int jet_index,      std::vector<int>& jet, const EJsHelper::BaseDV& base_dv,
+			  bool doCombos = true, bool doEJ   = true, bool doEJCuts   = false );
+  void getTPTypes       ( int tp_index,       std::vector<int>& tp );
+  void getTrkTypes      ( int trk_index,      std::vector<int>& trk, const EJsHelper::BaseDV& base_dv );
+  void getDVTypes       ( int dv_index,       std::vector<int>& dv,  const EJsHelper::BaseDV& base_dv,
+			  bool jetDV = false, bool doCombos = true, bool doGood = true, bool doGoodCuts = false );
+  void getLLPTypes      ( int llp_index,      std::vector<int>& llp );
+  int  getLLPDescTypes  ( int llpDesc_ID,     std::vector<int>& llpDesc );
 
 
  protected:
@@ -63,7 +66,6 @@ class EJsHistogramManager : public HistogramManager
 
  private:
   std::string      m_jetStr;
-  std::string      m_jetStrOth;
   float            m_nEvents_init;
   float            m_nEvents_sel;
   float            m_sumw_init;
@@ -85,6 +87,8 @@ class EJsHistogramManager : public HistogramManager
 
   // counters
   unsigned m_LJix        = 0;
+  unsigned m_nTypeTJs    = 0;
+  unsigned m_nTypeDJs    = 0;
   unsigned m_nTypeJs     = 0;
   unsigned m_nType1Js    = 0;
   unsigned m_nType1SVJs  = 0;
@@ -97,7 +101,9 @@ class EJsHistogramManager : public HistogramManager
   unsigned m_svNjtrkJ_ix = 0;
   unsigned m_svTrkJ_ix   = 0;
   unsigned m_svNJ_ix     = 0;
+  unsigned m_nTypeTPs    = 0;
   unsigned m_nTypeTrks   = 0;
+  unsigned m_nTypeLLPs   = 0;
   unsigned m_nTypeDVs    = 0;
   unsigned m_nType1DVs   = 0;
   unsigned m_nTypeBDVs   = 0;
@@ -107,28 +113,16 @@ class EJsHistogramManager : public HistogramManager
   unsigned m_nTypeBJDVs  = 0;
   std::vector<int>   m_nEntries;
   std::vector<float> m_nWeightedEntries;
-  std::vector<int>   m_nFourJets;
-  std::vector<int>   m_nSearch;
-  std::vector<int>   m_nTrig_4j120;
-  std::vector<int>   m_nOffTrig_4j120;
-  std::vector<int>   m_nOffTrig_4j120_other;
-  std::vector<int>   m_nOffTrigJVT_4j120;
-  std::vector<int>   m_nOffTrigJVT_4j120_other;
-  std::vector<int>   m_nTrig_fourJet;
-  std::vector<int>   m_nOffTrig_fourJet;
-  std::vector<int>   m_nOthOffTrig_fourJet;
-  std::vector<int>   m_nOffTrigJVT_fourJet;
-  std::vector<int>   m_nOthOffTrigJVT_fourJet;
-  std::vector<int>   m_nTrig_search;
-  std::vector<int>   m_nOffTrig_search;
-  std::vector<int>   m_nOthOffTrig_search;
-  std::vector<int>   m_nOffTrigJVT_search;
-  std::vector<int>   m_nOthOffTrigJVT_search;
 
   // analysis selections
   int    m_nJets      = 4;
   double m_jetPt      = 120.;
   double m_jetEta     = 2.5;
+
+  // tight jet selections
+  double m_tightJetPt  = 200.;
+  double m_tightJetEta = 2.0;
+  double m_tightJetM   = 25.;
   
   // trigger selections
   int    m_nTrigJets  = 4;
@@ -182,6 +176,9 @@ class EJsHistogramManager : public HistogramManager
   uint8_t  m_signal_jetPt;        //!
   uint8_t  m_signal_jetEta;       //!
   uint8_t  m_signal_njetHt;       //!
+  // event info: truth particle sum-pt
+  float    m_truthPartPtSum;      //!
+  float    m_truthPartDarkPtSum;  //!
   // PV info
   float    m_pv_x;                //!
   float    m_pv_y;                //!
@@ -269,21 +266,116 @@ class EJsHistogramManager : public HistogramManager
 
   // TRUTH JET BRANCHES
   // truth jets: basics / kinematics
-  int m_truthJet_n;                   //!
-  std::vector<int>* m_truthJet_ID;    //!
-  std::vector<int>* m_truthJet_index; //!
+  int m_truthJet_n;                                                //!
+  std::vector<int>*                      m_truthJet_ID;            //!
+  std::vector<int>*                      m_truthJet_index;         //!
+  std::vector<float>*                    m_truthJet_pt;            //!
+  std::vector<float>*                    m_truthJet_eta;           //!
+  std::vector<float>*                    m_truthJet_phi;           //!
+  std::vector<float>*                    m_truthJet_E;             //!
+  std::vector<float>*                    m_truthJet_M;             //!
+  std::vector<float>*                    m_truthJet_rapid;         //!
+  std::vector<float>*                    m_truthJet_girth;         //!
+  // truth jets: constituents
+  std::vector<int>*                      m_truthJet_nConstit;      //!
+  std::vector<float>*                    m_truthJet_constitPt;     //!
+  std::vector<std::vector<float>>*       m_truthJet_constit_pt;    //!
+  std::vector<std::vector<float>>*       m_truthJet_constit_eta;   //!
   // truth jets: matched dark
-  std::vector<uint8_t>* m_truthJet_isDark;    //!
-  std::vector<int>*     m_truthJet_darkID;    //!
-  std::vector<int>*     m_truthJet_darkIndex; //!
-  std::vector<float>*   m_truthJet_darkDR;    //!
+  std::vector<uint8_t>*                  m_truthJet_isDark;        //!
+  std::vector<int>*                      m_truthJet_darkID;        //!
+  std::vector<int>*                      m_truthJet_darkIndex;     //!
+  std::vector<float>*                    m_truthJet_darkDR;        //!
+  std::vector<float>*                    m_truthJet_darkPt;        //!
+  // truth jets: matched LLP decays
+  std::vector<int>*                      m_truthJet_nTV;           //!
+  std::vector<std::vector<std::string>>* m_truthJet_TV_llp;        //!
+  std::vector<std::vector<int>>*         m_truthJet_TV_ID;         //!
+  std::vector<std::vector<int>>*         m_truthJet_TV_index;      //!
+  std::vector<std::vector<float>>*       m_truthJet_TV_r;          //!
+  std::vector<std::vector<float>>*       m_truthJet_TV_z;          //!
+  std::vector<std::vector<float>>*       m_truthJet_TV_dR;         //!
+  // truth jets: matched LLP tracks
+  std::vector<int>*                      m_truthJet_ntp;           //!
+  std::vector<std::vector<int>>*         m_truthJet_tp_ID;         //!
+  std::vector<std::vector<int>>*         m_truthJet_tp_index;      //!
+  std::vector<std::vector<float>>*       m_truthJet_tp_dR;         //!
+  std::vector<std::vector<float>>*       m_truthJet_tp_phi;        //!
+  std::vector<std::vector<int>>*         m_truthJet_tp_pVtx_ID;    //!
+  std::vector<std::vector<int>>*         m_truthJet_tp_pVtx_index; //!
+  
 
   // DARK JET BRANCHES
   // dark jets: basics / kinematics
-  int m_darkJet_n;                      //!
-  std::vector<int>* m_darkJet_ID;       //!
-  std::vector<int>* m_darkJet_index;    //!
-  std::vector<int>* m_darkJet_nConstit; //!
+  int m_darkJet_n;                                                //!
+  std::vector<int>*                      m_darkJet_ID;            //!
+  std::vector<int>*                      m_darkJet_index;         //!
+  std::vector<float>*                    m_darkJet_pt;            //!
+  std::vector<float>*                    m_darkJet_eta;           //!
+  std::vector<float>*                    m_darkJet_phi;           //!
+  std::vector<float>*                    m_darkJet_E;             //!
+  std::vector<float>*                    m_darkJet_M;             //!
+  std::vector<float>*                    m_darkJet_rapid;         //!
+  std::vector<float>*                    m_darkJet_girth;         //!
+  // dark jets: constituents
+  std::vector<int>*                      m_darkJet_nConstit;      //!
+  std::vector<float>*                    m_darkJet_constitPt;     //!
+  std::vector<std::vector<float>>*       m_darkJet_constit_pt;    //!
+  std::vector<std::vector<float>>*       m_darkJet_constit_eta;   //!
+  // dark jets: matched to truth jets
+  std::vector<uint8_t>*                  m_darkJet_truthMatch;    //!
+  // dark jets: matched LLP decays
+  std::vector<int>*                      m_darkJet_nTV;           //!
+  std::vector<std::vector<std::string>>* m_darkJet_TV_llp;        //!
+  std::vector<std::vector<int>>*         m_darkJet_TV_ID;         //!
+  std::vector<std::vector<int>>*         m_darkJet_TV_index;      //!
+  std::vector<std::vector<float>>*       m_darkJet_TV_r;          //!
+  std::vector<std::vector<float>>*       m_darkJet_TV_z;          //!
+  std::vector<std::vector<float>>*       m_darkJet_TV_dR;         //!
+  // truth jets: matched LLP tracks
+  std::vector<int>*                      m_darkJet_ntp;           //!
+  std::vector<std::vector<int>>*         m_darkJet_tp_ID;         //!
+  std::vector<std::vector<int>>*         m_darkJet_tp_index;      //!
+  std::vector<std::vector<float>>*       m_darkJet_tp_dR;         //!
+  std::vector<std::vector<float>>*       m_darkJet_tp_phi;        //!
+  std::vector<std::vector<int>>*         m_darkJet_tp_pVtx_ID;    //!
+  std::vector<std::vector<int>>*         m_darkJet_tp_pVtx_index; //!
+  
+
+  
+  // TRUTH PARTICLE BRANCHES
+  int m_tp_n;                                                      //!
+  std::vector<int>*                      m_tp_ID;                  //!
+  std::vector<int>*                      m_tp_index;               //!
+  std::vector<float>*                    m_tp_pt;                  //!
+  std::vector<float>*                    m_tp_eta;                 //!
+  std::vector<float>*                    m_tp_phi;                 //!
+  std::vector<float>*                    m_tp_E;                   //!
+  std::vector<float>*                    m_tp_M;                   //!
+  std::vector<float>*                    m_tp_charge;              //!
+  std::vector<int>*                      m_tp_pdgId;               //!
+  std::vector<int>*                      m_tp_status;              //!
+  std::vector<uint8_t>*                  m_tp_isStable;            //!
+  std::vector<uint8_t>*                  m_tp_isDark;              //!
+  std::vector<uint8_t>*                  m_tp_isDesc;              //!
+  std::vector<std::vector<std::string>>* m_tp_ancest_llp;          //!
+  std::vector<std::vector<int>>*         m_tp_ancest_ID;           //!
+  std::vector<std::vector<int>>*         m_tp_ancest_index;        //!
+  std::vector<int>*                      m_tp_nParents;            //!
+  std::vector<std::vector<int>>*         m_tp_parent_pdgId;        //!
+  std::vector<std::vector<int>>*         m_tp_parent_status;       //!
+  std::vector<int>*                      m_tp_nChildren;           //!
+  std::vector<std::vector<int>>*         m_tp_child_pdgId;         //!
+  std::vector<std::vector<int>>*         m_tp_child_status;        //!
+  std::vector<uint8_t>*                  m_tp_truthJetMatch;       //!
+  std::vector<int>*                      m_tp_truthJetMatch_ID;    //!
+  std::vector<int>*                      m_tp_truthJetMatch_index; //!
+  std::vector<float>*                    m_tp_truthJetMatch_dR;    //!
+  std::vector<uint8_t>*                  m_tp_darkJetMatch;        //!
+  std::vector<int>*                      m_tp_darkJetMatch_ID;     //!
+  std::vector<int>*                      m_tp_darkJetMatch_index;  //!
+  std::vector<float>*                    m_tp_darkJetMatch_dR;     //!
+
 
   // TRACK BRANCHES
   // tracks: basics / kinematics
@@ -325,27 +417,36 @@ class EJsHistogramManager : public HistogramManager
 
   // TRUTH VERTEX BRANCHES
   // truth vertices: basics / kinematics
-  int m_truthVtx_n;                           //!
-  std::vector<std::string>* m_truthVtx_llp;   //!
-  std::vector<int>*         m_truthVtx_ID;    //!
-  std::vector<int>*         m_truthVtx_index; //!
-  std::vector<float>*       m_truthVtx_x;     //!
-  std::vector<float>*       m_truthVtx_y;     //!
-  std::vector<float>*       m_truthVtx_z;     //!
-  std::vector<float>*       m_truthVtx_r;     //!
-  std::vector<float>*       m_truthVtx_pt;    //!
-  std::vector<float>*       m_truthVtx_eta;   //!
-  std::vector<float>*       m_truthVtx_phi;   //!
-  std::vector<float>*       m_truthVtx_mass;  //!
-  std::vector<int>*         m_truthVtx_nOutP; //!
-  // truth vertices: parents
-  std::vector<int>* m_truthVtx_parent_pdgId; //!
+  int m_truthVtx_n;                                //!
+  std::vector<std::string>* m_truthVtx_llp;        //!
+  std::vector<int>*         m_truthVtx_ID;         //!
+  std::vector<int>*         m_truthVtx_index;      //!
+  std::vector<float>*       m_truthVtx_x;          //!
+  std::vector<float>*       m_truthVtx_y;          //!
+  std::vector<float>*       m_truthVtx_z;          //!
+  std::vector<float>*       m_truthVtx_r;          //!
+  std::vector<float>*       m_truthVtx_pt;         //!
+  std::vector<float>*       m_truthVtx_eta;        //!
+  std::vector<float>*       m_truthVtx_phi;        //!
+  std::vector<float>*       m_truthVtx_mass;       //!
+  std::vector<float>*       m_truthVtx_childOpAng; //!
+  std::vector<int>*         m_truthVtx_nOutP;      //!
   // truth vertices: reconstructible descendants
-  std::vector<int>* m_truthVtx_nDesc;     //!
-  std::vector<int>* m_truthVtx_nRecoDesc; //!
-  std::vector<int>* m_truthVtx_nSelDesc;  //!
+  std::vector<int>*         m_truthVtx_nDesc;      //!
+  std::vector<int>*         m_truthVtx_nRecoDesc;  //!
+  std::vector<int>*         m_truthVtx_nSelDesc;   //!
+  std::vector<float>*       m_truthVtx_descPt;     //!
+  std::vector<float>*       m_truthVtx_descEta;    //!
+  std::vector<float>*       m_truthVtx_descPhi;    //!
+  std::vector<float>*       m_truthVtx_descE;      //!
+  std::vector<float>*       m_truthVtx_descM;      //!
+  std::vector<std::vector<float>>* m_truthVtx_desc_pt;  //!
+  std::vector<std::vector<float>>* m_truthVtx_desc_eta; //!
+  std::vector<std::vector<float>>* m_truthVtx_desc_phi; //!
+  std::vector<std::vector<float>>* m_truthVtx_desc_E;   //!
+  std::vector<std::vector<float>>* m_truthVtx_desc_M;   //!
   // truth vertices: physical positions
-  std::vector<int>* m_truthVtx_nPos; //!
+  std::vector<int>*         m_truthVtx_nPos;       //!
   // truth vertices: reco matching
   std::vector<int>*                m_truthVtx_reco_n;     //!
   std::vector<std::vector<int>>*   m_truthVtx_reco_ID;    //!
@@ -467,6 +568,80 @@ class EJsHistogramManager : public HistogramManager
   // leading N-jet Ht
   std::vector<TH1F*> h_NJetHt;      //!
   std::vector<TH1F*> h_NJetHt_vrsh; //!
+  // --> add event-level NDV --> DV either dark pion LLP decay (truth only) or good DV
+  // orphan pt
+  std::vector<TH1F*> h_evt_truthPartPtSum;            //!
+  std::vector<TH1F*> h_evt_truthPartDarkPtSum;        //!
+  std::vector<TH1F*> h_evt_truthJetConstitPtSum;      //!
+  std::vector<TH1F*> h_evt_tightTruthJetConstitPtSum; //!
+  std::vector<TH1F*> h_evt_darkJetConstitPtSum;       //!
+  std::vector<TH1F*> h_evt_tightDarkJetConstitPtSum;  //!
+  std::vector<TH1F*> h_orphanPt;                      //!
+  std::vector<TH1F*> h_tightOrphanPt;                 //!
+  std::vector<TH1F*> h_darkOrphanPt;                  //!
+  std::vector<TH1F*> h_tightDarkOrphanPt;             //!
+
+
+  // TRUTH JET HISTOS
+  // basics
+  std::vector<std::vector<TH1F*>> h_truthJet_n;        //!
+  std::vector<std::vector<TH1F*>> h_truthJet_pt;       //!
+  std::vector<std::vector<TH1F*>> h_truthJet_pt_s;     //!
+  std::vector<std::vector<TH1F*>> h_truthJet_eta;      //!
+  std::vector<std::vector<TH1F*>> h_truthJet_phi;      //!
+  std::vector<std::vector<TH1F*>> h_truthJet_E;        //!
+  std::vector<std::vector<TH1F*>> h_truthJet_M;        //!
+  std::vector<std::vector<TH1F*>> h_truthJet_rapid;    //!
+  std::vector<std::vector<TH1F*>> h_truthJet_nConstit; //!
+  std::vector<std::vector<TH1F*>> h_truthJet_girth;    //!
+  // extra kinematics
+  std::vector<std::vector<TH1F*>> h_truthJet_px;       //!
+  std::vector<std::vector<TH1F*>> h_truthJet_py;       //!
+  std::vector<std::vector<TH1F*>> h_truthJet_pz;       //!
+  std::vector<std::vector<TH1F*>> h_truthJet_Et;       //!
+  std::vector<std::vector<TH1F*>> h_truthJet_Et_s;     //!
+  // matched truth vertices
+  std::vector<std::vector<std::vector<TH1F*>> > h_truthJet_nllpdv;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_truthJet_llpdv_dR;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_truthJet_llpdv_ndesc; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_truthJet_llpdv_z;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_truthJet_llpdv_r;     //!
+  // matched truth particles
+  std::vector<std::vector<std::vector<TH1F*>> > h_truthJet_nllptrk;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_truthJet_llptrk_dR;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_truthJet_llptrk_z0;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_truthJet_llptrk_d0;   //!
+  
+
+  // TRUTH DARK JET HISTOS
+  // basics
+  std::vector<std::vector<TH1F*>> h_darkJet_n;        //!
+  std::vector<std::vector<TH1F*>> h_darkJet_pt;       //!
+  std::vector<std::vector<TH1F*>> h_darkJet_pt_s;     //!
+  std::vector<std::vector<TH1F*>> h_darkJet_eta;      //!
+  std::vector<std::vector<TH1F*>> h_darkJet_phi;      //!
+  std::vector<std::vector<TH1F*>> h_darkJet_E;        //!
+  std::vector<std::vector<TH1F*>> h_darkJet_M;        //!
+  std::vector<std::vector<TH1F*>> h_darkJet_rapid;    //!
+  std::vector<std::vector<TH1F*>> h_darkJet_nConstit; //!
+  std::vector<std::vector<TH1F*>> h_darkJet_girth;    //!
+  // extra kinematics
+  std::vector<std::vector<TH1F*>> h_darkJet_px;       //!
+  std::vector<std::vector<TH1F*>> h_darkJet_py;       //!
+  std::vector<std::vector<TH1F*>> h_darkJet_pz;       //!
+  std::vector<std::vector<TH1F*>> h_darkJet_Et;       //!
+  std::vector<std::vector<TH1F*>> h_darkJet_Et_s;     //!
+  // matched truth vertices
+  std::vector<std::vector<std::vector<TH1F*>> > h_darkJet_nllpdv;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_darkJet_llpdv_dR;    //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_darkJet_llpdv_ndesc; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_darkJet_llpdv_z;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_darkJet_llpdv_r;     //!
+  // matched truth particles
+  std::vector<std::vector<std::vector<TH1F*>> > h_darkJet_nllptrk;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_darkJet_llptrk_dR;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_darkJet_llptrk_z0;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_darkJet_llptrk_d0;   //!
 
 
   // JET HISTOS
@@ -819,6 +994,21 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_NJetJJ_sumPt;      //!
   std::vector<TH1F*> h_NJetJJ_dR;         //!
 
+
+  // TRUTH PARTICLE HISTOS
+  std::vector<std::vector<TH1F*>> h_tp_n;           //!
+  std::vector<std::vector<TH1F*>> h_tp_pt;          //!
+  std::vector<std::vector<TH1F*>> h_tp_eta;         //!
+  std::vector<std::vector<TH1F*>> h_tp_phi;         //!
+  std::vector<std::vector<TH1F*>> h_tp_E;           //!
+  std::vector<std::vector<TH1F*>> h_tp_M;           //!
+  std::vector<std::vector<TH1F*>> h_tp_betagamma;   //!
+  std::vector<std::vector<TH1F*>> h_tp_charge;      //!
+  std::vector<std::vector<TH1F*>> h_tp_nParents;    //!
+  std::vector<std::vector<TH1F*>> h_tp_parentPdgId; //!
+  std::vector<std::vector<TH1F*>> h_tp_nChildren;   //!
+  std::vector<std::vector<TH1F*>> h_tp_childPdgId;  //!
+
   
   // TRACK HISTOS
   // basics
@@ -829,38 +1019,28 @@ class EJsHistogramManager : public HistogramManager
 
   
   // TRUTH VERTEX HISTOS
-  std::vector<TH1F*> h_truthVtx_n; //!
-  // --> CHANGE TO VECTOR OF VECTOR FOR ANY LLP TRUTH VERTEX
-  // dark pion decays
-  std::vector<TH1F*> h_truthDarkPionDecay_n;         //!
-  std::vector<TH1F*> h_truthDarkPionDecay_x;         //!
-  std::vector<TH1F*> h_truthDarkPionDecay_y;         //!
-  std::vector<TH1F*> h_truthDarkPionDecay_z;         //!
-  std::vector<TH1F*> h_truthDarkPionDecay_r;         //!
-  std::vector<TH1F*> h_truthDarkPionDecay_pt;        //!
-  std::vector<TH1F*> h_truthDarkPionDecay_eta;       //!
-  std::vector<TH1F*> h_truthDarkPionDecay_phi;       //!
-  std::vector<TH1F*> h_truthDarkPionDecay_mass;      //!
-  std::vector<TH1F*> h_truthDarkPionDecay_nOutP;     //!
-  std::vector<TH1F*> h_truthDarkPionDecay_nDesc;     //!
-  std::vector<TH1F*> h_truthDarkPionDecay_nRecoDesc; //!
-  std::vector<TH1F*> h_truthDarkPionDecay_nSelDesc;  //!
-  std::vector<TH1F*> h_truthDarkPionDecay_nPos;      //!
-  // k-short decays
-  std::vector<TH1F*> h_truthKshortDecay_n;         //!
-  std::vector<TH1F*> h_truthKshortDecay_x;         //!
-  std::vector<TH1F*> h_truthKshortDecay_y;         //!
-  std::vector<TH1F*> h_truthKshortDecay_z;         //!
-  std::vector<TH1F*> h_truthKshortDecay_r;         //!
-  std::vector<TH1F*> h_truthKshortDecay_pt;        //!
-  std::vector<TH1F*> h_truthKshortDecay_eta;       //!
-  std::vector<TH1F*> h_truthKshortDecay_phi;       //!
-  std::vector<TH1F*> h_truthKshortDecay_mass;      //!
-  std::vector<TH1F*> h_truthKshortDecay_nOutP;     //!
-  std::vector<TH1F*> h_truthKshortDecay_nDesc;     //!
-  std::vector<TH1F*> h_truthKshortDecay_nRecoDesc; //!
-  std::vector<TH1F*> h_truthKshortDecay_nSelDesc;  //!
-  std::vector<TH1F*> h_truthKshortDecay_nPos;      //!
+  // basics
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_n;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_z;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_r;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_pt;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_eta;        //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_phi;        //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_mass;       //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_childOpAng; //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_nOutP;      //!
+  // descendants
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_ndesc;      //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_descPt;     //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_descEta;    //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_descPhi;    //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_descE;      //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_descM;      //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_desc_pt;    //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_desc_eta;   //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_desc_phi;   //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_desc_d0;    //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_desc_z0;    //!
 
   
   // SECONDARY VERTEX HISTOS
@@ -1343,26 +1523,8 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetHt_vrsh;     //!
   // --> raw standard
   std::vector<std::vector<TH2F*>> h_abcd_raw_nDV_NJetHt;      //!
-  // --> raw shifteed
+  // --> raw shifted
   std::vector<std::vector<TH2F*>> h_abcd_raw_nDV_NJetHt_vrsh; //!
-
-  
-  // TRIGGER STUDY HISTOS
-  std::vector<TH1F*> h_nthJetPt;                     //!
-  std::vector<TH1F*> h_nthJetPt_trig;                //!
-  std::vector<TH1F*> h_nthJetPt_offTrig;             //!
-  std::vector<TH1F*> h_nthJetPt_othOffTrig;          //!
-  std::vector<TH1F*> h_nthJetPt_offTrigJVT;          //!
-  std::vector<TH1F*> h_nthJetPt_othOffTrigJVT;       //!
-  std::vector<TH1F*> h_trigEff_nthJetPt;             //!
-  std::vector<TH1F*> h_offTrigEff_nthJetPt;          //!
-  std::vector<TH1F*> h_othOffTrigEff_nthJetPt;       //!
-  std::vector<TH1F*> h_offTrigJVTEff_nthJetPt;       //!
-  std::vector<TH1F*> h_othOffTrigJVTEff_nthJetPt;    //!
-  std::vector<TH1F*> h_triggerEfficiency;            //!
-  std::vector<TH1F*> h_triggerEfficiency_fourJet;    //!
-  std::vector<TH1F*> h_triggerEfficiency_search;     //!
-  std::vector<TH1F*> h_searchTriggerEfficiency;      //!
   
 };
 

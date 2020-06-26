@@ -409,6 +409,9 @@ void EJsHelpTreeBase :: AddEventUser ( const std::string& detailStr )
   
     m_tree->Branch( "NJetHt_Truth",              &m_njetHt_truth        );
   }
+
+  m_tree->Branch(   "truthPartPtSum",            &m_truthPart_ptSum     );
+  m_tree->Branch(   "truthPartDarkPtSum",        &m_truthPartDark_ptSum );
 }
 
 void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
@@ -528,6 +531,9 @@ void EJsHelpTreeBase :: FillEventUser ( const xAOD::EventInfo* event )
     if ( event->isAvailable<double>( "NJetHt_Truth" ) )
       m_njetHt_truth = event->auxdataConst<double>( "NJetHt_Truth" );
   }
+
+  m_truthPart_ptSum     = event->auxdataConst<double>( "truthPartPtSum"     );
+  m_truthPartDark_ptSum = event->auxdataConst<double>( "truthPartDarkPtSum" );
     
 }
 
@@ -597,6 +603,9 @@ void EJsHelpTreeBase :: ClearEventUser ( )
     
     m_njetHt_truth        = 0;
   }
+
+  m_truthPart_ptSum       = 0;
+  m_truthPartDark_ptSum   = 0;
 }
 
 

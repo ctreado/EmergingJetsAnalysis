@@ -56,6 +56,8 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   m_isMC = false;
   if ( ( inFileName.find("mc16") != std::string::npos ) || ( inFileName.find("data1") == std::string::npos ) )
     m_isMC = true;
+  if ( m_truthLevelOnly )
+    m_isMC = true;
   
   // get total number of initial events
   if ( inFile->GetListOfKeys()->Contains( "MetaData_EventCount" ) ) {
@@ -73,6 +75,9 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   
   // get metadata weights from input text file for corresponding mc channel number
   if ( m_isMC ) {
+    
+    ANA_MSG_DEBUG( "Getting sample metadata." );
+    
     // get channel number
     int mcChannelNumber = 0;
     inTree->SetBranchStatus( "*", 0 ); // disable all branches
@@ -80,40 +85,39 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
     inTree->GetEntry( wk()->treeEntry() );
     
     // get metadata file
-    const char* metadataPath = gSystem->ExpandPathName( PathResolverFindCalibFile( m_metadataFileName ).c_str() );
-    std::ifstream m_metadataFile( metadataPath );
-    delete [] metadataPath;
+    if ( !m_truthLevelOnly && !m_metadataFileName.empty() ) {
+      const char* metadataPath = gSystem->ExpandPathName( PathResolverFindCalibFile( m_metadataFileName ).c_str() );
+      std::ifstream m_metadataFile( metadataPath );
+      delete [] metadataPath;
 
-    std::string line;
-    double word;
-    std::vector<double> metadata;
-    if ( m_metadataFile.is_open() ) {
-      while ( std::getline( m_metadataFile, line ) ) {
-	std::istringstream iss( line );
-	int i = 0;
-	while ( iss >> word ) {
-	  if ( i == 0 && word != mcChannelNumber ) continue;
-	  metadata.push_back( word );
-	  ++i;
+      std::string line;
+      double word;
+      std::vector<double> metadata;
+      if ( m_metadataFile.is_open() ) {
+	while ( std::getline( m_metadataFile, line ) ) {
+	  std::istringstream iss( line );
+	  int i = 0;
+	  while ( iss >> word ) {
+	    if ( i == 0 && word != mcChannelNumber ) continue;
+	    metadata.push_back( word );
+	    ++i;
+	  }
 	}
       }
+      // metadata = { dataset_number, crossSection [nb], kFactor, genFiltEff }
+      m_crossSection = metadata.at(1);
+      m_kFactor      = metadata.at(2);
+      m_genFilterEff = metadata.at(3);
     }
-    // metadata = { dataset_number, crossSection [nb], kFactor, genFiltEff }
-    m_crossSection = metadata.at(1);
-    m_kFactor      = metadata.at(2);
-    m_genFilterEff = metadata.at(3);
+    else {
+      m_crossSection = 1;
+      m_kFactor      = 1;
+      m_genFilterEff = 1;
+    }
+    
+    ANA_MSG_INFO( "Found cross-section, k-factor, generator filter efficiency: "
+		  << m_crossSection << " " << m_kFactor << " " << m_genFilterEff );
   }
-  // // --> old way: reading histo -- bug when hadding ntuple files together...
-  // if ( inFile->GetListOfKeys()->Contains( "MetaData_Weights" ) ) {
-  //   TH1F* metadata_weights = (TH1F*) inFile->Get( "MetaData_Weights" );
-  //   m_crossSection = metadata_weights->GetBinContent(1);
-  //   m_kFactor      = metadata_weights->GetBinContent(2);
-  //   m_genFilterEff = metadata_weights->GetBinContent(3);
-  //   ANA_MSG_INFO( "Found cross-section, k-factor, generator filter efficiency: " << m_crossSection << " " <<
-  // 		  m_kFactor << " " << m_genFilterEff );
-  // }
-  // else
-  //   ANA_MSG_INFO( "No MetaData_Weights information available." );
 
   // set metadata map
   m_metadata[ "eventCount_init" ] = m_nEvents_init;
@@ -127,6 +131,7 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   m_metadata[ "genFilterEff"    ] = m_genFilterEff;
   
   // get list of regions to run over
+  ANA_MSG_INFO( "Getting list of regions to run over." );
   std::string token;
   std::istringstream ss_region_names( m_regionName );
   while ( std::getline( ss_region_names, token, ' ' ) )
@@ -142,18 +147,20 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   }
 
   // get base DV type
+  ANA_MSG_INFO( "Setting base DV type." );
   EJsHelper::fillBaseDV( m_baseDV, m_baseDVName );
 
-  if ( m_jetHistoName      .empty() ) m_jetHistoName      = m_jetBranchName;
-  if ( m_otherJetHistoName .empty() ) m_otherJetHistoName = m_otherJetBranchName;
-  
+  // set jet branch and string to use for histograms
+  ANA_MSG_INFO( "Setting jet branch name." );
+  if ( m_jetHistoName .empty() ) m_jetHistoName = m_jetBranchName;
   if ( m_truthLevelOnly )
     m_jetStr = "Truth";
   if ( m_jetBranchName.find("PFlow")  != std::string::npos || m_jetBranchName.find("pflow")  != std::string::npos )
     m_jetStr = "PFlow";
   if ( m_jetBranchName.find("EMTopo") != std::string::npos || m_jetBranchName.find("emtopo") != std::string::npos )
     m_jetStr = "EMTopo";
-  
+
+  if ( m_truthLevelOnly ) m_detailStr += " truthOnly";
   // declare histogram manager class + add histograms to ouput
   m_plots = new EJsHistogramManager ( m_name, m_detailStr, m_jetStr, m_metadata, m_lumi, m_debug, m_isMC, m_unblind );
   ANA_CHECK( m_plots ->initialize( outFileName, m_regions, m_jetHistoName, m_baseDV ) );
@@ -200,8 +207,6 @@ EL::StatusCode EJsNtupleToHists :: changeInput ( bool /*firstFile*/ )
       ANA_CHECK ( m_plots ->connectTriggers       ( tree                              ) );
     if ( m_doJets )
       ANA_CHECK ( m_plots ->connectJets           ( tree, m_jetBranchName             ) );
-    if ( m_doOtherJets )
-      ANA_CHECK ( m_plots ->connectOtherJets      ( tree, m_otherJetBranchName        ) );
     if ( m_doTrigJets )
       ANA_CHECK ( m_plots ->connectTrigJets       ( tree, m_trigJetBranchName         ) );
     if ( m_doTracks )

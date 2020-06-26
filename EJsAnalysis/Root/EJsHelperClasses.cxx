@@ -53,16 +53,23 @@ namespace EJsHelperClasses {
     m_abcd            = has_exact( "abcd"            );
     m_cutflow         = has_exact( "cutflow"         );
     m_abcdcutOnly     = has_exact( "abcdcutOnly"     );
+    m_truthOnly       = has_exact( "truthOnly"       );
     m_pileup          = has_exact( "pileup"          );
     m_pv              = has_exact( "pv"              );
     m_kinematics      = has_exact( "kinematics"      );
     m_kinematics_jet  = has_exact( "kinematics_jet"  );
+    m_kinematics_tjet = has_exact( "kinematics_tjet" );
+    m_kinematics_djet = has_exact( "kinematics_djet" );
     m_jetCalo         = has_exact( "jetCalo"         );
     m_jetTrkMom       = has_exact( "jetTrkMom"       );
     m_jetTruth        = has_exact( "jetTruth"        );
     m_jetTrks         = has_exact( "jetTrks"         );
+    m_tjetTrks        = has_exact( "tjetTrks"        );
+    m_djetTrks        = has_exact( "djetTrks"        );
     m_jetTrksDVTypes  = has_exact( "jetTrksDVTypes"  );
     m_jetVerts        = has_exact( "jetVerts"        );
+    m_tjetVerts       = has_exact( "tjetVerts"       );
+    m_djetVerts       = has_exact( "djetVerts"       );
     m_jetVertices     = has_exact( "jetVertices"     );
     m_baseJetVerts    = has_exact( "baseJetVerts"    );
     m_fiducJetVerts   = has_exact( "fiducJetVerts"   );
@@ -99,10 +106,10 @@ namespace EJsHelperClasses {
     m_vtxOverallTrk   = has_exact( "vtxOverallTrk"   );
     m_vtxErrors       = has_exact( "vtxErrors"       );
     m_vtx2D           = has_exact( "vtx2D"           );
-    m_nDVs            = has_exact( "nDVs"            );
     m_llps            = has_exact( "llps"            );
     m_darkPions       = has_exact( "darkPions"       );
     m_kshorts         = has_exact( "kshorts"         );
+    m_llpDesc         = has_exact( "llpDesc"         );
 
     m_numLeadingJets  = 0;
     m_numVtxTrks      = 0;

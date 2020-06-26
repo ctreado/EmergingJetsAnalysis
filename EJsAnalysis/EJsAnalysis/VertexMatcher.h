@@ -33,6 +33,9 @@ class VertexMatcher : public xAH::Algorithm
   // truth vertex llp decay types to process
   std::string m_truthLLP = "";
 
+  // protection from running on truth derivation
+  bool m_truthLevelOnly = false;
+
   // do llp-decay truth vertex filtering?
   bool m_filterTruthVertex_llp  = true;
   // apply cut on truth vertex outside fiducial volume?
