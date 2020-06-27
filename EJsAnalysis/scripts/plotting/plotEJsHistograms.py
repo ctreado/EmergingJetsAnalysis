@@ -172,6 +172,7 @@ class lineStyleType( Enum ):
     ALL  = 1
     MOD  = 2
     CTAU = 3
+    MIX  = 4
 
 
 ### SKIP NORM FOR CUTFLOWS AND/OR EFFICIENCIES ?? ###
@@ -318,9 +319,17 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
             plotHelpers.doNorm( hist )
         
         # set maximum --> may want to play around with scale factors...
+        max_scale     = 1.2
+        max_scale_log = len( hists )
+        if len( hists ) > 12:
+            if "_dR" in histName or "eta" in histName or "rapid" in histName or "phi" in histName or "pt_s" in histName:
+                max_scale_log *= 7
+                if "dR" in histName or "phi" in histName or "pt_s" in histName:
+                    max_scale += len( hists ) * 0.05
+        
         maxy = hist.GetMaximum()
-        if doLogy: maxy *= 4
-        else:      maxy *= 1.2
+        if doLogy: maxy *= max_scale_log
+        else:      maxy *= max_scale
         hist.SetMaximum( maxy )
 
         # add legend entry

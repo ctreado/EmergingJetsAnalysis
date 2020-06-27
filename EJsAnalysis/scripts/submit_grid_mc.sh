@@ -38,13 +38,13 @@ out_sub="sub36"
 out_bkgd="bkgd"
 
 ## tags
-vtag="v1"
+vtag="v0"
 
 
 ## job steering
 #submitGridEJsJobs.py --inFiles ${input_a36}    --jo ${jo_a} --subDir ${subdir_a36} --outName ${out_sub} --vtag ${vtag} --nFiles -1 --isMC
-submitGridEJsJobs.py --inFiles ${input_d0}     --jo ${jo_d} --subDir ${subdir_d0}  --outName ${out_sub} --vtag ${vtag} --nFiles -1 --isMC
-#submitGridEJsJobs.py --inFiles ${input_d21}    --jo ${jo_d} --subDir ${subdir_d21} --outName ${out_sub} --vtag ${vtag} --nFiles -1 --isMC
+#submitGridEJsJobs.py --inFiles ${input_d0}     --jo ${jo_d} --subDir ${subdir_d0}  --outName ${out_sub} --vtag ${vtag} --nFiles -1 --isMC
+submitGridEJsJobs.py --inFiles ${input_d21}    --jo ${jo_d} --subDir ${subdir_d21} --outName ${out_sub} --vtag ${vtag} --nFiles -1 --isMC
 #submitGridEJsJobs.py --inFiles ${input_e36}    --jo ${jo_e} --subDir ${subdir_e36} --outName ${out_sub} --vtag ${vtag} --nFiles -1 --isMC
 #submitGridEJsJobs.py --inFiles ${input_bkgd_a} --jo ${jo_a} --subDir ${subdir_ab}  --outName ${out_bkgd} --vtag ${vtag} --nFiles -1 --isMC
 #submitGridEJsJobs.py --inFiles ${input_bkgd_d} --jo ${jo_d} --subDir ${subdir_db}  --outName ${out_bkgd} --vtag ${vtag} --nFiles -1 --isMC

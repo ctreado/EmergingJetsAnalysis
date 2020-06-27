@@ -49,6 +49,7 @@ class lineStyleType:
     ALL  = 1
     MOD  = 2
     CTAU = 3
+    MIX  = 4
 
 
 ## --- GET SAMPLES --- ##
@@ -838,8 +839,9 @@ def getSampleDict( sname, stype, hlsty ):
             style = 3
         elif dictlist[3] == 600:
             style = 7
+
         # --> set color/style of every point or every model - mediator mass point (all lifetimes the same)
-        if hlsty == lineStyleType.ALL or hlsty == lineStyleType.CTAU:
+        if   hlsty == lineStyleType.ALL or hlsty == lineStyleType.CTAU:
             # set line color / palette by model
             if   dictlist[1] == "A":
                 color   = sgnlColors()[0]
@@ -871,25 +873,49 @@ def getSampleDict( sname, stype, hlsty ):
                 elif dictlist[0] % 6 == 5:
                     color = color - 2
         # --> set color/style of every model point
-        if hlsty == lineStyleType.MOD:
-            if dictlist[0] % 6 == 0:
+        elif hlsty == lineStyleType.MOD:
+            if   dictlist[0] % 6 == 1:
                 color   = sgnlColors()[0]
                 palette = texec_sgnl()[0]
-            elif dictlist[0] % 6 == 1:
+            elif dictlist[0] % 6 == 2:
                 color   = sgnlColors()[1]
                 palette = texec_sgnl()[1]
-            elif dictlist[0] % 6 == 2:
+            elif dictlist[0] % 6 == 3:
                 color   = sgnlColors()[2]
                 palette = texec_sgnl()[2]
-            elif dictlist[0] % 6 == 3:
+            elif dictlist[0] % 6 == 4:
                 color   = sgnlColors()[3]
                 palette = texec_sgnl()[3]
-            elif dictlist[0] % 6 == 4:
+            elif dictlist[0] % 6 == 5:
                 color   = sgnlColors()[4]
                 palette = texec_sgnl()[4]
-            elif dictlist[0] % 6 == 5:
+            elif dictlist[0] % 6 == 0:
                 color   = sgnlColors()[5]
                 palette = texec_sgnl()[5]
+        # --> set color/style of every mediator mass - lifetime point (same for all models)
+        elif hlsty == lineStyleType.MIX:
+            if   dictlist[3] == 1400:
+                color = sgnlColors()[0]
+                palette = texec_sgnl()[0]
+            elif dictlist[3] == 1000:
+                color = sgnlColors()[1]
+                palette = texec_sgnl()[1]
+            elif dictlist[3] == 600:
+                color = sgnlColors()[2]
+                palette = texec_sgnl()[2]
+            if   dictlist[0] % 6 == 1:
+                style = 1
+            elif dictlist[0] % 6 == 2:
+                style = 3
+            elif dictlist[0] % 6 == 3:
+                style = 4
+            elif dictlist[0] % 6 == 4:
+                style = 6
+            elif dictlist[0] % 6 == 5:
+                style = 7
+            elif dictlist[0] % 6 == 0:
+                style = 9
+            
         # --> set specific colors / styles for truth fixed vs running coupling plots
         coupling = ""
         if   "ModA_run" in sname or "ModB_run" in sname or "ModA_fix" in sname or "ModB_fix" in sname:

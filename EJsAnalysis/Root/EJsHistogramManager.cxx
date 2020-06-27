@@ -1937,19 +1937,22 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<std::vector<TH1F*>> h_tj_llptrk_z0;
       std::vector<std::vector<TH1F*>> h_tj_llptrk_d0;
       for ( size_t i = 0; i != hTJ.size(); ++i ) {
-	std::string htj    = hTJ    [i] + "TruthJet"; htj[0] = tolower(htj[0]);
-	std::string htjstr = hTJstr [i] + " truth jet";
-	h_tj_n          .push_back( book( name, htj + "_n",        "n " + htjstr,               25,     0,   25 ) );
+	std::string htj     = hTJ    [i] + "TruthJet"; htj[0] = tolower(htj[0]);
+	std::string htjstr  = hTJstr [i]; if ( !htjstr.empty() ) htjstr += " ";
+	std::string htjstr += "truth jet";
+	int ntj = 25;
+	if ( i % 2 ) ntj = 10;
+	h_tj_n          .push_back( book( name, htj + "_n",        "n " + htjstr,              ntj,     0,  ntj ) );
 	if ( !m_histoInfoSwitch->m_abcdcutOnly ) {
 	  h_tj_pt       .push_back( book( name, htj + "_pt",       htjstr + " p_{T} [GeV]",    100,     0, 1500 ) );
 	  h_tj_pt_s     .push_back( book( name, htj + "_pt_s",     htjstr + " p_{T} [GeV]",    100,     0,  500 ) );
-	  h_tj_eta      .push_back( book( name, htj + "_eta",      htjstr + " eta",            100,    -5,    5 ) );
+	  h_tj_eta      .push_back( book( name, htj + "_eta",      htjstr + " eta",            100,    -3,    3 ) );
 	  h_tj_phi      .push_back( book( name, htj + "_phi",      htjstr + " phi",            100,  -3.5,  3.5 ) );
 	  h_tj_E        .push_back( book( name, htj + "_E",        htjstr + " energy [GeV]",   100,     0, 2500 ) );
 	  h_tj_M        .push_back( book( name, htj + "_M",        htjstr + " mass [GeV]",     100,     0,  300 ) );
-	  h_tj_rapid    .push_back( book( name, htj + "_rapid",    htjstr + " rapidity",       100,    -5,    5 ) );
+	  h_tj_rapid    .push_back( book( name, htj + "_rapid",    htjstr + " rapidity",       100,    -3,    3 ) );
 	  h_tj_girth    .push_back( book( name, htj + "_girth",    htjstr + " girth",          100,     0, 0.35 ) );
-	  h_tj_nConstit .push_back( book( name, htj + "_nConstit", "n "+htjstr+" constituents",100,     0,  300 ) );
+	  h_tj_nConstit .push_back( book( name, htj + "_nConstit", "n "+htjstr+" constituents",100,     0,  200 ) );
 	  // truth jets: extra kinematics
 	  if ( m_histoInfoSwitch->m_kinematics || m_histoInfoSwitch->m_kinematics_tjet ) {
 	    h_tj_px     .push_back( book( name, htj + "_px",       htjstr + " p_{x} [GeV]",    100, -1500, 1500 ) );
@@ -1979,14 +1982,14 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	    std::string htjtp    = htj + "_" + htp;
 	    std::string htpstr   = "matched " + hvstr + " truth track";
 	    std::string htjtpstr = htjstr + " " + htpstr;
-	    h_tj_nllp      .push_back( book( name, htj   + "_n" + htv, "n " +htvstrpl+ " per " + htjstr,  12,     0,   12 ) );
+	    h_tj_nllp      .push_back( book( name, htj   + "_n" + htv, "n " +htvstrpl+ " per " + htjstr,  15,     0,   15 ) );
 	    h_tj_llp_dR    .push_back( book( name, htjtv + "_dR",      htjstr + " - " + htvstr + " dR",  100,     0,  0.6 ) );
-	    h_tj_llp_ndesc .push_back( book( name, htjtv + "_nDesc",   htjtvstr + " n descendants",       15,     0,   15 ) );
+	    h_tj_llp_ndesc .push_back( book( name, htjtv + "_nDesc",   htjtvstr + " n descendants",       20,     0,   20 ) );
 	    if ( m_histoInfoSwitch->m_tjetVerts ) {
 	      h_tj_llp_z   .push_back( book( name, htjtv + "_z",       htjtvstr + " z-pos [mm]",         100, -3000, 3000 ) );
 	      h_tj_llp_r   .push_back( book( name, htjtv + "_r",       htjtvstr + " r-pos [mm]",         100,     0,  600 ) ); 
 	    }
-	    h_tj_nllpt     .push_back( book( name, htj   + "_n" + htp, "n " + htpstr + "s per " + htjstr,100,     0,  100 ) ); // 50
+	    h_tj_nllpt     .push_back( book( name, htj   + "_n" + htp, "n " + htpstr + "s per " + htjstr, 40,     0,   40 ) );
 	    h_tj_llpt_dR   .push_back( book( name, htjtp + "_dR",      htjstr + " - " + htpstr + " dR",  100,     0,  0.6 ) );
 	    if ( m_histoInfoSwitch->m_tjetTrks ) {
 	      h_tj_llpt_z0 .push_back( book( name, htjtp + "_z0",      htjtpstr + " z0 [mm]",            100, -1500, 1500 ) );
@@ -2070,27 +2073,30 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<std::vector<TH1F*>> h_dj_llptrk_dR;
       std::vector<std::vector<TH1F*>> h_dj_llptrk_z0;
       std::vector<std::vector<TH1F*>> h_dj_llptrk_d0;
+      std::vector<int>   ndj   = { 50, 25 };
+      std::vector<float> djeta = {  5,  3 };
       for ( size_t i = 0; i != hDJ.size(); ++i ) {
-	std::string hdj    = hDJ    [i] + "DarkJet"; hdj[0] = tolower(hdj[0]);
-	std::string hdjstr = hDJstr [i] + " dark jet";
-	h_dj_n          .push_back( book( name, hdj + "_n",        "n " + hdjstr,               50,    0,   50 ) );
+	std::string hdj     = hDJ    [i] + "DarkJet"; hdj[0] = tolower(hdj[0]);
+	std::string hdjstr  = hDJstr [i]; if ( !hdjstr.empty() ) hdjstr += " ";
+	std::string hdjstr += "dark jet";
+	h_dj_n          .push_back( book( name, hdj + "_n",        "n " + hdjstr,           ndj[i],       0,   ndj[i] ) );
 	if ( !m_histoInfoSwitch->m_abcdcutOnly ) {
-	  h_dj_pt       .push_back( book( name, hdj + "_pt",       hdjstr + " p_{T} [GeV]",    100,    0, 1500 ) );
-	  h_dj_pt_s     .push_back( book( name, hdj + "_pt_s",     hdjstr + " p_{T} [GeV]",    100,    0,  500 ) );
-	  h_dj_eta      .push_back( book( name, hdj + "_eta",      hdjstr + " eta",            100,   -5,    5 ) );
-	  h_dj_phi      .push_back( book( name, hdj + "_phi",      hdjstr + " phi",            100, -3.5,  3.5 ) );
-	  h_dj_E        .push_back( book( name, hdj + "_E",        hdjstr + " energy [GeV]",   100,    0, 2500 ) );
-	  h_dj_M        .push_back( book( name, hdj + "_M",        hdjstr + " mass [GeV]",     100,    0,  300 ) );
-	  h_dj_rapid    .push_back( book( name, hdj + "_rapid",    hdjstr + " rapidity",       100,   -5,    5 ) );
-	  h_dj_girth    .push_back( book( name, hdj + "_girth",    hdjstr + " girth",          100,    0,  1.0 ) );
-	  h_dj_nConstit .push_back( book( name, hdj + "_nConstit", "n "+hdjstr+" constituents", 30,    0,   30 ) );
+	  h_dj_pt       .push_back( book( name, hdj + "_pt",       hdjstr + " p_{T} [GeV]",    100,        0,    1500 ) );
+	  h_dj_pt_s     .push_back( book( name, hdj + "_pt_s",     hdjstr + " p_{T} [GeV]",    100,        0,     500 ) );
+	  h_dj_eta      .push_back( book( name, hdj + "_eta",      hdjstr + " eta",            100,-djeta[i],djeta[i] ) );
+	  h_dj_phi      .push_back( book( name, hdj + "_phi",      hdjstr + " phi",            100,     -3.5,     3.5 ) );
+	  h_dj_E        .push_back( book( name, hdj + "_E",        hdjstr + " energy [GeV]",   100,        0,    2500 ) );
+	  h_dj_M        .push_back( book( name, hdj + "_M",        hdjstr + " mass [GeV]",     100,        0,     300 ) );
+	  h_dj_rapid    .push_back( book( name, hdj + "_rapid",    hdjstr + " rapidity",       100,-djeta[i],djeta[i] ) );
+	  h_dj_girth    .push_back( book( name, hdj + "_girth",    hdjstr + " girth",          100,        0,    0.35 ) );
+	  h_dj_nConstit .push_back( book( name, hdj + "_nConstit", "n "+hdjstr+" constituents", 35,        0,      35 ) );
 	  // dark jets: extra kinematics
 	  if ( m_histoInfoSwitch->m_kinematics || m_histoInfoSwitch->m_kinematics_djet ) {
-	    h_dj_px     .push_back( book( name, hdj + "_px",       hdjstr + " p_{x} [GeV]",    100, -1500, 1500 ) );
-	    h_dj_py     .push_back( book( name, hdj + "_py",       hdjstr + " p_{y} [GeV]",    100, -1500, 1500 ) );
-	    h_dj_pz     .push_back( book( name, hdj + "_pz",       hdjstr + " p_{z} [GeV]",    100, -2500, 2500 ) );
-	    h_dj_Et     .push_back( book( name, hdj + "_Et",       hdjstr + " E_{T} [GeV]",    100,     0, 1500 ) );
-	    h_dj_Et_s   .push_back( book( name, hdj + "_Et_s",     hdjstr + " E_{T} [GeV]",    100,     0,  500 ) );
+	    h_dj_px     .push_back( book( name, hdj + "_px",       hdjstr + " p_{x} [GeV]",    100,    -1500,    1500 ) );
+	    h_dj_py     .push_back( book( name, hdj + "_py",       hdjstr + " p_{y} [GeV]",    100,    -1500,    1500 ) );
+	    h_dj_pz     .push_back( book( name, hdj + "_pz",       hdjstr + " p_{z} [GeV]",    100,    -2500,    2500 ) );
+	    h_dj_Et     .push_back( book( name, hdj + "_Et",       hdjstr + " E_{T} [GeV]",    100,        0,    1500 ) );
+	    h_dj_Et_s   .push_back( book( name, hdj + "_Et_s",     hdjstr + " E_{T} [GeV]",    100,        0,     500 ) );
 	  }
 	  // loop over matched LLP types
 	  std::vector<TH1F*> h_dj_nllp;
@@ -2113,14 +2119,14 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	    std::string hdjtp    = hdj + "_" + htp;
 	    std::string htpstr   = "matched " + hvstr + " truth track";
 	    std::string hdjtpstr = hdjstr + " " + htpstr;
-	    h_dj_nllp      .push_back( book( name, hdj   + "_n" + htv, "n " +htvstrpl+ " per " + hdjstr,  12,     0,   12 ) );
+	    h_dj_nllp      .push_back( book( name, hdj   + "_n" + htv, "n " +htvstrpl+ " per " + hdjstr,  15,     0,   15 ) );
 	    h_dj_llp_dR    .push_back( book( name, hdjtv + "_dR",      hdjstr + " - " + htvstr + " dR",  100,     0,  0.6 ) );
-	    h_dj_llp_ndesc .push_back( book( name, hdjtv + "_nDesc",   hdjtvstr + " n descendants",       15,     0,   15 ) );
+	    h_dj_llp_ndesc .push_back( book( name, hdjtv + "_nDesc",   hdjtvstr + " n descendants",       20,     0,   20 ) );
 	    if ( m_histoInfoSwitch->m_djetVerts ) {
 	      h_dj_llp_z   .push_back( book( name, hdjtv + "_z",       hdjtvstr + " z-pos [mm]",         100, -3000, 3000 ) );
 	      h_dj_llp_r   .push_back( book( name, hdjtv + "_r",       hdjtvstr + " r-pos [mm]",         100,     0,  600 ) );
 	    }
-	    h_dj_nllpt     .push_back( book( name, hdj   + "_n" + htp, "n " + htpstr + "s per " + hdjstr,100,     0,  100 ) );
+	    h_dj_nllpt     .push_back( book( name, hdj   + "_n" + htp, "n " + htpstr + "s per " + hdjstr, 40,     0,   40 ) );
 	    h_dj_llpt_dR   .push_back( book( name, hdjtp + "_dR",      hdjstr + " - " + htpstr + " dR",  100,     0,  0.6 ) );
 	    if ( m_histoInfoSwitch->m_djetTrks ) {
 	      h_dj_llpt_z0 .push_back( book( name, hdjtp + "_z0",      hdjtpstr + " z0 [mm]",            100, -1500, 1500 ) );
@@ -4027,7 +4033,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     if ( m_mc ) {
       std::vector<int>   ntp    = {       5,       5,     150,      75 };
       std::vector<float> tppt   = {    2500,    1500,     500,    1000 };
-      std::vector<float> tpm    = {    2000,      50,      25,     100 };
+      std::vector<float> tpm    = {    2500,      60,      30,     120 };
       std::vector<float> tpbg   = {       5,     200,     100,      50 };
       std::vector<int>   ptp_n  = {       5,       5,     225,     225 };
       std::vector<int>   ptp_l  = { 4900000, 4900100, 4900000, 4900000 };
@@ -4059,7 +4065,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	h_tpart_M           .push_back( book( name, htp + "_M",           htpstr + " mass [GeV]",           100,         0,    tpm[i] ) );
 	h_tpart_betagamma   .push_back( book( name, htp + "_betagamma",   htpstr + " #beta #gamma",         100,         0,   tpbg[i] ) );
 	h_tpart_charge      .push_back( book( name, htp + "_charge",      htpstr + " charge",               100,        -2,         2 ) );
-	h_tpart_nParents    .push_back( book( name, htp + "_nParents",    "n " + htpstr + " parents",         5,         0,         5 ) );
+	h_tpart_nParents    .push_back( book( name, htp + "_nParents",    "n " + htpstr + " parents",        10,         0,        10 ) );
 	h_tpart_parentPdgId .push_back( book( name, htp + "_parentPdgId", htpstr + " parent pdgId",    ptp_n[i],  ptp_l[i],  ptp_h[i] ) );
 	h_tpart_nChildren   .push_back( book( name, htp + "_nChildren",   "n " + htpstr + " children", ntpch[i],         0,  ntpch[i] ) );
 	h_tpart_childPdgId  .push_back( book( name, htp + "_childPdgId",  htpstr + " child pdgId",    ptch_n[i], ptch_l[i], ptch_h[i] ) );
@@ -4125,22 +4131,22 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	std::string hllpstrpl = hllpstr; hllpstr += " decay vertex"; hllpstrpl += " decay vertices";
 	std::string hllpdstr  = hllpstr +   " descendant";
 	std::string hllpndstr = hllpstr + " n-descendant";
-	h_llpdvtx_n          .push_back( book( name, hllp + "_n",          "n " + hllpstrpl,                   50,     0,   50 ) );
+	h_llpdvtx_n          .push_back( book( name, hllp + "_n",          "n " + hllpstrpl,                  100,     0,  100 ) );
 	h_llpdvtx_z          .push_back( book( name, hllp + "_z",          hllpstr + " z-pos [mm]",           100, -3000, 3000 ) );
 	h_llpdvtx_r          .push_back( book( name, hllp + "_r",          hllpstr + " r-pos [mm]",           100,     0,  600 ) );
 	h_llpdvtx_pt         .push_back( book( name, hllp + "_pt",         hllpstr + " p_{T} [GeV]",          100,     0,  250 ) );
 	h_llpdvtx_eta        .push_back( book( name, hllp + "_eta",        hllpstr + " eta",                  100,    -5,    5 ) );
 	h_llpdvtx_phi        .push_back( book( name, hllp + "_phi",        hllpstr + " phi",                  100,  -3.5,  3.5 ) );
-	h_llpdvtx_mass       .push_back( book( name, hllp + "_mass",       hllpstr + " mass [GeV]",           100,     0,   25 ) );
-	h_llpdvtx_childOpAng .push_back( book( name, hllp + "_childOpAng", hllpstr + " opening angle",        100,     0,  7.5 ) );
+	h_llpdvtx_mass       .push_back( book( name, hllp + "_mass",       hllpstr + " mass [GeV]",           100,     0,   30 ) );
+	h_llpdvtx_childOpAng .push_back( book( name, hllp + "_childOpAng", hllpstr + " opening angle",        100,     0,    6 ) );
 	h_llpdvtx_nOutP      .push_back( book( name, hllp + "_nOutP",      hllpstr + " n outgoing particles",  15,     0,   15 ) );
 	if ( m_histoInfoSwitch->m_llpDesc ) {
-	  h_llpdvtx_ndesc    .push_back( book( name, hllp + "_nDesc",      "n " + hllpstr + hllpdstr,          15,     0,   15 ) );
+	  h_llpdvtx_ndesc    .push_back( book( name, hllp + "_nDesc",      "n " + hllpdstr + "s",              20,     0,   20 ) );
 	  h_llpdvtx_descPt   .push_back( book( name, hllp + "_descPt",     hllpndstr + " p_{T} [GeV]",        100,     0,  250 ) );
 	  h_llpdvtx_descEta  .push_back( book( name, hllp + "_descEta",    hllpndstr + " eta",                100,    -5,    5 ) );
 	  h_llpdvtx_descPhi  .push_back( book( name, hllp + "_descPhi",    hllpndstr + " phi",                100,  -3.5,  3.5 ) );
 	  h_llpdvtx_descE    .push_back( book( name, hllp + "_descE",      hllpndstr + " energy [GeV]",       100,     0,  350 ) );
-	  h_llpdvtx_descM    .push_back( book( name, hllp + "_descM",      hllpndstr + " mass [GeV]",         100,     0,   25 ) );
+	  h_llpdvtx_descM    .push_back( book( name, hllp + "_descM",      hllpndstr + " mass [GeV]",         100,     0,   30 ) );
 	  h_llpdvtx_desc_pt  .push_back( book( name, hllp + "_desc_pt",    hllpdstr  + " p_{T} [GeV]",        100,     0,   50 ) );
 	  h_llpdvtx_desc_eta .push_back( book( name, hllp + "_desc_eta",   hllpdstr  + " eta",                100,    -5,    5 ) );
 	  h_llpdvtx_desc_phi .push_back( book( name, hllp + "_desc_phi",   hllpdstr  + " phi",                100,  -3.5,  3.5 ) );
@@ -6564,8 +6570,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	      }
 	      h_darkJet_llptrk_dR   [ireg][idj][djtp] ->Fill( m_darkJet_tp_dR ->at(i)[djp], weight );
 	      if ( m_histoInfoSwitch->m_djetTrks ) {
-		h_darkJet_llptrk_d0 [ireg][idj][djtp] ->Fill( fabs( d0 ),                    weight );
-		h_darkJet_llptrk_z0 [ireg][idj][djtp] ->Fill( fabs( z0 ),                    weight );
+		h_darkJet_llptrk_d0 [ireg][idj][djtp] ->Fill( d0,                           weight );
+		h_darkJet_llptrk_z0 [ireg][idj][djtp] ->Fill( z0,                           weight );
 	      }
 	    } // end loop over LLP desc types
 
@@ -9023,7 +9029,7 @@ void EJsHistogramManager :: getTruthJetTypes ( int truthJet_index, std::vector<i
   int qcdTJ      = 0;
   if ( truthJet_index < m_nJets ) leadTJ = 1;
   if (  m_truthJet_isDark ->at(truthJet_index) && m_truthJet_darkPt ->at(truthJet_index) > 30 ) emergingTJ = 1;
-  if ( !m_truthJet_isDark ->at(truthJet_index) ) QCDTJ = 1;
+  if ( !m_truthJet_isDark ->at(truthJet_index) ) qcdTJ = 1;
   // fill truth jet pass/fail cut vector
   truthJet .push_back( allTJ                );
   truthJet .push_back( allTJ      && leadTJ );
