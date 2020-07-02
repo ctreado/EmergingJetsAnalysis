@@ -1286,6 +1286,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     JSV    .push_back( gJSVup     + "GoodSV"   );
     JSVstr .push_back( gJSV[ijsv] + "-good-SV" );
   }
+  m_nTypeJSVs = JSV.size();
 
   // --> n-sv pt jet cuts
   m_svP4J_ix = m_nType1SVJs;
@@ -1642,17 +1643,6 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     hJDV    .push_back( baseDV    );
     hJDVstr .push_back( baseDVstr );
   }
-  // vertices by (leading) jets -- skip for jet DVs
-  std::string jDV     = "ByJet";
-  std::string ljDV    = "ByNJet";
-  std::string jDVstr  = "by-jet,";
-  std::string ljDVstr = "by-N-lead-jet,";
-  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_byJetVerts ) {
-    hDV    .push_back( jDV     );
-    hDV    .push_back( ljDV    );
-    hDVstr .push_back( jDVstr  );
-    hDVstr .push_back( ljDVstr );
-  }
   // vertices passing fiducial cuts (fiducial volume, chi2)
   std::string fidDV    = "Fiduc";
   std::string fidDVstr = "fiduc,";
@@ -1728,18 +1718,25 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     hJDVstr .push_back( minsqerrd0DVstr );
     hJDVstr .push_back( minsqerrz0DVstr );
   }
+  // vertices by (leading) jets -- skip for jet DVs
+  std::string jDV     = "ByJet";
+  std::string ljDV    = "ByNJet";
+  std::string jDVstr  = "by-jet,";
+  std::string ljDVstr = "by-N-lead-jet,";
+  if ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_byJetVerts ) {
+    hDV    .push_back( jDV     );
+    hDV    .push_back( ljDV    );
+    hDVstr .push_back( jDVstr  );
+    hDVstr .push_back( ljDVstr );
+  }
 
   // number of individual (jet) DV cuts
   m_nType1DVs  = hDV .size();
   m_nType1JDVs = hJDV.size();
   
-  // --> do combinations
-  
   // --> "good" DVs -- tentatively = combo of all above cuts
   std::vector<std::string> hGDVstr;
   hGDVstr .push_back( baseDVstr       );
-  hGDVstr .push_back( jDVstr          );
-  hGDVstr .push_back( ljDVstr         );
   hGDVstr .push_back( fidDVstr        );
   hGDVstr .push_back( ksmDVstr        );
   hGDVstr .push_back( ptDVstr         );
@@ -1747,24 +1744,22 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   hGDVstr .push_back( minz0DVstr      );
   hGDVstr .push_back( minsqerrd0DVstr );
   hGDVstr .push_back( minsqerrz0DVstr );
+  hGDVstr .push_back( jDVstr          );
+  hGDVstr .push_back( ljDVstr         );
   std::string goodDV    = "Good";
   std::string goodDVstr = "good,";
-  ++m_nTypeGDVs;
-  hDV     .push_back( "Loose"  + goodDV    );
-  hJDV    .push_back( "Loose"  + goodDV    );
-  hDVstr  .push_back( "loose-" + goodDVstr );
-  hJDVstr .push_back( "loose-" + goodDVstr );
-  ++m_nTypeGDVs;
-  hDV     .push_back( "Mid"    + goodDV    );
-  hJDV    .push_back( "Mid"    + goodDV    );
-  hDVstr  .push_back( "mid-"   + goodDVstr );
-  hJDVstr .push_back( "mid-"   + goodDVstr );
-  ++m_nTypeGDVs;
-  hDV     .push_back( "Tight"  + goodDV    );
-  hJDV    .push_back( "Tight"  + goodDV    );
-  hDVstr  .push_back( "tight-" + goodDVstr );
-  hJDVstr .push_back( "tight-" + goodDVstr );
-  ++m_nTypeGDVs;
+  hDV     .push_back( "ByNJetLoose"          + goodDV    );
+  hJDV    .push_back( "Loose"                + goodDV    );
+  hDVstr  .push_back( "by-N-lead-jet loose-" + goodDVstr );
+  hJDVstr .push_back( "loose-"               + goodDVstr );
+  hDV     .push_back( "ByNJetMid"            + goodDV    );
+  hJDV    .push_back( "Mid"                  + goodDV    );
+  hDVstr  .push_back( "by-N-lead-jet mid-"   + goodDVstr );
+  hJDVstr .push_back( "mid-"                 + goodDVstr );
+  hDV     .push_back( "ByNJetTight"          + goodDV    );
+  hJDV    .push_back( "Tight"                + goodDV    );
+  hDVstr  .push_back( "by-N-lead-jet tight-" + goodDVstr );
+  hJDVstr .push_back( "tight-"               + goodDVstr );
 
   // number of (jet) DV types excluding truth matching
   m_nTypeBDVs  = hDV .size();
@@ -1887,27 +1882,27 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     // event info: leading N-jet Ht
     h_NJetHt      .push_back( book( name, "NJetHt",      "leading N " + m_jetStr + " Jet H_{T} [GeV]",            100, njetht_xmin, 5000 ) );
     h_NJetHt_vrsh .push_back( book( name, "NJetHt_vrsh", "leading N " + m_jetStr + " Jet H_{T} [GeV] (VR-shift)", 100, njetht_xmin, 5000 ) );
-    // event info: orphan pt
-    h_evt_truthPartPtSum
-      .push_back( book( name, "evt_truthPartPtSum",            "truth particle sum-p{T} [GeV]",              100, 0, 7500 ) );
-    h_evt_truthPartDarkPtSum
-      .push_back( book( name, "evt_truthPartDarkPtSum",        "dark particle sum-p{T} [GeV]",               100, 0, 7500 ) );
-    h_evt_truthJetConstitPtSum
-      .push_back( book( name, "evt_truthJetConstitPtSum",      "truth jet constituent sum-p{T} [GeV]",       100, 0, 7500 ) );
-    h_evt_tightTruthJetConstitPtSum
-      .push_back( book( name, "evt_tightTruthJetConstitPtSum", "tight truth jet constituent sum-p{T} [GeV]", 100, 0, 7500 ) );
-    h_evt_darkJetConstitPtSum
-      .push_back( book( name, "evt_darkJetConstitPtSum",       "dark jet constituent sum-p{T} [GeV]",        100, 0, 3750 ) );
-    h_evt_tightDarkJetConstitPtSum
-      .push_back( book( name, "evt_tightDarkJetConstitPtSum",  "tight dark jet constituent sum-p{T} [GeV]",  100, 0, 3750 ) );
-    h_orphanPt
-      .push_back( book( name, "orphanPt",                      "orphan p_{T} [GeV]",                         100, 0, 3000 ) );
-    h_tightOrphanPt
-      .push_back( book( name, "tightOrphanPt",                 "tight orphan p_{T} [GeV]",                   100, 0, 3000 ) );
-    h_darkOrphanPt
-      .push_back( book( name, "darkOrphanPt",                  "dark orphan p_{T} [GeV]",                    100, 0, 6000 ) );
-    h_tightDarkOrphanPt
-      .push_back( book( name, "tightDarkOrphanPt",             "tight dark orphan p_{T} [GeV]",              100, 0, 6000 ) );
+    // // event info: orphan pt
+    // h_evt_truthPartPtSum
+    //   .push_back( book( name, "evt_truthPartPtSum",            "truth particle sum-p{T} [GeV]",              100, 0, 7500 ) );
+    // h_evt_truthPartDarkPtSum
+    //   .push_back( book( name, "evt_truthPartDarkPtSum",        "dark particle sum-p{T} [GeV]",               100, 0, 7500 ) );
+    // h_evt_truthJetConstitPtSum
+    //   .push_back( book( name, "evt_truthJetConstitPtSum",      "truth jet constituent sum-p{T} [GeV]",       100, 0, 7500 ) );
+    // h_evt_tightTruthJetConstitPtSum
+    //   .push_back( book( name, "evt_tightTruthJetConstitPtSum", "tight truth jet constituent sum-p{T} [GeV]", 100, 0, 7500 ) );
+    // h_evt_darkJetConstitPtSum
+    //   .push_back( book( name, "evt_darkJetConstitPtSum",       "dark jet constituent sum-p{T} [GeV]",        100, 0, 3750 ) );
+    // h_evt_tightDarkJetConstitPtSum
+    //   .push_back( book( name, "evt_tightDarkJetConstitPtSum",  "tight dark jet constituent sum-p{T} [GeV]",  100, 0, 3750 ) );
+    // h_orphanPt
+    //   .push_back( book( name, "orphanPt",                      "orphan p_{T} [GeV]",                         100, 0, 3000 ) );
+    // h_tightOrphanPt
+    //   .push_back( book( name, "tightOrphanPt",                 "tight orphan p_{T} [GeV]",                   100, 0, 3000 ) );
+    // h_darkOrphanPt
+    //   .push_back( book( name, "darkOrphanPt",                  "dark orphan p_{T} [GeV]",                    100, 0, 6000 ) );
+    // h_tightDarkOrphanPt
+    //   .push_back( book( name, "tightDarkOrphanPt",             "tight dark orphan p_{T} [GeV]",              100, 0, 6000 ) );
 
 
     if ( m_mc ) {
@@ -1939,7 +1934,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       for ( size_t i = 0; i != hTJ.size(); ++i ) {
 	std::string htj     = hTJ    [i] + "TruthJet"; htj[0] = tolower(htj[0]);
 	std::string htjstr  = hTJstr [i]; if ( !htjstr.empty() ) htjstr += " ";
-	std::string htjstr += "truth jet";
+	htjstr += "truth jet";
 	int ntj = 25;
 	if ( i % 2 ) ntj = 10;
 	h_tj_n          .push_back( book( name, htj + "_n",        "n " + htjstr,              ntj,     0,  ntj ) );
@@ -2078,7 +2073,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       for ( size_t i = 0; i != hDJ.size(); ++i ) {
 	std::string hdj     = hDJ    [i] + "DarkJet"; hdj[0] = tolower(hdj[0]);
 	std::string hdjstr  = hDJstr [i]; if ( !hdjstr.empty() ) hdjstr += " ";
-	std::string hdjstr += "dark jet";
+	hdjstr += "dark jet";
 	h_dj_n          .push_back( book( name, hdj + "_n",        "n " + hdjstr,           ndj[i],       0,   ndj[i] ) );
 	if ( !m_histoInfoSwitch->m_abcdcutOnly ) {
 	  h_dj_pt       .push_back( book( name, hdj + "_pt",       hdjstr + " p_{T} [GeV]",    100,        0,    1500 ) );
@@ -6309,6 +6304,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // --- EVENT INFO --- //
     // ------------------ //
     if ( doHists && !m_histoInfoSwitch->m_abcdcutOnly ) {
+      if ( m_debug ) Info( "EJsHistogramManager::execute()", "doing event info histos" );
       // pileup
       if ( m_histoInfoSwitch->m_pileup ) {
 	h_npv                [ireg] ->Fill( m_npv,                weight );
@@ -6349,6 +6345,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     if ( m_mc ) {
 
       // --- TRUTH JETS --- //
+      if ( m_debug ) Info( "EJsHistogramManager::execute()", "doing truth jet histos" );
       
       // set vector of nTJ counters
       std::vector<int> n_truthJet ( m_nTypeTJs, 0 );
@@ -6356,11 +6353,11 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
       // loop over truth jets
       for ( int i = 0; i != m_truthJet_n; ++i ) {
 
-	// sum truth jet constituent sum-pt for calculating truth orphan pt
-	if ( m_truthJet_pt ->at(i) > m_jetPt      )
-	  truthJetConstit_sumPt      += m_truthJet_constitPt ->at(i);
-	if ( m_truthJet_pt ->at(i) > m_tightJetPt )
-	  tightTruthJetConstit_sumPt += m_truthJet_constitPt ->at(i);
+	// // sum truth jet constituent sum-pt for calculating truth orphan pt
+	// if ( m_truthJet_pt ->at(i) > m_jetPt      )
+	//   truthJetConstit_sumPt      += m_truthJet_constitPt ->at(i);
+	// if ( m_truthJet_pt ->at(i) > m_tightJetPt )
+	//   tightTruthJetConstit_sumPt += m_truthJet_constitPt ->at(i);
 
 	// get truth jet four-momentum
 	TLorentzVector truthJet_p4;
@@ -6468,6 +6465,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 
 
       // --- TRUTH DARK JETS --- //
+      if ( m_debug ) Info( "EJsHistogramManager::execute()", "doing dark jet histos" );
       
       // set vector of nDJ counters
       std::vector<int> n_darkJet ( m_nTypeDJs, 0 );
@@ -6475,11 +6473,11 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
       // loop over truth dark jets
       for ( int i = 0; i != m_darkJet_n; ++i ) {
 
-	// sum truth dark jet constituent sum-pt for calculating truth dark orphan pt
-	if ( m_darkJet_pt ->at(i) > m_jetPt      )
-	  darkJetConstit_sumPt      += m_darkJet_constitPt ->at(i);
-	if ( m_darkJet_pt ->at(i) > m_tightJetPt )
-	  tightDarkJetConstit_sumPt += m_darkJet_constitPt ->at(i);
+	// // sum truth dark jet constituent sum-pt for calculating truth dark orphan pt
+	// if ( m_darkJet_pt ->at(i) > m_jetPt      )
+	//   darkJetConstit_sumPt      += m_darkJet_constitPt ->at(i);
+	// if ( m_darkJet_pt ->at(i) > m_tightJetPt )
+	//   tightDarkJetConstit_sumPt += m_darkJet_constitPt ->at(i);
 
 	// get truth dark jet four-momentum
 	TLorentzVector darkJet_p4;
@@ -6597,6 +6595,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // --- RECO JETS --- //
     // ----------------- //
     if ( !m_histoInfoSwitch->m_truthOnly ) {
+      if ( m_debug ) Info( "EJsHistogramManager::execute()", "doing jet histos" );
     
       // --> DIJETS
       // set vectors of dijet four-vectors
@@ -7375,37 +7374,37 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    }
 
 	    std::vector<std::vector<int>>        svP4JetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>    leadSvP4JetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>        svPtJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>    leadSvPtJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>        svHtJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>    leadSvHtJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>         svHJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>     leadSvHJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>      svNtrkJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>  leadSvNtrkJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>     svNjtrkJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>> leadSvNjtrkJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>       svTrkJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>   leadSvTrkJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>         svNJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>     leadSvNJetTestCut
-	      ( m_nTypeGDVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    unsigned ncjt     = ( m_nType1Js - m_nType1SVJs ) / m_LJix;
 	    unsigned ncjsvp4  = m_svP4J_ix    / m_LJix + ncjt;
 	    unsigned ncjsvpt  = m_svPtJ_ix    / m_LJix + ncjt;
@@ -7415,7 +7414,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    unsigned ncjsvnjt = m_svNjtrkJ_ix / m_LJix + ncjt;
 	    unsigned ncjsvt   = m_svTrkJ_ix   / m_LJix + ncjt;
 	    unsigned ncjsvn   = m_svNJ_ix     / m_LJix + ncjt;
-	    for ( unsigned ijsv = 0; ijsv != m_nTypeGDVs; ++ijsv ) {
+	    for ( unsigned ijsv = 0; ijsv != m_nTypeJSVs; ++ijsv ) {
 	      unsigned ibin_svp4    = 0;
 	      unsigned ibin_svpt    = 0;
 	      unsigned ibin_svht    = 0;
@@ -7850,52 +7849,55 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     double truthPartDark_sumPt = 0;
     
     if ( m_mc ) {
+      if ( m_debug ) Info( "EJsHistogramManager::execute()", "doing truth particle histos" );
       // set vector of ntp counters
       std::vector<int> n_tp ( m_nTypeTPs, 0 );
 
       // loop over truth particles
       for ( int i = 0; i != m_tp_n; ++i ) {
 
-	// sum truth (dark) particle pt for calculating truth (dark) orphan pt
-	if ( m_tp_isStable ->at(i) )
-	  truthPart_sumPt += m_tp_pt ->at(i);
-	// --> dark particle sum-pt
-	if ( m_tp_isDark ->at(i) && fabs( m_tp_child_pdgId ->at(i).at(0) ) < 4.9e6 ) // only count "stable" dark particles decaying to SM
-	  truthPartDark_sumPt += m_tp_pt ->at(i);
+      	// sum truth (dark) particle pt for calculating truth (dark) orphan pt
+      	if ( m_tp_isStable ->at(i) )
+      	  truthPart_sumPt += m_tp_pt ->at(i);
+      	// --> dark particle sum-pt
+      	if ( m_tp_isDark ->at(i) )
+	  // only count "stable" dark particles decaying to SM
+	  if ( ( m_tp_nChildren->at(i) && fabs( m_tp_child_pdgId ->at(i).at(0) ) < 4.9e6 ) || !m_tp_nChildren->at(i) ) 
+	    truthPartDark_sumPt += m_tp_pt ->at(i);
 
-	// get truth particle four-momentum
-	TLorentzVector tp_p4;
-	tp_p4.SetPtEtaPhiM( m_tp_pt->at(i), m_tp_eta->at(i), m_tp_phi->at(i), m_tp_M->at(i) );
+      	// get truth particle four-momentum
+      	TLorentzVector tp_p4;
+      	tp_p4.SetPtEtaPhiM( m_tp_pt->at(i), m_tp_eta->at(i), m_tp_phi->at(i), m_tp_M->at(i) );
 	  
-	// set vector of truth particle types
-	std::vector<int> tp;
-	getTPTypes( i, tp );
+      	// set vector of truth particle types
+      	std::vector<int> tp;
+      	getTPTypes( i, tp );
 
-	// loop over truth particle types and fill histograms
-	for ( size_t itp = 0; itp != tp.size(); ++itp ) {
-	  if ( !tp[itp] ) continue;
-	  ++n_tp[itp];
+      	// loop over truth particle types and fill histograms
+      	for ( size_t itp = 0; itp != tp.size(); ++itp ) {
+      	  if ( !tp[itp] ) continue;
+      	  ++n_tp[itp];
 	  
-	  if ( !doHists || m_histoInfoSwitch->m_abcdcutOnly ) continue;
-	  h_tp_pt        [ireg][itp] ->Fill( m_tp_pt            ->at(i), weight );
-	  h_tp_eta       [ireg][itp] ->Fill( m_tp_eta           ->at(i), weight );
-	  h_tp_phi       [ireg][itp] ->Fill( m_tp_phi           ->at(i), weight );
-	  h_tp_E         [ireg][itp] ->Fill( m_tp_E             ->at(i), weight );
-	  h_tp_M         [ireg][itp] ->Fill( m_tp_M             ->at(i), weight );
-	  h_tp_betagamma [ireg][itp] ->Fill( tp_p4.Beta()*tp_p4.Gamma(), weight );
-	  h_tp_charge    [ireg][itp] ->Fill( m_tp_charge        ->at(i), weight );
-	  h_tp_nParents  [ireg][itp] ->Fill( m_tp_nParents      ->at(i), weight );
-	  h_tp_nChildren [ireg][itp] ->Fill( m_tp_nChildren     ->at(i), weight );
+      	  if ( !doHists || m_histoInfoSwitch->m_abcdcutOnly ) continue;
+      	  h_tp_pt        [ireg][itp] ->Fill( m_tp_pt            ->at(i), weight );
+      	  h_tp_eta       [ireg][itp] ->Fill( m_tp_eta           ->at(i), weight );
+      	  h_tp_phi       [ireg][itp] ->Fill( m_tp_phi           ->at(i), weight );
+      	  h_tp_E         [ireg][itp] ->Fill( m_tp_E             ->at(i), weight );
+      	  h_tp_M         [ireg][itp] ->Fill( m_tp_M             ->at(i), weight );
+      	  h_tp_betagamma [ireg][itp] ->Fill( tp_p4.Beta()*tp_p4.Gamma(), weight );
+      	  h_tp_charge    [ireg][itp] ->Fill( m_tp_charge        ->at(i), weight );
+      	  h_tp_nParents  [ireg][itp] ->Fill( m_tp_nParents      ->at(i), weight );
+      	  h_tp_nChildren [ireg][itp] ->Fill( m_tp_nChildren     ->at(i), weight );
 	  for ( int j  = 0; j  != m_tp_nParents ->at(i); ++j  )
 	    h_tp_parentPdgId [ireg][itp] ->Fill( fabs( m_tp_parent_pdgId ->at(i).at(j) ), weight );
 	  for ( int j = 0; j != m_tp_nChildren->at(i); ++j )
 	    h_tp_childPdgId  [ireg][itp] ->Fill( fabs( m_tp_child_pdgId  ->at(i).at(j) ), weight );
-	} // end loop over truth particle types
+      	} // end loop over truth particle types
       } // end loop over truth particles
 
       // fill truth particle count histoograms
       for ( size_t itp = 0; itp != n_tp.size(); ++itp )
-	h_tp_n [ireg][itp] ->Fill( n_tp[itp], weight );
+       	h_tp_n [ireg][itp] ->Fill( n_tp[itp], weight );
     } // end if mc
     
 
@@ -7904,6 +7906,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // --- TRACKS --- //
     // -------------- //
     if ( !m_histoInfoSwitch->m_truthOnly ) {
+      if ( m_debug ) Info( "EJsHistogramManager::execute()", "doing track histos" );
+      
       // set vector of ntrk counters
       std::vector<int> n_trk ( m_nTypeTrks, 0 );
     
@@ -7931,6 +7935,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // --- TRUTH VERTICES --- //
     // ---------------------- //
     if ( m_mc ) {
+      if ( m_debug ) Info( "EJsHistogramManager::execute()", "doing truth vertex histos" );
 
       // set vector of nLLP counters
       std::vector<int> n_LLP ( m_nTypeLLPs, 0 );
@@ -8001,6 +8006,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // eventually will decide on DV type to use and can make generic "DV" histograms w/ no info switch
 
     if ( !m_histoInfoSwitch->m_truthOnly ) {
+      if ( m_debug ) Info( "EJsHistogramManager::execute()", "doing DV histos" );
 
       // set vector of nDV, ntrkDV counters
       std::vector<int> n_DV ( m_nTypeDVs, 0 );
@@ -8761,7 +8767,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  // --> test cuts
 	  if ( m_nType1DVs ) {
 	    std::vector<int> DV_testCut;
-	    getDVTypes( i, DV_testCut, base_dv, false, false, false );
+	    getDVTypes( i, DV_testCut, base_dv, false, false, false, false, false );
 	    std::vector<int> dvTestCut ( DV_testCut.size() / m_nType1DVs, 0 );
 	    for ( size_t idvc = 0; idvc != DV_testCut.size(); ++idvc ) {
 	      dvTestCut[idvc / m_nType1DVs] += DV_testCut[idvc];
@@ -8771,7 +8777,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  }
 	  // --> "good" cuts
 	  std::vector<int> DV_cut;
-	  getDVTypes( i, DV_cut, base_dv, false, false, false, true );
+	  getDVTypes( i, DV_cut, base_dv, false, false, false, false, true );
 	  int n_goodCuts = DV_cut.size() / h_evt_cutflow_DV [ireg].size();
 	  std::vector<int> dvCut ( h_evt_cutflow_DV [ireg].size(), 0 );
 	  for ( size_t idvc = 0; idvc != DV_cut.size(); ++idvc ) {
@@ -8813,24 +8819,26 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     } // end if not truthOnly
 
 
-    // --- ORPHAN PT --- //
-    if ( m_mc ) {
-      h_evt_truthPartPtSum            [ireg] ->Fill( m_truthPartPtSum,                                  weight );
-      h_evt_truthPartDarkPtSum        [ireg] ->Fill( m_truthPartDarkPtSum,                              weight );
-      h_evt_truthJetConstitPtSum      [ireg] ->Fill( truthJetConstit_sumPt,                             weight );
-      h_evt_tightTruthJetConstitPtSum [ireg] ->Fill( tightTruthJetConstit_sumPt,                        weight );
-      h_evt_darkJetConstitPtSum       [ireg] ->Fill( darkJetConstit_sumPt,                              weight );
-      h_evt_tightDarkJetConstitPtSum  [ireg] ->Fill( tightDarkJetConstit_sumPt,                         weight );
-      h_orphanPt                      [ireg] ->Fill( m_truthPartPtSum     - truthJetConstit_sumPt,      weight );
-      h_tightOrphanPt                 [ireg] ->Fill( m_truthPartPtSum     - tightTruthJetConstit_sumPt, weight );
-      h_darkOrphanPt                  [ireg] ->Fill( m_truthPartDarkPtSum - darkJetConstit_sumPt,       weight );
-      h_tightDarkOrphanPt             [ireg] ->Fill( m_truthPartDarkPtSum - tightDarkJetConstit_sumPt,  weight );
-    }
+    // // --- ORPHAN PT --- //
+    // if ( m_mc ) {
+    //   if ( m_debug ) Info( "EJsHistogramManager::execute()", "doing orphan pt histos" );
+    //   h_evt_truthPartPtSum            [ireg] ->Fill( m_truthPartPtSum,                                  weight );
+    //   h_evt_truthPartDarkPtSum        [ireg] ->Fill( m_truthPartDarkPtSum,                              weight );
+    //   h_evt_truthJetConstitPtSum      [ireg] ->Fill( truthJetConstit_sumPt,                             weight );
+    //   h_evt_tightTruthJetConstitPtSum [ireg] ->Fill( tightTruthJetConstit_sumPt,                        weight );
+    //   h_evt_darkJetConstitPtSum       [ireg] ->Fill( darkJetConstit_sumPt,                              weight );
+    //   h_evt_tightDarkJetConstitPtSum  [ireg] ->Fill( tightDarkJetConstit_sumPt,                         weight );
+    //   h_orphanPt                      [ireg] ->Fill( m_truthPartPtSum     - truthJetConstit_sumPt,      weight );
+    //   h_tightOrphanPt                 [ireg] ->Fill( m_truthPartPtSum     - tightTruthJetConstit_sumPt, weight );
+    //   h_darkOrphanPt                  [ireg] ->Fill( m_truthPartDarkPtSum - darkJetConstit_sumPt,       weight );
+    //   h_tightDarkOrphanPt             [ireg] ->Fill( m_truthPartDarkPtSum - tightDarkJetConstit_sumPt,  weight );
+    // }
 
 
     // --- ABCD PLANE TESTS --- //
     // -- tentative ABCD variables
     if ( m_histoInfoSwitch->m_abcd || m_histoInfoSwitch->m_abcdcutOnly ) {
+      if ( m_debug ) Info( "EJsHistogramManager::execute()", "doing abcd histos" );
       for ( size_t idv = 0; idv != NDV.size(); ++idv ) {
 	h_abcd_nDV_NJetHt          [ireg][idv] ->Fill( m_njetHt,                    NDV[idv], weight );
 	h_abcd_nDV_NJetHt_vrsh     [ireg][idv] ->Fill( m_njetHt * m_VRshift_njetHt, NDV[idv], weight );
@@ -8885,7 +8893,7 @@ StatusCode EJsHistogramManager :: finalize ( const std::vector<EJsHelper::Region
 	    h_evt_testCutflowEfficiency_jet        [ireg][icj] ->Fill( ibin, ibin_jcut  /  jcount );
 	    h_evt_testCutflowEfficiency_leadjet    [ireg][icj] ->Fill( ibin, ibin_ljcut / ljcount );
 	  }
-	for ( unsigned ijsv = 0; ijsv != m_nTypeGDVs; ++ijsv ) {
+	for ( unsigned ijsv = 0; ijsv != m_nTypeJSVs; ++ijsv ) {
 	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvP4Jets ) {
 	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svP4Jet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
 	      float ibin_jcut  = h_evt_testCutflow_svP4Jet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
@@ -9028,7 +9036,7 @@ void EJsHistogramManager :: getTruthJetTypes ( int truthJet_index, std::vector<i
   int emergingTJ = 0;
   int qcdTJ      = 0;
   if ( truthJet_index < m_nJets ) leadTJ = 1;
-  if (  m_truthJet_isDark ->at(truthJet_index) && m_truthJet_darkPt ->at(truthJet_index) > 30 ) emergingTJ = 1;
+  if (  m_truthJet_isDark ->at(truthJet_index) /*&& m_truthJet_darkPt ->at(truthJet_index) > 30*/ ) emergingTJ = 1; // change -- this branch doesn't exists
   if ( !m_truthJet_isDark ->at(truthJet_index) ) qcdTJ = 1;
   // fill truth jet pass/fail cut vector
   truthJet .push_back( allTJ                );
@@ -9088,25 +9096,25 @@ void EJsHistogramManager :: getJetTypes ( int jet_index, std::vector<int>& jet, 
   int tightEtaJet      = 0;
   int tightMassJet     = 0;
   // --> n-sv kinematic cuts
-  std::vector<int> svPtJet     ( m_nTypeGDVs * m_nJSVpt .size(), 0 );
-  std::vector<int> svSumPtJet  ( m_nTypeGDVs * m_nJSVpt .size(), 0 );
-  std::vector<int> svSumHtJet  ( m_nTypeGDVs * m_nJSVpt .size(), 0 );
-  std::vector<int> svSumHJet   ( m_nTypeGDVs * m_nJSVh  .size(), 0 );
+  std::vector<int> svPtJet     ( m_nTypeJSVs * m_nJSVpt .size(), 0 );
+  std::vector<int> svSumPtJet  ( m_nTypeJSVs * m_nJSVpt .size(), 0 );
+  std::vector<int> svSumHtJet  ( m_nTypeJSVs * m_nJSVpt .size(), 0 );
+  std::vector<int> svSumHJet   ( m_nTypeJSVs * m_nJSVh  .size(), 0 );
   // --> n-sv (trk) cuts
-  std::vector<int> svNtrkJet   ( m_nTypeGDVs * m_nJSVtrk.size(), 0 );
-  std::vector<int> svNjtrkJet  ( m_nTypeGDVs * m_nJSVtrk.size(), 0 );
-  std::vector<int> svTrkJet    ( m_nTypeGDVs * m_nJSVtrk.size(), 0 );
-  std::vector<int> svJet       ( m_nTypeGDVs * m_nJSV   .size(), 0 ); 
+  std::vector<int> svNtrkJet   ( m_nTypeJSVs * m_nJSVtrk.size(), 0 );
+  std::vector<int> svNjtrkJet  ( m_nTypeJSVs * m_nJSVtrk.size(), 0 );
+  std::vector<int> svTrkJet    ( m_nTypeJSVs * m_nJSVtrk.size(), 0 );
+  std::vector<int> svJet       ( m_nTypeJSVs * m_nJSV   .size(), 0 ); 
   // --> combo cuts
   int tightJet         = 0;
-  std::vector<int> svPtTightJet    ( m_nTypeGDVs * m_nJSVpt .size(), 0 );
-  std::vector<int> svSumPtTightJet ( m_nTypeGDVs * m_nJSVpt .size(), 0 );
-  std::vector<int> svSumHtTightJet ( m_nTypeGDVs * m_nJSVpt .size(), 0 );
-  std::vector<int> svSumHTightJet  ( m_nTypeGDVs * m_nJSVh  .size(), 0 );
-  std::vector<int> svNtrkTightJet  ( m_nTypeGDVs * m_nJSVtrk.size(), 0 );
-  std::vector<int> svNjtrkTightJet ( m_nTypeGDVs * m_nJSVtrk.size(), 0 );
-  std::vector<int> svTrkTightJet   ( m_nTypeGDVs * m_nJSVtrk.size(), 0 );
-  std::vector<int> svTightJet      ( m_nTypeGDVs * m_nJSV   .size(), 0 );
+  std::vector<int> svPtTightJet    ( m_nTypeJSVs * m_nJSVpt .size(), 0 );
+  std::vector<int> svSumPtTightJet ( m_nTypeJSVs * m_nJSVpt .size(), 0 );
+  std::vector<int> svSumHtTightJet ( m_nTypeJSVs * m_nJSVpt .size(), 0 );
+  std::vector<int> svSumHTightJet  ( m_nTypeJSVs * m_nJSVh  .size(), 0 );
+  std::vector<int> svNtrkTightJet  ( m_nTypeJSVs * m_nJSVtrk.size(), 0 );
+  std::vector<int> svNjtrkTightJet ( m_nTypeJSVs * m_nJSVtrk.size(), 0 );
+  std::vector<int> svTrkTightJet   ( m_nTypeJSVs * m_nJSVtrk.size(), 0 );
+  std::vector<int> svTightJet      ( m_nTypeJSVs * m_nJSV   .size(), 0 );
 
   // test if jet passes cuts
   // --> tight cuts
@@ -9121,15 +9129,15 @@ void EJsHistogramManager :: getJetTypes ( int jet_index, std::vector<int>& jet, 
   // --> n-sv kinematic (sum-p4) cuts
   TLorentzVector svP4sum;
   svP4sum.SetPtEtaPhiM( 0, 0, 0, 0 );
-  std::vector<TLorentzVector> svSumP4   ( m_nTypeGDVs, svP4sum );
-  std::vector<double>         svSumPt   ( m_nTypeGDVs, 0       );
-  std::vector<double>         svSumHt   ( m_nTypeGDVs, 0       );
-  std::vector<double>         svSumH    ( m_nTypeGDVs, 0       );
+  std::vector<TLorentzVector> svSumP4   ( m_nTypeJSVs, svP4sum );
+  std::vector<double>         svSumPt   ( m_nTypeJSVs, 0       );
+  std::vector<double>         svSumHt   ( m_nTypeJSVs, 0       );
+  std::vector<double>         svSumH    ( m_nTypeJSVs, 0       );
   // --> n-sv (trk) cuts
-  std::vector<int>            n_svNtrk  ( m_nTypeGDVs, 0       );
-  std::vector<int>            n_svNjtrk ( m_nTypeGDVs, 0       );
-  std::vector<int>            n_svTrk   ( m_nTypeGDVs, 0       );
-  std::vector<int>            n_sv      ( m_nTypeGDVs, 0       );
+  std::vector<int>            n_svNtrk  ( m_nTypeJSVs, 0       );
+  std::vector<int>            n_svNjtrk ( m_nTypeJSVs, 0       );
+  std::vector<int>            n_svTrk   ( m_nTypeJSVs, 0       );
+  std::vector<int>            n_sv      ( m_nTypeJSVs, 0       );
   // loop over matched secondary vertices
   for ( int jsv = 0; jsv != m_jet_secVtx_n ->at(jet_index); ++jsv ) {
     int   jetSvIx   = m_jet_secVtx_index ->at(jet_index)[jsv];
@@ -9482,7 +9490,7 @@ void EJsHistogramManager :: getTrkTypes ( int trk_index, std::vector<int>& trk, 
   if ( svTrk ) {
     int trkSVix = m_trk_SV_index ->at(trk_index);
     std::vector<int> trkSV;
-    getDVTypes ( trkSVix, trkSV, base_dv, true, false, true, false );
+    getDVTypes ( trkSVix, trkSV, base_dv, false, true, true, true );
     lgoodsvTrk = trkSV[trkSV.size()-3];
     mgoodsvTrk = trkSV[trkSV.size()-2];
     tgoodsvTrk = trkSV[trkSV.size()-1];
@@ -9501,8 +9509,10 @@ void EJsHistogramManager :: getTrkTypes ( int trk_index, std::vector<int>& trk, 
 
 
 void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, const EJsHelper::BaseDV& base_dv,
-					 bool jetDV, bool doCombos, bool doGood, bool doGoodCuts )
+					 bool jetDV, bool skipOneCuts, bool skipJetCuts, bool doGood, bool doGoodCuts )
 {
+  // separate chi2 cut from fiducial cut (for cutflow purposes); add material map cut
+  
   // get kinematic variables
   float secVtx_pt    = 0;
   float secVtx_mass  = 0;
@@ -9550,11 +9560,6 @@ void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, con
   // --> base vertices (bare, clean, filtered, or trimmed)
   bool baseDV = false;
   if ( secVtx_ntrk > 1 ) baseDV = true;
-  // --> vertices near (leading) jets
-  bool byJetDV  = false;
-  bool byNJetDV = false;
-  if ( m_secVtx_jetMatched ->at(dv_index) ) byJetDV = true;
-  if ( m_secVtx_jetMatched ->at(dv_index) && m_secVtx_jetMatch_index ->at(dv_index) < m_nJets ) byNJetDV = true;
   // --> fiducial vertices --> cut on r, z, chi2
   bool fiducDV = false;
   if ( m_secVtx_r    ->at(dv_index) < 300 && fabs( m_secVtx_z ->at(dv_index) ) < 300 &&
@@ -9577,57 +9582,62 @@ void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, con
   bool minsqerrz0DV = false;
   if ( sqrt(sqrt(secVtx_minerrd0)) < 0.5 ) minsqerrd0DV = true;
   if ( sqrt(sqrt(secVtx_minerrz0)) < 1.5 ) minsqerrz0DV = true;
+  // --> vertices near (leading) jets
+  bool byJetDV  = false;
+  bool byNJetDV = false;
+  if ( m_secVtx_jetMatched ->at(dv_index) ) byJetDV = true;
+  if ( m_secVtx_jetMatched ->at(dv_index) && m_secVtx_jetMatch_index ->at(dv_index) < m_nJets ) byNJetDV = true;
 
   // fill (jet) DV pass/fail cut vector
-  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_baseVerts     ) ) ||
-       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_baseJetVerts  ) ) ||
-       (  doGoodCuts ) )
-    dv .push_back( baseDV );
-  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_byJetVerts    ) ) ||
-       (  doGoodCuts ) ) {
-    dv .push_back( baseDV && byJetDV  );
-    dv .push_back( baseDV && byNJetDV );
+  if ( !skipOneCuts ) {
+    if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_baseVerts       ) ) ||
+	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_baseJetVerts    ) ) ||
+	 (  doGoodCuts ) )
+      dv .push_back( baseDV );
+    if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_fiducVerts      ) ) ||
+	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_fiducJetVerts   ) ) ||
+	 (  doGoodCuts ) )
+      dv .push_back( baseDV && fiducDV );
+    if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ksmVerts        ) ) ||
+	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_ksmJetVerts     ) ) ||
+	 (  doGoodCuts ) )
+      dv .push_back( baseDV && ksmDV   );
+    if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ptVerts         ) ) ||
+	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_ptJetVerts      ) ) ||
+	 (  doGoodCuts ) )
+      dv .push_back( baseDV && ptDV    );
+    if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0Verts         ) ) ||
+	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_d0JetVerts      ) ) ||
+	 (  doGoodCuts ) )
+      dv .push_back( baseDV && mind0DV );
+    if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_z0Verts         ) ) ||
+	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_z0JetVerts      ) ) ||
+	 (  doGoodCuts ) )
+      dv .push_back( baseDV && minz0DV );
+    if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0z0ErrVerts    ) ) ||
+	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_d0z0ErrJetVerts ) ) ||
+	 (  doGoodCuts ) ) {
+      dv .push_back( baseDV && minsqerrd0DV );
+      dv .push_back( baseDV && minsqerrz0DV );
+    }
+    if ( ( !skipJetCuts && !jetDV && ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_byJetVerts ) ) ||
+	 (  doGoodCuts ) ) {
+      dv .push_back( baseDV && byJetDV  );
+      dv .push_back( baseDV && byNJetDV );
+    }
   }
-  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_fiducVerts      ) ) ||
-       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_fiducJetVerts   ) ) ||
-       (  doGoodCuts ) )
-    dv .push_back( baseDV && fiducDV );
-  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ksmVerts        ) ) ||
-       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_ksmJetVerts     ) ) ||
-       (  doGoodCuts ) )
-    dv .push_back( baseDV && ksmDV   );
-  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ptVerts         ) ) ||
-       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_ptJetVerts      ) ) ||
-       (  doGoodCuts ) )
-    dv .push_back( baseDV && ptDV    );
-  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0Verts         ) ) ||
-       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_d0JetVerts      ) ) ||
-       (  doGoodCuts ) )
-    dv .push_back( baseDV && mind0DV );
-  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_z0Verts         ) ) ||
-       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_z0JetVerts      ) ) ||
-       (  doGoodCuts ) )
-    dv .push_back( baseDV && minz0DV );
-  if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0z0ErrVerts    ) ) ||
-       (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_d0z0ErrJetVerts ) ) ||
-       (  doGoodCuts ) ) {
-    dv .push_back( baseDV && minsqerrd0DV );
-    dv .push_back( baseDV && minsqerrz0DV );
-  }
-  
-  // --> combination cuts
 
   // --> "good" DVs
   bool looseGoodDV = baseDV && fiducDV && ksmDV;
   bool   midGoodDV = baseDV && fiducDV && ksmDV && ptDV;
   bool tightGoodDV = baseDV && fiducDV && ksmDV && ptDV && mind0DV && minz0DV && minsqerrd0DV && minsqerrz0DV;
   if ( doGood ) {
-    if      ( !jetDV ) {
+    if      ( !jetDV && !skipJetCuts ) {
       dv .push_back( looseGoodDV && byNJetDV );
       dv .push_back(   midGoodDV && byNJetDV );
       dv .push_back( tightGoodDV && byNJetDV );
     }
-    else if (  jetDV ) {
+    else if (  jetDV || skipJetCuts ) {
       dv .push_back( looseGoodDV );
       dv .push_back(   midGoodDV );
       dv .push_back( tightGoodDV );

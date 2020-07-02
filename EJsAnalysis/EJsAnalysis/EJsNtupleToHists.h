@@ -43,7 +43,6 @@ class EJsNtupleToHists : public xAH::Algorithm
 
   // input branch names
   std::string m_jetBranchName             = "";
-  std::string m_otherJetBranchName        = "";
   std::string m_trigJetBranchName         = "";
   std::string m_truthJetBranchName        = "";
   std::string m_truthDarkJetBranchName    = "";
@@ -57,7 +56,6 @@ class EJsNtupleToHists : public xAH::Algorithm
 
   // output histogram names
   std::string m_jetHistoName             = "";
-  std::string m_otherJetHistoName        = "";
   std::string m_trigJetHistoName         = "";
   std::string m_truthJetHistoName        = "";
   std::string m_truthDarkJetHistoName    = "";
@@ -74,7 +72,6 @@ class EJsNtupleToHists : public xAH::Algorithm
   bool m_doEventInfo         = true;
   bool m_doTriggers          = true;
   bool m_doJets              = true;
-  bool m_doOtherJets         = true;
   bool m_doTrigJets          = true;
   bool m_doTruthJets         = true;
   bool m_doTruthDarkJets     = true;

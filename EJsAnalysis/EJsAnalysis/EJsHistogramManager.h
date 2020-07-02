@@ -55,7 +55,7 @@ class EJsHistogramManager : public HistogramManager
   void getTPTypes       ( int tp_index,       std::vector<int>& tp );
   void getTrkTypes      ( int trk_index,      std::vector<int>& trk, const EJsHelper::BaseDV& base_dv );
   void getDVTypes       ( int dv_index,       std::vector<int>& dv,  const EJsHelper::BaseDV& base_dv,
-			  bool jetDV = false, bool doCombos = true, bool doGood = true, bool doGoodCuts = false );
+			  bool jetDV = false, bool skipOneCuts = false, bool skipJetCuts = false, bool doGood = true, bool doGoodCuts = false );
   void getLLPTypes      ( int llp_index,      std::vector<int>& llp );
   int  getLLPDescTypes  ( int llpDesc_ID,     std::vector<int>& llpDesc );
 
@@ -92,6 +92,7 @@ class EJsHistogramManager : public HistogramManager
   unsigned m_nTypeJs     = 0;
   unsigned m_nType1Js    = 0;
   unsigned m_nType1SVJs  = 0;
+  unsigned m_nTypeJSVs   = 0;
   unsigned m_nTypeBJs    = 0;
   unsigned m_svP4J_ix    = 0;
   unsigned m_svPtJ_ix    = 0;
@@ -107,7 +108,6 @@ class EJsHistogramManager : public HistogramManager
   unsigned m_nTypeDVs    = 0;
   unsigned m_nType1DVs   = 0;
   unsigned m_nTypeBDVs   = 0;
-  unsigned m_nTypeGDVs   = 0;
   unsigned m_nTypeJDVs   = 0;
   unsigned m_nType1JDVs  = 0;
   unsigned m_nTypeBJDVs  = 0;

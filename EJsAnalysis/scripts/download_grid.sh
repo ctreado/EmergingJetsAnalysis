@@ -7,8 +7,8 @@
 
 dtag_d="2020-06-15" # update
 vtag_d="v1"
-dtag_s="2020-06-15"
-vtag_s="v1"
+dtag_s="2020-06-17"
+vtag_s="v0"
 dtag_b="2020-06-15" # update
 vtag_b="v1"
 
@@ -25,7 +25,7 @@ cont18="user.ctreado.data18_13TeV.*.EJsAna."${dtag_d}"."${vtag_d}"*.root"
 ## mc16
 # --> signal
 conta36="user.ctreado.mc16_13TeV.3120*.*r10740*.EJsAna.sub36."${dtag_s}"."${vtag_s}"*.root"
-contd36="user.ctreado.mc16_13TeV.312075.*r10739*.EJsAna.sub36."${dtag_s}"."${vtag_s}"*.root" # change dtag_s for next 21 points
+contd36="user.ctreado.mc16_13TeV.3120*.*r10739*.EJsAna.sub36."${dtag_s}"."${vtag_s}"*.root" # change dtag_s for next 21 points
 conte36="user.ctreado.mc16_13TeV.3120*.*r11265*.EJsAna.sub36."${dtag_s}"."${vtag_s}"*.root"
 # --> background
 contab="user.ctreado.mc16_13TeV.361024.*r10847*.EJsAna.bkgd."${dtag_b}"."${vtag_b}"*.root"

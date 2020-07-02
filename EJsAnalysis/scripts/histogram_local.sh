@@ -46,8 +46,8 @@ intags_data="data"
 input_bench="$EJ_PATH/../output/localOutput/tmp_rel-update/tree/"
 #output_bench="$EJ_PATH/../output/localOutput/tmp_search-minus-one/"
 output_test="$EJ_PATH/../run/test.histos/"
-runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_mc}   --mergeDatasets --renameAndMove --nevents -1
-#runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_b}    --mergeDatasets --renameAndMove --nevents -1
+#runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_mc}   --mergeDatasets --renameAndMove --nevents -1
+runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_b}    --mergeDatasets --renameAndMove --nevents -1
 #runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_bkgd} --mergeDatasets --renameAndMove --nevents -1
 #runEJsHistogrammer.py --inDir ${input_bench} --outDir ${output_test} --inTags ${intags_17}   --mergeDatasets --renameAndMove --nevents -1
 
