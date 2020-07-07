@@ -110,7 +110,9 @@ namespace EJsHelperClasses {
     bool m_djetVerts;
     bool m_jetVertices;
     bool m_baseJetVerts;
+    bool m_matmapJetVerts;
     bool m_fiducJetVerts;
+    bool m_chi2JetVerts;
     bool m_ksmJetVerts;
     bool m_ptJetVerts;
     bool m_d0JetVerts;
@@ -132,13 +134,16 @@ namespace EJsHelperClasses {
     bool m_comboJets;
     bool m_vertices;
     bool m_baseVerts;
-    bool m_byJetVerts;
+    bool m_matmapVerts;
     bool m_fiducVerts;
+    bool m_chi2Verts;
     bool m_ksmVerts;
     bool m_ptVerts;
     bool m_d0Verts;
     bool m_z0Verts;
     bool m_d0z0ErrVerts;
+    bool m_byJetVerts;
+    bool m_comboVerts;
     bool m_vtxTruth;
     bool m_vtxTrks;
     bool m_vtxOverallTrk;

@@ -3,4 +3,5 @@ EJsAnalysis/scripts/plotting/*_cxx*
 EJsAnalysis/scripts/plotting/AutoDict*__.cxx
 EJsAnalysis/scripts/plotting/*.pyc
 EJsAnalysis/config/*.pyc
+*.DS_Store
 tmp/

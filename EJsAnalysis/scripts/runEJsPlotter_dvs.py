@@ -25,6 +25,7 @@ def main():
     
     # signal
     s_ab         = " --sgnlType 312008,312028"                      # ab benchmark test
+    #s_ab         = " --sgnlType 312008"
     s_14         = " --sgnlType 312004,312022,312039,312060,312075" # xdm-1400
     s_10         = " --sgnlType 312008,312028,312046,312066,312080" # xdm-1000
     s_06         = " --sgnlType 312017,312031,312052,312067,312090" # xdm-600
@@ -88,7 +89,8 @@ def main():
     # --> set number of tracks
     Ntrk = 5
     # --> set DV-cut types
-    #cuts = [ "ByJet", "ByNJet", "Fiduc", "Ksm", "Pt", "Mind0", "Minz0", "Minsqerrd0", "Minsqerrz0", "Good" ]
+    #cuts = [ "MatMap", "Fiduc", "Chi2", "Ksm", "Pt", "Mind0", "Minz0", "Minsqerrd0", "Minsqerrz0", "ByJet", "ByNJet", \
+    #"LooseGood", "MidGood", "TightGood" ]
     cuts = [ "Good" ]
     dvTypes = []
     for cut in cuts:
@@ -123,7 +125,7 @@ def main():
 
 
     # 2d plots -- one DV histo per plot
-    histList_2d = "" # --> skip dark pions for background; add different hist lists for signal and background?
+    histList_2d = "bareDV,cleanDV,matMapDV" # --> skip dark pions for background; add different hist lists for signal and background?
     command_2d  = " --draw2D --outSubdir 2d_dv --histList " + histList_2d
     # --> signal
     command_s_ab_2d_S  = command_s_ab + command_2d + command_S
@@ -278,7 +280,7 @@ def main():
     # --> add other signal/sample types, regions for each plot type as needed
 
     ## 1d: signal vs background
-    os.system( command_sb_ab_1d_S  ) # ab benchmark test
+    #os.system( command_sb_ab_1d_S  ) # ab benchmark test
     #os.system( command_sb_ab_1d_S1 )
     ##os.system( command_sb_14_1d_S  ) # xdm-1400
     #os.system( command_sb_14_1d_S1 )
@@ -289,19 +291,19 @@ def main():
     ## 1d: background vs data
     #os.system( command_bd_1d_V     )
 
-    ### 2d: signal
-    #os.system( command_s_ab_2d_S  ) # ab benchmark test
-    ##os.system( command_s_ab_2d_S1 )
+    ## 2d: signal
+    ##os.system( command_s_ab_2d_S  ) # ab benchmark test
+    os.system( command_s_ab_2d_S1 )
     ##os.system( command_s_14_2d_S  ) # xdm-1400
     ##os.system( command_s_14_2d_S1 )
     ##os.system( command_s_10_2d_S  ) # xdm-1000
     ##os.system( command_s_10_2d_S1 )
     ##os.system( command_s_06_2d_S  ) # xdm-600
     ##os.system( command_s_06_2d_S1 )
-    ### 2d: background
-    #os.system( command_b_2d_S    )
-    ##os.system( command_b_2d_S1   )
-    #os.system( command_b_2d_V    )
+    ## 2d: background
+    ##os.system( command_b_2d_S    )
+    os.system( command_b_2d_S1   )
+    os.system( command_b_2d_V    )
     ### 2d: data
     #os.system( command_d_2d_V    )
     

@@ -55,7 +55,9 @@ class EJsHistogramManager : public HistogramManager
   void getTPTypes       ( int tp_index,       std::vector<int>& tp );
   void getTrkTypes      ( int trk_index,      std::vector<int>& trk, const EJsHelper::BaseDV& base_dv );
   void getDVTypes       ( int dv_index,       std::vector<int>& dv,  const EJsHelper::BaseDV& base_dv,
-			  bool jetDV = false, bool skipOneCuts = false, bool skipJetCuts = false, bool doGood = true, bool doGoodCuts = false );
+			  bool doCombos    = false, bool jetDV       = false,
+			  bool skipOneCuts = false, bool skipJetCuts = false,
+			  bool doGood      = true,  bool doGoodCuts  = false );
   void getLLPTypes      ( int llp_index,      std::vector<int>& llp );
   int  getLLPDescTypes  ( int llpDesc_ID,     std::vector<int>& llpDesc );
 
@@ -81,6 +83,7 @@ class EJsHistogramManager : public HistogramManager
   bool             m_unblind; // un-blind analysis -- default = False to blind signal events in data
   int              m_numLeadJets;
   int              m_numVtxTrks;
+  bool             m_doComboDVs;
 
   float weight = 1.0;
   float lumi   = 139.; // [fb-1]  
@@ -457,56 +460,57 @@ class EJsHistogramManager : public HistogramManager
 
   // SECONDARY VERTEX BRANCHES
   // secondary vertices: basics / kinematics
-  int                 m_secVtx_n;               //!
-  std::vector<int>*   m_secVtx_ID;              //!
-  std::vector<int>*   m_secVtx_index;           //!
-  std::vector<float>* m_secVtx_x;               //!
-  std::vector<float>* m_secVtx_y;               //!
-  std::vector<float>* m_secVtx_z;               //!
-  std::vector<float>* m_secVtx_r;               //!
-  std::vector<float>* m_secVtx_pt;              //!
-  std::vector<float>* m_secVtx_eta;             //!
-  std::vector<float>* m_secVtx_phi;             //!
-  std::vector<float>* m_secVtx_mass;            //!
-  std::vector<float>* m_secVtx_massNA;          //!
-  std::vector<float>* m_secVtx_direction;       //!
-  std::vector<int>*   m_secVtx_charge;          //!
-  std::vector<float>* m_secVtx_H;               //!
-  std::vector<float>* m_secVtx_Ht;              //!
-  std::vector<float>* m_secVtx_minOpAng;        //!
-  std::vector<float>* m_secVtx_maxOpAng;        //!
-  std::vector<float>* m_secVtx_mind0;           //!
-  std::vector<float>* m_secVtx_maxd0;           //!
-  std::vector<float>* m_secVtx_pt_clean;        //!
-  std::vector<float>* m_secVtx_eta_clean;       //!
-  std::vector<float>* m_secVtx_phi_clean;       //!
-  std::vector<float>* m_secVtx_mass_clean;      //!
-  std::vector<float>* m_secVtx_massNA_clean;    //!
-  std::vector<float>* m_secVtx_direction_clean; //!
-  std::vector<int>*   m_secVtx_charge_clean;    //!
-  std::vector<float>* m_secVtx_H_clean;         //!
-  std::vector<float>* m_secVtx_Ht_clean;        //!
-  std::vector<float>* m_secVtx_minOpAng_clean;  //!
-  std::vector<float>* m_secVtx_maxOpAng_clean;  //!
-  std::vector<float>* m_secVtx_mind0_clean;     //!
-  std::vector<float>* m_secVtx_maxd0_clean;     //!
-  std::vector<float>* m_secVtx_pt_bare;         //!
-  std::vector<float>* m_secVtx_eta_bare;        //!
-  std::vector<float>* m_secVtx_phi_bare;        //!
-  std::vector<float>* m_secVtx_mass_bare;       //!
-  std::vector<float>* m_secVtx_massNA_bare;     //!
-  std::vector<float>* m_secVtx_direction_bare;  //!
-  std::vector<int>*   m_secVtx_charge_bare;     //!
-  std::vector<float>* m_secVtx_H_bare;          //!
-  std::vector<float>* m_secVtx_Ht_bare;         //!
-  std::vector<float>* m_secVtx_minOpAng_bare;   //!
-  std::vector<float>* m_secVtx_maxOpAng_bare;   //!
-  std::vector<float>* m_secVtx_mind0_bare;      //!
-  std::vector<float>* m_secVtx_maxd0_bare;      //!
-  std::vector<float>* m_secVtx_chi2;            //!
-  std::vector<int>*   m_secVtx_ntrk;            //!
-  std::vector<int>*   m_secVtx_ntrk_clean;      //!
-  std::vector<int>*   m_secVtx_ntrk_filt;       //!
+  int                   m_secVtx_n;               //!
+  std::vector<int>*     m_secVtx_ID;              //!
+  std::vector<int>*     m_secVtx_index;           //!
+  std::vector<float>*   m_secVtx_x;               //!
+  std::vector<float>*   m_secVtx_y;               //!
+  std::vector<float>*   m_secVtx_z;               //!
+  std::vector<float>*   m_secVtx_r;               //!
+  std::vector<float>*   m_secVtx_pt;              //!
+  std::vector<float>*   m_secVtx_eta;             //!
+  std::vector<float>*   m_secVtx_phi;             //!
+  std::vector<float>*   m_secVtx_mass;            //!
+  std::vector<float>*   m_secVtx_massNA;          //!
+  std::vector<float>*   m_secVtx_direction;       //!
+  std::vector<int>*     m_secVtx_charge;          //!
+  std::vector<float>*   m_secVtx_H;               //!
+  std::vector<float>*   m_secVtx_Ht;              //!
+  std::vector<float>*   m_secVtx_minOpAng;        //!
+  std::vector<float>*   m_secVtx_maxOpAng;        //!
+  std::vector<float>*   m_secVtx_mind0;           //!
+  std::vector<float>*   m_secVtx_maxd0;           //!
+  std::vector<uint8_t>* m_secVtx_passMatVeto;     //!
+  std::vector<float>*   m_secVtx_pt_clean;        //!
+  std::vector<float>*   m_secVtx_eta_clean;       //!
+  std::vector<float>*   m_secVtx_phi_clean;       //!
+  std::vector<float>*   m_secVtx_mass_clean;      //!
+  std::vector<float>*   m_secVtx_massNA_clean;    //!
+  std::vector<float>*   m_secVtx_direction_clean; //!
+  std::vector<int>*     m_secVtx_charge_clean;    //!
+  std::vector<float>*   m_secVtx_H_clean;         //!
+  std::vector<float>*   m_secVtx_Ht_clean;        //!
+  std::vector<float>*   m_secVtx_minOpAng_clean;  //!
+  std::vector<float>*   m_secVtx_maxOpAng_clean;  //!
+  std::vector<float>*   m_secVtx_mind0_clean;     //!
+  std::vector<float>*   m_secVtx_maxd0_clean;     //!
+  std::vector<float>*   m_secVtx_pt_bare;         //!
+  std::vector<float>*   m_secVtx_eta_bare;        //!
+  std::vector<float>*   m_secVtx_phi_bare;        //!
+  std::vector<float>*   m_secVtx_mass_bare;       //!
+  std::vector<float>*   m_secVtx_massNA_bare;     //!
+  std::vector<float>*   m_secVtx_direction_bare;  //!
+  std::vector<int>*     m_secVtx_charge_bare;     //!
+  std::vector<float>*   m_secVtx_H_bare;          //!
+  std::vector<float>*   m_secVtx_Ht_bare;         //!
+  std::vector<float>*   m_secVtx_minOpAng_bare;   //!
+  std::vector<float>*   m_secVtx_maxOpAng_bare;   //!
+  std::vector<float>*   m_secVtx_mind0_bare;      //!
+  std::vector<float>*   m_secVtx_maxd0_bare;      //!
+  std::vector<float>*   m_secVtx_chi2;            //!
+  std::vector<int>*     m_secVtx_ntrk;            //!
+  std::vector<int>*     m_secVtx_ntrk_clean;      //!
+  std::vector<int>*     m_secVtx_ntrk_filt;       //!
   std::vector<std::vector<float>>* m_secVtx_covariance; //!
   // secondary vertex tracks
   std::vector<std::vector<int>>*     m_secVtx_trk_ID;       //!
@@ -1157,6 +1161,10 @@ class EJsHistogramManager : public HistogramManager
   // --> selected tracks
   std::vector<std::vector<TH1F*>> h_DV_seltrk_d0;    //!
   std::vector<std::vector<TH1F*>> h_DV_seltrk_d0_xs; //!
+  // --> associated tracks
+  std::vector<std::vector<TH1F*>> h_DV_assoctrk_d0;      //!
+  std::vector<std::vector<TH1F*>> h_DV_assoctrk_eta;     //!
+  std::vector<std::vector<TH1F*>> h_DV_assoctrk_phi;     //!
   // --> look at final, selected, associated (and combo) tracks, ...
   
   // --> combined track parameters
@@ -1272,12 +1280,20 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_maxSignifP_sv;   //!
   
   // --> 2d histos: track/vertex vs track/vertex parameters
+  std::vector<std::vector<TH2F*>> h_DV_y_x;                    //!
   std::vector<std::vector<TH2F*>> h_DV_z_r;                    //!
+  std::vector<std::vector<TH2F*>> h_DV_r_z;                    //!
+  std::vector<std::vector<TH2F*>> h_DV_r_phi;                  //!
+  std::vector<std::vector<TH3F*>> h_DV_rzphi;                  //!
   std::vector<std::vector<TH2F*>> h_DV_mass_r;                 //!
   std::vector<std::vector<TH2F*>> h_DV_z_chi2;                 //!
   std::vector<std::vector<TH2F*>> h_DV_r_chi2;                 //!
   std::vector<std::vector<TH2F*>> h_DV_mass_chi2;              //!
+  std::vector<std::vector<TH2F*>> h_DV_y_x_s;                  //!
   std::vector<std::vector<TH2F*>> h_DV_z_r_s;                  //!
+  std::vector<std::vector<TH2F*>> h_DV_r_z_s;                  //!
+  std::vector<std::vector<TH2F*>> h_DV_r_phi_s;                //!
+  std::vector<std::vector<TH3F*>> h_DV_rzphi_s;                //!
   std::vector<std::vector<TH2F*>> h_DV_mass_r_s;               //!
   std::vector<std::vector<TH2F*>> h_DV_z_chi2_s;               //!
   std::vector<std::vector<TH2F*>> h_DV_r_chi2_s;               //!
@@ -1359,6 +1375,9 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH2F*>> h_DV_trkSqrterrd0sv_trkd0sv; //!
   std::vector<std::vector<TH2F*>> h_DV_trkSqrterrz0sv_trkz0sv; //!
   std::vector<std::vector<TH2F*>> h_DV_trkSqrterrPsv_trkPsv;   //!
+  std::vector<std::vector<TH2F*>> h_DV_assoctrk_d0_phi;        //!
+  std::vector<std::vector<TH2F*>> h_DV_assoctrk_eta_phi;       //!
+  std::vector<std::vector<TH2F*>> h_DV_assoctrk_phi_eta;       //!
   
   // n-track vertices
   std::vector<std::vector<std::vector<TH1F*>> > h_ntrkDV_n;               //!

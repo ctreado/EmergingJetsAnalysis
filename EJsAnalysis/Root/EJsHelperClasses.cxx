@@ -72,7 +72,9 @@ namespace EJsHelperClasses {
     m_djetVerts       = has_exact( "djetVerts"       );
     m_jetVertices     = has_exact( "jetVertices"     );
     m_baseJetVerts    = has_exact( "baseJetVerts"    );
+    m_matmapJetVerts  = has_exact( "matmapJetVerts"  );
     m_fiducJetVerts   = has_exact( "fiducJetVerts"   );
+    m_chi2JetVerts    = has_exact( "chi2JetVerts"    );
     m_ksmJetVerts     = has_exact( "ksmJetVerts"     );
     m_ptJetVerts      = has_exact( "ptJetVerts"      );
     m_d0JetVerts      = has_exact( "d0JetVerts"      );
@@ -94,13 +96,16 @@ namespace EJsHelperClasses {
     m_comboJets       = has_exact( "comboJets"       );
     m_vertices        = has_exact( "vertices"        );
     m_baseVerts       = has_exact( "baseVerts"       );
-    m_byJetVerts      = has_exact( "byJetVerts"      );
+    m_matmapVerts     = has_exact( "matmapVerts"     );
     m_fiducVerts      = has_exact( "fiducVerts"      );
+    m_chi2Verts       = has_exact( "chi2Verts"       );
     m_ksmVerts        = has_exact( "ksmVerts"        );
     m_ptVerts         = has_exact( "ptVerts"         );
     m_d0Verts         = has_exact( "d0Verts"         );
     m_z0Verts         = has_exact( "z0Verts"         );
     m_d0z0ErrVerts    = has_exact( "d0z0ErrVerts"    );
+    m_byJetVerts      = has_exact( "byJetVerts"      );
+    m_comboVerts      = has_exact( "comboVerts"      );
     m_vtxTruth        = has_exact( "vtxTruth"        );
     m_vtxTrks         = has_exact( "vtxTrks"         );
     m_vtxOverallTrk   = has_exact( "vtxOverallTrk"   );

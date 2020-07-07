@@ -28,6 +28,7 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_unblind            = unblind;
   m_numLeadJets        = m_histoInfoSwitch->m_numLeadingJets;
   m_numVtxTrks         = m_histoInfoSwitch->m_numVtxTrks;
+  m_doComboDVs         = m_histoInfoSwitch->m_comboVerts;
 
   if ( m_debug ) Info( "EJsHistogramManager()", "setting up" );
 
@@ -319,6 +320,7 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_secVtx_maxOpAng        = new std::vector<float>;
   m_secVtx_mind0           = new std::vector<float>;
   m_secVtx_maxd0           = new std::vector<float>;
+  m_secVtx_passMatVeto     = new std::vector<uint8_t>;
   m_secVtx_pt_clean        = new std::vector<float>;
   m_secVtx_eta_clean       = new std::vector<float>;
   m_secVtx_phi_clean       = new std::vector<float>;
@@ -628,6 +630,7 @@ EJsHistogramManager :: ~EJsHistogramManager ()
   delete m_secVtx_maxOpAng;
   delete m_secVtx_mind0;
   delete m_secVtx_maxd0;
+  delete m_secVtx_passMatVeto;
   delete m_secVtx_pt_clean;
   delete m_secVtx_eta_clean;
   delete m_secVtx_phi_clean;
@@ -1057,49 +1060,50 @@ StatusCode EJsHistogramManager :: connectSecondaryVerts ( TTree* tree, const std
   
   using namespace HelperFunctions;
 
-  connectBranch<int>   ( name, tree, "ID",                  &m_secVtx_ID              );
-  connectBranch<int>   ( name, tree, "index",               &m_secVtx_index           );
-  connectBranch<float> ( name, tree, "x",                   &m_secVtx_x               );
-  connectBranch<float> ( name, tree, "y",                   &m_secVtx_y               );
-  connectBranch<float> ( name, tree, "z",                   &m_secVtx_z               );
-  connectBranch<float> ( name, tree, "r",                   &m_secVtx_r               );
-  connectBranch<float> ( name, tree, "pt",                  &m_secVtx_pt              );
-  connectBranch<float> ( name, tree, "eta",                 &m_secVtx_eta             );
-  connectBranch<float> ( name, tree, "phi",                 &m_secVtx_phi             );
-  connectBranch<float> ( name, tree, "mass",                &m_secVtx_mass            );
-  connectBranch<float> ( name, tree, "mass_nonAssoc",       &m_secVtx_massNA          );
-  connectBranch<float> ( name, tree, "direction",           &m_secVtx_direction       );
-  connectBranch<float> ( name, tree, "H",                   &m_secVtx_H               );
-  connectBranch<float> ( name, tree, "Ht",                  &m_secVtx_Ht              );
-  connectBranch<float> ( name, tree, "minOpAng",            &m_secVtx_minOpAng        );
-  connectBranch<float> ( name, tree, "maxOpAng",            &m_secVtx_maxOpAng        );
-  connectBranch<float> ( name, tree, "mind0",               &m_secVtx_mind0           );
-  connectBranch<float> ( name, tree, "maxd0",               &m_secVtx_maxd0           );
-  connectBranch<float> ( name, tree, "pt_clean",            &m_secVtx_pt_clean        );
-  connectBranch<float> ( name, tree, "eta_clean",           &m_secVtx_eta_clean       );
-  connectBranch<float> ( name, tree, "phi_clean",           &m_secVtx_phi_clean       );
-  connectBranch<float> ( name, tree, "mass_clean",          &m_secVtx_mass_clean      );
-  connectBranch<float> ( name, tree, "mass_nonAssoc_clean", &m_secVtx_massNA_clean    );
-  connectBranch<float> ( name, tree, "direction_clean",     &m_secVtx_direction_clean );
-  connectBranch<float> ( name, tree, "H_clean",             &m_secVtx_H_clean         );
-  connectBranch<float> ( name, tree, "Ht_clean",            &m_secVtx_Ht_clean        );
-  connectBranch<float> ( name, tree, "minOpAng_clean",      &m_secVtx_minOpAng_clean  );
-  connectBranch<float> ( name, tree, "maxOpAng_clean",      &m_secVtx_maxOpAng_clean  );
-  connectBranch<float> ( name, tree, "mind0_clean",         &m_secVtx_mind0_clean     );
-  connectBranch<float> ( name, tree, "maxd0_clean",         &m_secVtx_maxd0_clean     );
-  connectBranch<float> ( name, tree, "pt_bare",             &m_secVtx_pt_bare         );
-  connectBranch<float> ( name, tree, "eta_bare",            &m_secVtx_eta_bare        );
-  connectBranch<float> ( name, tree, "phi_bare",            &m_secVtx_phi_bare        );
-  connectBranch<float> ( name, tree, "mass_bare",           &m_secVtx_mass_bare       );
-  connectBranch<float> ( name, tree, "mass_nonAssoc_bare",  &m_secVtx_massNA_bare     );
-  connectBranch<float> ( name, tree, "direction_bare",      &m_secVtx_direction_bare  );
-  connectBranch<float> ( name, tree, "H_bare",              &m_secVtx_H_bare          );
-  connectBranch<float> ( name, tree, "Ht_bare",             &m_secVtx_Ht_bare         );
-  connectBranch<float> ( name, tree, "minOpAng_bare",       &m_secVtx_minOpAng_bare   );
-  connectBranch<float> ( name, tree, "maxOpAng_bare",       &m_secVtx_maxOpAng_bare   );
-  connectBranch<float> ( name, tree, "mind0_bare",          &m_secVtx_mind0_bare      );
-  connectBranch<float> ( name, tree, "maxd0_bare",          &m_secVtx_maxd0_bare      );
-  connectBranch<float> ( name, tree, "chi2",                &m_secVtx_chi2            );
+  connectBranch<int>     ( name, tree, "ID",                  &m_secVtx_ID              );
+  connectBranch<int>     ( name, tree, "index",               &m_secVtx_index           );
+  connectBranch<float>   ( name, tree, "x",                   &m_secVtx_x               );
+  connectBranch<float>   ( name, tree, "y",                   &m_secVtx_y               );
+  connectBranch<float>   ( name, tree, "z",                   &m_secVtx_z               );
+  connectBranch<float>   ( name, tree, "r",                   &m_secVtx_r               );
+  connectBranch<float>   ( name, tree, "pt",                  &m_secVtx_pt              );
+  connectBranch<float>   ( name, tree, "eta",                 &m_secVtx_eta             );
+  connectBranch<float>   ( name, tree, "phi",                 &m_secVtx_phi             );
+  connectBranch<float>   ( name, tree, "mass",                &m_secVtx_mass            );
+  connectBranch<float>   ( name, tree, "mass_nonAssoc",       &m_secVtx_massNA          );
+  connectBranch<float>   ( name, tree, "direction",           &m_secVtx_direction       );
+  connectBranch<float>   ( name, tree, "H",                   &m_secVtx_H               );
+  connectBranch<float>   ( name, tree, "Ht",                  &m_secVtx_Ht              );
+  connectBranch<float>   ( name, tree, "minOpAng",            &m_secVtx_minOpAng        );
+  connectBranch<float>   ( name, tree, "maxOpAng",            &m_secVtx_maxOpAng        );
+  connectBranch<float>   ( name, tree, "mind0",               &m_secVtx_mind0           );
+  connectBranch<float>   ( name, tree, "maxd0",               &m_secVtx_maxd0           );
+  connectBranch<uint8_t> ( name, tree, "passMaterialVeto",    &m_secVtx_passMatVeto     );
+  connectBranch<float>   ( name, tree, "pt_clean",            &m_secVtx_pt_clean        );
+  connectBranch<float>   ( name, tree, "eta_clean",           &m_secVtx_eta_clean       );
+  connectBranch<float>   ( name, tree, "phi_clean",           &m_secVtx_phi_clean       );
+  connectBranch<float>   ( name, tree, "mass_clean",          &m_secVtx_mass_clean      );
+  connectBranch<float>   ( name, tree, "mass_nonAssoc_clean", &m_secVtx_massNA_clean    );
+  connectBranch<float>   ( name, tree, "direction_clean",     &m_secVtx_direction_clean );
+  connectBranch<float>   ( name, tree, "H_clean",             &m_secVtx_H_clean         );
+  connectBranch<float>   ( name, tree, "Ht_clean",            &m_secVtx_Ht_clean        );
+  connectBranch<float>   ( name, tree, "minOpAng_clean",      &m_secVtx_minOpAng_clean  );
+  connectBranch<float>   ( name, tree, "maxOpAng_clean",      &m_secVtx_maxOpAng_clean  );
+  connectBranch<float>   ( name, tree, "mind0_clean",         &m_secVtx_mind0_clean     );
+  connectBranch<float>   ( name, tree, "maxd0_clean",         &m_secVtx_maxd0_clean     );
+  connectBranch<float>   ( name, tree, "pt_bare",             &m_secVtx_pt_bare         );
+  connectBranch<float>   ( name, tree, "eta_bare",            &m_secVtx_eta_bare        );
+  connectBranch<float>   ( name, tree, "phi_bare",            &m_secVtx_phi_bare        );
+  connectBranch<float>   ( name, tree, "mass_bare",           &m_secVtx_mass_bare       );
+  connectBranch<float>   ( name, tree, "mass_nonAssoc_bare",  &m_secVtx_massNA_bare     );
+  connectBranch<float>   ( name, tree, "direction_bare",      &m_secVtx_direction_bare  );
+  connectBranch<float>   ( name, tree, "H_bare",              &m_secVtx_H_bare          );
+  connectBranch<float>   ( name, tree, "Ht_bare",             &m_secVtx_Ht_bare         );
+  connectBranch<float>   ( name, tree, "minOpAng_bare",       &m_secVtx_minOpAng_bare   );
+  connectBranch<float>   ( name, tree, "maxOpAng_bare",       &m_secVtx_maxOpAng_bare   );
+  connectBranch<float>   ( name, tree, "mind0_bare",          &m_secVtx_mind0_bare      );
+  connectBranch<float>   ( name, tree, "maxd0_bare",          &m_secVtx_maxd0_bare      );
+  connectBranch<float>   ( name, tree, "chi2",                &m_secVtx_chi2            );
 
   connectBranch<std::vector<float>> ( name, tree, "covariance", &m_secVtx_covariance );
   
@@ -1629,12 +1633,13 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   std::vector<std::string> hDV,  hDVstr;
   std::vector<std::string> hJDV, hJDVstr;
   // base vertices (bare or clean or filtered or custom-trimmed --> starting point for all further cuts)
+  // --> no material map veto applied here, but applied for every other type of DV...
   std::string baseDV    = "";
   std::string baseDVstr = base_dv.name + ",";
   if      ( base_dv.type == EJsHelper::BARE     ) baseDV = "Bare";
   else if ( base_dv.type == EJsHelper::CLEAN    ) baseDV = "Clean";
-  else if ( base_dv.type == EJsHelper::FILTERED ) baseDV = "Filt";
-  else if ( base_dv.type == EJsHelper::TRIMMED  ) baseDV = "Trim";
+  else if ( base_dv.type == EJsHelper::FILTERED ) baseDV = "Filtered";
+  else if ( base_dv.type == EJsHelper::TRIMMED  ) baseDV = "Trimmed";
   if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_baseVerts    ) {
     hDV     .push_back( baseDV    );
     hDVstr  .push_back( baseDVstr );
@@ -1643,9 +1648,20 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     hJDV    .push_back( baseDV    );
     hJDVstr .push_back( baseDVstr );
   }
-  // vertices passing fiducial cuts (fiducial volume, chi2)
+  // vertices passing material map veto
+  std::string matmapDV    = "MatMap";
+  std::string matmapDVstr = "material veto,";
+  if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_matmapVerts    ) {
+    hDV     .push_back( matmapDV    );
+    hDVstr  .push_back( matmapDVstr );
+  }
+  if ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_matmapJetVerts ) {
+    hJDV    .push_back( matmapDV    );
+    hJDVstr .push_back( matmapDVstr );
+  }
+  // vertices passing fiducial volume cuts
   std::string fidDV    = "Fiduc";
-  std::string fidDVstr = "fiduc,";
+  std::string fidDVstr = "fiducial volume,";
   if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_fiducVerts    ) {
     hDV     .push_back( fidDV    );
     hDVstr  .push_back( fidDVstr );
@@ -1654,9 +1670,20 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     hJDV    .push_back( fidDV    );
     hJDVstr .push_back( fidDVstr );
   }
+  // vertices passing quality of fit cut
+  std::string chi2DV    = "Chi2";
+  std::string chi2DVstr = "chi2/ndof,";
+  if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_chi2Verts    ) {
+    hDV     .push_back( chi2DV    );
+    hDVstr  .push_back( chi2DVstr );
+  }
+  if ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_chi2JetVerts ) {
+    hJDV    .push_back( chi2DV    );
+    hJDVstr .push_back( chi2DVstr );
+  }
   // vertices w/ k-short mass window removed
   std::string ksmDV    = "Ksm";
-  std::string ksmDVstr = "ksm,";
+  std::string ksmDVstr = "k-short mass,";
   if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ksmVerts    ) {
     hDV    .push_back( ksmDV    );
     hDVstr .push_back( ksmDVstr );
@@ -1679,7 +1706,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   // vertices pass min-d0 cut
   // --> add max/sum-d0 (wrt SV) cuts if necessary...
   std::string mind0DV    = "Mind0";
-  std::string mind0DVstr = "mind0,";
+  std::string mind0DVstr = "min-d0,";
   if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0Verts    ) {
     hDV     .push_back( mind0DV    );
     hDVstr  .push_back( mind0DVstr );
@@ -1691,7 +1718,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   // vertices passing min-z0 cut
   // --> add max/sum-z0 (wrt SV) cuts if necessary...
   std::string minz0DV    = "Minz0";
-  std::string minz0DVstr = "minz0,";
+  std::string minz0DVstr = "min-z0,";
   if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_z0Verts    ) {
     hDV     .push_back( minz0DV    );
     hDVstr  .push_back( minz0DVstr );
@@ -1704,8 +1731,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   // --> add max/sum-sqrterr-d0/z0 (wrt SV) cuts if necessary...
   std::string minsqerrd0DV    = "Minsqerrd0";
   std::string minsqerrz0DV    = "Minsqerrz0";
-  std::string minsqerrd0DVstr = "minsqerrd0,";
-  std::string minsqerrz0DVstr = "minsqerrz0,";
+  std::string minsqerrd0DVstr = "min sqrt d0-error,";
+  std::string minsqerrz0DVstr = "min sqrt z0-error,";
   if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0z0ErrVerts    ) {
     hDV     .push_back( minsqerrd0DV    );
     hDV     .push_back( minsqerrz0DV    );
@@ -1737,7 +1764,9 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   // --> "good" DVs -- tentatively = combo of all above cuts
   std::vector<std::string> hGDVstr;
   hGDVstr .push_back( baseDVstr       );
+  hGDVstr .push_back( matmapDVstr     );
   hGDVstr .push_back( fidDVstr        );
+  hGDVstr .push_back( chi2DVstr       );
   hGDVstr .push_back( ksmDVstr        );
   hGDVstr .push_back( ptDVstr         );
   hGDVstr .push_back( mind0DVstr      );
@@ -4282,6 +4311,9 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<TH1F*> h_dv_trk_chiSq_sv;
       std::vector<TH1F*> h_dv_seltrk_d0;
       std::vector<TH1F*> h_dv_seltrk_d0_xs;
+      std::vector<TH1F*> h_dv_assoctrk_d0;
+      std::vector<TH1F*> h_dv_assoctrk_eta;
+      std::vector<TH1F*> h_dv_assoctrk_phi;
       std::vector<TH1F*> h_dv_sumd0;
       std::vector<TH1F*> h_dv_sumz0;
       std::vector<TH1F*> h_dv_sumP;
@@ -4390,12 +4422,20 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<TH1F*> h_dv_maxSignifd0_sv;
       std::vector<TH1F*> h_dv_maxSignifz0_sv;
       std::vector<TH1F*> h_dv_maxSignifP_sv;
+      std::vector<TH2F*> h_dv_y_x;
       std::vector<TH2F*> h_dv_z_r;
+      std::vector<TH2F*> h_dv_r_z;
+      std::vector<TH2F*> h_dv_r_phi;
+      std::vector<TH3F*> h_dv_rzphi;
       std::vector<TH2F*> h_dv_mass_r;
       std::vector<TH2F*> h_dv_z_chi2;
       std::vector<TH2F*> h_dv_r_chi2;
       std::vector<TH2F*> h_dv_mass_chi2;
+      std::vector<TH2F*> h_dv_y_x_s;
       std::vector<TH2F*> h_dv_z_r_s;
+      std::vector<TH2F*> h_dv_r_z_s;
+      std::vector<TH2F*> h_dv_r_phi_s;
+      std::vector<TH3F*> h_dv_rzphi_s;
       std::vector<TH2F*> h_dv_mass_r_s;
       std::vector<TH2F*> h_dv_z_chi2_s;
       std::vector<TH2F*> h_dv_r_chi2_s;
@@ -4476,6 +4516,9 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<TH2F*> h_dv_trkSqrterrd0sv_trkd0sv;
       std::vector<TH2F*> h_dv_trkSqrterrz0sv_trkz0sv;
       std::vector<TH2F*> h_dv_trkSqrterrPsv_trkPsv;
+      std::vector<TH2F*> h_dv_assoctrk_d0_phi;
+      std::vector<TH2F*> h_dv_assoctrk_eta_phi;
+      std::vector<TH2F*> h_dv_assoctrk_phi_eta;
       std::vector<std::vector<TH1F*>> h_ntrkdv_n;
       std::vector<std::vector<TH1F*>> h_ntrkdv_z;
       std::vector<std::vector<TH1F*>> h_ntrkdv_z_s;
@@ -4620,10 +4663,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  h_dv_leadJetDR    .push_back( book( name, hdv + "_leadJetDR",   hdvstr + " - lead jet dR",              100,    0,  0.6 ) );
 
 	  // vertex tracks
-	  std::string hDVtrk       = hdv    + "_trk";
-	  std::string hDVtrkstr    = hdvstr + " track";
-	  std::string hDVseltrk    = hdv    + "_seltrk";
-	  std::string hDVseltrkstr = hdvstr + " selected track";
+	  std::string hDVtrk         = hdv    + "_trk";
+	  std::string hDVtrkstr      = hdvstr + " track";
+	  std::string hDVseltrk      = hdv    + "_seltrk";
+	  std::string hDVseltrkstr   = hdvstr + " selected track";
+	  std::string hDVassoctrk    = hdv    + "_assoctrk";
+	  std::string hDVassoctrkstr = hdvstr + " associated track";
 	  if ( m_histoInfoSwitch->m_vtxTrks ) {
 	    h_dv_trk_qOverP       .push_back( book( name, hDVtrk + "_qOverP",       hDVtrkstr + " q/p [e/GeV]",             100,  -1.1,   1.1 ) );
 	    h_dv_trk_theta        .push_back( book( name, hDVtrk + "_theta",        hDVtrkstr + " theta",                   100,     0,  3.15 ) );
@@ -4670,6 +4715,9 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	    h_dv_trk_chiSq_sv     .push_back( book( name, hDVtrk + "_chiSq_sv",     hDVtrkstr + " chi2 to SV",              100,     0,   100 ) );
 	    h_dv_seltrk_d0        .push_back( book( name, hDVseltrk + "_d0",        hDVseltrkstr + " d0 [mm]",              100,  -300,   300 ) );
 	    h_dv_seltrk_d0_xs     .push_back( book( name, hDVseltrk + "_d0_xs",     hDVseltrkstr + " d0 [mm]",              100,    -5,     5 ) );
+	    h_dv_assoctrk_d0      .push_back( book( name, hDVassoctrk + "_d0",      hDVassoctrkstr + " d0 [mm]",            100,     0,   300 ) );
+	    h_dv_assoctrk_eta     .push_back( book( name, hDVassoctrk + "_eta",     hDVassoctrkstr + " eta",                100,  -3.5,   3.5 ) );
+	    h_dv_assoctrk_phi     .push_back( book( name, hDVassoctrk + "_phi",     hDVassoctrkstr + " phi",                100,  -3.5,   3.5 ) );
 	  }
       
 	  // sum, min, max vertex track errors
@@ -4799,8 +4847,17 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 
 	  // 2d vertex / track histos
 	  if ( m_histoInfoSwitch->m_vtx2D ) {
+	    h_dv_y_x                    .push_back( book( name, hdv + "_y_x",             hdvstr + " x-pos [mm]",      100,  -800,  800,
+							  hdvstr + " y-pos [mm]",           100,  -800,  800 ) );
 	    h_dv_z_r                    .push_back( book( name, hdv + "_z_r",             hdvstr + " r-pos [mm]",      100,     0,  400,
 							  hdvstr + " z-pos [mm]",           100,  -800,  800 ) );
+	    h_dv_r_z                    .push_back( book( name, hdv + "_r_z",             hdvstr + " z-pos [mm]",      100,  -800,  800,
+							  hdvstr + " r-pos [mm]",           100,     0,  400 ) );
+	    h_dv_r_phi                  .push_back( book( name, hdv + "_r_phi",           hdvstr + " phi-pos [mm]",    100,  -3.5,  3.5,
+							  hdvstr + " r-pos [mm]",           100,     0,  400 ) );
+	    h_dv_rzphi                  .push_back( book( name, hdv + "_rzphi",           hdvstr + " r-pos [mm]",      100,     0,  400,
+							  hdvstr + " z-pos [mm]",           100,  -800, 800,
+							  hdvstr + " phi-pos [mm]",         100,  -3.5, 3.5 ) );
 	    h_dv_mass_r                 .push_back( book( name, hdv + "_mass_r",          hdvstr + " r-pos [mm]",      100,     0,  400,
 							  hdvstr + " mass [GeV]",           100,     0,   50 ) );
 	    h_dv_z_chi2                 .push_back( book( name, hdv + "_z_chi2",          hdvstr + " chi2 / nDoF",     100,     0,   10,
@@ -4809,8 +4866,17 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 							  hdvstr + " r-pos [mm]",           100,     0,  400 ) );
 	    h_dv_mass_chi2              .push_back( book( name, hdv + "_mass_chi2",       hdvstr + " chi2 / nDoF",     100,     0,   10,
 							  hdvstr + " mass [GeV]",           100,     0,   50 ) );
+	    h_dv_y_x_s                  .push_back( book( name, hdv + "_y_x_s",           hdvstr + " x-pos [mm]",      100,  -300,  300,
+							  hdvstr + " y-pos [mm]",           100,  -300,  300 ) );
 	    h_dv_z_r_s                  .push_back( book( name, hdv + "_z_r_s",           hdvstr + " r-pos [mm]",      100,     0,  300,
 							  hdvstr + " z-pos [mm]",           100,  -300,  300 ) );
+	    h_dv_r_z_s                  .push_back( book( name, hdv + "_r_z_s",           hdvstr + " z-pos [mm]",      100,  -300,  300,
+							  hdvstr + " r-pos [mm]",           100,     0,  300 ) );
+	    h_dv_r_phi_s                .push_back( book( name, hdv + "_r_phi_s",         hdvstr + " phi-pos [mm]",    100,  -3.5,  3.5,
+							  hdvstr + " r-pos [mm]",           100,     0,  300 ) );
+	    h_dv_rzphi_s                .push_back( book( name, hdv + "_rzphi_s",         hdvstr + " r-pos [mm]",      100,     0,  300,
+							  hdvstr + " z-pos [mm]",           100,  -300, 300,
+							  hdvstr + " phi-pos [mm]",         100,  -3.5, 3.5 ) );
 	    h_dv_mass_r_s               .push_back( book( name, hdv + "_mass_r_s",        hdvstr + " r-pos [mm]",      100,     0,  300,
 							  hdvstr + " mass [GeV]",           100,     0,   25 ) );
 	    h_dv_z_chi2_s               .push_back( book( name, hdv + "_z_chi2_s",        hdvstr + " chi2 / nDoF",     100,     0,    5,
@@ -4975,6 +5041,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 							  hDVtrkstr + " z0 wrt SV sqrt-uncert.",  100,     0,    5 ) );
 	    h_dv_trkSqrterrPsv_trkPsv   .push_back( book( name, hDVtrk + "SqrterrPsv_trkPsv",   hDVtrkstr + " q/p wrt SV [e/GeV]", 100,  -1.1,  1.1,
 							  hDVtrkstr + " q/p wrt SV sqrt-uncert.", 100,     0, 0.25 ) );
+	    h_dv_assoctrk_d0_phi        .push_back( book( name, hDVassoctrk + "_d0_phi",        hDVassoctrkstr + " phi",           100,  -3.5,  3.5,
+							  hDVassoctrkstr + " d0 [mm]",            100,     0,  300 ) );
+	    h_dv_assoctrk_eta_phi       .push_back( book( name, hDVassoctrk + "_eta_phi",       hDVassoctrkstr + " phi",           100,  -3.5,  3.5,
+							  hDVassoctrkstr + " eta",                100,  -3.5,  3.5 ) );
+	    h_dv_assoctrk_phi_eta       .push_back( book( name, hDVassoctrk + "_phi_eta",       hDVassoctrkstr + " eta",           100,  -3.5,  3.5,
+							  hDVassoctrkstr + " phi",                100,  -3.5,  3.5 ) );
 	  }
 	} // end if abcdcutOnly
 	
@@ -5333,6 +5405,9 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  h_DV_trk_chiSq_sv           .push_back( h_dv_trk_chiSq_sv           );
 	  h_DV_seltrk_d0              .push_back( h_dv_seltrk_d0              );
 	  h_DV_seltrk_d0_xs           .push_back( h_dv_seltrk_d0_xs           );
+	  h_DV_assoctrk_d0            .push_back( h_dv_assoctrk_d0            );
+	  h_DV_assoctrk_eta           .push_back( h_dv_assoctrk_eta           );
+	  h_DV_assoctrk_phi           .push_back( h_dv_assoctrk_phi           );
 	}
 	if ( m_histoInfoSwitch->m_vtxOverallTrk ) {
 	  h_DV_sumd0                  .push_back( h_dv_sumd0                  );
@@ -5447,12 +5522,20 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  h_DV_maxSignifP_sv          .push_back( h_dv_maxSignifP_sv          );
 	}
 	if ( m_histoInfoSwitch->m_vtx2D ) {
+	  h_DV_y_x                    .push_back( h_dv_y_x                    );
 	  h_DV_z_r                    .push_back( h_dv_z_r                    );
+	  h_DV_r_z                    .push_back( h_dv_r_z                    );
+	  h_DV_r_phi                  .push_back( h_dv_r_phi                  );
+	  h_DV_rzphi                  .push_back( h_dv_rzphi                  );
 	  h_DV_mass_r                 .push_back( h_dv_mass_r                 );
 	  h_DV_z_chi2                 .push_back( h_dv_z_chi2                 );
 	  h_DV_r_chi2                 .push_back( h_dv_r_chi2                 );
 	  h_DV_mass_chi2              .push_back( h_dv_mass_chi2              );
+	  h_DV_y_x_s                  .push_back( h_dv_y_x_s                  );
 	  h_DV_z_r_s                  .push_back( h_dv_z_r_s                  );
+	  h_DV_r_z_s                  .push_back( h_dv_r_z_s                  );
+	  h_DV_r_phi_s                .push_back( h_dv_r_phi_s                );
+	  h_DV_rzphi_s                .push_back( h_dv_rzphi_s                );
 	  h_DV_mass_r_s               .push_back( h_dv_mass_r_s               );
 	  h_DV_z_chi2_s               .push_back( h_dv_z_chi2_s               );
 	  h_DV_r_chi2_s               .push_back( h_dv_r_chi2_s               );
@@ -5537,6 +5620,9 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  h_DV_trkSqrterrd0sv_trkd0sv .push_back( h_dv_trkSqrterrd0sv_trkd0sv );
 	  h_DV_trkSqrterrz0sv_trkz0sv .push_back( h_dv_trkSqrterrz0sv_trkz0sv );
 	  h_DV_trkSqrterrPsv_trkPsv   .push_back( h_dv_trkSqrterrPsv_trkPsv   );
+	  h_DV_assoctrk_d0_phi        .push_back( h_dv_assoctrk_d0_phi        );
+	  h_DV_assoctrk_eta_phi       .push_back( h_dv_assoctrk_eta_phi       );
+	  h_DV_assoctrk_phi_eta       .push_back( h_dv_assoctrk_phi_eta       );
 	}
       } // end if not abcdcutOnly
       if ( m_numVtxTrks ) {
@@ -7200,7 +7286,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 
 	    // set vector of matched secondary vertex types
 	    std::vector<int> jetsv;
-	    getDVTypes( jetSvIx, jetsv, base_dv, true );
+	    getDVTypes( jetSvIx, jetsv, base_dv, m_doComboDVs, true );
 	    // loop over matched secondary vertex types
 	    for ( size_t jv = 0; jv != jetsv.size(); ++jv ) {
 	      if ( !jetsv[jv] ) continue;
@@ -8172,7 +8258,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
       
 	// set vector of DV types
 	std::vector<int> DV;
-	getDVTypes( i, DV, base_dv );
+	getDVTypes( i, DV, base_dv, m_doComboDVs );
 	// --> add "good" vertices --> this will eventually be our final version to use for analysis
 	// --> --> require clean vertices --> remove "isFinal=false" tracks too (not extrapolated back to DV) ??? ...
 	// ... ... (will need to re-compute vertex parameters, if so)
@@ -8254,12 +8340,20 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 
 	  // 2d plots
 	  if ( m_histoInfoSwitch->m_vtx2D ) {
+	    h_DV_y_x         [ireg][idv] ->Fill( m_secVtx_x    ->at(i), m_secVtx_y    ->at(i), weight );
 	    h_DV_z_r         [ireg][idv] ->Fill( m_secVtx_r    ->at(i), m_secVtx_z    ->at(i), weight );
+	    h_DV_r_z         [ireg][idv] ->Fill( m_secVtx_z    ->at(i), m_secVtx_r    ->at(i), weight );
+	    h_DV_r_phi       [ireg][idv] ->Fill( secVtx_pos     .Phi(), m_secVtx_r    ->at(i), weight );
+	    h_DV_rzphi       [ireg][idv] ->Fill( m_secVtx_r    ->at(i), m_secVtx_z    ->at(i), secVtx_pos .Phi(), weight );
 	    h_DV_mass_r      [ireg][idv] ->Fill( m_secVtx_r    ->at(i), m_secVtx_mass ->at(i), weight );
 	    h_DV_z_chi2      [ireg][idv] ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_z    ->at(i), weight );
 	    h_DV_r_chi2      [ireg][idv] ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_r    ->at(i), weight );
 	    h_DV_mass_chi2   [ireg][idv] ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_mass ->at(i), weight );
+	    h_DV_y_x_s       [ireg][idv] ->Fill( m_secVtx_x    ->at(i), m_secVtx_y    ->at(i), weight );
 	    h_DV_z_r_s       [ireg][idv] ->Fill( m_secVtx_r    ->at(i), m_secVtx_z    ->at(i), weight );
+	    h_DV_r_z_s       [ireg][idv] ->Fill( m_secVtx_z    ->at(i), m_secVtx_r    ->at(i), weight );
+	    h_DV_r_phi_s     [ireg][idv] ->Fill( secVtx_pos     .Phi(), m_secVtx_r    ->at(i), weight );
+	    h_DV_rzphi_s     [ireg][idv] ->Fill( m_secVtx_r    ->at(i), m_secVtx_z    ->at(i), secVtx_pos .Phi(), weight );
 	    h_DV_mass_r_s    [ireg][idv] ->Fill( m_secVtx_r    ->at(i), m_secVtx_mass ->at(i), weight );
 	    h_DV_z_chi2_s    [ireg][idv] ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_z    ->at(i), weight );
 	    h_DV_r_chi2_s    [ireg][idv] ->Fill( m_secVtx_chi2 ->at(i), m_secVtx_r    ->at(i), weight );
@@ -8478,8 +8572,14 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	      h_DV_trk_chiSq_sv      [ireg][idv] ->Fill( m_secVtx_trk_chi2_sv ->at(i)[j],  weight );
 	      // selected tracks
 	      if ( m_secVtx_trk_isSel ->at(i)[j] ) {
-		h_DV_seltrk_d0       [ireg][idv] ->Fill( m_trk_d0             ->at(trkIx),   weight );
-		h_DV_seltrk_d0_xs    [ireg][idv] ->Fill( m_trk_d0             ->at(trkIx),   weight );
+		h_DV_seltrk_d0       [ireg][idv] ->Fill( m_trk_d0             ->at(trkIx), weight );
+		h_DV_seltrk_d0_xs    [ireg][idv] ->Fill( m_trk_d0             ->at(trkIx), weight );
+	      }
+	      // associated tracks
+	      if ( m_secVtx_trk_isAssoc ->at(i)[j] ) {
+		h_DV_assoctrk_d0      [ireg][idv] ->Fill( m_trk_d0            ->at(trkIx), weight );
+		h_DV_assoctrk_eta     [ireg][idv] ->Fill( m_trk_eta           ->at(trkIx), weight );
+		h_DV_assoctrk_phi     [ireg][idv] ->Fill( m_trk_phi           ->at(trkIx), weight );
 	      }
 	    }
 
@@ -8515,6 +8615,10 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	      h_DV_trkSqrterrd0sv_trkd0sv [ireg][idv] ->Fill( m_secVtx_trk_d0_sv  ->at(i)[j],  sqrt(sqrt(trk_errd0_sv)), weight );
 	      h_DV_trkSqrterrz0sv_trkz0sv [ireg][idv] ->Fill( m_secVtx_trk_z0_sv  ->at(i)[j],  sqrt(sqrt(trk_errz0_sv)), weight );
 	      h_DV_trkSqrterrPsv_trkPsv   [ireg][idv] ->Fill( trk_qOverP_sv,                   sqrt(sqrt(trk_errP)),     weight );
+
+	      h_DV_assoctrk_d0_phi        [ireg][idv] ->Fill( m_trk_phi           ->at(trkIx), m_trk_d0  ->at(trkIx),    weight );
+	      h_DV_assoctrk_eta_phi       [ireg][idv] ->Fill( m_trk_phi           ->at(trkIx), m_trk_eta ->at(trkIx),    weight );
+	      h_DV_assoctrk_phi_eta       [ireg][idv] ->Fill( m_trk_eta           ->at(trkIx), m_trk_phi ->at(trkIx),    weight );
 	    }
 	  
 	  } // end loop over tracks
@@ -8762,12 +8866,12 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	
 	} // end loop over DV types
 
-	// do DV cutflows
+	// do DV cutflows --> should be able to fix so we can set doCombos to true and just grab ith element (already has combo built in)
 	if ( m_histoInfoSwitch->m_cutflow || m_histoInfoSwitch->m_abcdcutOnly ) {
 	  // --> test cuts
 	  if ( m_nType1DVs ) {
 	    std::vector<int> DV_testCut;
-	    getDVTypes( i, DV_testCut, base_dv, false, false, false, false, false );
+	    getDVTypes( i, DV_testCut, base_dv, false, false, false, false, false, false );
 	    std::vector<int> dvTestCut ( DV_testCut.size() / m_nType1DVs, 0 );
 	    for ( size_t idvc = 0; idvc != DV_testCut.size(); ++idvc ) {
 	      dvTestCut[idvc / m_nType1DVs] += DV_testCut[idvc];
@@ -8777,7 +8881,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  }
 	  // --> "good" cuts
 	  std::vector<int> DV_cut;
-	  getDVTypes( i, DV_cut, base_dv, false, false, false, false, true );
+	  getDVTypes( i, DV_cut, base_dv, false, false, false, false, false, true );
 	  int n_goodCuts = DV_cut.size() / h_evt_cutflow_DV [ireg].size();
 	  std::vector<int> dvCut ( h_evt_cutflow_DV [ireg].size(), 0 );
 	  for ( size_t idvc = 0; idvc != DV_cut.size(); ++idvc ) {
@@ -9191,7 +9295,8 @@ void EJsHistogramManager :: getJetTypes ( int jet_index, std::vector<int>& jet, 
     jetSvP4.SetPtEtaPhiM( jetSvPt, jetSvEta, jetSvPhi, jetSvMass );
     
     std::vector<int> jetsv;
-    getDVTypes( jetSvIx, jetsv, base_dv, true );
+    //getDVTypes( jetSvIx, jetsv, base_dv, false, true );
+    getDVTypes( jetSvIx, jetsv, base_dv, false, true, true, true ); // only want goodDVs (w/o jet cuts)
     // base sv
     if ( jetSvNtrk > 1 ) {
       svSumP4  [0] += jetSvP4;
@@ -9490,7 +9595,7 @@ void EJsHistogramManager :: getTrkTypes ( int trk_index, std::vector<int>& trk, 
   if ( svTrk ) {
     int trkSVix = m_trk_SV_index ->at(trk_index);
     std::vector<int> trkSV;
-    getDVTypes ( trkSVix, trkSV, base_dv, false, true, true, true );
+    getDVTypes ( trkSVix, trkSV, base_dv, false, false, true, true, true );
     lgoodsvTrk = trkSV[trkSV.size()-3];
     mgoodsvTrk = trkSV[trkSV.size()-2];
     tgoodsvTrk = trkSV[trkSV.size()-1];
@@ -9509,7 +9614,7 @@ void EJsHistogramManager :: getTrkTypes ( int trk_index, std::vector<int>& trk, 
 
 
 void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, const EJsHelper::BaseDV& base_dv,
-					 bool jetDV, bool skipOneCuts, bool skipJetCuts, bool doGood, bool doGoodCuts )
+					 bool doCombos, bool jetDV, bool skipOneCuts, bool skipJetCuts, bool doGood, bool doGoodCuts )
 {
   // separate chi2 cut from fiducial cut (for cutflow purposes); add material map cut
   
@@ -9560,10 +9665,16 @@ void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, con
   // --> base vertices (bare, clean, filtered, or trimmed)
   bool baseDV = false;
   if ( secVtx_ntrk > 1 ) baseDV = true;
-  // --> fiducial vertices --> cut on r, z, chi2
+  // --> material map veto
+  bool matmapDV = true;
+  if ( !m_secVtx_passMatVeto ->empty() )
+    if ( !m_secVtx_passMatVeto ->at(dv_index) ) matmapDV = false;
+  // --> fiducial volume vertices --> cut on r, z
   bool fiducDV = false;
-  if ( m_secVtx_r    ->at(dv_index) < 300 && fabs( m_secVtx_z ->at(dv_index) ) < 300 &&
-       m_secVtx_chi2 ->at(dv_index) < 5 ) fiducDV = true;
+  if ( m_secVtx_r ->at(dv_index) < 300 && fabs( m_secVtx_z ->at(dv_index) ) < 300 ) fiducDV = true;
+  // --> good quality of fit vertices --> cut on chi2/ndof
+  bool chi2DV = false;
+  if ( m_secVtx_chi2 ->at(dv_index) < 5 ) chi2DV = true;
   // --> k-short-mass-cut vertices --> cut on vertex mass
   bool ksmDV = false;
   if ( secVtx_mass  > 0.7 ) ksmDV   = true;
@@ -9588,49 +9699,86 @@ void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, con
   if ( m_secVtx_jetMatched ->at(dv_index) ) byJetDV = true;
   if ( m_secVtx_jetMatched ->at(dv_index) && m_secVtx_jetMatch_index ->at(dv_index) < m_nJets ) byNJetDV = true;
 
+  // add explicit bare dv -- then only include in cutflow if baseDV != bare
+  bool dv_base       = baseDV;
+  bool dv_matmap     = baseDV && matmapDV;
+  bool dv_fiduc      = baseDV && matmapDV && fiducDV;
+  bool dv_chi2       = baseDV && matmapDV && chi2DV;
+  bool dv_ksm        = baseDV && matmapDV && ksmDV;
+  bool dv_pt         = baseDV && matmapDV && ptDV;
+  bool dv_mind0      = baseDV && matmapDV && mind0DV;
+  bool dv_minz0      = baseDV && matmapDV && minz0DV;
+  bool dv_minsqerrd0 = baseDV && matmapDV && minsqerrd0DV;
+  bool dv_minsqerrz0 = baseDV && matmapDV && minsqerrz0DV;
+  bool dv_byjet      = baseDV && matmapDV && byJetDV;
+  bool dv_bynjet     = baseDV && matmapDV && byNJetDV;
+  if ( doCombos ) {
+    dv_chi2       = dv_fiduc && chi2DV;
+    dv_ksm        = dv_chi2  && ksmDV;
+    dv_pt         = dv_ksm   && ptDV;
+    dv_mind0      = dv_pt    && mind0DV;
+    dv_minz0      = dv_pt    && minz0DV;
+    dv_minsqerrd0 = dv_mind0 && dv_minz0 && minsqerrd0DV;
+    dv_minsqerrz0 = dv_mind0 && dv_minz0 && minsqerrz0DV;
+  }
+
   // fill (jet) DV pass/fail cut vector
+  // --> may want to add cleaning / filtering bin for cutflow, but not necessary with baseline track cleaning ...
+  // ... (doesn't remove any vertices from event)
   if ( !skipOneCuts ) {
     if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_baseVerts       ) ) ||
 	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_baseJetVerts    ) ) ||
 	 (  doGoodCuts ) )
-      dv .push_back( baseDV );
+      dv .push_back( dv_base   );
+    if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_matmapVerts     ) ) ||
+	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_matmapJetVerts  ) ) ||
+	 (  doGoodCuts ) )
+      dv .push_back( dv_matmap );
     if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_fiducVerts      ) ) ||
 	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_fiducJetVerts   ) ) ||
 	 (  doGoodCuts ) )
-      dv .push_back( baseDV && fiducDV );
+      dv .push_back( dv_fiduc  );
+    if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_chi2Verts       ) ) ||
+	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_chi2JetVerts    ) ) ||
+	 (  doGoodCuts ) )
+      dv .push_back( dv_chi2   );
     if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ksmVerts        ) ) ||
 	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_ksmJetVerts     ) ) ||
 	 (  doGoodCuts ) )
-      dv .push_back( baseDV && ksmDV   );
+      dv .push_back( dv_ksm    );
     if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ptVerts         ) ) ||
 	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_ptJetVerts      ) ) ||
 	 (  doGoodCuts ) )
-      dv .push_back( baseDV && ptDV    );
+      dv .push_back( dv_pt     );
     if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0Verts         ) ) ||
 	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_d0JetVerts      ) ) ||
 	 (  doGoodCuts ) )
-      dv .push_back( baseDV && mind0DV );
+      dv .push_back( dv_mind0  );
     if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_z0Verts         ) ) ||
 	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_z0JetVerts      ) ) ||
 	 (  doGoodCuts ) )
-      dv .push_back( baseDV && minz0DV );
+      dv .push_back( dv_minz0  );
     if ( ( !jetDV && ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0z0ErrVerts    ) ) ||
 	 (  jetDV && ( m_histoInfoSwitch->m_jetVertices || m_histoInfoSwitch->m_d0z0ErrJetVerts ) ) ||
 	 (  doGoodCuts ) ) {
-      dv .push_back( baseDV && minsqerrd0DV );
-      dv .push_back( baseDV && minsqerrz0DV );
+      dv .push_back( dv_minsqerrd0 );
+      dv .push_back( dv_minsqerrz0 );
     }
     if ( ( !skipJetCuts && !jetDV && ( m_histoInfoSwitch->m_vertices || m_histoInfoSwitch->m_byJetVerts ) ) ||
 	 (  doGoodCuts ) ) {
-      dv .push_back( baseDV && byJetDV  );
-      dv .push_back( baseDV && byNJetDV );
+      dv .push_back( dv_byjet  );
+      dv .push_back( dv_bynjet );
     }
   }
 
+  // ADD COMBOS -- add doCombos option to override individual cuts (so cut-DVs include all previous cuts, i.e. ksmDVs contain cuts on material veto, fiducial volume, and k-short mass
+  // --> add material veto to everything (i.e. fiducDV = baseDV && matvetoDV && fiducDV)
+  // --> add cutflow bins for track cleaning and material map (i.e. if doGoodCuts dv.push_back())
+
   // --> "good" DVs
-  bool looseGoodDV = baseDV && fiducDV && ksmDV;
-  bool   midGoodDV = baseDV && fiducDV && ksmDV && ptDV;
-  bool tightGoodDV = baseDV && fiducDV && ksmDV && ptDV && mind0DV && minz0DV && minsqerrd0DV && minsqerrz0DV;
+  bool looseGoodDV = baseDV && matmapDV && fiducDV && chi2DV && ksmDV;
+  bool   midGoodDV = baseDV && matmapDV && fiducDV && chi2DV && ksmDV && ptDV;
+  bool tightGoodDV = baseDV && matmapDV && fiducDV && chi2DV && ksmDV && ptDV && mind0DV && minz0DV && minsqerrd0DV && minsqerrz0DV;
   if ( doGood ) {
     if      ( !jetDV && !skipJetCuts ) {
       dv .push_back( looseGoodDV && byNJetDV );

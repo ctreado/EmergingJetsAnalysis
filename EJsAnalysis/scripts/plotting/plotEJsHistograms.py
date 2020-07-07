@@ -256,7 +256,7 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, histNames, hists ):
                 plot1D( hists, name, sampleNames, sampleTypes, sampleDicts )
                 plot1D( hists, name, sampleNames, sampleTypes, sampleDicts, True ) # log-y
 
-        # draw 1D plots (one histo per plot)
+        # draw 2D plots (one histo per plot) -- add handling of 2d projections (grab 3d histos and make projections, if applicable)
         if args.draw2D:
             if isinstance( hists[0], ROOT.TH2 ):
                 for iH, hist in enumerate( hists ):
@@ -403,6 +403,7 @@ def plot2D( hist, histName, sampleName, sampleType, sampleDict ):
     c = ROOT.TCanvas( histName )
 
     # draw 2D plot
+    hist.SetContour(1000) # change for certain 2d histos?
     hist.Draw( args.drawOpt2D )
     hist.SetStats(0)
     hist.SetTitle("")
