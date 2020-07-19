@@ -153,6 +153,9 @@ namespace EJsHelperClasses {
     bool m_darkPions;
     bool m_kshorts;
     bool m_llpDesc;
+    bool m_llpRecoEff;
+    bool m_llpvtxRecoEff;
+    bool m_llptrkRecoEff;
 
     int m_numLeadingJets; // n leading jets
     int m_numVtxTrks;     // n vertex tracks

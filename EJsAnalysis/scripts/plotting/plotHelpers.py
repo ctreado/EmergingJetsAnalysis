@@ -43,13 +43,15 @@ class histVarType:
     DV      = 1
     DV_NTRK = 2
     JET     = 3
-    # add NONE option ?? would want to update usage in if statements here; would need to update enum in plotEJsHistogram, too...
+    TRK     = 4
+    NONE    = 5
 
 class lineStyleType:
     ALL  = 1
-    MOD  = 2
-    CTAU = 3
-    MIX  = 4
+    CTAU = 2
+    XDM  = 3
+    MOOD = 4
+    MIX  = 5
 
 
 ## --- GET SAMPLES --- ##
@@ -162,7 +164,7 @@ def getHistList( histFiles, subdir, inTag, exTag ):
         f = ROOT.TFile( file, "READ" )
         d = f.GetDirectory( subdir )
         if not d:
-            print ( "ERROR: TDirectory not in TFile. Exiting." )
+            print ( "ERROR: TDirectory " + subdir + " not in TFile " + file + ". Exiting." )
             exit(1)
         # grab histograms of interest
         for key in d.GetListOfKeys():
@@ -315,6 +317,10 @@ def doNorm( hist, norm_factor = 1 ):
         return
     if "cuteff"     in hist.GetName().lower():
         return
+    if "eff"        in hist.GetName().lower():
+        return
+    if "accept"     in hist.GetName().lower():
+        return
 
     # add other histos to skip as needed...
 
@@ -364,17 +370,17 @@ def setLegStr( stype, sdict, lslen ):
         # long strings: full model, xdm, ctau info
         if   lslen == legStrLen.LONG:
             legend_string = "Model " + sdict["model"] + " (#pi_{dm} = " + str(sdict["pidm"]) + \
-            " GeV); #chi_{dm} = " + str(sdict["xdm"]) + " GeV; c#tau = " + str(sdict["ctau"]) + " mm"
+            " GeV); X_{dm} = " + str(sdict["xdm"]) + " GeV; c#tau = " + str(sdict["ctau"]) + " mm"
         # long strings w/o pid mass 
         elif lslen == legStrLen.LONG_SM:
-            legend_string = "Model " + sdict["model"] + "; #chi_{dm} = " + str(sdict["xdm"]) + \
+            legend_string = "Model " + sdict["model"] + "; X_{dm} = " + str(sdict["xdm"]) + \
               " GeV; c#tau = " + str(sdict["ctau"]) + " mm"
         # mid-length strings: model, xdm
         elif lslen == legStrLen.MID0:
             legend_string = "Model " + sdict["model"] + " (#pi_{dm} = " + str(sdict["pidm"]) + \
-            " GeV); #chi_{dm} = " + str(sdict["xdm"]) + " GeV"
+            " GeV); X_{dm} = " + str(sdict["xdm"]) + " GeV"
         elif lslen == legStrLen.MID0_SM:
-            legend_string = "Model " + sdict["model"] + "; #chi_{dm} = " + str(sdict["xdm"]) + " GeV"
+            legend_string = "Model " + sdict["model"] + "; X_{dm} = " + str(sdict["xdm"]) + " GeV"
         # mid-length strings: model, ctau
         elif lslen == legStrLen.MID1:
             legend_string = "Model " + sdict["model"] + " (#pi_{dm} = " + str(sdict["pidm"]) + \
@@ -388,7 +394,7 @@ def setLegStr( stype, sdict, lslen ):
             legend_string = "Model " + sdict["model"]
         # mid-length strings: xdm, ctau
         elif lslen == legStrLen.MID3:
-            legend_string = "#chi_{dm} = " + str(sdict["xdm"]) + " GeV; c#tau = " + str(sdict["ctau"]) + " mm"
+            legend_string = "X_{dm} = " + str(sdict["xdm"]) + " GeV; c#tau = " + str(sdict["ctau"]) + " mm"
         # mid-length strings: ctau
         elif lslen == legStrLen.MID4:
             legend_string = "c#tau = " + str(sdict["ctau"]) + " mm"
@@ -413,7 +419,7 @@ def setLegStr( stype, sdict, lslen ):
 
 
 ## --- SET STRING FOR MULTIVARIATE LEGEND ENTRY --- ##
-def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False, doSvBStr = False ):
+def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False, doSvBStr = False, lslen = 11 ):
     legend_string = ""
 
     if hvar == histVarType.DV:
@@ -473,20 +479,20 @@ def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False, doSvBStr = F
                     legend_string += " "
                 legend_string += "unmatched"
             if not legend_string or len(legend_string) > 100:
-                legend_string = hname
+                legend_string = hname.split('_')[1]
             else:
                 legend_string += " DV"
     elif hvar == histVarType.DV_NTRK:
-        if hname.startswith("2trk"):
+        if hname.split('_')[1].startswith("2trk"):
             legend_string = "2-track DV"
-        elif hname.startswith("3trk"):
+        elif hname.split('_')[1].startswith("3trk"):
             legend_string = "3-track DV"
-        elif hname.startswith("4trk"):
+        elif hname.split('_')[1].startswith("4trk"):
             legend_string = "4-track DV"
-        elif hname.startswith("5trk"):
+        elif hname.split('_')[1].startswith("5trk"):
             legend_string = "5-plus-track DV"
         else:
-            legend_string = hname
+            legend_string = hname.split('_')[1]
     elif hvar == histVarType.JET:
         if "lead"      .lower() in hname.lower():
             if legend_string:
@@ -501,12 +507,33 @@ def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False, doSvBStr = F
                 legend_string += " "
             legend_string += "unmatched"
         if not legend_string:
-            legend_string = hname
+            legend_string = hname.split('_')[1]
         else:
             legend_string += " jet"
+    elif hvar == histVarType.TRK:
+        if "desc" not in hname.lower():
+            if   "reco" in hname.lower():
+                legend_string = "inclusive tracks"
+            elif "std"  in hname.lower():
+                legend_string = "standard tracks"
+            elif "lrt"  in hname.lower():
+                legend_string = "large-radius tracks"
+        else:
+            legend_string = "truth tracks"
+            if   "recodesc" in hname.lower():
+                legend_string = "reconstructed " + legend_string
+            elif "vtxdesc" in hname.lower():
+                legend_string = "vertexed "      + legend_string
+                if   "loosevtxdesc"  in hname.lower():
+                    legend_string = "loose "  + legend_string
+                elif "mediumvtxdesc" in hname.lower():
+                    legend_string = "medium " + legend_string
+                elif "tightvtxdesc"  in hname.lower():
+                    legend_string = "tight "  + legend_string
+                                                 
 
     if doMultiSmpl:
-        legend_string += " (" + setLegStr( stype, sdict, 10 ) + ")"
+        legend_string += " (" + setLegStr( stype, sdict, lslen ) + ")"
 
     return legend_string
 
@@ -551,6 +578,13 @@ def setXaxisTitle( hist, doMulti = False, multiObjStr = "", hvar = histVarType.D
             if "nomatch"  .lower() in histName.lower(): oldJetStr = "unmatched "    + oldJetStr
             if "lead"     .lower() in histName.lower(): oldJetStr = "lead "         + oldJetStr
             xtitle = xtitle.replace( oldJetStr, jetStr )
+        elif hvar == histVarType.TRK:
+            if "standard"       in xtitle:
+                xtitle = xtitle.split('standard')    [-1]
+            elif "large-radius" in xtitle:
+                xtitle = xtitle.split('large-radius')[-1]
+            else:
+                xtitle = xtitle
         else:
             xtitle = xtitle
 
@@ -841,24 +875,22 @@ def getSampleDict( sname, stype, hlsty ):
             style = 7
 
         # --> set color/style of every point or every model - mediator mass point (all lifetimes the same)
-        if   hlsty == lineStyleType.ALL or hlsty == lineStyleType.CTAU:
+        if   hlsty == lineStyleType.ALL or hlsty == lineStyleType.CTAU or hlsty == lineStyleType.XDM:
             # set line color / palette by model
+            col_ix = 0
             if   dictlist[1] == "A":
-                color   = sgnlColors()[0]
-                palette = texec_sgnl()[0]
+                col_ix = 0
             elif dictlist[1] == "B":
-                color   = sgnlColors()[1]
-                palette = texec_sgnl()[1]
+                col_ix = 1
             elif dictlist[1] == "C":
-                color   = sgnlColors()[2]
-                palette = texec_sgnl()[2]
+                col_ix = 2
             elif dictlist[1] == "D":
-                color   = sgnlColors()[3]
-                palette = texec_sgnl()[3]
+                col_ix = 3
             elif dictlist[1] == "E":
-                color   = sgnlColors()[4]
-                palette = texec_sgnl()[4]
-            if  hlsty == lineStyleType.ALL:
+                col_ix = 4
+            color   = sgnlColors()[col_ix]
+            palette = texec_sgnl()[col_ix]
+            if  hlsty == lineStyleType.CTAU:
                 # vary base colors by lifetime
                 if dictlist[0] % 6 == 0:
                     color = color
@@ -872,6 +904,14 @@ def getSampleDict( sname, stype, hlsty ):
                     color = color - 1
                 elif dictlist[0] % 6 == 5:
                     color = color - 2
+            elif hlsty == lineStyleType.XDM:
+                # vary base color by mediator mass
+                if   dictlist[3] == 1400:
+                    color = varSgnlColors()[col_ix][0]
+                elif dictlist[3] == 1000:
+                    color = varSgnlColors()[col_ix][1]
+                elif dictlist[3] == 600:
+                    color = varSgnlColors()[col_ix][2]
         # --> set color/style of every model point
         elif hlsty == lineStyleType.MOD:
             if   dictlist[0] % 6 == 1:
@@ -1021,6 +1061,13 @@ def setLineWidth( lstyle ):
 def sgnlColors():
     return [ ROOT.kRed, ROOT.kGreen + 1, ROOT.kBlue, ROOT.kViolet, ROOT.kOrange + 1, ROOT.kCyan+1 ]
 # one base color per model; one line / marker style per Xdm; one color (close to base) per lifetime
+
+def varSgnlColors():
+    return [ [ ROOT.kRed,        ROOT.kRed    + 2, ROOT.kRed    - 6 ],
+             [ ROOT.kGreen  + 1, ROOT.kGreen  + 4, ROOT.kGreen  - 5 ],
+             [ ROOT.kBlue,       ROOT.kBlue   + 3, ROOT.kBlue   - 6 ],
+             [ ROOT.kViolet,     ROOT.kViolet + 3, ROOT.kViolet - 8 ],
+             [ ROOT.kOrange + 1, ROOT.kOrange + 3, ROOT.kOrange + 7 ] ]
 
 def bkgdColors():
     return [ ROOT.kGray + 2 ]

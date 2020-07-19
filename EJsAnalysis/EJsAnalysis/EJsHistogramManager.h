@@ -89,31 +89,32 @@ class EJsHistogramManager : public HistogramManager
   float lumi   = 139.; // [fb-1]  
 
   // counters
-  unsigned m_LJix        = 0;
-  unsigned m_nTypeTJs    = 0;
-  unsigned m_nTypeDJs    = 0;
-  unsigned m_nTypeJs     = 0;
-  unsigned m_nType1Js    = 0;
-  unsigned m_nType1SVJs  = 0;
-  unsigned m_nTypeJSVs   = 0;
-  unsigned m_nTypeBJs    = 0;
-  unsigned m_svP4J_ix    = 0;
-  unsigned m_svPtJ_ix    = 0;
-  unsigned m_svHtJ_ix    = 0;
-  unsigned m_svHJ_ix     = 0;
-  unsigned m_svNtrkJ_ix  = 0;
-  unsigned m_svNjtrkJ_ix = 0;
-  unsigned m_svTrkJ_ix   = 0;
-  unsigned m_svNJ_ix     = 0;
-  unsigned m_nTypeTPs    = 0;
-  unsigned m_nTypeTrks   = 0;
-  unsigned m_nTypeLLPs   = 0;
-  unsigned m_nTypeDVs    = 0;
-  unsigned m_nType1DVs   = 0;
-  unsigned m_nTypeBDVs   = 0;
-  unsigned m_nTypeJDVs   = 0;
-  unsigned m_nType1JDVs  = 0;
-  unsigned m_nTypeBJDVs  = 0;
+  unsigned m_LJix         = 0;
+  unsigned m_nTypeSgnlDVs = 0;
+  unsigned m_nTypeTJs     = 0;
+  unsigned m_nTypeDJs     = 0;
+  unsigned m_nTypeJs      = 0;
+  unsigned m_nType1Js     = 0;
+  unsigned m_nType1SVJs   = 0;
+  unsigned m_nTypeJSVs    = 0;
+  unsigned m_nTypeBJs     = 0;
+  unsigned m_svP4J_ix     = 0;
+  unsigned m_svPtJ_ix     = 0;
+  unsigned m_svHtJ_ix     = 0;
+  unsigned m_svHJ_ix      = 0;
+  unsigned m_svNtrkJ_ix   = 0;
+  unsigned m_svNjtrkJ_ix  = 0;
+  unsigned m_svTrkJ_ix    = 0;
+  unsigned m_svNJ_ix      = 0;
+  unsigned m_nTypeTPs     = 0;
+  unsigned m_nTypeTrks    = 0;
+  unsigned m_nTypeLLPs    = 0;
+  unsigned m_nTypeDVs     = 0;
+  unsigned m_nType1DVs    = 0;
+  unsigned m_nTypeBDVs    = 0;
+  unsigned m_nTypeJDVs    = 0;
+  unsigned m_nType1JDVs   = 0;
+  unsigned m_nTypeBJDVs   = 0;
   std::vector<int>   m_nEntries;
   std::vector<float> m_nWeightedEntries;
 
@@ -358,6 +359,10 @@ class EJsHistogramManager : public HistogramManager
   std::vector<float>*                    m_tp_charge;              //!
   std::vector<int>*                      m_tp_pdgId;               //!
   std::vector<int>*                      m_tp_status;              //!
+  std::vector<uint8_t>*                  m_tp_isReco;              //!
+  std::vector<float>*                    m_tp_recoProb;            //!
+  std::vector<int>*                      m_tp_recoID;              //!
+  std::vector<int>*                      m_tp_recoIndex;           //!
   std::vector<uint8_t>*                  m_tp_isStable;            //!
   std::vector<uint8_t>*                  m_tp_isDark;              //!
   std::vector<uint8_t>*                  m_tp_isDesc;              //!
@@ -370,6 +375,10 @@ class EJsHistogramManager : public HistogramManager
   std::vector<int>*                      m_tp_nChildren;           //!
   std::vector<std::vector<int>>*         m_tp_child_pdgId;         //!
   std::vector<std::vector<int>>*         m_tp_child_status;        //!
+  std::vector<uint8_t>*                  m_tp_pvtx;                //!
+  std::vector<int>*                      m_tp_pvtx_ID;             //!
+  std::vector<int>*                      m_tp_pvtx_index;          //!
+  std::vector<float>*                    m_tp_pvtx_r;              //!
   std::vector<uint8_t>*                  m_tp_truthJetMatch;       //!
   std::vector<int>*                      m_tp_truthJetMatch_ID;    //!
   std::vector<int>*                      m_tp_truthJetMatch_index; //!
@@ -434,6 +443,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<float>*       m_truthVtx_mass;       //!
   std::vector<float>*       m_truthVtx_childOpAng; //!
   std::vector<int>*         m_truthVtx_nOutP;      //!
+  std::vector<uint8_t>*     m_truthVtx_isRecoble;  //!
   // truth vertices: reconstructible descendants
   std::vector<int>*         m_truthVtx_nDesc;      //!
   std::vector<int>*         m_truthVtx_nRecoDesc;  //!
@@ -443,20 +453,31 @@ class EJsHistogramManager : public HistogramManager
   std::vector<float>*       m_truthVtx_descPhi;    //!
   std::vector<float>*       m_truthVtx_descE;      //!
   std::vector<float>*       m_truthVtx_descM;      //!
-  std::vector<std::vector<float>>* m_truthVtx_desc_pt;  //!
-  std::vector<std::vector<float>>* m_truthVtx_desc_eta; //!
-  std::vector<std::vector<float>>* m_truthVtx_desc_phi; //!
-  std::vector<std::vector<float>>* m_truthVtx_desc_E;   //!
-  std::vector<std::vector<float>>* m_truthVtx_desc_M;   //!
+  std::vector<std::vector<int>>*     m_truthVtx_desc_ID;     //!
+  std::vector<std::vector<int>>*     m_truthVtx_desc_index;  //!
+  std::vector<std::vector<float>>*   m_truthVtx_desc_pt;     //!
+  std::vector<std::vector<float>>*   m_truthVtx_desc_eta;    //!
+  std::vector<std::vector<float>>*   m_truthVtx_desc_phi;    //!
+  std::vector<std::vector<float>>*   m_truthVtx_desc_E;      //!
+  std::vector<std::vector<float>>*   m_truthVtx_desc_M;      //!
+  std::vector<std::vector<uint8_t>>* m_truthVtx_desc_isReco; //!
+  std::vector<std::vector<int>>*     m_truthVtx_desc_recoID; //!
   // truth vertices: physical positions
   std::vector<int>*         m_truthVtx_nPos;       //!
   // truth vertices: reco matching
-  std::vector<int>*                m_truthVtx_reco_n;     //!
-  std::vector<std::vector<int>>*   m_truthVtx_reco_ID;    //!
-  std::vector<std::vector<int>>*   m_truthVtx_reco_index; //!
-  std::vector<std::vector<float>>* m_truthVtx_reco_score; //!
-  std::vector<std::vector<int>>*   m_truthVtx_reco_posID; //!
-  std::vector<std::vector<float>>* m_truthVtx_reco_resid; //!
+  std::vector<int>*                m_truthVtx_reco_n;       //!
+  std::vector<std::vector<int>>*   m_truthVtx_reco_ID;      //!
+  std::vector<std::vector<int>>*   m_truthVtx_reco_index;   //!
+  std::vector<std::vector<float>>* m_truthVtx_reco_score;   //!
+  std::vector<std::vector<int>>*   m_truthVtx_reco_posID;   //!
+  std::vector<std::vector<float>>* m_truthVtx_reco_resid;   //!
+  std::vector<std::vector<float>>* m_truthVtx_reco_x;       //!
+  std::vector<std::vector<float>>* m_truthVtx_reco_y;       //!
+  std::vector<std::vector<float>>* m_truthVtx_reco_z;       //!
+  std::vector<std::vector<float>>* m_truthVtx_reco_r;       //!
+  std::vector<std::vector<float>>* m_truthVtx_reco_phi;     //!
+  std::vector<std::vector<int>>*   m_truthVtx_reco_ntrk;    //!
+  std::vector<std::vector<int>>*   m_truthVtx_reco_nseltrk; //!
 
   // SECONDARY VERTEX BRANCHES
   // secondary vertices: basics / kinematics
@@ -1000,18 +1021,129 @@ class EJsHistogramManager : public HistogramManager
 
 
   // TRUTH PARTICLE HISTOS
-  std::vector<std::vector<TH1F*>> h_tp_n;           //!
-  std::vector<std::vector<TH1F*>> h_tp_pt;          //!
-  std::vector<std::vector<TH1F*>> h_tp_eta;         //!
-  std::vector<std::vector<TH1F*>> h_tp_phi;         //!
-  std::vector<std::vector<TH1F*>> h_tp_E;           //!
-  std::vector<std::vector<TH1F*>> h_tp_M;           //!
-  std::vector<std::vector<TH1F*>> h_tp_betagamma;   //!
-  std::vector<std::vector<TH1F*>> h_tp_charge;      //!
-  std::vector<std::vector<TH1F*>> h_tp_nParents;    //!
-  std::vector<std::vector<TH1F*>> h_tp_parentPdgId; //!
-  std::vector<std::vector<TH1F*>> h_tp_nChildren;   //!
-  std::vector<std::vector<TH1F*>> h_tp_childPdgId;  //!
+  std::vector<std::vector<TH1F*>> h_tp_n;                //!
+  std::vector<std::vector<TH1F*>> h_tp_pt;               //!
+  std::vector<std::vector<TH1F*>> h_tp_eta;              //!
+  std::vector<std::vector<TH1F*>> h_tp_phi;              //!
+  std::vector<std::vector<TH1F*>> h_tp_E;                //!
+  std::vector<std::vector<TH1F*>> h_tp_M;                //!
+  std::vector<std::vector<TH1F*>> h_tp_betagamma;        //!
+  std::vector<std::vector<TH1F*>> h_tp_charge;           //!
+  std::vector<std::vector<TH1F*>> h_tp_nParents;         //!
+  std::vector<std::vector<TH1F*>> h_tp_parentPdgId;      //!
+  std::vector<std::vector<TH1F*>> h_tp_nChildren;        //!
+  std::vector<std::vector<TH1F*>> h_tp_childPdgId;       //!
+  // reconstruction efficiency
+  std::vector<std::vector<TH1F*>> h_LLPtrk_x;            //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_y;            //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_r;            //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_z;            //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_pt;           //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_eta;          //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_phi;          //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_d0;           //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_z0;           //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_avgMu;        //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_minDR;        //!
+  // --> reconstructed tracks
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_x;        //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_y;        //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_r;        //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_z;        //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_pt;       //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_eta;      //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_phi;      //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_d0;       //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_z0;       //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_avgMu;    //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_minDR;    //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_resid_d0;        //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_resid_z0;        //!
+  std::vector<std::vector<TH1F*>> h_recoLLPtrk_resid_qOverP;    //!
+  std::vector<std::vector<TH2F*>> h_recoLLPtrk_resid_d0_r;      //!
+  std::vector<std::vector<TH2F*>> h_recoLLPtrk_resid_d0_pt;     //!
+  std::vector<std::vector<TH2F*>> h_recoLLPtrk_resid_z0_r;      //!
+  std::vector<std::vector<TH2F*>> h_recoLLPtrk_resid_z0_pt;     //!
+  std::vector<std::vector<TH2F*>> h_recoLLPtrk_resid_qOverP_r;  //!
+  std::vector<std::vector<TH2F*>> h_recoLLPtrk_resid_qOverP_pt; //!
+  // --> standard tracks
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_x;         //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_y;         //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_r;         //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_z;         //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_pt;        //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_eta;       //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_phi;       //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_d0;        //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_z0;        //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_avgMu;     //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_minDR;     //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_resid_d0;         //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_resid_z0;         //!
+  std::vector<std::vector<TH1F*>> h_stdLLPtrk_resid_qOverP;     //!
+  std::vector<std::vector<TH2F*>> h_stdLLPtrk_resid_d0_r;       //!
+  std::vector<std::vector<TH2F*>> h_stdLLPtrk_resid_d0_pt;      //!
+  std::vector<std::vector<TH2F*>> h_stdLLPtrk_resid_z0_r;       //!
+  std::vector<std::vector<TH2F*>> h_stdLLPtrk_resid_z0_pt;      //!
+  std::vector<std::vector<TH2F*>> h_stdLLPtrk_resid_qOverP_r;   //!
+  std::vector<std::vector<TH2F*>> h_stdLLPtrk_resid_qOverP_pt;  //!
+  // --> LRT tracks
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_x;         //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_y;         //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_r;         //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_z;         //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_pt;        //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_eta;       //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_phi;       //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_d0;        //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_z0;        //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_avgMu;     //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_minDR;     //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_resid_d0;         //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_resid_z0;         //!
+  std::vector<std::vector<TH1F*>> h_lrtLLPtrk_resid_qOverP;     //!
+  std::vector<std::vector<TH2F*>> h_lrtLLPtrk_resid_d0_r;       //!
+  std::vector<std::vector<TH2F*>> h_lrtLLPtrk_resid_d0_pt;      //!
+  std::vector<std::vector<TH2F*>> h_lrtLLPtrk_resid_z0_r;       //!
+  std::vector<std::vector<TH2F*>> h_lrtLLPtrk_resid_z0_pt;      //!
+  std::vector<std::vector<TH2F*>> h_lrtLLPtrk_resid_qOverP_r;   //!
+  std::vector<std::vector<TH2F*>> h_lrtLLPtrk_resid_qOverP_pt;  //!
+  // --> inclusive tracking efficiency
+  std::vector<std::vector<TH1F*>> h_LLPtrk_recoEff_x;    //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_recoEff_y;    //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_recoEff_z;    //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_recoEff_r;    //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_recoEff_pt;   //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_recoEff_eta;  //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_recoEff_phi;  //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_recoEff_d0;   //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_recoEff_z0;   //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_recoEff_avgMu;//!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_recoEff_minDR;//!
+  // --> standard tracking efficiency
+  std::vector<std::vector<TH1F*>> h_LLPtrk_stdEff_x;     //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_stdEff_y;     //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_stdEff_z;     //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_stdEff_r;     //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_stdEff_pt;    //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_stdEff_eta;   //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_stdEff_phi;   //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_stdEff_d0;    //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_stdEff_z0;    //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_stdEff_avgMu; //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_stdEff_minDR; //!
+  // --> large-radius tracking efficiency
+  std::vector<std::vector<TH1F*>> h_LLPtrk_lrtEff_x;     //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_lrtEff_y;     //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_lrtEff_z;     //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_lrtEff_r;     //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_lrtEff_pt;    //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_lrtEff_eta;   //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_lrtEff_phi;   //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_lrtEff_d0;    //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_lrtEff_z0;    //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_lrtEff_avgMu; //!
+  std::vector<std::vector<TH1F*>> h_LLPtrk_lrtEff_minDR; //!
 
   
   // TRACK HISTOS
@@ -1045,6 +1177,318 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_LLPdVtx_desc_phi;   //!
   std::vector<std::vector<TH1F*>> h_LLPdVtx_desc_d0;    //!
   std::vector<std::vector<TH1F*>> h_LLPdVtx_desc_z0;    //!
+  // reconstruction efficiency numerators / denominators
+  // --> reconstructible LLP decays (>= 2 reconstructible descendants)
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_x;          //!
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_y;          //!
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_z;          //!
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_r;          //!
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_pt;         //!
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_eta;        //!
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_phi;        //!
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_avgMu;      //!
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_descM;      //!
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_nDesc;      //!
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_nRecoDesc;  //!
+  std::vector<std::vector<TH1F*>> h_recobleLLPdVtx_nSelDesc;   //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_nDesc_r;    //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_nDesc_z;    //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_descM_r;    //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_descM_z;    //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_nRecoDesc_r;//!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_nRecoDesc_z;//!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_recoDescM_r;//!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_recoDescM_z;//!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_nVtxDesc_r; //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_nVtxDesc_z; //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_vtxDescM_r; //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_vtxDescM_z; //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_fracRecoDesc_r; //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_fracRecoDesc_z; //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_fracRecoDescM_r;//!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_fracRecoDescM_z;//!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_fracVtxDesc_r;  //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_fracVtxDesc_z;  //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_fracVtxDescM_r; //!
+  std::vector<std::vector<TH2F*>> h_recobleLLPdVtx_fracVtxDescM_z; //!
+  // --> reconstructed LLP decays (>= 2 reconstructed descendants)
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_x;             //!
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_y;             //!
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_z;             //!
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_r;             //!
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_pt;            //!
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_eta;           //!
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_phi;           //!
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_avgMu;         //!
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_descM;         //!
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_nDesc;         //!
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_nRecoDesc;     //!
+  std::vector<std::vector<TH1F*>> h_recoLLPdVtx_nSelDesc;      //!
+  // --> selected LLP decays (>= 2 selected descendants)
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_x;              //!
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_y;              //!
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_z;              //!
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_r;              //!
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_pt;             //!
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_eta;            //!
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_phi;            //!
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_avgMu;          //!
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_descM;          //!
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_nDesc;          //!
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_nRecoDesc;      //!
+  std::vector<std::vector<TH1F*>> h_selLLPdVtx_nSelDesc;       //!
+  // --> reco-matched LLP decays
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_score;     //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_x;         //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_y;         //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_z;         //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_r;         //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_pt;        //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_eta;       //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_phi;       //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_avgMu;     //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_descM;     //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_nDesc;     //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_nRecoDesc; //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_nSelDesc;  //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_resid_x;   //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_resid_y;   //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_resid_z;   //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_resid_r;   //!
+  std::vector<std::vector<TH1F*>> h_recoMatchLLPdVtx_resid_rphi;//!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_z_r;          //!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_z_z;          //!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_z_ntrk;       //!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_z_nseltrk;    //!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_r_r;          //!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_r_z;          //!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_r_ntrk;       //!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_r_nseltrk;    //!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_rphi_r;       //!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_rphi_z;       //!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_rphi_ntrk;    //!
+  std::vector<std::vector<TH2F*>> h_recoMatchLLPdVtx_resid_rphi_nseltrk; //!
+  // --> reconstructible LLP decays (>= 2 reconstructible descendants) in analysis fiducial volume
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_x;            //!
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_y;            //!
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_z;            //!
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_r;            //!
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_pt;           //!
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_eta;          //!
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_phi;          //!
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_avgMu;        //!
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_descM;        //!
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_nDesc;        //!
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_nRecoDesc;    //!
+  std::vector<std::vector<TH1F*>> h_fiducLLPdVtx_nSelDesc;     //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_nDesc_r;      //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_nDesc_z;      //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_descM_r;      //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_descM_z;      //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_nRecoDesc_r;  //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_nRecoDesc_z;  //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_recoDescM_r;  //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_recoDescM_z;  //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_fiducLLPdVtx_nVtxDesc_r; //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_fiducLLPdVtx_nVtxDesc_z; //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_fiducLLPdVtx_vtxDescM_r; //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_fiducLLPdVtx_vtxDescM_z; //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_fracRecoDesc_r;  //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_fracRecoDesc_z;  //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_fracRecoDescM_r; //!
+  std::vector<std::vector<TH2F*>> h_fiducLLPdVtx_fracRecoDescM_z; //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_fiducLLPdVtx_fracVtxDesc_r;  //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_fiducLLPdVtx_fracVtxDesc_z;  //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_fiducLLPdVtx_fracVtxDescM_r; //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_fiducLLPdVtx_fracVtxDescM_z; //!
+  // --> reconstructed LLP decays (>= 2 reconstructed descendants) in analysis fiducial volume
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_x;        //!
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_y;        //!
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_z;        //!
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_r;        //!
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_pt;       //!
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_eta;      //!
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_phi;      //!
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_avgMu;    //!
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_descM;    //!
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_nDesc;    //!
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_nRecoDesc;//!
+  std::vector<std::vector<TH1F*>> h_recoFiducLLPdVtx_nSelDesc; //!
+  // --> selected LLP decays (>= 2 selected descendants) in analysis fiducial volume
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_x;         //!
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_y;         //!
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_z;         //!
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_r;         //!
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_pt;        //!
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_eta;       //!
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_phi;       //!
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_avgMu;     //!
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_descM;     //!
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_nDesc;     //!
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_nRecoDesc; //!
+  std::vector<std::vector<TH1F*>> h_selFiducLLPdVtx_nSelDesc;  //!
+  // --> signal-reco-matched LLP decays
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_score;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_x;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_y;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_z;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_r;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_pt;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_eta;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_phi;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_avgMu;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_descM;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_nDesc;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_nRecoDesc; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_nSelDesc;  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_resid_x;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_resid_y;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_resid_z;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_resid_r;   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_sgnlRecoMatchLLPdVtx_resid_rphi;//!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_z_r;          //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_z_z;          //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_z_ntrk;       //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_z_nseltrk;    //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_r_r;          //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_r_z;          //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_r_ntrk;       //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_r_nseltrk;    //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_rphi_r;       //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_rphi_z;       //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_rphi_ntrk;    //!
+  std::vector<std::vector<std::vector<TH2F*>> > h_sgnlRecoMatchLLPdVtx_resid_rphi_nseltrk; //!
+  // --> acceptance
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_x;              //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_y;              //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_z;              //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_r;              //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_pt;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_eta;            //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_phi;            //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_avgMu;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_descM;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_nDesc;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_nRecoDesc;      //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_accept_nSelDesc;       //!
+  // --> total efficiency
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_x;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_y;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_z;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_r;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_pt;            //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_eta;           //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_phi;           //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_avgMu;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_descM;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_nDesc;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_nRecoDesc;     //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_recoEff_nSelDesc;      //!
+  // --> algorithmic efficiency
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_x;              //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_y;              //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_z;              //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_r;              //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_pt;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_eta;            //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_phi;            //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_avgMu;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_descM;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_nDesc;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_nRecoDesc;      //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_algEff_nSelDesc;       //!
+  // --> core efficiency
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_x;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_y;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_z;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_r;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_pt;            //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_eta;           //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_phi;           //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_avgMu;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_descM;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_nDesc;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_nRecoDesc;     //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_coreEff_nSelDesc;      //!
+  // --> seed efficiency
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_x;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_y;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_z;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_r;             //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_pt;            //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_eta;           //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_phi;           //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_avgMu;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_descM;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_nDesc;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_nRecoDesc;     //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_seedEff_nSelDesc;      //!
+  // --> signal acceptance
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_x;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_y;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_z;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_r;          //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_pt;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_eta;        //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_phi;        //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_avgMu;      //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_descM;      //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_nDesc;      //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_nRecoDesc;  //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlAccept_nSelDesc;   //!
+  // --> total signal efficiency
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_x;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_y;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_z;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_r;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_pt;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_eta;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_phi;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_avgMu;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_descM;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_nDesc;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_nRecoDesc; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlRecoEff_nSelDesc;  //!
+  // --> algorithmic signal efficiency
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_x;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_y;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_z;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_r;          //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_pt;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_eta;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_phi;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_avgMu;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_descM;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_nDesc;      //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_nRecoDesc;  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlAlgEff_nSelDesc;   //!
+  // --> core signal efficiency
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_x;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_y;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_z;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_r;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_pt;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_eta;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_phi;       //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_avgMu;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_descM;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_nDesc;     //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_nRecoDesc; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_LLPdVtx_sgnlCoreEff_nSelDesc;  //!
+  // --> seed signal efficiency
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_x;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_y;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_z;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_r;         //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_pt;        //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_eta;       //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_phi;       //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_avgMu;     //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_descM;     //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_nDesc;     //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_nRecoDesc; //!
+  std::vector<std::vector<TH1F*>> h_LLPdVtx_sgnlSeedEff_nSelDesc;  //!
+  
 
   
   // SECONDARY VERTEX HISTOS
@@ -1207,6 +1651,8 @@ class EJsHistogramManager : public HistogramManager
   // --> min track parameters
   std::vector<std::vector<TH1F*>> h_DV_mind0;           //!
   std::vector<std::vector<TH1F*>> h_DV_minz0;           //!
+  std::vector<std::vector<TH1F*>> h_DV_mind0_s;         //!
+  std::vector<std::vector<TH1F*>> h_DV_minz0_s;         //!
   std::vector<std::vector<TH1F*>> h_DV_minP;            //!
   std::vector<std::vector<TH1F*>> h_DV_minsqrtd0;       //!
   std::vector<std::vector<TH1F*>> h_DV_minsqrtz0;       //!
@@ -1216,6 +1662,8 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_DV_minErrP;         //!
   std::vector<std::vector<TH1F*>> h_DV_minSqrterrd0;    //!
   std::vector<std::vector<TH1F*>> h_DV_minSqrterrz0;    //!
+  std::vector<std::vector<TH1F*>> h_DV_minSqrterrd0_s;  //!
+  std::vector<std::vector<TH1F*>> h_DV_minSqrterrz0_s;  //!
   std::vector<std::vector<TH1F*>> h_DV_minSqrterrP;     //!
   std::vector<std::vector<TH1F*>> h_DV_minFracerrd0;    //!
   std::vector<std::vector<TH1F*>> h_DV_minFracerrz0;    //!
@@ -1289,6 +1737,9 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH2F*>> h_DV_z_chi2;                 //!
   std::vector<std::vector<TH2F*>> h_DV_r_chi2;                 //!
   std::vector<std::vector<TH2F*>> h_DV_mass_chi2;              //!
+  std::vector<std::vector<TH2F*>> h_DV_mind0_r;                //!
+  std::vector<std::vector<TH2F*>> h_DV_minz0_z;                //!
+  std::vector<std::vector<TH2F*>> h_DV_mind0z0;                //!
   std::vector<std::vector<TH2F*>> h_DV_y_x_s;                  //!
   std::vector<std::vector<TH2F*>> h_DV_z_r_s;                  //!
   std::vector<std::vector<TH2F*>> h_DV_r_z_s;                  //!
@@ -1298,6 +1749,9 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH2F*>> h_DV_z_chi2_s;               //!
   std::vector<std::vector<TH2F*>> h_DV_r_chi2_s;               //!
   std::vector<std::vector<TH2F*>> h_DV_mass_chi2_s;            //!
+  std::vector<std::vector<TH2F*>> h_DV_mind0_r_s;              //!
+  std::vector<std::vector<TH2F*>> h_DV_minz0_z_s;              //!
+  std::vector<std::vector<TH2F*>> h_DV_mind0z0_s;              //!
   // --> errors vs mass, chi2 ??
   std::vector<std::vector<TH2F*>> h_DV_errx_x;                 //!
   std::vector<std::vector<TH2F*>> h_DV_erry_y;                 //!
@@ -1327,6 +1781,12 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH2F*>> h_DV_minSqrterrd0_r;         //!
   std::vector<std::vector<TH2F*>> h_DV_minSqrterrz0_z;         //!
   std::vector<std::vector<TH2F*>> h_DV_minSqrterrP_pt;         //!
+  std::vector<std::vector<TH2F*>> h_DV_minSqrterrd0_mind0;     //!
+  std::vector<std::vector<TH2F*>> h_DV_minSqrterrz0_minz0;     //!
+  std::vector<std::vector<TH2F*>> h_DV_minSqrterrd0z0;         //!
+  std::vector<std::vector<TH2F*>> h_DV_minSqrterrd0_mind0_s;   //!
+  std::vector<std::vector<TH2F*>> h_DV_minSqrterrz0_minz0_s;   //!
+  std::vector<std::vector<TH2F*>> h_DV_minSqrterrd0z0_s;       //!
   std::vector<std::vector<TH2F*>> h_DV_minErrd0sv_r;           //!
   std::vector<std::vector<TH2F*>> h_DV_minErrz0sv_z;           //!
   std::vector<std::vector<TH2F*>> h_DV_minErrPsv_pt;           //!

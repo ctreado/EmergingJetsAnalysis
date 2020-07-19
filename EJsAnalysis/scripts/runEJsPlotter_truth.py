@@ -51,11 +51,11 @@ def main():
     
     s_150               = " --sgnlType modA_1400_150_,modA_1000_150_,modA_600_150_,modB_1400_150_,modB_1000_150_,modB_600_150_," + \
       "modC_1400_150_,modC_1000_150_,modC_600_150_,modD_1400_150_,modD_1000_150_,modD_600_150_,modE_1400_150_,modE_1000_150_,modE_600_150_"
-    command_s_150       = command_grid + s_150 + " --outName grid.150 --histTitle 'ctau = 150 mm' --lstyleEnum 3 --legLenEnum 4" + \
+    command_s_150       = command_grid + s_150 + " --outName grid.150 --histTitle 'ctau = 150 mm' --lstyleEnum 1 --legLenEnum 4" + \
       " --lxint 0.007 --lyint 0.025"
     command_s_150_S1    = command_s_150 + command_S1
 
-    s_mod_150_style     = " --lstyleEnum 3 --legLenEnum 7"
+    s_mod_150_style     = " --lstyleEnum 1 --legLenEnum 7"
     s_1400_150          = " --sgnlType modA_1400_150_,modB_1400_150_,modC_1400_150_,modD_1400_150_,modE_1400_150_"
     s_1000_150          = " --sgnlType modA_1000_150_,modB_1000_150_,modC_1000_150_,modD_1000_150_,modE_1000_150_"
     s_600_150           = " --sgnlType modA_600_150_,modB_600_150_,modC_600_150_,modD_600_150_,modE_600_150_"
@@ -69,7 +69,7 @@ def main():
     command_s_1000_150_S1 = command_s_1000_150 + command_S1
     command_s_600_150_S1  = command_s_600_150  + command_S1
 
-    s_mod_style         = " --lstyleEnum 2 --legLenEnum 10 --lxint 0.0125 --lyint 0.05"
+    s_mod_style         = " --lstyleEnum 4 --legLenEnum 10 --lxint 0.0125 --lyint 0.05"
     s_A_1400            = " --sgnlType modA_1400_300_,modA_1400_150_,modA_1400_75_,modA_1400_20_,modA_1400_5_,modA_1400_2_"
     s_A_1000            = " --sgnlType modA_1000_300_,modA_1000_150_,modA_1000_75_,modA_1000_5_,modA_1000_2_,modA_1000_1_"
     s_A_600             = " --sgnlType modA_600_300_,modA_600_150_,modA_600_20_,modA_600_2_,modA_600_1_,modA_600_0p5_"
@@ -135,7 +135,7 @@ def main():
     command_E_1000_S1   = command_E_1000 + command_S1
     command_E_600_S1    = command_E_600  + command_S1
 
-    s_mod_mix_style     = " --lstyleEnum 4 --legLenEnum 9 --lyint 0.035"
+    s_mod_mix_style     = " --lstyleEnum 5 --legLenEnum 9 --lyint 0.035"
     s_A_mix             = " --sgnlType modA_1400_300_,modA_1400_75_,modA_1400_2_,modA_1000_150_,modA_1000_5_,modA_1000_1_," + \
       "modA_600_150_,modA_600_20_,modA_600_0p5_"   
     s_B_mix             = " --sgnlType modB_1400_150_,modB_1400_75_,modB_1400_2_,modB_1000_150_,modB_1000_5_,modB_1000_1_," + \
@@ -162,7 +162,7 @@ def main():
     command_D_mix_S1    = command_D_mix + command_S1
     command_E_mix_S1    = command_E_mix + command_S1
 
-    s_xdm_mix_style     = " --lstyleEnum 3 --legLenEnum 6 --lxint 0.0125 --lyint 0.04"
+    s_xdm_mix_style     = " --lstyleEnum 1 --legLenEnum 6 --lxint 0.0125 --lyint 0.04"
     s_1400_mix          = " --sgnlType modA_1400_20_,modB_1400_300_,modC_1400_2_,modD_1400_75_,modE_1400_5_"
     s_1000_mix          = " --sgnlType modA_1000_150_,modB_1000_5_,modC_1000_75_,modD_1000_2_,modE_1000_300_"
     s_600_mix           = " --sgnlType modA_600_2_,modB_600_1_,modC_600_0p5_,modD_600_150_,modE_600_20_"

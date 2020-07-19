@@ -115,6 +115,9 @@ namespace EJsHelperClasses {
     m_darkPions       = has_exact( "darkPions"       );
     m_kshorts         = has_exact( "kshorts"         );
     m_llpDesc         = has_exact( "llpDesc"         );
+    m_llpRecoEff      = has_exact( "llpRecoEff"      );
+    m_llpvtxRecoEff   = has_exact( "llpvtxRecoEff"   );
+    m_llptrkRecoEff   = has_exact( "llptrkRecoEff"   );
 
     m_numLeadingJets  = 0;
     m_numVtxTrks      = 0;

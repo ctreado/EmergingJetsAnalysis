@@ -206,6 +206,10 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_tp_charge              = new std::vector<float>;
   m_tp_pdgId               = new std::vector<int>;
   m_tp_status              = new std::vector<int>;
+  m_tp_isReco              = new std::vector<uint8_t>;
+  m_tp_recoProb            = new std::vector<float>;
+  m_tp_recoID              = new std::vector<int>;
+  m_tp_recoIndex           = new std::vector<int>;
   m_tp_isStable            = new std::vector<uint8_t>;
   m_tp_isDark              = new std::vector<uint8_t>;
   m_tp_isDesc              = new std::vector<uint8_t>;
@@ -218,6 +222,10 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_tp_nChildren           = new std::vector<int>;
   m_tp_child_pdgId         = new std::vector<std::vector<int>>;
   m_tp_child_status        = new std::vector<std::vector<int>>;
+  m_tp_pvtx                = new std::vector<uint8_t>;
+  m_tp_pvtx_ID             = new std::vector<int>;
+  m_tp_pvtx_index          = new std::vector<int>;
+  m_tp_pvtx_r              = new std::vector<float>;
   m_tp_truthJetMatch       = new std::vector<uint8_t>;
   m_tp_truthJetMatch_ID    = new std::vector<int>;
   m_tp_truthJetMatch_index = new std::vector<int>;
@@ -279,6 +287,7 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_truthVtx_mass         = new std::vector<float>;
   m_truthVtx_childOpAng   = new std::vector<float>;
   m_truthVtx_nOutP        = new std::vector<int>;
+  m_truthVtx_isRecoble    = new std::vector<uint8_t>;
   m_truthVtx_nDesc        = new std::vector<int>;
   m_truthVtx_nRecoDesc    = new std::vector<int>;
   m_truthVtx_nSelDesc     = new std::vector<int>;
@@ -287,11 +296,15 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_truthVtx_descPhi      = new std::vector<float>;
   m_truthVtx_descE        = new std::vector<float>;
   m_truthVtx_descM        = new std::vector<float>;
+  m_truthVtx_desc_ID      = new std::vector<std::vector<int>>;
+  m_truthVtx_desc_index   = new std::vector<std::vector<int>>;
   m_truthVtx_desc_pt      = new std::vector<std::vector<float>>;
   m_truthVtx_desc_eta     = new std::vector<std::vector<float>>;
   m_truthVtx_desc_phi     = new std::vector<std::vector<float>>;
   m_truthVtx_desc_E       = new std::vector<std::vector<float>>;
   m_truthVtx_desc_M       = new std::vector<std::vector<float>>;
+  m_truthVtx_desc_isReco  = new std::vector<std::vector<uint8_t>>;
+  m_truthVtx_desc_recoID  = new std::vector<std::vector<int>>;
   m_truthVtx_nPos         = new std::vector<int>;
   m_truthVtx_reco_n       = new std::vector<int>;
   m_truthVtx_reco_ID      = new std::vector<std::vector<int>>;
@@ -299,6 +312,13 @@ EJsHistogramManager :: EJsHistogramManager ( const std::string& name, const std:
   m_truthVtx_reco_score   = new std::vector<std::vector<float>>;
   m_truthVtx_reco_posID   = new std::vector<std::vector<int>>;
   m_truthVtx_reco_resid   = new std::vector<std::vector<float>>;
+  m_truthVtx_reco_x       = new std::vector<std::vector<float>>;
+  m_truthVtx_reco_y       = new std::vector<std::vector<float>>;
+  m_truthVtx_reco_z       = new std::vector<std::vector<float>>;
+  m_truthVtx_reco_r       = new std::vector<std::vector<float>>;
+  m_truthVtx_reco_phi     = new std::vector<std::vector<float>>;
+  m_truthVtx_reco_ntrk    = new std::vector<std::vector<int>>;
+  m_truthVtx_reco_nseltrk = new std::vector<std::vector<int>>;
 
   // secondary vertex branches
   m_secVtx_n               = 0;
@@ -519,6 +539,10 @@ EJsHistogramManager :: ~EJsHistogramManager ()
   delete m_tp_charge;
   delete m_tp_pdgId;
   delete m_tp_status;
+  delete m_tp_isReco;
+  delete m_tp_recoProb;
+  delete m_tp_recoID;
+  delete m_tp_recoIndex;
   delete m_tp_isStable;
   delete m_tp_isDark;
   delete m_tp_isDesc;
@@ -531,6 +555,10 @@ EJsHistogramManager :: ~EJsHistogramManager ()
   delete m_tp_nChildren;
   delete m_tp_child_pdgId;
   delete m_tp_child_status;
+  delete m_tp_pvtx;
+  delete m_tp_pvtx_ID;
+  delete m_tp_pvtx_index;
+  delete m_tp_pvtx_r;
   delete m_tp_truthJetMatch;
   delete m_tp_truthJetMatch_ID;
   delete m_tp_truthJetMatch_index;
@@ -590,6 +618,7 @@ EJsHistogramManager :: ~EJsHistogramManager ()
   delete m_truthVtx_mass;
   delete m_truthVtx_childOpAng;
   delete m_truthVtx_nOutP;
+  delete m_truthVtx_isRecoble;
   delete m_truthVtx_nDesc;
   delete m_truthVtx_nRecoDesc;
   delete m_truthVtx_nSelDesc;
@@ -598,11 +627,15 @@ EJsHistogramManager :: ~EJsHistogramManager ()
   delete m_truthVtx_descPhi;
   delete m_truthVtx_descE;
   delete m_truthVtx_descM;
+  delete m_truthVtx_desc_ID;
+  delete m_truthVtx_desc_index;
   delete m_truthVtx_desc_pt;
   delete m_truthVtx_desc_eta;
   delete m_truthVtx_desc_phi;
   delete m_truthVtx_desc_E;
   delete m_truthVtx_desc_M;
+  delete m_truthVtx_desc_isReco;
+  delete m_truthVtx_desc_recoID;
   delete m_truthVtx_nPos;
   delete m_truthVtx_reco_n;
   delete m_truthVtx_reco_ID;
@@ -610,6 +643,13 @@ EJsHistogramManager :: ~EJsHistogramManager ()
   delete m_truthVtx_reco_score;
   delete m_truthVtx_reco_posID;
   delete m_truthVtx_reco_resid;
+  delete m_truthVtx_reco_x;
+  delete m_truthVtx_reco_y;
+  delete m_truthVtx_reco_z;
+  delete m_truthVtx_reco_r;
+  delete m_truthVtx_reco_phi;
+  delete m_truthVtx_reco_ntrk;
+  delete m_truthVtx_reco_nseltrk;
 
   // secondary vertex branches
   delete m_secVtx_ID;
@@ -1021,6 +1061,10 @@ StatusCode EJsHistogramManager :: connectTruthParts ( TTree* tree, const std::st
   connectBranch<float>                    ( name, tree, "M",                   &m_tp_M                   );
   connectBranch<float>                    ( name, tree, "charge",              &m_tp_charge              );
   connectBranch<int>                      ( name, tree, "status",              &m_tp_status              );
+  connectBranch<uint8_t>                  ( name, tree, "isReco",              &m_tp_isReco              );
+  connectBranch<float>                    ( name, tree, "recoProb",            &m_tp_recoProb            );
+  connectBranch<int>                      ( name, tree, "recoID",              &m_tp_recoID              );
+  connectBranch<int>                      ( name, tree, "recoIndex",           &m_tp_recoIndex           );
   connectBranch<uint8_t>                  ( name, tree, "isStable",            &m_tp_isStable            );
   connectBranch<uint8_t>                  ( name, tree, "isDark",              &m_tp_isDark              );
   connectBranch<uint8_t>                  ( name, tree, "isDescendant",        &m_tp_isDesc              );
@@ -1034,6 +1078,10 @@ StatusCode EJsHistogramManager :: connectTruthParts ( TTree* tree, const std::st
   connectBranch<int>                      ( name, tree, "nChildren",           &m_tp_nChildren           );
   connectBranch<std::vector<int>>         ( name, tree, "child_pdgId",         &m_tp_child_pdgId         );
   connectBranch<std::vector<int>>         ( name, tree, "child_status",        &m_tp_child_status        );
+  connectBranch<uint8_t>                  ( name, tree, "hasProdVtx",          &m_tp_pvtx                );
+  connectBranch<int>                      ( name, tree, "prodVtx_ID",          &m_tp_pvtx_ID             );
+  connectBranch<int>                      ( name, tree, "prodVtx_index",       &m_tp_pvtx_index          );
+  connectBranch<float>                    ( name, tree, "prodVtx_r",           &m_tp_pvtx_r              );
   connectBranch<uint8_t>                  ( name, tree, "truthJetMatch",       &m_tp_truthJetMatch       );
   connectBranch<int>                      ( name, tree, "truthJetMatch_ID",    &m_tp_truthJetMatch_ID    );
   connectBranch<int>                      ( name, tree, "truthJetMatch_index", &m_tp_truthJetMatch_index );
@@ -1174,6 +1222,7 @@ StatusCode EJsHistogramManager :: connectTruthVerts ( TTree* tree, const std::st
   connectBranch<float>       ( name, tree, "mass",                 &m_truthVtx_mass       );
   connectBranch<float>       ( name, tree, "childOpenAngle",       &m_truthVtx_childOpAng );
   connectBranch<int>         ( name, tree, "nOutP",                &m_truthVtx_nOutP      );
+  connectBranch<uint8_t>     ( name, tree, "isReconstructible",    &m_truthVtx_isRecoble  );
   
   connectBranch<int>         ( name, tree, "descendant_n",         &m_truthVtx_nDesc      );
   connectBranch<int>         ( name, tree, "descendant_nReco",     &m_truthVtx_nRecoDesc  );
@@ -1183,21 +1232,32 @@ StatusCode EJsHistogramManager :: connectTruthVerts ( TTree* tree, const std::st
   connectBranch<float>       ( name, tree, "descendant_sumPhi",    &m_truthVtx_descPhi    );
   connectBranch<float>       ( name, tree, "descendant_sumE",      &m_truthVtx_descE      );
   connectBranch<float>       ( name, tree, "descendant_sumM",      &m_truthVtx_descM      );
-  
-  connectBranch<std::vector<float>> ( name, tree, "descendant_pt",  &m_truthVtx_desc_pt    );
-  connectBranch<std::vector<float>> ( name, tree, "descendant_eta", &m_truthVtx_desc_eta   );
-  connectBranch<std::vector<float>> ( name, tree, "descendant_phi", &m_truthVtx_desc_phi   );
-  connectBranch<std::vector<float>> ( name, tree, "descendant_E",   &m_truthVtx_desc_E     );
-  connectBranch<std::vector<float>> ( name, tree, "descendant_M",   &m_truthVtx_desc_M     );
+
+  connectBranch<std::vector<int>>     ( name, tree, "descendant_ID",     &m_truthVtx_desc_ID     );
+  connectBranch<std::vector<int>>     ( name, tree, "descendant_index",  &m_truthVtx_desc_index  );
+  connectBranch<std::vector<float>>   ( name, tree, "descendant_pt",     &m_truthVtx_desc_pt     );
+  connectBranch<std::vector<float>>   ( name, tree, "descendant_eta",    &m_truthVtx_desc_eta    );
+  connectBranch<std::vector<float>>   ( name, tree, "descendant_phi",    &m_truthVtx_desc_phi    );
+  connectBranch<std::vector<float>>   ( name, tree, "descendant_E",      &m_truthVtx_desc_E      );
+  connectBranch<std::vector<float>>   ( name, tree, "descendant_M",      &m_truthVtx_desc_M      );
+  connectBranch<std::vector<uint8_t>> ( name, tree, "descendant_isReco", &m_truthVtx_desc_isReco );
+  connectBranch<std::vector<int>>     ( name, tree, "descendant_recoID", &m_truthVtx_desc_recoID );
 
   connectBranch<int> ( name, tree, "physPos_n", &m_truthVtx_nPos );
 
-  connectBranch<int>                ( name, tree, "matchedRecoVtx_n",                 &m_truthVtx_reco_n     );
-  connectBranch<std::vector<int>>   ( name, tree, "matchedRecoVtx_ID",                &m_truthVtx_reco_ID    );
-  connectBranch<std::vector<int>>   ( name, tree, "matchedRecoVtx_index",             &m_truthVtx_reco_index );
-  connectBranch<std::vector<float>> ( name, tree, "matchedRecoVtx_matchScore",        &m_truthVtx_reco_score );
-  connectBranch<std::vector<int>>   ( name, tree, "matchedRecoVtx_reprTruthPosID",    &m_truthVtx_reco_posID );
-  connectBranch<std::vector<float>> ( name, tree, "matchedRecoVtx_residual_distance", &m_truthVtx_reco_resid );
+  connectBranch<int>                ( name, tree, "matchedRecoVtx_n",                 &m_truthVtx_reco_n       );
+  connectBranch<std::vector<int>>   ( name, tree, "matchedRecoVtx_ID",                &m_truthVtx_reco_ID      );
+  connectBranch<std::vector<int>>   ( name, tree, "matchedRecoVtx_index",             &m_truthVtx_reco_index   );
+  connectBranch<std::vector<float>> ( name, tree, "matchedRecoVtx_matchScore",        &m_truthVtx_reco_score   );
+  connectBranch<std::vector<int>>   ( name, tree, "matchedRecoVtx_reprTruthPosID",    &m_truthVtx_reco_posID   );
+  connectBranch<std::vector<float>> ( name, tree, "matchedRecoVtx_residual_distance", &m_truthVtx_reco_resid   );
+  connectBranch<std::vector<float>> ( name, tree, "matchedRecoVtx_x",                 &m_truthVtx_reco_x       );
+  connectBranch<std::vector<float>> ( name, tree, "matchedRecoVtx_y",                 &m_truthVtx_reco_y       );
+  connectBranch<std::vector<float>> ( name, tree, "matchedRecoVtx_z",                 &m_truthVtx_reco_z       );
+  connectBranch<std::vector<float>> ( name, tree, "matchedRecoVtx_r",                 &m_truthVtx_reco_r       );
+  connectBranch<std::vector<float>> ( name, tree, "matchedRecoVtx_phi",               &m_truthVtx_reco_phi     );
+  connectBranch<std::vector<int>>   ( name, tree, "matchedRecoVtx_ntrk",              &m_truthVtx_reco_ntrk    );
+  connectBranch<std::vector<int>>   ( name, tree, "matchedRecoVtx_ntrk_sel",          &m_truthVtx_reco_nseltrk );
   
   return StatusCode::SUCCESS;
 }
@@ -1210,6 +1270,11 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   if ( m_debug ) Info( "EJsHistogramManager::initialize()", "booking histograms" );
 
   // initialize object types
+
+  // --> signal vertex types
+  std::vector<std::string> hSgnlDV    = { "Loose",  "Mid",     "Tight"  };
+  std::vector<std::string> hSgnlDVstr = { "Loose,", "Medium,", "Tight," };
+  m_nTypeSgnlDVs = hSgnlDV.size();
 
   // --> truth jets
   std::vector<std::string> hTJ, hTJstr;
@@ -1280,15 +1345,14 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   }
 
   std::string baseJSVup = base_dv.name; baseJSVup[0] = toupper(baseJSVup[0]);
-  std::vector<std::string> gJSV = { "loose", "mid", "tight" };
   std::vector<std::string> JSV;
   std::vector<std::string> JSVstr;
   JSV    .push_back( baseJSVup    +  "SV" );
   JSVstr .push_back( base_dv.name + "-SV" );
-  for ( size_t ijsv = 0; ijsv != gJSV.size(); ++ijsv ) {
-    std::string gJSVup = gJSV[ijsv]; gJSVup[0] = toupper(gJSVup[0]);
-    JSV    .push_back( gJSVup     + "GoodSV"   );
-    JSVstr .push_back( gJSV[ijsv] + "-good-SV" );
+  for ( size_t ijsv = 0; ijsv != hSgnlDV.size(); ++ijsv ) {
+    std::string sgnlJSVstr = hSgnlDVstr[ijsv]; sgnlJSVstr.pop_back();
+    JSV    .push_back( hSgnlDV[ijsv] + "SV"  );
+    JSVstr .push_back( sgnlJSVstr    + "-SV" );
   }
   m_nTypeJSVs = JSV.size();
 
@@ -1650,7 +1714,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   }
   // vertices passing material map veto
   std::string matmapDV    = "MatMap";
-  std::string matmapDVstr = "material veto,";
+  std::string matmapDVstr = "material-veto,";
   if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_matmapVerts    ) {
     hDV     .push_back( matmapDV    );
     hDVstr  .push_back( matmapDVstr );
@@ -1661,7 +1725,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   }
   // vertices passing fiducial volume cuts
   std::string fidDV    = "Fiduc";
-  std::string fidDVstr = "fiducial volume,";
+  std::string fidDVstr = "fiducial-volume,";
   if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_fiducVerts    ) {
     hDV     .push_back( fidDV    );
     hDVstr  .push_back( fidDVstr );
@@ -1683,7 +1747,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   }
   // vertices w/ k-short mass window removed
   std::string ksmDV    = "Ksm";
-  std::string ksmDVstr = "k-short mass,";
+  std::string ksmDVstr = "k-short-mass,";
   if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_ksmVerts    ) {
     hDV    .push_back( ksmDV    );
     hDVstr .push_back( ksmDVstr );
@@ -1731,8 +1795,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   // --> add max/sum-sqrterr-d0/z0 (wrt SV) cuts if necessary...
   std::string minsqerrd0DV    = "Minsqerrd0";
   std::string minsqerrz0DV    = "Minsqerrz0";
-  std::string minsqerrd0DVstr = "min sqrt d0-error,";
-  std::string minsqerrz0DVstr = "min sqrt z0-error,";
+  std::string minsqerrd0DVstr = "min-sqrt-d0-error,";
+  std::string minsqerrz0DVstr = "min-sqrt-z0-error,";
   if ( m_histoInfoSwitch->m_vertices    || m_histoInfoSwitch->m_d0z0ErrVerts    ) {
     hDV     .push_back( minsqerrd0DV    );
     hDV     .push_back( minsqerrz0DV    );
@@ -1775,20 +1839,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   hGDVstr .push_back( minsqerrz0DVstr );
   hGDVstr .push_back( jDVstr          );
   hGDVstr .push_back( ljDVstr         );
-  std::string goodDV    = "Good";
-  std::string goodDVstr = "good,";
-  hDV     .push_back( "ByNJetLoose"          + goodDV    );
-  hJDV    .push_back( "Loose"                + goodDV    );
-  hDVstr  .push_back( "by-N-lead-jet loose-" + goodDVstr );
-  hJDVstr .push_back( "loose-"               + goodDVstr );
-  hDV     .push_back( "ByNJetMid"            + goodDV    );
-  hJDV    .push_back( "Mid"                  + goodDV    );
-  hDVstr  .push_back( "by-N-lead-jet mid-"   + goodDVstr );
-  hJDVstr .push_back( "mid-"                 + goodDVstr );
-  hDV     .push_back( "ByNJetTight"          + goodDV    );
-  hJDV    .push_back( "Tight"                + goodDV    );
-  hDVstr  .push_back( "by-N-lead-jet tight-" + goodDVstr );
-  hJDVstr .push_back( "tight-"               + goodDVstr );
+  for ( size_t isdv = 0; isdv != hSgnlDV.size(); ++isdv ) {
+    hDV     .push_back( "ByNJet"         + hSgnlDV    [isdv] ); // test ByJet
+    hJDV    .push_back(                    hSgnlDV    [isdv] );
+    hDVstr  .push_back( "by-N-lead-jet " + hSgnlDVstr [isdv] ); // test by-jet
+    hJDVstr .push_back(                    hSgnlDVstr [isdv] );
+  }
 
   // number of (jet) DV types excluding truth matching
   m_nTypeBDVs  = hDV .size();
@@ -1885,18 +1941,18 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     if ( !m_histoInfoSwitch->m_abcdcutOnly ) {
       // event info: pileup
       if ( m_histoInfoSwitch->m_pileup ) {
-	h_npv       .push_back( book( name, "nPV",       "n primary vertices",               50, 0,  50 ) );
-	h_actualMu  .push_back( book( name, "actualMu",  "actual interactions / crossing",  100, 0, 100 ) );
-	h_averageMu .push_back( book( name, "averageMu", "average interactions / crossing", 100, 0, 100 ) );
+	h_npv       .push_back( book( name, "nPV",       "n primary vertices",              50, 0, 50 ) );
+	h_actualMu  .push_back( book( name, "actualMu",  "actual interactions / crossing",  90, 0, 90 ) );
+	h_averageMu .push_back( book( name, "averageMu", "average interactions / crossing", 90, 0, 90 ) );
 	
 	h_corrActualMu
-	  .push_back( book( name, "corrActualMu",       "corrected actual interactions / crossing",           100, 0, 100 ) );
+	  .push_back( book( name, "corrActualMu",       "corrected actual interactions / crossing",           90, 0, 90 ) );
 	h_corrAverageMu
-	  .push_back( book( name, "corrAverageMu",      "corrected average interactions / crossing",          100, 0, 100 ) );
+	  .push_back( book( name, "corrAverageMu",      "corrected average interactions / crossing",          90, 0, 90 ) );
 	h_corrScaleActualMu
-	  .push_back( book( name, "corrScaleActualMu",  "corrected + scaled actual interactions / crossing",  100, 0, 100 ) );
+	  .push_back( book( name, "corrScaleActualMu",  "corrected + scaled actual interactions / crossing",  90, 0, 90 ) );
 	h_corrScaleAverageMu
-	  .push_back( book( name, "corrScaleAverageMu", "corrected + scaled average interactions / crossing", 100, 0, 100 ) );
+	  .push_back( book( name, "corrScaleAverageMu", "corrected + scaled average interactions / crossing", 90, 0, 90 ) );
       }
       // event info: primary vertex
       if ( m_histoInfoSwitch->m_pv ) {
@@ -4093,7 +4149,6 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	h_tpart_parentPdgId .push_back( book( name, htp + "_parentPdgId", htpstr + " parent pdgId",    ptp_n[i],  ptp_l[i],  ptp_h[i] ) );
 	h_tpart_nChildren   .push_back( book( name, htp + "_nChildren",   "n " + htpstr + " children", ntpch[i],         0,  ntpch[i] ) );
 	h_tpart_childPdgId  .push_back( book( name, htp + "_childPdgId",  htpstr + " child pdgId",    ptch_n[i], ptch_l[i], ptch_h[i] ) );
-	
       } // end loop over truth particle types
       h_tp_n           .push_back( h_tpart_n           );
       h_tp_pt          .push_back( h_tpart_pt          );
@@ -4107,6 +4162,377 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       h_tp_parentPdgId .push_back( h_tpart_parentPdgId );
       h_tp_nChildren   .push_back( h_tpart_nChildren   );
       h_tp_childPdgId  .push_back( h_tpart_childPdgId  );
+      if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llptrkRecoEff ) {
+	std::vector<TH1F*> h_llptrk_x;
+	std::vector<TH1F*> h_llptrk_y;
+	std::vector<TH1F*> h_llptrk_z;
+	std::vector<TH1F*> h_llptrk_r;
+	std::vector<TH1F*> h_llptrk_pt;
+	std::vector<TH1F*> h_llptrk_eta;
+	std::vector<TH1F*> h_llptrk_phi;
+	std::vector<TH1F*> h_llptrk_d0;
+	std::vector<TH1F*> h_llptrk_z0;
+	std::vector<TH1F*> h_llptrk_avgMu;
+	std::vector<TH1F*> h_llptrk_minDR;
+	std::vector<TH1F*> h_rllptrk_x;
+	std::vector<TH1F*> h_rllptrk_y;
+	std::vector<TH1F*> h_rllptrk_z;
+	std::vector<TH1F*> h_rllptrk_r;
+	std::vector<TH1F*> h_rllptrk_pt;
+	std::vector<TH1F*> h_rllptrk_eta;
+	std::vector<TH1F*> h_rllptrk_phi;
+	std::vector<TH1F*> h_rllptrk_d0;
+	std::vector<TH1F*> h_rllptrk_z0;
+	std::vector<TH1F*> h_rllptrk_avgMu;
+	std::vector<TH1F*> h_rllptrk_minDR;
+	std::vector<TH1F*> h_rllptrk_resid_d0;
+	std::vector<TH1F*> h_rllptrk_resid_z0;
+	std::vector<TH1F*> h_rllptrk_resid_qOverP;
+	std::vector<TH2F*> h_rllptrk_resid_d0_r;
+	std::vector<TH2F*> h_rllptrk_resid_d0_pt;
+	std::vector<TH2F*> h_rllptrk_resid_z0_r;
+	std::vector<TH2F*> h_rllptrk_resid_z0_pt;
+	std::vector<TH2F*> h_rllptrk_resid_qOverP_r;
+	std::vector<TH2F*> h_rllptrk_resid_qOverP_pt;
+	std::vector<TH1F*> h_sllptrk_x;
+	std::vector<TH1F*> h_sllptrk_y;
+	std::vector<TH1F*> h_sllptrk_z;
+	std::vector<TH1F*> h_sllptrk_r;
+	std::vector<TH1F*> h_sllptrk_pt;
+	std::vector<TH1F*> h_sllptrk_eta;
+	std::vector<TH1F*> h_sllptrk_phi;
+	std::vector<TH1F*> h_sllptrk_d0;
+	std::vector<TH1F*> h_sllptrk_z0;
+	std::vector<TH1F*> h_sllptrk_avgMu;
+	std::vector<TH1F*> h_sllptrk_minDR;
+	std::vector<TH1F*> h_sllptrk_resid_d0;
+	std::vector<TH1F*> h_sllptrk_resid_z0;
+	std::vector<TH1F*> h_sllptrk_resid_qOverP;
+	std::vector<TH2F*> h_sllptrk_resid_d0_r;
+	std::vector<TH2F*> h_sllptrk_resid_d0_pt;
+	std::vector<TH2F*> h_sllptrk_resid_z0_r;
+	std::vector<TH2F*> h_sllptrk_resid_z0_pt;
+	std::vector<TH2F*> h_sllptrk_resid_qOverP_r;
+	std::vector<TH2F*> h_sllptrk_resid_qOverP_pt;
+	std::vector<TH1F*> h_lllptrk_x;
+	std::vector<TH1F*> h_lllptrk_y;
+	std::vector<TH1F*> h_lllptrk_z;
+	std::vector<TH1F*> h_lllptrk_r;
+	std::vector<TH1F*> h_lllptrk_pt;
+	std::vector<TH1F*> h_lllptrk_eta;
+	std::vector<TH1F*> h_lllptrk_phi;
+	std::vector<TH1F*> h_lllptrk_d0;
+	std::vector<TH1F*> h_lllptrk_z0;
+	std::vector<TH1F*> h_lllptrk_avgMu;
+	std::vector<TH1F*> h_lllptrk_minDR;
+	std::vector<TH1F*> h_lllptrk_resid_d0;
+	std::vector<TH1F*> h_lllptrk_resid_z0;
+	std::vector<TH1F*> h_lllptrk_resid_qOverP;
+	std::vector<TH2F*> h_lllptrk_resid_d0_r;
+	std::vector<TH2F*> h_lllptrk_resid_d0_pt;
+	std::vector<TH2F*> h_lllptrk_resid_z0_r;
+	std::vector<TH2F*> h_lllptrk_resid_z0_pt;
+	std::vector<TH2F*> h_lllptrk_resid_qOverP_r;
+	std::vector<TH2F*> h_lllptrk_resid_qOverP_pt;
+	std::vector<TH1F*> h_llptrk_reff_x;
+	std::vector<TH1F*> h_llptrk_reff_y;
+	std::vector<TH1F*> h_llptrk_reff_z;
+	std::vector<TH1F*> h_llptrk_reff_r;
+	std::vector<TH1F*> h_llptrk_reff_pt;
+	std::vector<TH1F*> h_llptrk_reff_eta;
+	std::vector<TH1F*> h_llptrk_reff_phi;
+	std::vector<TH1F*> h_llptrk_reff_d0;
+	std::vector<TH1F*> h_llptrk_reff_z0;
+	std::vector<TH1F*> h_llptrk_reff_avgMu;
+	std::vector<TH1F*> h_llptrk_reff_minDR;
+	std::vector<TH1F*> h_llptrk_seff_x;
+	std::vector<TH1F*> h_llptrk_seff_y;
+	std::vector<TH1F*> h_llptrk_seff_z;
+	std::vector<TH1F*> h_llptrk_seff_r;
+	std::vector<TH1F*> h_llptrk_seff_pt;
+	std::vector<TH1F*> h_llptrk_seff_eta;
+	std::vector<TH1F*> h_llptrk_seff_phi;
+	std::vector<TH1F*> h_llptrk_seff_d0;
+	std::vector<TH1F*> h_llptrk_seff_z0;
+	std::vector<TH1F*> h_llptrk_seff_avgMu;
+	std::vector<TH1F*> h_llptrk_seff_minDR;
+	std::vector<TH1F*> h_llptrk_leff_x;
+	std::vector<TH1F*> h_llptrk_leff_y;
+	std::vector<TH1F*> h_llptrk_leff_z;
+	std::vector<TH1F*> h_llptrk_leff_r;
+	std::vector<TH1F*> h_llptrk_leff_pt;
+	std::vector<TH1F*> h_llptrk_leff_eta;
+	std::vector<TH1F*> h_llptrk_leff_phi;
+	std::vector<TH1F*> h_llptrk_leff_d0;
+	std::vector<TH1F*> h_llptrk_leff_z0;
+	std::vector<TH1F*> h_llptrk_leff_avgMu;
+	std::vector<TH1F*> h_llptrk_leff_minDR;
+	// loop over descendant types
+	for ( size_t i = 0; i != hLLP.size(); ++i ) {
+	  std::string hllpstr = hLLPstr[i]; hllpstr.pop_back();
+	  std::string htp     = hLLP[i] + "Trk"; htp[0] = tolower(htp[0]);
+	  std::string htpstr  = hllpstr + " truth track";
+	  std::string hrtp    = "reco"  + hLLP[i] + "Trk";
+	  std::string hrtpstr = "reconstructed "              + htpstr;
+	  std::string hstp    = "std"   + hLLP[i] + "Trk";
+	  std::string hstpstr = "standard reconstructed "     + htpstr;
+	  std::string hltp    = "lrt"   + hLLP[i] + "Trk";
+	  std::string hltpstr = "large-radius reconstructed " + htpstr;
+	  h_llptrk_x          .push_back( book( name, htp  + "_x",             htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
+	  h_llptrk_y          .push_back( book( name, htp  + "_y",             htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
+	  h_llptrk_z          .push_back( book( name, htp  + "_z",             htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
+	  h_llptrk_r          .push_back( book( name, htp  + "_r",             htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
+	  h_llptrk_pt         .push_back( book( name, htp  + "_pt",            htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
+	  h_llptrk_eta        .push_back( book( name, htp  + "_eta",           htpstr  + " eta",                   100,    -3,    3 ) );
+	  h_llptrk_phi        .push_back( book( name, htp  + "_phi",           htpstr  + " phi",                   100,  -3.5,  3.5 ) );
+	  h_llptrk_d0         .push_back( book( name, htp  + "_d0",            htpstr  + " d0 [mm]",               100,  -300,  300 ) );
+	  h_llptrk_z0         .push_back( book( name, htp  + "_z0",            htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
+	  h_llptrk_avgMu      .push_back( book( name, htp  + "_avgMu",         htpstr  + " average pp interactions",90,     0,   90 ) );
+	  h_llptrk_minDR      .push_back( book( name, htp  + "_minDR",         htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
+	  h_rllptrk_x         .push_back( book( name, hrtp + "_x",             hrtpstr + " production x-pos [mm]", 100,  -450,  450 ) );
+	  h_rllptrk_y         .push_back( book( name, hrtp + "_y",             hrtpstr + " production y-pos [mm]", 100,  -450,  450 ) );
+	  h_rllptrk_z         .push_back( book( name, hrtp + "_z",             hrtpstr + " production z-pos [mm]", 100, -2000, 2000 ) );
+	  h_rllptrk_r         .push_back( book( name, hrtp + "_r",             hrtpstr + " production r-pos [mm]", 100,     0,  450 ) );
+	  h_rllptrk_pt        .push_back( book( name, hrtp + "_pt",            hrtpstr + " p_{T} [GeV]",           100,     0,  300 ) ); // 100
+	  h_rllptrk_eta       .push_back( book( name, hrtp + "_eta",           hrtpstr + " eta",                   100,    -3,    3 ) );
+	  h_rllptrk_phi       .push_back( book( name, hrtp + "_phi",           hrtpstr + " phi",                   100,  -3.5,  3.5 ) );
+	  h_rllptrk_d0        .push_back( book( name, hrtp + "_d0",            hrtpstr + " d0 [mm]",               100,  -300,  300 ) );
+	  h_rllptrk_z0        .push_back( book( name, hrtp + "_z0",            hrtpstr + " z0 [mm]",               100, -1500, 1500 ) );
+	  h_rllptrk_avgMu     .push_back( book( name, hrtp + "_avgMu",         hrtpstr + " average pp interactions",90,     0,   90 ) );
+	  h_rllptrk_minDR     .push_back( book( name, hrtp + "_minDR",         hrtpstr + " nearest truth track dR",100,     0,  1.0 ) );
+	  h_rllptrk_resid_d0
+	    .push_back( book( name, hrtp + "_resid_d0",         hrtpstr + " residual d0 [mm]",      100,  -30,   30 ) ); // 10
+	  h_rllptrk_resid_z0
+	    .push_back( book( name, hrtp + "_resid_z0",         hrtpstr + " residual z0 [mm]",      100, -100,  100 ) ); // 10
+	  h_rllptrk_resid_qOverP
+	    .push_back( book( name, hrtp + "_resid_qOverP",     hrtpstr + " residual q/p [e/GeV]",  100, -0.5,  0.5 ) ); // 1
+	  h_rllptrk_resid_d0_r
+	    .push_back( book( name, hrtp + "_resid_d0_r",       hrtpstr + " production r-pos [mm]", 100,    0,  450,
+			      hrtpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	  h_rllptrk_resid_d0_pt
+	    .push_back( book( name, hrtp + "_resid_d0_pt",      hrtpstr + " p_{T} [GeV]",           100,    0,  300,
+			      hrtpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	  h_rllptrk_resid_z0_r
+	    .push_back( book( name, hrtp + "_resid_z0_r",       hrtpstr + " production r-pos [mm]", 100,    0,  450,
+			      hrtpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	  h_rllptrk_resid_z0_pt
+	    .push_back( book( name, hrtp + "_resid_z0_pt",      hrtpstr + " p_{T} [GeV]",           100,    0,  300,
+			      hrtpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	  h_rllptrk_resid_qOverP_r
+	    .push_back( book( name, hrtp + "_resid_qOverP_r",   hrtpstr + " production r-pos [mm]", 100,    0,  450,
+			      hrtpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	  h_rllptrk_resid_qOverP_pt
+	    .push_back( book( name, hrtp + "_resid_qOverP_pt",  hrtpstr + " p_{T} [GeV]",           100,    0,  300,
+			      hrtpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	  h_sllptrk_x         .push_back( book( name, hstp + "_x",             hstpstr + " production x-pos [mm]", 100,  -450,  450 ) );
+	  h_sllptrk_y         .push_back( book( name, hstp + "_y",             hstpstr + " production y-pos [mm]", 100,  -450,  450 ) );
+	  h_sllptrk_z         .push_back( book( name, hstp + "_z",             hstpstr + " production z-pos [mm]", 100, -2000, 2000 ) );
+	  h_sllptrk_r         .push_back( book( name, hstp + "_r",             hstpstr + " production r-pos [mm]", 100,     0,  450 ) );
+	  h_sllptrk_pt        .push_back( book( name, hstp + "_pt",            hstpstr + " p_{T} [GeV]",           100,     0,  300 ) );
+	  h_sllptrk_eta       .push_back( book( name, hstp + "_eta",           hstpstr + " eta",                   100,    -3,    3 ) );
+	  h_sllptrk_phi       .push_back( book( name, hstp + "_phi",           hstpstr + " phi",                   100,  -3.5,  3.5 ) );
+	  h_sllptrk_d0        .push_back( book( name, hstp + "_d0",            hstpstr + " d0 [mm]",               100,  -300,  300 ) );
+	  h_sllptrk_z0        .push_back( book( name, hstp + "_z0",            hstpstr + " z0 [mm]",               100, -1500, 1500 ) );
+	  h_sllptrk_avgMu     .push_back( book( name, hstp + "_avgMu",         hstpstr + " average pp interactions",90,     0,   90 ) );
+	  h_sllptrk_minDR     .push_back( book( name, hstp + "_minDR",         hstpstr + " nearest truth track dR",100,     0,  1.0 ) );
+	  h_sllptrk_resid_d0
+	    .push_back( book( name, hstp + "_resid_d0",         hstpstr + " residual d0 [mm]",      100,  -30,  30 ) );
+	  h_sllptrk_resid_z0
+	    .push_back( book( name, hstp + "_resid_z0",         hstpstr + " residual z0 [mm]",      100, -100, 100 ) );
+	  h_sllptrk_resid_qOverP
+	    .push_back( book( name, hstp + "_resid_qOverP",     hstpstr + " residual q/p [e/GeV]",  100, -0.5, 0.5 ) );
+	  h_sllptrk_resid_d0_r
+	    .push_back( book( name, hstp + "_resid_d0_r",       hstpstr + " production r-pos [mm]", 100,    0, 450,
+			      hstpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	  h_sllptrk_resid_d0_pt
+	    .push_back( book( name, hstp + "_resid_d0_pt",       hstpstr + " p_{T} [GeV]",          100,    0, 300,
+			      hstpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	  h_sllptrk_resid_z0_r
+	    .push_back( book( name, hstp + "_resid_z0_r",       hstpstr + " production r-pos [mm]", 100,    0, 450,
+			      hstpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	  h_sllptrk_resid_z0_pt
+	    .push_back( book( name, hstp + "_resid_z0_pt",      hstpstr + " p_{T} [GeV]",           100,    0, 300,
+			      hstpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	  h_sllptrk_resid_qOverP_r
+	    .push_back( book( name, hstp + "_resid_qOverP_r",   hstpstr + " production r-pos [mm]", 100,    0, 450,
+			      hstpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	  h_sllptrk_resid_qOverP_pt
+	    .push_back( book( name, hstp + "_resid_qOverP_pt",  hstpstr + " p_{T} [GeV]",           100,    0, 300,
+			      hstpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	  h_lllptrk_x         .push_back( book( name, hltp + "_x",             hltpstr + " production x-pos [mm]", 100,  -450,  450 ) );
+	  h_lllptrk_y         .push_back( book( name, hltp + "_y",             hltpstr + " production y-pos [mm]", 100,  -450,  450 ) );
+	  h_lllptrk_z         .push_back( book( name, hltp + "_z",             hltpstr + " production z-pos [mm]", 100, -2000, 2000 ) );
+	  h_lllptrk_r         .push_back( book( name, hltp + "_r",             hltpstr + " production r-pos [mm]", 100,     0,  450 ) );
+	  h_lllptrk_pt        .push_back( book( name, hltp + "_pt",            hltpstr + " p_{T} [GeV]",           100,     0,  300 ) );
+	  h_lllptrk_eta       .push_back( book( name, hltp + "_eta",           hltpstr + " eta",                   100,    -3,    3 ) );
+	  h_lllptrk_phi       .push_back( book( name, hltp + "_phi",           hltpstr + " phi",                   100,  -3.5,  3.5 ) );
+	  h_lllptrk_d0        .push_back( book( name, hltp + "_d0",            hltpstr + " d0 [mm]",               100,  -300,  300 ) );
+	  h_lllptrk_z0        .push_back( book( name, hltp + "_z0",            hltpstr + " z0 [mm]",               100, -1500, 1500 ) );
+	  h_lllptrk_avgMu     .push_back( book( name, hltp + "_avgMu",         hltpstr + " average pp interactions",90,     0,   90 ) );
+	  h_lllptrk_minDR     .push_back( book( name, hltp  + "_minDR",        hltpstr + " nearest truth track dR",100,     0,  1.0 ) );
+	  h_lllptrk_resid_d0
+	    .push_back( book( name, hltp + "_resid_d0",         hltpstr + " residual d0 [mm]",      100,  -30,  30 ) );
+	  h_lllptrk_resid_z0
+	    .push_back( book( name, hltp + "_resid_z0",         hltpstr + " residual z0 [mm]",      100, -100, 100 ) );
+	  h_lllptrk_resid_qOverP
+	    .push_back( book( name, hltp + "_resid_qOverP",     hltpstr + " residual q/p [e/GeV]",  100, -0.5, 0.5 ) );
+	  h_lllptrk_resid_d0_r
+	    .push_back( book( name, hltp + "_resid_d0_r",       hltpstr + " production r-pos [mm]", 100,    0, 450,
+			      hltpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	  h_lllptrk_resid_d0_pt
+	    .push_back( book( name, hltp + "_resid_d0_pt",      hltpstr + " p_{T} [GeV]",           100,    0, 300,
+			      hltpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	  h_lllptrk_resid_z0_r
+	    .push_back( book( name, hltp + "_resid_z0_r",       hltpstr + " production r-pos [mm]", 100,    0, 450,
+			      hltpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	  h_lllptrk_resid_z0_pt
+	    .push_back( book( name, hltp + "_resid_z0_pt",      hltpstr + " p_{T} [GeV]",           100,    0, 300,
+			      hltpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	  h_lllptrk_resid_qOverP_r
+	    .push_back( book( name, hltp + "_resid_qOverP_r",   hltpstr + " production r-pos [mm]", 100,    0, 450,
+			      hltpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	  h_lllptrk_resid_qOverP_pt
+	    .push_back( book( name, hltp + "_resid_qOverP_pt",  hltpstr + " p_{T} [GeV]",           100,    0, 300,
+			      hltpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	  h_llptrk_reff_x     .push_back( book( name, htp  + "_recoEff_x",     htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
+	  h_llptrk_reff_y     .push_back( book( name, htp  + "_recoEff_y",     htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
+	  h_llptrk_reff_z     .push_back( book( name, htp  + "_recoEff_z",     htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
+	  h_llptrk_reff_r     .push_back( book( name, htp  + "_recoEff_r",     htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
+	  h_llptrk_reff_pt    .push_back( book( name, htp  + "_recoEff_pt",    htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
+	  h_llptrk_reff_eta   .push_back( book( name, htp  + "_recoEff_eta",   htpstr  + " eta",                   100,    -3,    3 ) );
+	  h_llptrk_reff_phi   .push_back( book( name, htp  + "_recoEff_phi",   htpstr  + " phi",                   100,  -3.5,  3.5 ) );
+	  h_llptrk_reff_d0    .push_back( book( name, htp  + "_recoEff_d0",    htpstr  + " d0 [mm]",               100,  -300,  300 ) );
+	  h_llptrk_reff_z0    .push_back( book( name, htp  + "_recoEff_z0",    htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
+	  h_llptrk_reff_avgMu .push_back( book( name, htp  + "_recoEff_avgMu", htpstr  + " average pp interactions",90,     0,   90 ) );
+	  h_llptrk_reff_minDR .push_back( book( name, htp  + "_recoEff_minDR", htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
+	  h_llptrk_seff_x     .push_back( book( name, htp  + "_stdEff_x",      htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
+	  h_llptrk_seff_y     .push_back( book( name, htp  + "_stdEff_y",      htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
+	  h_llptrk_seff_z     .push_back( book( name, htp  + "_stdEff_z",      htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
+	  h_llptrk_seff_r     .push_back( book( name, htp  + "_stdEff_r",      htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
+	  h_llptrk_seff_pt    .push_back( book( name, htp  + "_stdEff_pt",     htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
+	  h_llptrk_seff_eta   .push_back( book( name, htp  + "_stdEff_eta",    htpstr  + " eta",                   100,    -3,    3 ) );
+	  h_llptrk_seff_phi   .push_back( book( name, htp  + "_stdEff_phi",    htpstr  + " phi",                   100,  -3.5,  3.5 ) );
+	  h_llptrk_seff_d0    .push_back( book( name, htp  + "_stdEff_d0",     htpstr  + " d0 [mm]",               100,  -300,  300 ) );
+	  h_llptrk_seff_z0    .push_back( book( name, htp  + "_stdEff_z0",     htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
+	  h_llptrk_seff_avgMu .push_back( book( name, htp  + "_stdEff_avgMu",  htpstr  + " average pp interactions",90,     0,   90 ) );
+	  h_llptrk_seff_minDR .push_back( book( name, htp  + "_stdEff_minDR",  htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
+	  h_llptrk_leff_x     .push_back( book( name, htp  + "_lrtEff_x",      htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
+	  h_llptrk_leff_y     .push_back( book( name, htp  + "_lrtEff_y",      htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
+	  h_llptrk_leff_z     .push_back( book( name, htp  + "_lrtEff_z",      htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
+	  h_llptrk_leff_r     .push_back( book( name, htp  + "_lrtEff_r",      htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
+	  h_llptrk_leff_pt    .push_back( book( name, htp  + "_lrtEff_pt",     htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
+	  h_llptrk_leff_eta   .push_back( book( name, htp  + "_lrtEff_eta",    htpstr  + " eta",                   100,    -3,    3 ) );
+	  h_llptrk_leff_phi   .push_back( book( name, htp  + "_lrtEff_phi",    htpstr  + " phi",                   100,  -3.5,  3.5 ) );
+	  h_llptrk_leff_d0    .push_back( book( name, htp  + "_lrtEff_d0",     htpstr  + " d0 [mm]",               100,  -300,  300 ) );
+	  h_llptrk_leff_z0    .push_back( book( name, htp  + "_lrtEff_z0",     htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
+	  h_llptrk_leff_avgMu .push_back( book( name, htp  + "_lrtEff_avgMu",  htpstr  + " average pp interactions",90,     0,   90 ) );
+	  h_llptrk_leff_minDR .push_back( book( name, htp  + "_lrtEff_minDR",  htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
+	}
+	h_LLPtrk_x             .push_back( h_llptrk_x          );
+	h_LLPtrk_y             .push_back( h_llptrk_y          );
+	h_LLPtrk_z             .push_back( h_llptrk_z          );
+	h_LLPtrk_r             .push_back( h_llptrk_r          );
+	h_LLPtrk_pt            .push_back( h_llptrk_pt         );
+	h_LLPtrk_eta           .push_back( h_llptrk_eta        );
+	h_LLPtrk_phi           .push_back( h_llptrk_phi        );
+	h_LLPtrk_d0            .push_back( h_llptrk_d0         );
+	h_LLPtrk_z0            .push_back( h_llptrk_z0         );
+	h_LLPtrk_avgMu         .push_back( h_llptrk_avgMu      );
+	h_LLPtrk_minDR         .push_back( h_llptrk_minDR      );
+	h_recoLLPtrk_x         .push_back( h_rllptrk_x         );
+	h_recoLLPtrk_y         .push_back( h_rllptrk_y         );
+	h_recoLLPtrk_z         .push_back( h_rllptrk_z         );
+	h_recoLLPtrk_r         .push_back( h_rllptrk_r         );
+	h_recoLLPtrk_pt        .push_back( h_rllptrk_pt        );
+	h_recoLLPtrk_eta       .push_back( h_rllptrk_eta       );
+	h_recoLLPtrk_phi       .push_back( h_rllptrk_phi       );
+	h_recoLLPtrk_d0        .push_back( h_rllptrk_d0        );
+	h_recoLLPtrk_z0        .push_back( h_rllptrk_z0        );
+	h_recoLLPtrk_avgMu     .push_back( h_rllptrk_avgMu     );
+	h_recoLLPtrk_minDR     .push_back( h_rllptrk_minDR     );
+	h_recoLLPtrk_resid_d0        .push_back( h_rllptrk_resid_d0        );
+	h_recoLLPtrk_resid_z0        .push_back( h_rllptrk_resid_z0        );
+	h_recoLLPtrk_resid_qOverP    .push_back( h_rllptrk_resid_qOverP    );
+	h_recoLLPtrk_resid_d0_r      .push_back( h_rllptrk_resid_d0_r      );
+	h_recoLLPtrk_resid_d0_pt     .push_back( h_rllptrk_resid_d0_pt     );
+	h_recoLLPtrk_resid_z0_r      .push_back( h_rllptrk_resid_z0_r      );
+	h_recoLLPtrk_resid_z0_pt     .push_back( h_rllptrk_resid_z0_pt     );
+	h_recoLLPtrk_resid_qOverP_r  .push_back( h_rllptrk_resid_qOverP_r  );
+	h_recoLLPtrk_resid_qOverP_pt .push_back( h_rllptrk_resid_qOverP_pt );
+	h_stdLLPtrk_x          .push_back( h_sllptrk_x         );
+	h_stdLLPtrk_y          .push_back( h_sllptrk_y         );
+	h_stdLLPtrk_z          .push_back( h_sllptrk_z         );
+	h_stdLLPtrk_r          .push_back( h_sllptrk_r         );
+	h_stdLLPtrk_pt         .push_back( h_sllptrk_pt        );
+	h_stdLLPtrk_eta        .push_back( h_sllptrk_eta       );
+	h_stdLLPtrk_phi        .push_back( h_sllptrk_phi       );
+	h_stdLLPtrk_d0         .push_back( h_sllptrk_d0        );
+	h_stdLLPtrk_z0         .push_back( h_sllptrk_z0        );
+	h_stdLLPtrk_avgMu      .push_back( h_sllptrk_avgMu     );
+	h_stdLLPtrk_minDR      .push_back( h_sllptrk_minDR     );
+	h_stdLLPtrk_resid_d0         .push_back( h_sllptrk_resid_d0        );
+	h_stdLLPtrk_resid_z0         .push_back( h_sllptrk_resid_z0        );
+	h_stdLLPtrk_resid_qOverP     .push_back( h_sllptrk_resid_qOverP    );
+	h_stdLLPtrk_resid_d0_r       .push_back( h_sllptrk_resid_d0_r      );
+	h_stdLLPtrk_resid_d0_pt      .push_back( h_sllptrk_resid_d0_pt     );
+	h_stdLLPtrk_resid_z0_r       .push_back( h_sllptrk_resid_z0_r      );
+	h_stdLLPtrk_resid_z0_pt      .push_back( h_sllptrk_resid_z0_pt     );
+	h_stdLLPtrk_resid_qOverP_r   .push_back( h_sllptrk_resid_qOverP_r  );
+	h_stdLLPtrk_resid_qOverP_pt  .push_back( h_sllptrk_resid_qOverP_pt );
+	h_lrtLLPtrk_x          .push_back( h_lllptrk_x         );
+	h_lrtLLPtrk_y          .push_back( h_lllptrk_y         );
+	h_lrtLLPtrk_z          .push_back( h_lllptrk_z         );
+	h_lrtLLPtrk_r          .push_back( h_lllptrk_r         );
+	h_lrtLLPtrk_pt         .push_back( h_lllptrk_pt        );
+	h_lrtLLPtrk_eta        .push_back( h_lllptrk_eta       );
+	h_lrtLLPtrk_phi        .push_back( h_lllptrk_phi       );
+	h_lrtLLPtrk_d0         .push_back( h_lllptrk_d0        );
+	h_lrtLLPtrk_z0         .push_back( h_lllptrk_z0        );
+	h_lrtLLPtrk_avgMu      .push_back( h_lllptrk_avgMu     );
+	h_lrtLLPtrk_minDR      .push_back( h_lllptrk_minDR     );
+	h_lrtLLPtrk_resid_d0         .push_back( h_lllptrk_resid_d0        );
+	h_lrtLLPtrk_resid_z0         .push_back( h_lllptrk_resid_z0        );
+	h_lrtLLPtrk_resid_qOverP     .push_back( h_lllptrk_resid_qOverP    );
+	h_lrtLLPtrk_resid_d0_r       .push_back( h_lllptrk_resid_d0_r      );
+	h_lrtLLPtrk_resid_d0_pt      .push_back( h_lllptrk_resid_d0_pt     );
+	h_lrtLLPtrk_resid_z0_r       .push_back( h_lllptrk_resid_z0_r      );
+	h_lrtLLPtrk_resid_z0_pt      .push_back( h_lllptrk_resid_z0_pt     );
+	h_lrtLLPtrk_resid_qOverP_r   .push_back( h_lllptrk_resid_qOverP_r  );
+	h_lrtLLPtrk_resid_qOverP_pt  .push_back( h_lllptrk_resid_qOverP_pt );
+	h_LLPtrk_recoEff_x     .push_back( h_llptrk_reff_x     );
+	h_LLPtrk_recoEff_y     .push_back( h_llptrk_reff_y     );
+	h_LLPtrk_recoEff_z     .push_back( h_llptrk_reff_z     );
+	h_LLPtrk_recoEff_r     .push_back( h_llptrk_reff_r     );
+	h_LLPtrk_recoEff_pt    .push_back( h_llptrk_reff_pt    );
+	h_LLPtrk_recoEff_eta   .push_back( h_llptrk_reff_eta   );
+	h_LLPtrk_recoEff_phi   .push_back( h_llptrk_reff_phi   );
+	h_LLPtrk_recoEff_d0    .push_back( h_llptrk_reff_d0    );
+	h_LLPtrk_recoEff_z0    .push_back( h_llptrk_reff_z0    );
+	h_LLPtrk_recoEff_avgMu .push_back( h_llptrk_reff_avgMu );
+	h_LLPtrk_recoEff_minDR .push_back( h_llptrk_reff_minDR );
+	h_LLPtrk_stdEff_x      .push_back( h_llptrk_seff_x     );
+	h_LLPtrk_stdEff_y      .push_back( h_llptrk_seff_y     );
+	h_LLPtrk_stdEff_z      .push_back( h_llptrk_seff_z     );
+	h_LLPtrk_stdEff_r      .push_back( h_llptrk_seff_r     );
+	h_LLPtrk_stdEff_pt     .push_back( h_llptrk_seff_pt    );
+	h_LLPtrk_stdEff_eta    .push_back( h_llptrk_seff_eta   );
+	h_LLPtrk_stdEff_phi    .push_back( h_llptrk_seff_phi   );
+	h_LLPtrk_stdEff_d0     .push_back( h_llptrk_seff_d0    );
+	h_LLPtrk_stdEff_z0     .push_back( h_llptrk_seff_z0    );
+	h_LLPtrk_stdEff_avgMu  .push_back( h_llptrk_seff_avgMu );
+	h_LLPtrk_stdEff_minDR  .push_back( h_llptrk_seff_minDR );
+	h_LLPtrk_lrtEff_x      .push_back( h_llptrk_leff_x     );
+	h_LLPtrk_lrtEff_y      .push_back( h_llptrk_leff_y     );
+	h_LLPtrk_lrtEff_z      .push_back( h_llptrk_leff_z     );
+	h_LLPtrk_lrtEff_r      .push_back( h_llptrk_leff_r     );
+	h_LLPtrk_lrtEff_pt     .push_back( h_llptrk_leff_pt    );
+	h_LLPtrk_lrtEff_eta    .push_back( h_llptrk_leff_eta   );
+	h_LLPtrk_lrtEff_phi    .push_back( h_llptrk_leff_phi   );
+	h_LLPtrk_lrtEff_d0     .push_back( h_llptrk_leff_d0    );
+	h_LLPtrk_lrtEff_z0     .push_back( h_llptrk_leff_z0    );
+	h_LLPtrk_lrtEff_avgMu  .push_back( h_llptrk_leff_avgMu );
+	h_LLPtrk_lrtEff_minDR  .push_back( h_llptrk_leff_minDR );
+      } // end reconstruction efficiency
     }
     
 
@@ -4148,24 +4574,330 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<TH1F*> h_llpdvtx_desc_phi;
       std::vector<TH1F*> h_llpdvtx_desc_d0;
       std::vector<TH1F*> h_llpdvtx_desc_z0;
+      std::vector<TH1F*> h_recollpdvtx_x;
+      std::vector<TH1F*> h_recollpdvtx_y;
+      std::vector<TH1F*> h_recollpdvtx_z;
+      std::vector<TH1F*> h_recollpdvtx_r;
+      std::vector<TH1F*> h_recollpdvtx_pt;
+      std::vector<TH1F*> h_recollpdvtx_eta;
+      std::vector<TH1F*> h_recollpdvtx_phi;
+      std::vector<TH1F*> h_recollpdvtx_avgMu;
+      std::vector<TH1F*> h_recollpdvtx_descM;
+      std::vector<TH1F*> h_recollpdvtx_nDesc;
+      std::vector<TH1F*> h_recollpdvtx_nRecoDesc;
+      std::vector<TH1F*> h_recollpdvtx_nSelDesc;
+      std::vector<TH2F*> h_recollpdvtx_nDesc_r;
+      std::vector<TH2F*> h_recollpdvtx_nDesc_z;
+      std::vector<TH2F*> h_recollpdvtx_descM_r;
+      std::vector<TH2F*> h_recollpdvtx_descM_z;
+      std::vector<TH2F*> h_recollpdvtx_nRecoDesc_r;
+      std::vector<TH2F*> h_recollpdvtx_nRecoDesc_z;
+      std::vector<TH2F*> h_recollpdvtx_recoDescM_r;
+      std::vector<TH2F*> h_recollpdvtx_recoDescM_z;
+      std::vector<TH2F*> h_recollpdvtx_nVtxDesc_r;
+      std::vector<TH2F*> h_recollpdvtx_nVtxDesc_z;
+      std::vector<TH2F*> h_recollpdvtx_vtxDescM_r;
+      std::vector<TH2F*> h_recollpdvtx_vtxDescM_z;
+      std::vector<TH2F*> h_recollpdvtx_fracRecoDesc_r;
+      std::vector<TH2F*> h_recollpdvtx_fracRecoDesc_z;
+      std::vector<TH2F*> h_recollpdvtx_fracRecoDescM_r;
+      std::vector<TH2F*> h_recollpdvtx_fracRecoDescM_z;
+      std::vector<TH2F*> h_recollpdvtx_fracVtxDesc_r;
+      std::vector<TH2F*> h_recollpdvtx_fracVtxDesc_z;
+      std::vector<TH2F*> h_recollpdvtx_fracVtxDescM_r;
+      std::vector<TH2F*> h_recollpdvtx_fracVtxDescM_z;
+      std::vector<TH1F*> h_reco2llpdvtx_x;
+      std::vector<TH1F*> h_reco2llpdvtx_y;
+      std::vector<TH1F*> h_reco2llpdvtx_z;
+      std::vector<TH1F*> h_reco2llpdvtx_r;
+      std::vector<TH1F*> h_reco2llpdvtx_pt;
+      std::vector<TH1F*> h_reco2llpdvtx_eta;
+      std::vector<TH1F*> h_reco2llpdvtx_phi;
+      std::vector<TH1F*> h_reco2llpdvtx_avgMu;
+      std::vector<TH1F*> h_reco2llpdvtx_descM;
+      std::vector<TH1F*> h_reco2llpdvtx_nDesc;
+      std::vector<TH1F*> h_reco2llpdvtx_nRecoDesc;
+      std::vector<TH1F*> h_reco2llpdvtx_nSelDesc;
+      std::vector<TH1F*> h_slctllpdvtx_x;
+      std::vector<TH1F*> h_slctllpdvtx_y;
+      std::vector<TH1F*> h_slctllpdvtx_z;
+      std::vector<TH1F*> h_slctllpdvtx_r;
+      std::vector<TH1F*> h_slctllpdvtx_pt;
+      std::vector<TH1F*> h_slctllpdvtx_eta;
+      std::vector<TH1F*> h_slctllpdvtx_phi;
+      std::vector<TH1F*> h_slctllpdvtx_avgMu;
+      std::vector<TH1F*> h_slctllpdvtx_descM;
+      std::vector<TH1F*> h_slctllpdvtx_nDesc;
+      std::vector<TH1F*> h_slctllpdvtx_nRecoDesc;
+      std::vector<TH1F*> h_slctllpdvtx_nSelDesc;
+      std::vector<TH1F*> h_matchllpdvtx_score;
+      std::vector<TH1F*> h_matchllpdvtx_x;
+      std::vector<TH1F*> h_matchllpdvtx_y;
+      std::vector<TH1F*> h_matchllpdvtx_z;
+      std::vector<TH1F*> h_matchllpdvtx_r;
+      std::vector<TH1F*> h_matchllpdvtx_pt;
+      std::vector<TH1F*> h_matchllpdvtx_eta;
+      std::vector<TH1F*> h_matchllpdvtx_phi;
+      std::vector<TH1F*> h_matchllpdvtx_avgMu;
+      std::vector<TH1F*> h_matchllpdvtx_descM;
+      std::vector<TH1F*> h_matchllpdvtx_nDesc;
+      std::vector<TH1F*> h_matchllpdvtx_nRecoDesc;
+      std::vector<TH1F*> h_matchllpdvtx_nSelDesc;
+      std::vector<TH1F*> h_matchllpdvtx_resid_x;
+      std::vector<TH1F*> h_matchllpdvtx_resid_y;
+      std::vector<TH1F*> h_matchllpdvtx_resid_z;
+      std::vector<TH1F*> h_matchllpdvtx_resid_r;
+      std::vector<TH1F*> h_matchllpdvtx_resid_rphi;
+      std::vector<TH2F*> h_matchllpdvtx_resid_z_r;
+      std::vector<TH2F*> h_matchllpdvtx_resid_z_z;
+      std::vector<TH2F*> h_matchllpdvtx_resid_z_ntrk;
+      std::vector<TH2F*> h_matchllpdvtx_resid_z_nseltrk;
+      std::vector<TH2F*> h_matchllpdvtx_resid_r_r;
+      std::vector<TH2F*> h_matchllpdvtx_resid_r_z;
+      std::vector<TH2F*> h_matchllpdvtx_resid_r_ntrk;
+      std::vector<TH2F*> h_matchllpdvtx_resid_r_nseltrk;
+      std::vector<TH2F*> h_matchllpdvtx_resid_rphi_r;
+      std::vector<TH2F*> h_matchllpdvtx_resid_rphi_z;
+      std::vector<TH2F*> h_matchllpdvtx_resid_rphi_ntrk;
+      std::vector<TH2F*> h_matchllpdvtx_resid_rphi_nseltrk;
+      std::vector<TH1F*> h_recofllpdvtx_x;
+      std::vector<TH1F*> h_recofllpdvtx_y;
+      std::vector<TH1F*> h_recofllpdvtx_z;
+      std::vector<TH1F*> h_recofllpdvtx_r;
+      std::vector<TH1F*> h_recofllpdvtx_pt;
+      std::vector<TH1F*> h_recofllpdvtx_eta;
+      std::vector<TH1F*> h_recofllpdvtx_phi;
+      std::vector<TH1F*> h_recofllpdvtx_avgMu;
+      std::vector<TH1F*> h_recofllpdvtx_descM;
+      std::vector<TH1F*> h_recofllpdvtx_nDesc;
+      std::vector<TH1F*> h_recofllpdvtx_nRecoDesc;
+      std::vector<TH1F*> h_recofllpdvtx_nSelDesc;
+      std::vector<TH2F*> h_recofllpdvtx_nDesc_r;
+      std::vector<TH2F*> h_recofllpdvtx_nDesc_z;
+      std::vector<TH2F*> h_recofllpdvtx_descM_r;
+      std::vector<TH2F*> h_recofllpdvtx_descM_z;
+      std::vector<TH2F*> h_recofllpdvtx_nRecoDesc_r;
+      std::vector<TH2F*> h_recofllpdvtx_nRecoDesc_z;
+      std::vector<TH2F*> h_recofllpdvtx_recoDescM_r;
+      std::vector<TH2F*> h_recofllpdvtx_recoDescM_z;
+      std::vector<std::vector<TH2F*>> h_recofllpdvtx_nVtxDesc_r;
+      std::vector<std::vector<TH2F*>> h_recofllpdvtx_nVtxDesc_z;
+      std::vector<std::vector<TH2F*>> h_recofllpdvtx_vtxDescM_r;
+      std::vector<std::vector<TH2F*>> h_recofllpdvtx_vtxDescM_z;
+      std::vector<TH2F*> h_recofllpdvtx_fracRecoDesc_r;
+      std::vector<TH2F*> h_recofllpdvtx_fracRecoDesc_z;
+      std::vector<TH2F*> h_recofllpdvtx_fracRecoDescM_r;
+      std::vector<TH2F*> h_recofllpdvtx_fracRecoDescM_z;
+      std::vector<std::vector<TH2F*>> h_recofllpdvtx_fracVtxDesc_r;
+      std::vector<std::vector<TH2F*>> h_recofllpdvtx_fracVtxDesc_z;
+      std::vector<std::vector<TH2F*>> h_recofllpdvtx_fracVtxDescM_r;
+      std::vector<std::vector<TH2F*>> h_recofllpdvtx_fracVtxDescM_z;
+      std::vector<TH1F*> h_reco2fllpdvtx_x;
+      std::vector<TH1F*> h_reco2fllpdvtx_y;
+      std::vector<TH1F*> h_reco2fllpdvtx_z;
+      std::vector<TH1F*> h_reco2fllpdvtx_r;
+      std::vector<TH1F*> h_reco2fllpdvtx_pt;
+      std::vector<TH1F*> h_reco2fllpdvtx_eta;
+      std::vector<TH1F*> h_reco2fllpdvtx_phi;
+      std::vector<TH1F*> h_reco2fllpdvtx_avgMu;
+      std::vector<TH1F*> h_reco2fllpdvtx_descM;
+      std::vector<TH1F*> h_reco2fllpdvtx_nDesc;
+      std::vector<TH1F*> h_reco2fllpdvtx_nRecoDesc;
+      std::vector<TH1F*> h_reco2fllpdvtx_nSelDesc;
+      std::vector<TH1F*> h_slctfllpdvtx_x;
+      std::vector<TH1F*> h_slctfllpdvtx_y;
+      std::vector<TH1F*> h_slctfllpdvtx_z;
+      std::vector<TH1F*> h_slctfllpdvtx_r;
+      std::vector<TH1F*> h_slctfllpdvtx_pt;
+      std::vector<TH1F*> h_slctfllpdvtx_eta;
+      std::vector<TH1F*> h_slctfllpdvtx_phi;
+      std::vector<TH1F*> h_slctfllpdvtx_avgMu;
+      std::vector<TH1F*> h_slctfllpdvtx_descM;
+      std::vector<TH1F*> h_slctfllpdvtx_nDesc;
+      std::vector<TH1F*> h_slctfllpdvtx_nRecoDesc;
+      std::vector<TH1F*> h_slctfllpdvtx_nSelDesc;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_score;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_x;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_y;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_z;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_r;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_pt;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_eta;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_phi;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_avgMu;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_descM;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_nDesc;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_nRecoDesc;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_nSelDesc;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_resid_x;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_resid_y;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_resid_z;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_resid_r;
+      std::vector<std::vector<TH1F*>> h_smatchllpdvtx_resid_rphi;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_z_r;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_z_z;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_z_ntrk;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_z_nseltrk;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_r_r;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_r_z;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_r_ntrk;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_r_nseltrk;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_rphi_r;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_rphi_z;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_rphi_ntrk;
+      std::vector<std::vector<TH2F*>> h_smatchllpdvtx_resid_rphi_nseltrk;
+      std::vector<TH1F*> h_llpdvtx_accept_x;
+      std::vector<TH1F*> h_llpdvtx_accept_y;
+      std::vector<TH1F*> h_llpdvtx_accept_z;
+      std::vector<TH1F*> h_llpdvtx_accept_r;
+      std::vector<TH1F*> h_llpdvtx_accept_pt;
+      std::vector<TH1F*> h_llpdvtx_accept_eta;
+      std::vector<TH1F*> h_llpdvtx_accept_phi;
+      std::vector<TH1F*> h_llpdvtx_accept_avgMu;
+      std::vector<TH1F*> h_llpdvtx_accept_descM;
+      std::vector<TH1F*> h_llpdvtx_accept_nDesc;
+      std::vector<TH1F*> h_llpdvtx_accept_nRecoDesc;
+      std::vector<TH1F*> h_llpdvtx_accept_nSelDesc;
+      std::vector<TH1F*> h_llpdvtx_recoEff_x;
+      std::vector<TH1F*> h_llpdvtx_recoEff_y;
+      std::vector<TH1F*> h_llpdvtx_recoEff_z;
+      std::vector<TH1F*> h_llpdvtx_recoEff_r;
+      std::vector<TH1F*> h_llpdvtx_recoEff_pt;
+      std::vector<TH1F*> h_llpdvtx_recoEff_eta;
+      std::vector<TH1F*> h_llpdvtx_recoEff_phi;
+      std::vector<TH1F*> h_llpdvtx_recoEff_avgMu;
+      std::vector<TH1F*> h_llpdvtx_recoEff_descM;
+      std::vector<TH1F*> h_llpdvtx_recoEff_nDesc;
+      std::vector<TH1F*> h_llpdvtx_recoEff_nRecoDesc;
+      std::vector<TH1F*> h_llpdvtx_recoEff_nSelDesc;
+      std::vector<TH1F*> h_llpdvtx_algEff_x;
+      std::vector<TH1F*> h_llpdvtx_algEff_y;
+      std::vector<TH1F*> h_llpdvtx_algEff_z;
+      std::vector<TH1F*> h_llpdvtx_algEff_r;
+      std::vector<TH1F*> h_llpdvtx_algEff_pt;
+      std::vector<TH1F*> h_llpdvtx_algEff_eta;
+      std::vector<TH1F*> h_llpdvtx_algEff_phi;
+      std::vector<TH1F*> h_llpdvtx_algEff_avgMu;
+      std::vector<TH1F*> h_llpdvtx_algEff_descM;
+      std::vector<TH1F*> h_llpdvtx_algEff_nDesc;
+      std::vector<TH1F*> h_llpdvtx_algEff_nRecoDesc;
+      std::vector<TH1F*> h_llpdvtx_algEff_nSelDesc;
+      std::vector<TH1F*> h_llpdvtx_coreEff_x;
+      std::vector<TH1F*> h_llpdvtx_coreEff_y;
+      std::vector<TH1F*> h_llpdvtx_coreEff_z;
+      std::vector<TH1F*> h_llpdvtx_coreEff_r;
+      std::vector<TH1F*> h_llpdvtx_coreEff_pt;
+      std::vector<TH1F*> h_llpdvtx_coreEff_eta;
+      std::vector<TH1F*> h_llpdvtx_coreEff_phi;
+      std::vector<TH1F*> h_llpdvtx_coreEff_avgMu;
+      std::vector<TH1F*> h_llpdvtx_coreEff_descM;
+      std::vector<TH1F*> h_llpdvtx_coreEff_nDesc;
+      std::vector<TH1F*> h_llpdvtx_coreEff_nRecoDesc;
+      std::vector<TH1F*> h_llpdvtx_coreEff_nSelDesc;
+      std::vector<TH1F*> h_llpdvtx_seedEff_x;
+      std::vector<TH1F*> h_llpdvtx_seedEff_y;
+      std::vector<TH1F*> h_llpdvtx_seedEff_z;
+      std::vector<TH1F*> h_llpdvtx_seedEff_r;
+      std::vector<TH1F*> h_llpdvtx_seedEff_pt;
+      std::vector<TH1F*> h_llpdvtx_seedEff_eta;
+      std::vector<TH1F*> h_llpdvtx_seedEff_phi;
+      std::vector<TH1F*> h_llpdvtx_seedEff_avgMu;
+      std::vector<TH1F*> h_llpdvtx_seedEff_descM;
+      std::vector<TH1F*> h_llpdvtx_seedEff_nDesc;
+      std::vector<TH1F*> h_llpdvtx_seedEff_nRecoDesc;
+      std::vector<TH1F*> h_llpdvtx_seedEff_nSelDesc;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_x;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_y;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_z;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_r;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_pt;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_eta;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_phi;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_avgMu;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_descM;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_nDesc;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_nRecoDesc;
+      std::vector<TH1F*> h_llpdvtx_sgnlaccept_nSelDesc;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_x;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_y;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_z;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_r;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_pt;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_eta;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_phi;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_avgMu;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_descM;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_nDesc;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_nRecoDesc;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlrecoEff_nSelDesc;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_x;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_y;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_z;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_r;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_pt;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_eta;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_phi;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_avgMu;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_descM;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_nDesc;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_nRecoDesc;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlalgEff_nSelDesc;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_x;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_y;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_z;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_r;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_pt;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_eta;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_phi;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_avgMu;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_descM;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_nDesc;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_nRecoDesc;
+      std::vector<std::vector<TH1F*>> h_llpdvtx_sgnlcoreEff_nSelDesc;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_x;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_y;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_z;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_r;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_pt;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_eta;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_phi;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_avgMu;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_descM;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_nDesc;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_nRecoDesc;
+      std::vector<TH1F*> h_llpdvtx_sgnlseedEff_nSelDesc;
       for ( size_t i = 0; i != hLLP.size(); ++i ) {
 	// llp decay truth vertex basics
-	std::string hllp      = hLLP    [i] + "DecayVtx"; hllp[0] = tolower(hllp[0]);
-	std::string hllpstr   = hLLPstr [i]; hllpstr.pop_back();
-	std::string hllpstrpl = hllpstr; hllpstr += " decay vertex"; hllpstrpl += " decay vertices";
-	std::string hllpdstr  = hllpstr +   " descendant";
-	std::string hllpndstr = hllpstr + " n-descendant";
+	std::string hllp       = hLLP    [i] + "DecayVtx"; hllp[0] = tolower(hllp[0]);
+	std::string hllpstr    = hLLPstr [i]; hllpstr.pop_back();
+	std::string hllpstrpl  = hllpstr; hllpstr += " decay vertex"; hllpstrpl += " decay vertices";
+	std::string hllpdstr   = hllpstr +   " descendant";
+	std::string hllpndstr  = hllpstr + " n-descendant";
+	std::string hrllp      = "recoble"   + hLLP[i] + "DecayVtx";
+	std::string hrllpstr   = "reconstructible "          + hllpstr;
+	std::string hr2llp     = "reco"      + hLLP[i] + "DecayVtx";
+	std::string hr2llpstr  = "reconstructed "            + hllpstr;
+	std::string hsllp      = "sel"       + hLLP[i] + "DecayVtx";
+	std::string hsllpstr   = "selected "                 + hllpstr;
+	std::string hmllp      = "recoMatch" + hLLP[i] + "DecayVtx";
+	std::string hmllpstr   = "reco-matched "             + hllpstr;
+	std::string hrfllp     = "fiduc"     + hLLP[i] + "DecayVtx";
+	std::string hrfllpstr  = "reconstructible fiducial " + hllpstr;
+	std::string hr2fllp    = "recoFiduc" + hLLP[i] + "DecayVtx";
+	std::string hr2fllpstr = "reconstructed fiducial "   + hllpstr;
+	std::string hsfllp     = "selFiduc"  + hLLP[i] + "DecayVtx";
+	std::string hsfllpstr  = "selected fiducial "        + hllpstr;
 	h_llpdvtx_n          .push_back( book( name, hllp + "_n",          "n " + hllpstrpl,                  100,     0,  100 ) );
-	h_llpdvtx_z          .push_back( book( name, hllp + "_z",          hllpstr + " z-pos [mm]",           100, -3000, 3000 ) );
+	h_llpdvtx_z          .push_back( book( name, hllp + "_z",          hllpstr + " z-pos [mm]",           100, -2500, 2500 ) );
 	h_llpdvtx_r          .push_back( book( name, hllp + "_r",          hllpstr + " r-pos [mm]",           100,     0,  600 ) );
-	h_llpdvtx_pt         .push_back( book( name, hllp + "_pt",         hllpstr + " p_{T} [GeV]",          100,     0,  250 ) );
+	h_llpdvtx_pt         .push_back( book( name, hllp + "_pt",         hllpstr + " p_{T} [GeV]",          100,     0,  500 ) );
 	h_llpdvtx_eta        .push_back( book( name, hllp + "_eta",        hllpstr + " eta",                  100,    -5,    5 ) );
 	h_llpdvtx_phi        .push_back( book( name, hllp + "_phi",        hllpstr + " phi",                  100,  -3.5,  3.5 ) );
 	h_llpdvtx_mass       .push_back( book( name, hllp + "_mass",       hllpstr + " mass [GeV]",           100,     0,   30 ) );
 	h_llpdvtx_childOpAng .push_back( book( name, hllp + "_childOpAng", hllpstr + " opening angle",        100,     0,    6 ) );
-	h_llpdvtx_nOutP      .push_back( book( name, hllp + "_nOutP",      hllpstr + " n outgoing particles",  15,     0,   15 ) );
+	h_llpdvtx_nOutP      .push_back( book( name, hllp + "_nOutP",      hllpstr + " n outgoing particles",   5,     0,    5 ) );
+	h_llpdvtx_ndesc      .push_back( book( name, hllp + "_nDesc",      "n " + hllpdstr + "s",              20,     0,   20 ) );
 	if ( m_histoInfoSwitch->m_llpDesc ) {
-	  h_llpdvtx_ndesc    .push_back( book( name, hllp + "_nDesc",      "n " + hllpdstr + "s",              20,     0,   20 ) );
 	  h_llpdvtx_descPt   .push_back( book( name, hllp + "_descPt",     hllpndstr + " p_{T} [GeV]",        100,     0,  250 ) );
 	  h_llpdvtx_descEta  .push_back( book( name, hllp + "_descEta",    hllpndstr + " eta",                100,    -5,    5 ) );
 	  h_llpdvtx_descPhi  .push_back( book( name, hllp + "_descPhi",    hllpndstr + " phi",                100,  -3.5,  3.5 ) );
@@ -4177,7 +4909,687 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  h_llpdvtx_desc_d0  .push_back( book( name, hllp + "_desc_d0",    hllpdstr  + " d0 [mm]",            100,  -300,  300 ) );
 	  h_llpdvtx_desc_z0  .push_back( book( name, hllp + "_desc_z0",    hllpdstr  + " z0 [mm]",            100, -1500, 1500 ) );
 	}
+	if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llpvtxRecoEff ) {
+	  h_recollpdvtx_x              .push_back( book( name, hrllp   + "_x",         hrllpstr   + " x-pos [mm]",             100,  -600,  600 ) );
+	  h_recollpdvtx_y              .push_back( book( name, hrllp   + "_y",         hrllpstr   + " y-pos [mm]",             100,  -600,  600 ) );
+	  h_recollpdvtx_z              .push_back( book( name, hrllp   + "_z",         hrllpstr   + " z-pos [mm]",             100, -2500, 2500 ) );
+	  h_recollpdvtx_r              .push_back( book( name, hrllp   + "_r",         hrllpstr   + " r-pos [mm]",             100,     0,  600 ) );
+	  h_recollpdvtx_pt             .push_back( book( name, hrllp   + "_pt",        hrllpstr   + " p_{T} [GeV]",            100,     0,  500 ) );
+	  h_recollpdvtx_eta            .push_back( book( name, hrllp   + "_eta",       hrllpstr   + " eta",                    100,    -5,    5 ) );
+	  h_recollpdvtx_phi            .push_back( book( name, hrllp   + "_phi",       hrllpstr   + " phi",                    100,  -3.5,  3.5 ) );
+	  h_recollpdvtx_avgMu          .push_back( book( name, hrllp   + "_avgMu",     hrllpstr   + " average pp interactions", 90,     0,   90 ) );
+	  h_recollpdvtx_descM          .push_back( book( name, hrllp   + "_descM",     hrllpstr   + " descendant mass [GeV]",  100,     0,   21 ) );
+	  h_recollpdvtx_nDesc          .push_back( book( name, hrllp   + "_nDesc",     "n "+hrllpstr+" descendants",                20, 0,   20 ) );
+	  h_recollpdvtx_nRecoDesc      .push_back( book( name, hrllp   + "_nRecoDesc", "n "+hrllpstr+" reconstructed descendants",  20, 0,   20 ) );
+	  h_recollpdvtx_nSelDesc       .push_back( book( name, hrllp   + "_nSelDesc",  "n "+hrllpstr+" selected descendants",       20, 0,   20 ) );
+	  h_recollpdvtx_nDesc_r        .push_back( book( name, hrllp   + "_nDesc_r",         hrllpstr       + " r-pos [mm]",   100,     0,  600,
+							 "n " + hrllpstr + " descendants",                     20, 0, 20 ) );
+	  h_recollpdvtx_nDesc_z        .push_back( book( name, hrllp   + "_nDesc_z",         hrllpstr       + " z-pos [mm]",   100, -2500, 2500,
+							 "n " + hrllpstr + " descendants",                     20, 0, 20 ) );
+	  h_recollpdvtx_descM_r        .push_back( book( name, hrllp   + "_descM_r",         hrllpstr       + " r-pos [mm]",   100,     0,  600,
+							 hrllpstr + " descendant mass [GeV]",                 100, 0, 21 ) );
+	  h_recollpdvtx_descM_z        .push_back( book( name, hrllp   + "_descM_z",         hrllpstr       + " z-pos [mm]",   100, -2500, 2500,
+							 hrllpstr + " descendant mass [GeV]",                 100, 0, 21 ) );
+	  h_recollpdvtx_nRecoDesc_r    .push_back( book( name, hrllp   + "_nRecoDesc_r",     hrllpstr   + " r-pos [mm]",       100,     0,  600,
+							 "n " + hrllpstr + " reconstructed descendants",       20, 0, 20 ) );
+	  h_recollpdvtx_nRecoDesc_z    .push_back( book( name, hrllp   + "_nRecoDesc_z",     hrllpstr   + " z-pos [mm]",       100, -2500, 2500,
+							 "n " + hrllpstr + " reconstructed descendants",       20, 0, 20 ) );
+	  h_recollpdvtx_recoDescM_r    .push_back( book( name, hrllp   + "_recoDescM_r",     hrllpstr   + " r-pos [mm]",       100,     0,  600,
+							 hrllpstr + " reconstructed descendant mass [GeV]",   100, 0, 21 ) );
+	  h_recollpdvtx_recoDescM_z    .push_back( book( name, hrllp   + "_recoDescM_z",     hrllpstr   + " z-pos [mm]",       100, -2500, 2500,
+							 hrllpstr + " reconstructed descendant mass [GeV]",   100, 0, 21 ) );
+	  h_recollpdvtx_nVtxDesc_r     .push_back( book( name, hrllp   + "_nVtxDesc_r",      hrllpstr    + " r-pos [mm]",      100,     0,  600,
+							 "n " + hrllpstr + " vertexed descendants",            20, 0, 20 ) );
+	  h_recollpdvtx_nVtxDesc_z     .push_back( book( name, hrllp   + "_nVtxDesc_z",      hrllpstr    + " z-pos [mm]",      100, -2500, 2500,
+							 "n " + hrllpstr + " vertexed descendants",            20, 0, 20 ) );
+	  h_recollpdvtx_vtxDescM_r     .push_back( book( name, hrllp   + "_vtxDescM_r",      hrllpstr    + " r-pos [mm]",      100,     0,  600,
+							 hrllpstr + " vertexed descendant mass [GeV]",        100, 0, 21 ) );
+	  h_recollpdvtx_vtxDescM_z     .push_back( book( name, hrllp   + "_vtxDescM_z",      hrllpstr    + " z-pos [mm]",      100, -2500, 2500,
+							 hrllpstr + " vertexed descendant mass [GeV]",        100, 0, 21 ) );
+	  h_recollpdvtx_fracRecoDesc_r .push_back( book( name, hrllp   + "_fracRecoDesc_r",  hrllpstr   + " r-pos [mm]",       100,     0,  600,
+							 "fraction " + hrllpstr + " reconstructed descendants",100,0,  1 ) );
+	  h_recollpdvtx_fracRecoDesc_z .push_back( book( name, hrllp   + "_fracRecoDesc_z",  hrllpstr   + " z-pos [mm]",       100, -2500, 2500,
+							 "fraction " + hrllpstr + " reconstructed descendants",100,0,  1 ) );
+	  h_recollpdvtx_fracRecoDescM_r.push_back( book( name, hrllp   + "_fracRecoDescM_r", hrllpstr   + " r-pos [mm]",       100,     0,  600,
+							 hrllpstr + " reconstructed descendant mass fraction", 100,0,  1 ) );
+	  h_recollpdvtx_fracRecoDescM_z.push_back( book( name, hrllp   + "_fracRecoDescM_z", hrllpstr   + " z-pos [mm]",       100, -2500, 2500,
+							 hrllpstr + " reconstructed descendant mass fraction", 100,0,  1 ) );
+	  h_recollpdvtx_fracVtxDesc_r  .push_back( book( name, hrllp   + "_fracVtxDesc_r",   hrllpstr    + " r-pos [mm]",      100,     0,  600,
+							 "fraction " + hrllpstr + " vertexed descendants",     100,0,  1 ) );
+	  h_recollpdvtx_fracVtxDesc_z  .push_back( book( name, hrllp   + "_fracVtxDesc_z",   hrllpstr    + " z-pos [mm]",      100, -2500, 2500,
+							 "fraction " + hrllpstr + " vertexed descendants",     100,0,  1 ) );
+	  h_recollpdvtx_fracVtxDescM_r .push_back( book( name, hrllp   + "_fracVtxDescM_r",  hrllpstr    + " r-pos [mm]",      100,     0,  600,
+							 hrllpstr + " vertexed descendant mass fraction",      100,0,  1 ) );
+	  h_recollpdvtx_fracVtxDescM_z .push_back( book( name, hrllp   + "_fracVtxDescM_z",  hrllpstr    + " z-pos [mm]",      100, -2500, 2500,
+							 hrllpstr + " vertexed descendant mass fraction",      100,0,  1 ) );
+	  h_reco2llpdvtx_x          .push_back( book( name, hr2llp  + "_x",         hr2llpstr  + " x-pos [mm]",             100,  -600,  600 ) );
+	  h_reco2llpdvtx_y          .push_back( book( name, hr2llp  + "_y",         hr2llpstr  + " y-pos [mm]",             100,  -600,  600 ) );
+	  h_reco2llpdvtx_z          .push_back( book( name, hr2llp  + "_z",         hr2llpstr  + " z-pos [mm]",             100, -2500, 2500 ) );
+	  h_reco2llpdvtx_r          .push_back( book( name, hr2llp  + "_r",         hr2llpstr  + " r-pos [mm]",             100,     0,  600 ) );
+	  h_reco2llpdvtx_pt         .push_back( book( name, hr2llp  + "_pt",        hr2llpstr  + " p_{T} [GeV]",            100,     0,  500 ) );
+	  h_reco2llpdvtx_eta        .push_back( book( name, hr2llp  + "_eta",       hr2llpstr  + " eta",                    100,    -5,    5 ) );
+	  h_reco2llpdvtx_phi        .push_back( book( name, hr2llp  + "_phi",       hr2llpstr  + " phi",                    100,  -3.5,  3.5 ) );
+	  h_reco2llpdvtx_avgMu      .push_back( book( name, hr2llp  + "_avgMu",     hr2llpstr  + " average pp interactions", 90,     0,   90 ) );
+	  h_reco2llpdvtx_descM      .push_back( book( name, hr2llp  + "_descM",     hr2llpstr  + " descendant mass [GeV]",  100,     0,   21 ) );
+	  h_reco2llpdvtx_nDesc      .push_back( book( name, hr2llp  + "_nDesc",     "n "+hr2llpstr+" descendants",               20, 0,   20 ) );
+	  h_reco2llpdvtx_nRecoDesc  .push_back( book( name, hr2llp  + "_nRecoDesc", "n "+hr2llpstr+" reconstructed descendants", 20, 0,   20 ) );
+	  h_reco2llpdvtx_nSelDesc   .push_back( book( name, hr2llp  + "_nSelDesc",  "n "+hr2llpstr+" selected descendants",      20, 0,   20 ) );
+	  h_slctllpdvtx_x           .push_back( book( name, hsllp   + "_x",         hsllpstr   + " x-pos [mm]",             100,  -600,  600 ) );
+	  h_slctllpdvtx_y           .push_back( book( name, hsllp   + "_y",         hsllpstr   + " y-pos [mm]",             100,  -600,  600 ) );
+	  h_slctllpdvtx_z           .push_back( book( name, hsllp   + "_z",         hsllpstr   + " z-pos [mm]",             100, -2500, 2500 ) );
+	  h_slctllpdvtx_r           .push_back( book( name, hsllp   + "_r",         hsllpstr   + " r-pos [mm]",             100,     0,  600 ) );
+	  h_slctllpdvtx_pt          .push_back( book( name, hsllp   + "_pt",        hsllpstr   + " p_{T} [GeV]",            100,     0,  500 ) );
+	  h_slctllpdvtx_eta         .push_back( book( name, hsllp   + "_eta",       hsllpstr   + " eta",                    100,    -5,    5 ) );
+	  h_slctllpdvtx_phi         .push_back( book( name, hsllp   + "_phi",       hsllpstr   + " phi",                    100,  -3.5,  3.5 ) );
+	  h_slctllpdvtx_avgMu       .push_back( book( name, hsllp   + "_avgMu",     hsllpstr   + " average pp interactions", 90,     0,   90 ) );
+	  h_slctllpdvtx_descM       .push_back( book( name, hsllp   + "_descM",     hsllpstr   + " descendant mass [GeV]",  100,     0,   21 ) );
+	  h_slctllpdvtx_nDesc       .push_back( book( name, hsllp   + "_nDesc",     "n "+hsllpstr+" descendants",                20, 0,   20 ) );
+	  h_slctllpdvtx_nRecoDesc   .push_back( book( name, hsllp   + "_nRecoDesc", "n "+hsllpstr+" reconstructed descendants",  20, 0,   20 ) );
+	  h_slctllpdvtx_nSelDesc    .push_back( book( name, hsllp   + "_nSelDesc",  "n "+hsllpstr+" selected descendants",       20, 0,   20 ) );
+	  h_matchllpdvtx_score      .push_back( book( name, hmllp   + "_score",     hmllpstr   + " match score",            100,     0,    1 ) );
+	  h_matchllpdvtx_x          .push_back( book( name, hmllp   + "_x",         hmllpstr   + " x-pos [mm]",             100,  -600,  600 ) );
+	  h_matchllpdvtx_y          .push_back( book( name, hmllp   + "_y",         hmllpstr   + " y-pos [mm]",             100,  -600,  600 ) );
+	  h_matchllpdvtx_z          .push_back( book( name, hmllp   + "_z",         hmllpstr   + " z-pos [mm]",             100, -2500, 2500 ) );
+	  h_matchllpdvtx_r          .push_back( book( name, hmllp   + "_r",         hmllpstr   + " r-pos [mm]",             100,     0,  600 ) );
+	  h_matchllpdvtx_pt         .push_back( book( name, hmllp   + "_pt",        hmllpstr   + " p_{T} [GeV]",            100,     0,  500 ) );
+	  h_matchllpdvtx_eta        .push_back( book( name, hmllp   + "_eta",       hmllpstr   + " eta",                    100,    -5,    5 ) );
+	  h_matchllpdvtx_phi        .push_back( book( name, hmllp   + "_phi",       hmllpstr   + " phi",                    100,  -3.5,  3.5 ) );
+	  h_matchllpdvtx_avgMu      .push_back( book( name, hmllp   + "_avgMu",     hmllpstr   + " average pp interaction",  90,     0,   90 ) );
+	  h_matchllpdvtx_descM      .push_back( book( name, hmllp   + "_descM",     hmllpstr   + " descendant mass [GeV]",  100,     0,   21 ) );
+	  h_matchllpdvtx_nDesc      .push_back( book( name, hmllp   + "_nDesc",     "n "+hsllpstr+" descendants",                20, 0,   20 ) );
+	  h_matchllpdvtx_nRecoDesc  .push_back( book( name, hmllp   + "_nRecoDesc", "n "+hsllpstr+" reconstructed descendants",  20, 0,   20 ) );
+	  h_matchllpdvtx_nSelDesc   .push_back( book( name, hmllp   + "_nSelDesc",  "n "+hsllpstr+" selected descendants",       20, 0,   20 ) );
+	  h_matchllpdvtx_resid_x    .push_back( book( name, hmllp   + "_resid_x",   hmllpstr   + " residual x-pos [mm]",    100,   -10,   10 ) );
+	  h_matchllpdvtx_resid_y    .push_back( book( name, hmllp   + "_resid_y",   hmllpstr   + " residual y-pos [mm]",    100,   -10,   10 ) );
+	  h_matchllpdvtx_resid_z    .push_back( book( name, hmllp   + "_resid_z",   hmllpstr   + " residual z-pos [mm]",    100,   -10,   10 ) );
+	  h_matchllpdvtx_resid_r    .push_back( book( name, hmllp   + "_resid_r",   hmllpstr   + " residual r-pos [mm]",    100,   -10,   10 ) );
+	  h_matchllpdvtx_resid_rphi .push_back( book( name, hmllp   + "_resid_rphi",hmllpstr   + " r times residual phi-pos [mm]",100,-10,10 ) );
+	  h_matchllpdvtx_resid_z_r
+	    .push_back( book( name, hmllp + "_resid_z_r",          hmllpstr + " r-pos [mm]",      100,     0,  600,
+			      hmllpstr + " residual z-pos [mm]",           100, -10, 10 ) );
+	  h_matchllpdvtx_resid_z_z
+	    .push_back( book( name, hmllp + "_resid_z_z",          hmllpstr + " z-pos [mm]",      100, -2500, 2500,
+			      hmllpstr + " residual z-pos [mm]",           100, -10, 10 ) );
+	  h_matchllpdvtx_resid_z_ntrk
+	    .push_back( book( name, hmllp + "_resid_z_ntrk",       hmllpstr + " n tracks",         20,     0,   20,
+			      hmllpstr + " residual z-pos [mm]",           100, -10, 10 ) );
+	  h_matchllpdvtx_resid_z_nseltrk
+	    .push_back( book( name, hmllp + "_resid_z_nseltrk",    hmllpstr + " n selected tracks",20,     0,   20,
+			      hmllpstr + " residual z-pos [mm]",           100, -10, 10 ) );
+	  h_matchllpdvtx_resid_r_r
+	    .push_back( book( name, hmllp + "_resid_r_r",          hmllpstr + " r-pos [mm]",      100,     0,  600,
+			      hmllpstr + " residual r-pos [mm]",           100, -10, 10 ) );
+	  h_matchllpdvtx_resid_r_z
+	    .push_back( book( name, hmllp + "_resid_r_z",          hmllpstr + " z-pos [mm]",      100, -2500, 2500,
+			      hmllpstr + " residual r-pos [mm]",           100, -10, 10 ) );
+	  h_matchllpdvtx_resid_r_ntrk
+	    .push_back( book( name, hmllp + "_resid_r_ntrk",       hmllpstr + " n tracks",         20,     0,   20,
+			      hmllpstr + " residual r-pos [mm]",           100, -10, 10 ) );
+	  h_matchllpdvtx_resid_r_nseltrk
+	    .push_back( book( name, hmllp + "_resid_r_nseltrk",    hmllpstr + " n selected tracks",20,     0,   20,
+			      hmllpstr + " residual r-pos [mm]",           100, -10, 10 ) );
+	  h_matchllpdvtx_resid_rphi_r
+	    .push_back( book( name, hmllp + "_resid_rphi_r",       hmllpstr + " r-pos [mm]",      100,     0,  600,
+			      hmllpstr + " r times residual phi-pos [mm]", 100, -10, 10 ) );
+	  h_matchllpdvtx_resid_rphi_z
+	    .push_back( book( name, hmllp + "_resid_rphi_z",       hmllpstr + " z-pos [mm]",      100, -2500, 2500,
+			      hmllpstr + " r times residual phi-pos [mm]", 100, -10, 10 ) );
+	  h_matchllpdvtx_resid_rphi_ntrk
+	    .push_back( book( name, hmllp + "_resid_rphi_ntrk",    hmllpstr + " n tracks",         20,     0,   20,
+			      hmllpstr + " r times residual phi-pos [mm]", 100, -10, 10 ) );
+	  h_matchllpdvtx_resid_rphi_nseltrk
+	    .push_back( book( name, hmllp + "_resid_rphi_nseltrk", hmllpstr + " n selected tracks",20,     0,   20,
+			      hmllpstr + " r times residual phi-pos [mm]", 100, -10, 10 ) );
+	  h_recofllpdvtx_x          .push_back( book( name, hrfllp  + "_x",         hrfllpstr  + " x-pos [mm]",             100,  -300,  300 ) );
+	  h_recofllpdvtx_y          .push_back( book( name, hrfllp  + "_y",         hrfllpstr  + " y-pos [mm]",             100,  -300,  300 ) );
+	  h_recofllpdvtx_z          .push_back( book( name, hrfllp  + "_z",         hrfllpstr  + " z-pos [mm]",             100,  -300,  300 ) );
+	  h_recofllpdvtx_r          .push_back( book( name, hrfllp  + "_r",         hrfllpstr  + " r-pos [mm]",             100,     0,  300 ) );
+	  h_recofllpdvtx_pt         .push_back( book( name, hrfllp  + "_pt",        hrfllpstr  + " p_{T} [GeV]",            100,     0,  500 ) );
+	  h_recofllpdvtx_eta        .push_back( book( name, hrfllp  + "_eta",       hrfllpstr  + " eta",                    100,    -5,    5 ) );
+	  h_recofllpdvtx_phi        .push_back( book( name, hrfllp  + "_phi",       hrfllpstr  + " phi",                    100,  -3.5,  3.5 ) );
+	  h_recofllpdvtx_avgMu      .push_back( book( name, hrfllp  + "_avgMu",     hrfllpstr  + " average pp interactions", 90,     0,   90 ) );
+	  h_recofllpdvtx_descM      .push_back( book( name, hrfllp  + "_descM",     hrfllpstr  + " descendant mass [GeV]",  100,     0,   21 ) );
+	  h_recofllpdvtx_nDesc      .push_back( book( name, hrfllp  + "_nDesc",     "n "+hrfllpstr+" descendants",               20, 0,   20 ) );
+	  h_recofllpdvtx_nRecoDesc  .push_back( book( name, hrfllp  + "_nRecoDesc", "n "+hrfllpstr+" reconstructed descendants", 20, 0,   20 ) );
+	  h_recofllpdvtx_nSelDesc   .push_back( book( name, hrfllp  + "_nSelDesc",  "n "+hrfllpstr+" selected descendants",      20, 0,   20 ) );
+	  h_recofllpdvtx_nDesc_r        .push_back( book( name, hrfllp   + "_nDesc_r",   hrfllpstr       + " r-pos [mm]",   100,   0,  300,
+							  "n " + hrfllpstr + " descendants",                      20, 0, 20 ) );
+	  h_recofllpdvtx_nDesc_z        .push_back( book( name, hrfllp   + "_nDesc_z",   hrfllpstr       + " z-pos [mm]",   100, -300, 300,
+							  "n " + hrfllpstr + " descendants",                      20, 0, 20 ) );
+	  h_recofllpdvtx_descM_r        .push_back( book( name, hrfllp   + "_descM_r",   hrfllpstr       + " r-pos [mm]",   100,   0,  300,
+							  hrfllpstr + " descendant mass [GeV]",                  100, 0, 21 ) );
+	  h_recofllpdvtx_descM_z        .push_back( book( name, hrfllp   + "_descM_z",   hrfllpstr       + " z-pos [mm]",   100, -300, 300,
+							  hrfllpstr + " descendant mass [GeV]",                  100, 0, 21 ) );
+	  h_recofllpdvtx_nRecoDesc_r    .push_back( book( name, hrfllp   + "_nRecoDesc_r",   hrfllpstr   + " r-pos [mm]",   100,   0,  300,
+							  "n " + hrfllpstr + " reconstructed descendants",        20, 0, 20 ) );
+	  h_recofllpdvtx_nRecoDesc_z    .push_back( book( name, hrfllp   + "_nRecoDesc_z",   hrfllpstr   + " z-pos [mm]",   100, -300, 300,
+							  "n " + hrfllpstr + " reconstructed descendants",        20, 0, 20 ) );
+	  h_recofllpdvtx_recoDescM_r    .push_back( book( name, hrfllp   + "_recoDescM_r",   hrfllpstr   + " r-pos [mm]",   100,    0, 300,
+							  hrfllpstr + " reconstructed descendant mass [GeV]",    100, 0, 21 ) );
+	  h_recofllpdvtx_recoDescM_z    .push_back( book( name, hrfllp   + "_recoDescM_z",   hrfllpstr   + " z-pos [mm]",   100, -300, 300,
+							  hrfllpstr + " reconstructed descendant mass [GeV]",    100, 0, 21 ) );
+	  h_recofllpdvtx_fracRecoDesc_r .push_back( book( name, hrfllp   + "_fracRecoDesc_r",  hrfllpstr   + " r-pos [mm]", 100,    0, 300,
+							  "fraction " + hrfllpstr + " reconstructed descendants",100, 0,  1 ) );
+	  h_recofllpdvtx_fracRecoDesc_z .push_back( book( name, hrfllp   + "_fracRecoDesc_z",  hrfllpstr   + " z-pos [mm]", 100, -300, 300,
+							  "fraction " + hrfllpstr + " reconstructed descendants",100, 0,  1 ) );
+	  h_recofllpdvtx_fracRecoDescM_r.push_back( book( name, hrfllp   + "_fracRecoDescM_r", hrfllpstr   + " r-pos [mm]", 100,    0, 300,
+							  hrfllpstr + " reconstructed descendant mass fraction", 100, 0,  1 ) );
+	  h_recofllpdvtx_fracRecoDescM_z.push_back( book( name, hrfllp   + "_fracRecoDescM_z", hrfllpstr   + " z-pos [mm]", 100, -300, 300,
+							  hrfllpstr + " reconstructed descendant mass fraction", 100, 0,  1 ) );
+	  // loop over truth-matched signal reco vertex types
+	  std::vector<TH2F*> h_recofllpdv_nVtxDesc_r;
+	  std::vector<TH2F*> h_recofllpdv_nVtxDesc_z;
+	  std::vector<TH2F*> h_recofllpdv_vtxDescM_r;
+	  std::vector<TH2F*> h_recofllpdv_vtxDescM_z;
+	  std::vector<TH2F*> h_recofllpdv_fracVtxDesc_r;
+	  std::vector<TH2F*> h_recofllpdv_fracVtxDesc_z;
+	  std::vector<TH2F*> h_recofllpdv_fracVtxDescM_r;
+	  std::vector<TH2F*> h_recofllpdv_fracVtxDescM_z;
+	  for ( size_t k = 0; k != hSgnlDV.size() + 1; ++k ) {
+	    std::string hsvtmp     = "";
+	    std::string hsvtmp_low = "";
+	    std::string hsvtmp_str = "";
+	    if ( k != 0 ) {
+	      hsvtmp     = hSgnlDVstr[k-1]; hsvtmp.pop_back();
+	      hsvtmp_low = hsvtmp; hsvtmp_low[0] = tolower(hsvtmp_low[0]);
+	      hsvtmp_str = " " + hsvtmp_low;
+	    }
+	    std::string hsv_desc = "";
+	    if ( !hsvtmp ) hsv_desc = "vtxDesc";
+	    else           hsv_desc = "VtxDesc";
+	    h_recofllpdv_nVtxDesc_r    .push_back( book( name, hrfllp + "_n" + hsvtmp + hsv_desc + "_r", hrfllpstr + " r-pos [mm]",     100,   0, 300,
+							 "n " + hrfllpstr + hsvtmp_str + " vertexed descendants",        20, 0, 20 ) );
+	    h_recofllpdv_nVtxDesc_z    .push_back( book( name, hrfllp + "_n" + hsvtmp + hsv_desc + "_z", hrfllpstr + " z-pos [mm]",     100,-300, 300,
+							 "n " + hrfllpstr + hsvtmp_str + " vertexed descendants",        20, 0, 20 ) );
+	    h_recofllpdv_vtxDescM_r    .push_back( book( name, hrfllp + "_" + hsvtmp_low + hsv_desc + "M_r", hrfllpstr + " r-pos [mm]", 100,   0, 300,
+							 hrfllpstr + hsvtmp_str + " vertexed descendant mass [GeV]",    100, 0, 21 ) );
+	    h_recofllpdv_vtxDescM_z    .push_back( book( name, hrfllp + "_" + hsvtmp_low + hsv_desc + "M_z", hrfllpstr + " z-pos [mm]", 100,-300, 300,
+							 hrfllpstr + hsvtmp_str + " vertexed descendant mass [GeV]",    100, 0, 21 ) );
+	    h_recofllpdv_fracVtxDesc_r .push_back( book( name, hrfllp + "_frac" + hsvtmp + hsv_desc + "_r",  hrfllpstr + " r-pos [mm]", 100,   0, 300,
+							 "fraction " + hrfllpstr + hsvtmp_str + " vertexed descendants",100, 0,  1 ) );
+	    h_recofllpdv_fracVtxDesc_z .push_back( book( name, hrfllp + "_frac" + hsvtmp + hsv_desc + "_z",  hrfllpstr + " z-pos [mm]", 100,-300, 300,
+							 "fraction " + hrfllpstr + hsvtmp_str + " vertexed descendants",100, 0,  1 ) );
+	    h_recofllpdv_fracVtxDescM_r.push_back( book( name, hrfllp + "_frac" + hsvtmp + hsv_desc + "M_r", hrfllpstr + " r-pos [mm]", 100,   0, 300,
+							 hrfllpstr + hsvtmp_str + " vertexed descendant mass fraction", 100, 0,  1 ) );
+	    h_recofllpdv_fracVtxDescM_z.push_back( book( name, hrfllp + "_frac" + hsvtmp + hsv_desc + "M_z", hrfllpstr + " z-pos [mm]", 100,-300, 300,
+							 hrfllpstr + hsvtmp_str + " vertexed descendant mass fraction", 100, 0,  1 ) );
+	  }
+	  h_recofllpdvtx_nVtxDesc_r    .push_back( h_recofllpdv_nVtxDesc_r     );
+	  h_recofllpdvtx_nVtxDesc_z    .push_back( h_recofllpdv_nVtxDesc_z     );
+	  h_recofllpdvtx_vtxDescM_r    .push_back( h_recofllpdv_vtxDescM_r     );
+	  h_recofllpdvtx_vtxDescM_z    .push_back( h_recofllpdv_vtxDescM_z     );
+	  h_recofllpdvtx_fracVtxDesc_r .push_back( h_recofllpdv_fracVtxDesc_r  );
+	  h_recofllpdvtx_fracVtxDesc_z .push_back( h_recofllpdv_fracVtxDesc_z  );
+	  h_recofllpdvtx_fracVtxDescM_r.push_back( h_recofllpdv_fracVtxDescM_r );
+	  h_recofllpdvtx_fracVtxDescM_z.push_back( h_recofllpdv_fracVtxDescM_z );
+	  
+	  h_reco2fllpdvtx_x         .push_back( book( name, hr2fllp + "_x",         hr2fllpstr + " x-pos [mm]",             100,  -300,  300 ) );
+	  h_reco2fllpdvtx_y         .push_back( book( name, hr2fllp + "_y",         hr2fllpstr + " y-pos [mm]",             100,  -300,  300 ) );
+	  h_reco2fllpdvtx_z         .push_back( book( name, hr2fllp + "_z",         hr2fllpstr + " z-pos [mm]",             100,  -300,  300 ) );
+	  h_reco2fllpdvtx_r         .push_back( book( name, hr2fllp + "_r",         hr2fllpstr + " r-pos [mm]",             100,     0,  300 ) );
+	  h_reco2fllpdvtx_pt        .push_back( book( name, hr2fllp + "_pt",        hr2fllpstr + " p_{T} [GeV]",            100,     0,  500 ) );
+	  h_reco2fllpdvtx_eta       .push_back( book( name, hr2fllp + "_eta",       hr2fllpstr + " eta",                    100,    -5,    5 ) );
+	  h_reco2fllpdvtx_phi       .push_back( book( name, hr2fllp + "_phi",       hr2fllpstr + " phi",                    100,  -3.5,  3.5 ) );
+	  h_reco2fllpdvtx_avgMu     .push_back( book( name, hr2fllp + "_avgMu",     hr2fllpstr + " average pp interactions", 90,     0,   90 ) );
+	  h_reco2fllpdvtx_descM     .push_back( book( name, hr2fllp + "_descM",     hr2fllpstr + " descendant mass [GeV]",  100,     0,   21 ) );
+	  h_reco2fllpdvtx_nDesc     .push_back( book( name, hr2fllp + "_nDesc",     "n "+hr2fllpstr+" descendants",              20, 0,   20 ) );
+	  h_reco2fllpdvtx_nRecoDesc .push_back( book( name, hr2fllp + "_nRecoDesc", "n "+hr2fllpstr+" reconstructed descendants",20, 0,   20 ) );
+	  h_reco2fllpdvtx_nSelDesc  .push_back( book( name, hr2fllp + "_nSelDesc",  "n "+hr2fllpstr+" selected descendants",     20, 0,   20 ) );
+	  h_slctfllpdvtx_x          .push_back( book( name, hsfllp  + "_x",         hsfllpstr  + " x-pos [mm]",             100,  -300,  300 ) );
+	  h_slctfllpdvtx_y          .push_back( book( name, hsfllp  + "_y",         hsfllpstr  + " y-pos [mm]",             100,  -300,  300 ) );
+	  h_slctfllpdvtx_z          .push_back( book( name, hsfllp  + "_z",         hsfllpstr  + " z-pos [mm]",             100,  -300,  300 ) );
+	  h_slctfllpdvtx_r          .push_back( book( name, hsfllp  + "_r",         hsfllpstr  + " r-pos [mm]",             100,     0,  300 ) );
+	  h_slctfllpdvtx_pt         .push_back( book( name, hsfllp  + "_pt",        hsfllpstr  + " p_{T} [GeV]",            100,     0,  500 ) );
+	  h_slctfllpdvtx_eta        .push_back( book( name, hsfllp  + "_eta",       hsfllpstr  + " eta",                    100,    -5,    5 ) );
+	  h_slctfllpdvtx_phi        .push_back( book( name, hsfllp  + "_phi",       hsfllpstr  + " phi",                    100,  -3.5,  3.5 ) );
+	  h_slctfllpdvtx_avgMu      .push_back( book( name, hsfllp  + "_avgMu",     hsfllpstr  + " average pp interactions", 90,     0,   90 ) );
+	  h_slctfllpdvtx_descM      .push_back( book( name, hsfllp  + "_descM",     hsfllpstr  + " descendant mass [GeV]",  100,     0,   21 ) );
+	  h_slctfllpdvtx_nDesc      .push_back( book( name, hsfllp  + "_nDesc",     "n "+hsfllpstr+" descendants",               20, 0,   20 ) );
+	  h_slctfllpdvtx_nRecoDesc  .push_back( book( name, hsfllp  + "_nRecoDesc", "n "+hsfllpstr+" reconstructed descendants", 20, 0,   20 ) );
+	  h_slctfllpdvtx_nSelDesc   .push_back( book( name, hsfllp  + "_nSelDesc",  "n "+hsfllpstr+" selected descendants",      20, 0,   20 ) );
+
+	  // loop over truth-matched signal reco vertex types
+	  std::vector<TH1F*> h_smatchllpdv_score;
+	  std::vector<TH1F*> h_smatchllpdv_x;
+	  std::vector<TH1F*> h_smatchllpdv_y;
+	  std::vector<TH1F*> h_smatchllpdv_z;
+	  std::vector<TH1F*> h_smatchllpdv_r;
+	  std::vector<TH1F*> h_smatchllpdv_pt;
+	  std::vector<TH1F*> h_smatchllpdv_eta;
+	  std::vector<TH1F*> h_smatchllpdv_phi;
+	  std::vector<TH1F*> h_smatchllpdv_avgMu;
+	  std::vector<TH1F*> h_smatchllpdv_descM;
+	  std::vector<TH1F*> h_smatchllpdv_nDesc;
+	  std::vector<TH1F*> h_smatchllpdv_nRecoDesc;
+	  std::vector<TH1F*> h_smatchllpdv_nSelDesc;
+	  std::vector<TH1F*> h_smatchllpdv_resid_x;
+	  std::vector<TH1F*> h_smatchllpdv_resid_y;
+	  std::vector<TH1F*> h_smatchllpdv_resid_z;
+	  std::vector<TH1F*> h_smatchllpdv_resid_r;
+	  std::vector<TH1F*> h_smatchllpdv_resid_rphi;
+	  std::vector<TH2F*> h_smatchllpdv_resid_z_r;
+	  std::vector<TH2F*> h_smatchllpdv_resid_z_z;
+	  std::vector<TH2F*> h_smatchllpdv_resid_z_ntrk;
+	  std::vector<TH2F*> h_smatchllpdv_resid_z_nseltrk;
+	  std::vector<TH2F*> h_smatchllpdv_resid_r_r;
+	  std::vector<TH2F*> h_smatchllpdv_resid_r_z;
+	  std::vector<TH2F*> h_smatchllpdv_resid_r_ntrk;
+	  std::vector<TH2F*> h_smatchllpdv_resid_r_nseltrk;
+	  std::vector<TH2F*> h_smatchllpdv_resid_rphi_r;
+	  std::vector<TH2F*> h_smatchllpdv_resid_rphi_z;
+	  std::vector<TH2F*> h_smatchllpdv_resid_rphi_ntrk;
+	  std::vector<TH2F*> h_smatchllpdv_resid_rphi_nseltrk;
+	  for ( size_t k = 0; k != hSgnlDV.size(); ++k ) {
+	    std::string hsmtmp    = hSgnlDVstr [k]; hsmtmp.pop_back(); hsmtmp[0] = tolower(hsmtmp[0]); // keep capitalized?
+	    std::string hsmllp    = hSgnlDV    [k] + "RecoMatch" + hLLP[i] + "DecayVtx"; hsmllp[0] = tolower(hsmllp[0]);
+	    std::string hsmllpstr = hsmtmp + "-reco-matched " + hllpstr;
+	    h_smatchllpdv_score     .push_back( book( name, hsmllp  + "_score",     hsmllpstr  + " match score",            100,     0,    1 ) );
+	    h_smatchllpdv_x         .push_back( book( name, hsmllp  + "_x",         hsmllpstr  + " x-pos [mm]",             100,  -300,  300 ) );
+	    h_smatchllpdv_y         .push_back( book( name, hsmllp  + "_y",         hsmllpstr  + " y-pos [mm]",             100,  -300,  300 ) );
+	    h_smatchllpdv_z         .push_back( book( name, hsmllp  + "_z",         hsmllpstr  + " z-pos [mm]",             100,  -300,  300 ) );
+	    h_smatchllpdv_r         .push_back( book( name, hsmllp  + "_r",         hsmllpstr  + " r-pos [mm]",             100,     0,  300 ) );
+	    h_smatchllpdv_pt        .push_back( book( name, hsmllp  + "_pt",        hsmllpstr  + " p_{T} [GeV]",            100,     0,  500 ) );
+	    h_smatchllpdv_eta       .push_back( book( name, hsmllp  + "_eta",       hsmllpstr  + " eta",                    100,    -5,    5 ) );
+	    h_smatchllpdv_phi       .push_back( book( name, hsmllp  + "_phi",       hsmllpstr  + " phi",                    100,  -3.5,  3.5 ) );
+	    h_smatchllpdv_avgMu     .push_back( book( name, hsmllp  + "_avgMu",     hsmllpstr  + " average pp interactions", 90,     0,   90 ) );
+	    h_smatchllpdv_descM     .push_back( book( name, hsmllp  + "_descM",     hsmllpstr  + " descendant mass [GeV]",  100,     0,   21 ) );
+	    h_smatchllpdv_nDesc     .push_back( book( name, hsmllp  + "_nDesc",     "n "+hsfllpstr+" descendants",               20, 0,   20 ) );
+	    h_smatchllpdv_nRecoDesc .push_back( book( name, hsmllp  + "_nRecoDesc", "n "+hsfllpstr+" reconstructed descendants", 20, 0,   20 ) );
+	    h_smatchllpdv_nSelDesc  .push_back( book( name, hsmllp  + "_nSelDesc",  "n "+hsfllpstr+" selected descendants",      20, 0,   20 ) );
+	    h_smatchllpdv_resid_x   .push_back( book( name, hsmllp  + "_resid_x",   hsmllpstr  + " residual x-pos [mm]",    100,   -10,   10 ) );
+	    h_smatchllpdv_resid_y   .push_back( book( name, hsmllp  + "_resid_y",   hsmllpstr  + " residual y-pos [mm]",    100,   -10,   10 ) );
+	    h_smatchllpdv_resid_z   .push_back( book( name, hsmllp  + "_resid_z",   hsmllpstr  + " residual z-pos [mm]",    100,   -10,   10 ) );
+	    h_smatchllpdv_resid_r   .push_back( book( name, hsmllp  + "_resid_r",   hsmllpstr  + " residual r-pos [mm]",    100,   -10,   10 ) );
+	    h_smatchllpdv_resid_rphi.push_back( book( name, hsmllp  + "_resid_rphi",hsmllpstr  + " r times residual phi-pos [mm]",100,-10,10 ) );
+	    h_smatchllpdv_resid_z_r
+	      .push_back( book( name, hsmllp + "_resid_z_r",          hsmllpstr + " r-pos [mm]",       100,    0, 300,
+				hsmllpstr + " residual z-pos [mm]",            100, -10, 10 ) );
+	    h_smatchllpdv_resid_z_z
+	      .push_back( book( name, hsmllp + "_resid_z_z",          hsmllpstr + " z-pos [mm]",       100, -300, 300,
+				hsmllpstr + " residual z-pos [mm]",           100, -10, 10 ) );
+	    h_smatchllpdv_resid_z_ntrk
+	      .push_back( book( name, hsmllp + "_resid_z_ntrk",       hsmllpstr + " n tracks",          20,    0,  20,
+				hsmllpstr + " residual z-pos [mm]",           100, -10, 10 ) );
+	    h_smatchllpdv_resid_z_nseltrk
+	      .push_back( book( name, hsmllp + "_resid_z_nseltrk",    hsmllpstr + " n selected tracks", 20,    0,  20,
+				hsmllpstr + " residual z-pos [mm]",           100, -10, 10 ) );
+	    h_smatchllpdv_resid_r_r
+	      .push_back( book( name, hsmllp + "_resid_r_r",          hsmllpstr + " r-pos [mm]",       100,    0, 300,
+				hsmllpstr + " residual r-pos [mm]",           100, -10, 10 ) );
+	    h_smatchllpdv_resid_r_z
+	      .push_back( book( name, hsmllp + "_resid_r_z",          hsmllpstr + " z-pos [mm]",       100, -300, 300,
+				hsmllpstr + " residual r-pos [mm]",           100, -10, 10 ) );
+	    h_smatchllpdv_resid_r_ntrk
+	      .push_back( book( name, hsmllp + "_resid_r_ntrk",       hsmllpstr + " n tracks",          20,    0,  20,
+				hsmllpstr + " residual r-pos [mm]",           100, -10, 10 ) );
+	    h_smatchllpdv_resid_r_nseltrk
+	      .push_back( book( name, hsmllp + "_resid_r_nseltrk",    hsmllpstr + " n selected tracks", 20,    0,  20,
+				hsmllpstr + " residual r-pos [mm]",           100, -10, 10 ) );
+	    h_smatchllpdv_resid_rphi_r
+	      .push_back( book( name, hsmllp + "_resid_rphi_r",       hsmllpstr + " r-pos [mm]",       100,    0, 300,
+				hsmllpstr + " r times residual phi-pos [mm]", 100, -10, 10 ) );
+	    h_smatchllpdv_resid_rphi_z
+	      .push_back( book( name, hsmllp + "_resid_rphi_z",       hsmllpstr + " z-pos [mm]",       100, -300, 300,
+				hsmllpstr + " r times residual phi-pos [mm]", 100, -10, 10 ) );
+	    h_smatchllpdv_resid_rphi_ntrk
+	      .push_back( book( name, hsmllp + "_resid_rphi_ntrk",    hsmllpstr + " n tracks",          20,    0,  20,
+				hsmllpstr + " r times residual phi-pos [mm]", 100, -10, 10 ) );
+	    h_smatchllpdv_resid_rphi_nseltrk
+	      .push_back( book( name, hsmllp + "_resid_rphi_nseltrk", hsmllpstr + " n selected tracks", 20,    0,  20,
+				hsmllpstr + " r times residual phi-pos [mm]", 100, -10, 10 ) );
+	  }
+	  h_smatchllpdvtx_score              .push_back( h_smatchllpdv_score              );
+	  h_smatchllpdvtx_x                  .push_back( h_smatchllpdv_x                  );
+	  h_smatchllpdvtx_y                  .push_back( h_smatchllpdv_y                  );
+	  h_smatchllpdvtx_z                  .push_back( h_smatchllpdv_z                  );
+	  h_smatchllpdvtx_r                  .push_back( h_smatchllpdv_r                  );
+	  h_smatchllpdvtx_pt                 .push_back( h_smatchllpdv_pt                 );
+	  h_smatchllpdvtx_eta                .push_back( h_smatchllpdv_eta                );
+	  h_smatchllpdvtx_phi                .push_back( h_smatchllpdv_phi                );
+	  h_smatchllpdvtx_avgMu              .push_back( h_smatchllpdv_avgMu              );
+	  h_smatchllpdvtx_descM              .push_back( h_smatchllpdv_descM              );
+	  h_smatchllpdvtx_nDesc              .push_back( h_smatchllpdv_nDesc              );
+	  h_smatchllpdvtx_nRecoDesc          .push_back( h_smatchllpdv_nRecoDesc          );
+	  h_smatchllpdvtx_nSelDesc           .push_back( h_smatchllpdv_nSelDesc           );
+	  h_smatchllpdvtx_resid_x            .push_back( h_smatchllpdv_resid_x            );
+	  h_smatchllpdvtx_resid_y            .push_back( h_smatchllpdv_resid_y            );
+	  h_smatchllpdvtx_resid_z            .push_back( h_smatchllpdv_resid_z            );
+	  h_smatchllpdvtx_resid_r            .push_back( h_smatchllpdv_resid_r            );
+	  h_smatchllpdvtx_resid_rphi         .push_back( h_smatchllpdv_resid_rphi         );
+	  h_smatchllpdvtx_resid_z_r          .push_back( h_smatchllpdv_resid_z_r          );
+	  h_smatchllpdvtx_resid_z_z          .push_back( h_smatchllpdv_resid_z_z          );
+	  h_smatchllpdvtx_resid_z_ntrk       .push_back( h_smatchllpdv_resid_z_ntrk       );
+	  h_smatchllpdvtx_resid_z_nseltrk    .push_back( h_smatchllpdv_resid_z_nseltrk    );
+	  h_smatchllpdvtx_resid_r_r          .push_back( h_smatchllpdv_resid_r_r          );
+	  h_smatchllpdvtx_resid_r_z          .push_back( h_smatchllpdv_resid_r_z          );
+	  h_smatchllpdvtx_resid_r_ntrk       .push_back( h_smatchllpdv_resid_r_ntrk       );
+	  h_smatchllpdvtx_resid_r_nseltrk    .push_back( h_smatchllpdv_resid_r_nseltrk    );
+	  h_smatchllpdvtx_resid_rphi_r       .push_back( h_smatchllpdv_resid_rphi_r       );
+	  h_smatchllpdvtx_resid_rphi_z       .push_back( h_smatchllpdv_resid_rphi_z       );
+	  h_smatchllpdvtx_resid_rphi_ntrk    .push_back( h_smatchllpdv_resid_rphi_ntrk    );
+	  h_smatchllpdvtx_resid_rphi_nseltrk .push_back( h_smatchllpdv_resid_rphi_nseltrk );
+	  
+	  h_llpdvtx_accept_x
+	    .push_back( book( name, hllp + "_accept_x",             hllpstr    + " x-pos [mm]",                 100,  -600,  600 ) );
+	  h_llpdvtx_accept_y
+	    .push_back( book( name, hllp + "_accept_y",             hllpstr    + " y-pos [mm]",                 100,  -600,  600 ) );
+	  h_llpdvtx_accept_z
+	    .push_back( book( name, hllp + "_accept_z",             hllpstr    + " z-pos [mm]",                 100, -2500, 2500 ) );
+	  h_llpdvtx_accept_r
+	    .push_back( book( name, hllp + "_accept_r",             hllpstr    + " r-pos [mm]",                 100,     0,  600 ) );
+	  h_llpdvtx_accept_pt
+	    .push_back( book( name, hllp + "_accept_pt",            hllpstr    + " p_{T} [GeV]",                100,     0,  500 ) );
+	  h_llpdvtx_accept_eta
+	    .push_back( book( name, hllp + "_accept_eta",           hllpstr    + " eta",                        100,    -5,    5 ) );
+	  h_llpdvtx_accept_phi
+	    .push_back( book( name, hllp + "_accept_phi",           hllpstr    + " phi",                        100,  -3.5,  3.5 ) );
+	  h_llpdvtx_accept_avgMu
+	    .push_back( book( name, hllp + "_accept_avgMu",         hllpstr    + " average pp interactions",     90,     0,   90 ) );
+	  h_llpdvtx_accept_descM
+	    .push_back( book( name, hllp + "_accept_descM",         hllpstr    + " descendant mass [GeV]",      100,     0,   21 ) );
+	  h_llpdvtx_accept_nDesc
+	    .push_back( book( name, hllp + "_accept_nDesc",         "n " +hllpstr+ " descendants",               20,     0,   20 ) );
+	  h_llpdvtx_accept_nRecoDesc
+	    .push_back( book( name, hllp + "_accept_nRecoDesc",     "n " +hllpstr+ " reconstructed descendants", 20,     0,   20 ) );
+	  h_llpdvtx_accept_nSelDesc
+	    .push_back( book( name, hllp + "_accept_nSelDesc",      "n " +hllpstr+ " selected descendants",      20,     0,   20 ) );
+	  h_llpdvtx_recoEff_x
+	    .push_back( book( name, hllp + "_recoEff_x",            hllpstr + " x-pos [mm]",                    100,  -600,  600 ) );
+	  h_llpdvtx_recoEff_y
+	    .push_back( book( name, hllp + "_recoEff_y",            hllpstr + " y-pos [mm]",                    100,  -600,  600 ) );
+	  h_llpdvtx_recoEff_z
+	    .push_back( book( name, hllp + "_recoEff_z",            hllpstr + " z-pos [mm]",                    100, -2500, 2500 ) );
+	  h_llpdvtx_recoEff_r
+	    .push_back( book( name, hllp + "_recoEff_r",            hllpstr + " r-pos [mm]",                    100,     0,  600 ) );
+	  h_llpdvtx_recoEff_pt
+	    .push_back( book( name, hllp + "_recoEff_pt",           hllpstr + " p_{T} [GeV]",                   100,     0,  500 ) );
+	  h_llpdvtx_recoEff_eta
+	    .push_back( book( name, hllp + "_recoEff_eta",          hllpstr + " eta",                           100,    -5,    5 ) );
+	  h_llpdvtx_recoEff_phi
+	    .push_back( book( name, hllp + "_recoEff_phi",          hllpstr + " phi",                           100,  -3.5,  3.5 ) );
+	  h_llpdvtx_recoEff_avgMu
+	    .push_back( book( name, hllp + "_recoEff_avgMu",        hllpstr + " average pp interactions",        90,     0,   90 ) );
+	  h_llpdvtx_recoEff_descM
+	    .push_back( book( name, hllp + "_recoEff_descM",        hllpstr + " descendant mass [GeV]",         100,     0,   21 ) );
+	  h_llpdvtx_recoEff_nDesc
+	    .push_back( book( name, hllp + "_recoEff_nDesc",        "n " +hllpstr+ " descendants",               20,     0,   20 ) );
+	  h_llpdvtx_recoEff_nRecoDesc
+	    .push_back( book( name, hllp + "_recoEff_nRecoDesc",    "n " +hllpstr+ " reconstructed descendants", 20,     0,   20 ) );
+	  h_llpdvtx_recoEff_nSelDesc
+	    .push_back( book( name, hllp + "_recoEff_nSelDesc",     "n " +hllpstr+ " selected descendants",      20,     0,   20 ) );
+	  h_llpdvtx_algEff_x
+	    .push_back( book( name, hllp + "_algEff_x",             hllpstr + " x-pos [mm]",                    100,  -600,  600 ) );
+	  h_llpdvtx_algEff_y
+	    .push_back( book( name, hllp + "_algEff_y",             hllpstr + " y-pos [mm]",                    100,  -600,  600 ) );
+	  h_llpdvtx_algEff_z
+	    .push_back( book( name, hllp + "_algEff_z",             hllpstr + " z-pos [mm]",                    100, -2500, 2500 ) );
+	  h_llpdvtx_algEff_r
+	    .push_back( book( name, hllp + "_algEff_r",             hllpstr + " r-pos [mm]",                    100,     0,  600 ) );
+	  h_llpdvtx_algEff_pt
+	    .push_back( book( name, hllp + "_algEff_pt",            hllpstr + " p_{T} [GeV]",                   100,     0,  500 ) );
+	  h_llpdvtx_algEff_eta
+	    .push_back( book( name, hllp + "_algEff_eta",           hllpstr + " eta",                           100,    -5,    5 ) );
+	  h_llpdvtx_algEff_phi
+	    .push_back( book( name, hllp + "_algEff_phi",           hllpstr + " phi",                           100,  -3.5,  3.5 ) );
+	  h_llpdvtx_algEff_avgMu
+	    .push_back( book( name, hllp + "_algEff_avgMu",         hllpstr + " average pp interactions",        90,     0,   90 ) );
+	  h_llpdvtx_algEff_descM
+	    .push_back( book( name, hllp + "_algEff_descM",         hllpstr + " descendant mass [GeV]",         100,     0,   21 ) );
+	  h_llpdvtx_algEff_nDesc
+	    .push_back( book( name, hllp + "_algEff_nDesc",         "n " +hllpstr+ " descendants",               20,     0,   20 ) );
+	  h_llpdvtx_algEff_nRecoDesc
+	    .push_back( book( name, hllp + "_algEff_nRecoDesc",     "n " +hllpstr+ " reconstructed descendants", 20,     0,   20 ) );
+	  h_llpdvtx_algEff_nSelDesc
+	    .push_back( book( name, hllp + "_algEff_nSelDesc",      "n " +hllpstr+ " selected descendants",      20,     0,   20 ) );
+	  h_llpdvtx_coreEff_x
+	    .push_back( book( name, hllp + "_coreEff_x",            hllpstr + " x-pos [mm]",                    100,  -600,  600 ) );
+	  h_llpdvtx_coreEff_y
+	    .push_back( book( name, hllp + "_coreEff_y",            hllpstr + " y-pos [mm]",                    100,  -600,  600 ) );
+	  h_llpdvtx_coreEff_z
+	    .push_back( book( name, hllp + "_coreEff_z",            hllpstr + " z-pos [mm]",                    100, -2500, 2500 ) );
+	  h_llpdvtx_coreEff_r
+	    .push_back( book( name, hllp + "_coreEff_r",            hllpstr + " r-pos [mm]",                    100,     0,  600 ) );
+	  h_llpdvtx_coreEff_pt
+	    .push_back( book( name, hllp + "_coreEff_pt",           hllpstr + " p_{T} [GeV]",                   100,     0,  500 ) );
+	  h_llpdvtx_coreEff_eta
+	    .push_back( book( name, hllp + "_coreEff_eta",          hllpstr + " eta",                           100,    -5,    5 ) );
+	  h_llpdvtx_coreEff_phi
+	    .push_back( book( name, hllp + "_coreEff_phi",          hllpstr + " phi",                           100,  -3.5,  3.5 ) );
+	  h_llpdvtx_coreEff_avgMu
+	    .push_back( book( name, hllp + "_coreEff_avgMu",        hllpstr + " average pp interactions",        90,     0,   90 ) );
+	  h_llpdvtx_coreEff_descM
+	    .push_back( book( name, hllp + "_coreEff_descM",        hllpstr + " descendant mass [GeV]",         100,     0,   21 ) );
+	  h_llpdvtx_coreEff_nDesc
+	    .push_back( book( name, hllp + "_coreEff_nDesc",        "n " +hllpstr+ " descendants",               20,     0,   20 ) );
+	  h_llpdvtx_coreEff_nRecoDesc
+	    .push_back( book( name, hllp + "_coreEff_nRecoDesc",    "n " +hllpstr+ " reconstructed descendants", 20,     0,   20 ) );
+	  h_llpdvtx_coreEff_nSelDesc
+	    .push_back( book( name, hllp + "_coreEff_nSelDesc",     "n " +hllpstr+ " selected descendants",      20,     0,   20 ) );
+	  h_llpdvtx_seedEff_x
+	    .push_back( book( name, hllp + "_seedEff_x",            hllpstr + " x-pos [mm]",                    100,  -600,  600 ) );
+	  h_llpdvtx_seedEff_y
+	    .push_back( book( name, hllp + "_seedEff_y",            hllpstr + " y-pos [mm]",                    100,  -600,  600 ) );
+	  h_llpdvtx_seedEff_z
+	    .push_back( book( name, hllp + "_seedEff_z",            hllpstr + " z-pos [mm]",                    100, -2500, 2500 ) );
+	  h_llpdvtx_seedEff_r
+	    .push_back( book( name, hllp + "_seedEff_r",            hllpstr + " r-pos [mm]",                    100,     0,  600 ) );
+	  h_llpdvtx_seedEff_pt
+	    .push_back( book( name, hllp + "_seedEff_pt",           hllpstr + " p_{T} [GeV]",                   100,     0,  500 ) );
+	  h_llpdvtx_seedEff_eta
+	    .push_back( book( name, hllp + "_seedEff_eta",          hllpstr + " eta",                           100,    -5,    5 ) );
+	  h_llpdvtx_seedEff_phi
+	    .push_back( book( name, hllp + "_seedEff_phi",          hllpstr + " phi",                           100,  -3.5,  3.5 ) );
+	  h_llpdvtx_seedEff_avgMu
+	    .push_back( book( name, hllp + "_seedEff_avgMu",        hllpstr + " average pp interactions",        90,     0,   90 ) );
+	  h_llpdvtx_seedEff_descM
+	    .push_back( book( name, hllp + "_seedEff_descM",        hllpstr + " descendant mass [GeV]",         100,     0,   21 ) );
+	  h_llpdvtx_seedEff_nDesc
+	    .push_back( book( name, hllp + "_seedEff_nDesc",        "n " +hllpstr+ " descendants",               20,     0,   20 ) );
+	  h_llpdvtx_seedEff_nRecoDesc
+	    .push_back( book( name, hllp + "_seedEff_nRecoDesc",    "n " +hllpstr+ " reconstructed descendants", 20,     0,   20 ) );
+	  h_llpdvtx_seedEff_nSelDesc
+	    .push_back( book( name, hllp + "_seedEff_nSelDesc",     "n " +hllpstr+ " selected descendants",      20,     0,   20 ) );
+	  
+	  h_llpdvtx_sgnlaccept_x
+	    .push_back( book( name, hllp + "_sgnlAccept_x",         hllpstr    + " x-pos [mm]",                 100,  -300,  300 ) );
+	  h_llpdvtx_sgnlaccept_y
+	    .push_back( book( name, hllp + "_sgnlAccept_y",         hllpstr    + " y-pos [mm]",                 100,  -300,  300 ) );
+	  h_llpdvtx_sgnlaccept_z
+	    .push_back( book( name, hllp + "_sgnlAccept_z",         hllpstr    + " z-pos [mm]",                 100,  -300,  300 ) );
+	  h_llpdvtx_sgnlaccept_r
+	    .push_back( book( name, hllp + "_sgnlAccept_r",         hllpstr    + " r-pos [mm]",                 100,     0,  300 ) );
+	  h_llpdvtx_sgnlaccept_pt
+	    .push_back( book( name, hllp + "_sgnlAccept_pt",        hllpstr    + " p_{T} [GeV]",                100,     0,  500 ) );
+	  h_llpdvtx_sgnlaccept_eta
+	    .push_back( book( name, hllp + "_sgnlAccept_eta",       hllpstr    + " eta",                        100,    -5,    5 ) );
+	  h_llpdvtx_sgnlaccept_phi
+	    .push_back( book( name, hllp + "_sgnlAccept_phi",       hllpstr    + " phi",                        100,  -3.5,  3.5 ) );
+	  h_llpdvtx_sgnlaccept_avgMu
+	    .push_back( book( name, hllp + "_sgnlAccept_avgMu",     hllpstr    + " average pp interactions",     90,     0,   90 ) );
+	  h_llpdvtx_sgnlaccept_descM
+	    .push_back( book( name, hllp + "_sgnlAccept_descM",     hllpstr    + " descendant mass [GeV]",      100,     0,   21 ) );
+	  h_llpdvtx_sgnlaccept_nDesc
+	    .push_back( book( name, hllp + "_sgnlAccept_nDesc",     "n " +hllpstr+ " descendants",               20,     0,   20 ) );
+	  h_llpdvtx_sgnlaccept_nRecoDesc
+	    .push_back( book( name, hllp + "_sgnlAccept_nRecoDesc", "n " +hllpstr+ " reconstructed descendants", 20,     0,   20 ) );
+	  h_llpdvtx_sgnlaccept_nSelDesc
+	    .push_back( book( name, hllp + "_sgnlAccept_nSelDesc",  "n " +hllpstr+ " selected descendants",      20,     0,   20 ) );
+
+	  // loop over truth-matched signal reco vertex types
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_x;
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_y;
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_z;
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_r;
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_pt;
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_eta;
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_phi;
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_avgMu;
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_descM;
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_nDesc;
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_nRecoDesc;
+	  std::vector<TH1F*> h_llpdv_sgnlrecoEff_nSelDesc;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_x;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_y;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_z;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_r;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_pt;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_eta;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_phi;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_avgMu;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_descM;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_nDesc;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_nRecoDesc;
+	  std::vector<TH1F*> h_llpdv_sgnlalgEff_nSelDesc;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_x;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_y;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_z;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_r;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_pt;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_eta;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_phi;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_avgMu;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_descM;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_nDesc;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_nRecoDesc;
+	  std::vector<TH1F*> h_llpdv_sgnlcoreEff_nSelDesc;
+	  for ( size_t k = 0; k != hSgnlDV.size(); ++k ) {
+	    std::string hsdv = hSgnlDV[k]; hsdv[0] = tolower(hsdv[0]);
+	    h_llpdv_sgnlrecoEff_x
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_x",         hllpstr + " x-pos [mm]",                100, -300, 300 ) );
+	    h_llpdv_sgnlrecoEff_y
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_y",         hllpstr + " y-pos [mm]",                100, -300, 300 ) );
+	    h_llpdv_sgnlrecoEff_z
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_z",         hllpstr + " z-pos [mm]",                100, -300, 300 ) );
+	    h_llpdv_sgnlrecoEff_r
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_r",         hllpstr + " r-pos [mm]",                100,    0, 300 ) );
+	    h_llpdv_sgnlrecoEff_pt
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_pt",        hllpstr + " p_{T} [GeV]",               100,    0, 500 ) );
+	    h_llpdv_sgnlrecoEff_eta
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_eta",       hllpstr + " eta",                       100,   -5,   5 ) );
+	    h_llpdv_sgnlrecoEff_phi
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_phi",       hllpstr + " phi",                       100, -3.5, 3.5 ) );
+	    h_llpdv_sgnlrecoEff_avgMu
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_avgMu",     hllpstr + " average pp interactions",    90,    0,  90 ) );
+	    h_llpdv_sgnlrecoEff_descM
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_descM",     hllpstr + " descendant mass [GeV]",     100,    0,  21 ) );
+	    h_llpdv_sgnlrecoEff_nDesc
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_nDesc",     "n " +hllpstr+ " descendants",              20, 0,  20 ) );
+	    h_llpdv_sgnlrecoEff_nRecoDesc
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_nRecoDesc", "n " +hllpstr+ " reconstructed descendants",20, 0,  20 ) );
+	    h_llpdv_sgnlrecoEff_nSelDesc
+	      .push_back( book( name, hllp + "_" + hsdv + "RecoEff_nSelDesc",  "n " +hllpstr+ " selected descendants",     20, 0,  20 ) );
+	    h_llpdv_sgnlalgEff_x
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_x",          hllpstr + " x-pos [mm]",                100, -300, 300 ) );
+	    h_llpdv_sgnlalgEff_y
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_y",          hllpstr + " y-pos [mm]",                100, -300, 300 ) );
+	    h_llpdv_sgnlalgEff_z
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_z",          hllpstr + " z-pos [mm]",                100, -300, 300 ) );
+	    h_llpdv_sgnlalgEff_r
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_r",          hllpstr + " r-pos [mm]",                100,    0, 300 ) );
+	    h_llpdv_sgnlalgEff_pt
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_pt",         hllpstr + " p_{T} [GeV]",               100,    0, 500 ) );
+	    h_llpdv_sgnlalgEff_eta
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_eta",        hllpstr + " eta",                       100,   -5,   5 ) );
+	    h_llpdv_sgnlalgEff_phi
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_phi",        hllpstr + " phi",                       100, -3.5, 3.5 ) );
+	    h_llpdv_sgnlalgEff_avgMu
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_avgMu",      hllpstr + " average pp interactions",    90,    0,  90 ) );
+	    h_llpdv_sgnlalgEff_descM
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_descM",      hllpstr + " descendant mass [GeV]",     100,    0,  21 ) );
+	    h_llpdv_sgnlalgEff_nDesc
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_nDesc",      "n " +hllpstr+ " descendants",              20, 0,  20 ) );
+	    h_llpdv_sgnlalgEff_nRecoDesc
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_nRecoDesc",  "n " +hllpstr+ " reconstructed descendants",20, 0,  20 ) );
+	    h_llpdv_sgnlalgEff_nSelDesc
+	      .push_back( book( name, hllp + "_" + hsdv + "AlgEff_nSelDesc",   "n " +hllpstr+ " selected descendants",     20, 0,  20 ) );
+	    h_llpdv_sgnlcoreEff_x
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_x",         hllpstr + " x-pos [mm]",                100, -300, 300 ) );
+	    h_llpdv_sgnlcoreEff_y
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_y",         hllpstr + " y-pos [mm]",                100, -300, 300 ) );
+	    h_llpdv_sgnlcoreEff_z
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_z",         hllpstr + " z-pos [mm]",                100, -300, 300 ) );
+	    h_llpdv_sgnlcoreEff_r
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_r",         hllpstr + " r-pos [mm]",                100,    0, 300 ) );
+	    h_llpdv_sgnlcoreEff_pt
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_pt",        hllpstr + " p_{T} [GeV]",               100,    0, 500 ) );
+	    h_llpdv_sgnlcoreEff_eta
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_eta",       hllpstr + " eta",                       100,   -5,   5 ) );
+	    h_llpdv_sgnlcoreEff_phi
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_phi",       hllpstr + " phi",                       100, -3.5, 3.5 ) );
+	    h_llpdv_sgnlcoreEff_avgMu
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_avgMu",     hllpstr + " average pp interactions",    90,    0,  90 ) );
+	    h_llpdv_sgnlcoreEff_descM
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_descM",     hllpstr + " descendant mass [GeV]",     100,    0,  21 ) );
+	    h_llpdv_sgnlcoreEff_nDesc
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_nDesc",     "n " +hllpstr+ " descendants",              20, 0,  20 ) );
+	    h_llpdv_sgnlcoreEff_nRecoDesc
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_nRecoDesc", "n " +hllpstr+ " reconstructed descendants",20, 0,  20 ) );
+	    h_llpdv_sgnlcoreEff_nSelDesc
+	      .push_back( book( name, hllp + "_" + hsdv + "CoreEff_nSelDesc",  "n " +hllpstr+ " selected descendants",     20, 0,  20 ) );
+	  }
+	  h_llpdvtx_sgnlrecoEff_x         .push_back( h_llpdv_sgnlrecoEff_x         );
+	  h_llpdvtx_sgnlrecoEff_y         .push_back( h_llpdv_sgnlrecoEff_y         );
+	  h_llpdvtx_sgnlrecoEff_z         .push_back( h_llpdv_sgnlrecoEff_z         );
+	  h_llpdvtx_sgnlrecoEff_r         .push_back( h_llpdv_sgnlrecoEff_r         );
+	  h_llpdvtx_sgnlrecoEff_pt        .push_back( h_llpdv_sgnlrecoEff_pt        );
+	  h_llpdvtx_sgnlrecoEff_eta       .push_back( h_llpdv_sgnlrecoEff_eta       );
+	  h_llpdvtx_sgnlrecoEff_phi       .push_back( h_llpdv_sgnlrecoEff_phi       );
+	  h_llpdvtx_sgnlrecoEff_avgMu     .push_back( h_llpdv_sgnlrecoEff_avgMu     );
+	  h_llpdvtx_sgnlrecoEff_descM     .push_back( h_llpdv_sgnlrecoEff_descM     );
+	  h_llpdvtx_sgnlrecoEff_nDesc     .push_back( h_llpdv_sgnlrecoEff_nDesc     );
+	  h_llpdvtx_sgnlrecoEff_nRecoDesc .push_back( h_llpdv_sgnlrecoEff_nRecoDesc );
+	  h_llpdvtx_sgnlrecoEff_nSelDesc  .push_back( h_llpdv_sgnlrecoEff_nSelDesc  );
+	  h_llpdvtx_sgnlalgEff_x          .push_back( h_llpdv_sgnlalgEff_x          );
+	  h_llpdvtx_sgnlalgEff_y          .push_back( h_llpdv_sgnlalgEff_y          );
+	  h_llpdvtx_sgnlalgEff_z          .push_back( h_llpdv_sgnlalgEff_z          );
+	  h_llpdvtx_sgnlalgEff_r          .push_back( h_llpdv_sgnlalgEff_r          );
+	  h_llpdvtx_sgnlalgEff_pt         .push_back( h_llpdv_sgnlalgEff_pt         );
+	  h_llpdvtx_sgnlalgEff_eta        .push_back( h_llpdv_sgnlalgEff_eta        );
+	  h_llpdvtx_sgnlalgEff_phi        .push_back( h_llpdv_sgnlalgEff_phi        );
+	  h_llpdvtx_sgnlalgEff_avgMu      .push_back( h_llpdv_sgnlalgEff_avgMu      );
+	  h_llpdvtx_sgnlalgEff_descM      .push_back( h_llpdv_sgnlalgEff_descM      );
+	  h_llpdvtx_sgnlalgEff_nDesc      .push_back( h_llpdv_sgnlalgEff_nDesc      );
+	  h_llpdvtx_sgnlalgEff_nRecoDesc  .push_back( h_llpdv_sgnlalgEff_nRecoDesc  );
+	  h_llpdvtx_sgnlalgEff_nSelDesc   .push_back( h_llpdv_sgnlalgEff_nSelDesc   );
+	  h_llpdvtx_sgnlcoreEff_x         .push_back( h_llpdv_sgnlcoreEff_x         );
+	  h_llpdvtx_sgnlcoreEff_y         .push_back( h_llpdv_sgnlcoreEff_y         );
+	  h_llpdvtx_sgnlcoreEff_z         .push_back( h_llpdv_sgnlcoreEff_z         );
+	  h_llpdvtx_sgnlcoreEff_r         .push_back( h_llpdv_sgnlcoreEff_r         );
+	  h_llpdvtx_sgnlcoreEff_pt        .push_back( h_llpdv_sgnlcoreEff_pt        );
+	  h_llpdvtx_sgnlcoreEff_eta       .push_back( h_llpdv_sgnlcoreEff_eta       );
+	  h_llpdvtx_sgnlcoreEff_phi       .push_back( h_llpdv_sgnlcoreEff_phi       );
+	  h_llpdvtx_sgnlcoreEff_avgMu     .push_back( h_llpdv_sgnlcoreEff_avgMu     );
+	  h_llpdvtx_sgnlcoreEff_descM     .push_back( h_llpdv_sgnlcoreEff_descM     );
+	  h_llpdvtx_sgnlcoreEff_nDesc     .push_back( h_llpdv_sgnlcoreEff_nDesc     );
+	  h_llpdvtx_sgnlcoreEff_nRecoDesc .push_back( h_llpdv_sgnlcoreEff_nRecoDesc );
+	  h_llpdvtx_sgnlcoreEff_nSelDesc  .push_back( h_llpdv_sgnlcoreEff_nSelDesc  );
+	  h_llpdvtx_sgnlseedEff_x
+	    .push_back( book( name, hllp + "_sgnlSeedEff_x",         hllpstr + " x-pos [mm]",                100, -300, 300 ) );
+	  h_llpdvtx_sgnlseedEff_y
+	    .push_back( book( name, hllp + "_sgnlSeedEff_y",         hllpstr + " y-pos [mm]",                100, -300, 300 ) );
+	  h_llpdvtx_sgnlseedEff_z
+	    .push_back( book( name, hllp + "_sgnlSeedEff_z",         hllpstr + " z-pos [mm]",                100, -300, 300 ) );
+	  h_llpdvtx_sgnlseedEff_r
+	    .push_back( book( name, hllp + "_sgnlSeedEff_r",         hllpstr + " r-pos [mm]",                100,    0, 300 ) );
+	  h_llpdvtx_sgnlseedEff_pt
+	    .push_back( book( name, hllp + "_sgnlSeedEff_pt",        hllpstr + " p_{T} [GeV]",               100,    0, 500 ) );
+	  h_llpdvtx_sgnlseedEff_eta
+	    .push_back( book( name, hllp + "_sgnlSeedEff_eta",       hllpstr + " eta",                       100,   -5,   5 ) );
+	  h_llpdvtx_sgnlseedEff_phi
+	    .push_back( book( name, hllp + "_sgnlSeedEff_phi",       hllpstr + " phi",                       100, -3.5, 3.5 ) );
+	  h_llpdvtx_sgnlseedEff_avgMu
+	    .push_back( book( name, hllp + "_sgnlSeedEff_avgMu",     hllpstr + " average pp interactions",    90,    0,  90 ) );
+	  h_llpdvtx_sgnlseedEff_descM
+	    .push_back( book( name, hllp + "_sgnlSeedEff_descM",     hllpstr + " descendant mass [GeV]",     100,    0,  21 ) );
+	  h_llpdvtx_sgnlseedEff_nDesc
+	    .push_back( book( name, hllp + "_sgnlSeedEff_nDesc",     "n " +hllpstr+ " descendants",              20, 0,  20 ) );
+	  h_llpdvtx_sgnlseedEff_nRecoDesc
+	    .push_back( book( name, hllp + "_sgnlSeedEff_nRecoDesc", "n " +hllpstr+ " reconstructed descendants",20, 0,  20 ) );
+	  h_llpdvtx_sgnlseedEff_nSelDesc
+	    .push_back( book( name, hllp + "_sgnlSeedEff_nSelDesc",  "n " +hllpstr+ " selected descendants",     20, 0,  20 ) );
+	} // end reco efficiency
       } // end loop over llp decay types
+      
       h_LLPdVtx_n          .push_back( h_llpdvtx_n          );
       h_LLPdVtx_z          .push_back( h_llpdvtx_z          );
       h_LLPdVtx_r          .push_back( h_llpdvtx_r          );
@@ -4187,8 +5599,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       h_LLPdVtx_mass       .push_back( h_llpdvtx_mass       );
       h_LLPdVtx_childOpAng .push_back( h_llpdvtx_childOpAng );
       h_LLPdVtx_nOutP      .push_back( h_llpdvtx_nOutP      );
+      h_LLPdVtx_ndesc      .push_back( h_llpdvtx_ndesc      );
       if ( m_histoInfoSwitch->m_llpDesc ) {
-	h_LLPdVtx_ndesc    .push_back( h_llpdvtx_ndesc      );
 	h_LLPdVtx_descPt   .push_back( h_llpdvtx_descPt     );
 	h_LLPdVtx_descEta  .push_back( h_llpdvtx_descEta    );
 	h_LLPdVtx_descPhi  .push_back( h_llpdvtx_descPhi    );
@@ -4199,6 +5611,300 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	h_LLPdVtx_desc_phi .push_back( h_llpdvtx_desc_phi   );
 	h_LLPdVtx_desc_d0  .push_back( h_llpdvtx_desc_d0    );
 	h_LLPdVtx_desc_z0  .push_back( h_llpdvtx_desc_z0    );
+      }
+      if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llpvtxRecoEff ) {
+	h_recobleLLPdVtx_x               .push_back( h_recollpdvtx_x                 );
+	h_recobleLLPdVtx_y               .push_back( h_recollpdvtx_y                 );
+	h_recobleLLPdVtx_z               .push_back( h_recollpdvtx_z                 );
+	h_recobleLLPdVtx_r               .push_back( h_recollpdvtx_r                 );
+	h_recobleLLPdVtx_pt              .push_back( h_recollpdvtx_pt                );
+	h_recobleLLPdVtx_eta             .push_back( h_recollpdvtx_eta               );
+	h_recobleLLPdVtx_phi             .push_back( h_recollpdvtx_phi               );
+	h_recobleLLPdVtx_avgMu           .push_back( h_recollpdvtx_avgMu             );
+	h_recobleLLPdVtx_descM           .push_back( h_recollpdvtx_descM             );
+	h_recobleLLPdVtx_nDesc           .push_back( h_recollpdvtx_nDesc             );
+	h_recobleLLPdVtx_nRecoDesc       .push_back( h_recollpdvtx_nRecoDesc         );
+	h_recobleLLPdVtx_nSelDesc        .push_back( h_recollpdvtx_nSelDesc          );
+	h_recobleLLPdVtx_nDesc_r         .push_back( h_recollpdvtx_nDesc_r           );
+	h_recobleLLPdVtx_nDesc_z         .push_back( h_recollpdvtx_nDesc_z           );
+	h_recobleLLPdVtx_descM_r         .push_back( h_recollpdvtx_descM_r           );
+	h_recobleLLPdVtx_descM_z         .push_back( h_recollpdvtx_descM_z           );
+	h_recobleLLPdVtx_nRecoDesc_r     .push_back( h_recollpdvtx_nRecoDesc_r       );
+	h_recobleLLPdVtx_nRecoDesc_z     .push_back( h_recollpdvtx_nRecoDesc_z       );
+	h_recobleLLPdVtx_recoDescM_r     .push_back( h_recollpdvtx_recoDescM_r       );
+	h_recobleLLPdVtx_recoDescM_z     .push_back( h_recollpdvtx_recoDescM_z       );
+	h_recobleLLPdVtx_nVtxDesc_r      .push_back( h_recollpdvtx_nVtxDesc_r        );
+	h_recobleLLPdVtx_nVtxDesc_z      .push_back( h_recollpdvtx_nVtxDesc_z        );
+	h_recobleLLPdVtx_vtxDescM_r      .push_back( h_recollpdvtx_vtxDescM_r        );
+	h_recobleLLPdVtx_vtxDescM_z      .push_back( h_recollpdvtx_vtxDescM_z        );
+	h_recobleLLPdVtx_fracRecoDesc_r  .push_back( h_recollpdvtx_fracRecoDesc_r    );
+	h_recobleLLPdVtx_fracRecoDesc_z  .push_back( h_recollpdvtx_fracRecoDesc_z    );
+	h_recobleLLPdVtx_fracRecoDescM_r .push_back( h_recollpdvtx_fracRecoDescM_r   );
+	h_recobleLLPdVtx_fracRecoDescM_z .push_back( h_recollpdvtx_fracRecoDescM_z   );
+	h_recobleLLPdVtx_fracVtxDesc_r   .push_back( h_recollpdvtx_fracVtxDesc_r     );
+	h_recobleLLPdVtx_fracVtxDesc_z   .push_back( h_recollpdvtx_fracVtxDesc_z     );
+	h_recobleLLPdVtx_fracVtxDescM_r  .push_back( h_recollpdvtx_fracVtxDescM_r    );
+	h_recobleLLPdVtx_fracVtxDescM_z  .push_back( h_recollpdvtx_fracVtxDescM_z    );
+	h_recoLLPdVtx_x                  .push_back( h_reco2llpdvtx_x                );
+	h_recoLLPdVtx_y                  .push_back( h_reco2llpdvtx_y                );
+	h_recoLLPdVtx_z                  .push_back( h_reco2llpdvtx_z                );
+	h_recoLLPdVtx_r                  .push_back( h_reco2llpdvtx_r                );
+	h_recoLLPdVtx_pt                 .push_back( h_reco2llpdvtx_pt               );
+	h_recoLLPdVtx_eta                .push_back( h_reco2llpdvtx_eta              );
+	h_recoLLPdVtx_phi                .push_back( h_reco2llpdvtx_phi              );
+	h_recoLLPdVtx_avgMu              .push_back( h_reco2llpdvtx_avgMu            );
+	h_recoLLPdVtx_descM              .push_back( h_reco2llpdvtx_descM            );
+	h_recoLLPdVtx_nDesc              .push_back( h_reco2llpdvtx_nDesc            );
+	h_recoLLPdVtx_nRecoDesc          .push_back( h_reco2llpdvtx_nRecoDesc        );
+	h_recoLLPdVtx_nSelDesc           .push_back( h_reco2llpdvtx_nSelDesc         );
+	h_selLLPdVtx_x                   .push_back( h_slctllpdvtx_x                 );
+	h_selLLPdVtx_y                   .push_back( h_slctllpdvtx_y                 );
+	h_selLLPdVtx_z                   .push_back( h_slctllpdvtx_z                 );
+	h_selLLPdVtx_r                   .push_back( h_slctllpdvtx_r                 );
+	h_selLLPdVtx_pt                  .push_back( h_slctllpdvtx_pt                ); 
+	h_selLLPdVtx_eta                 .push_back( h_slctllpdvtx_eta               );
+	h_selLLPdVtx_phi                 .push_back( h_slctllpdvtx_phi               );
+	h_selLLPdVtx_avgMu               .push_back( h_slctllpdvtx_avgMu             );
+	h_selLLPdVtx_descM               .push_back( h_slctllpdvtx_descM             );
+	h_selLLPdVtx_nDesc               .push_back( h_slctllpdvtx_nDesc             );
+	h_selLLPdVtx_nRecoDesc           .push_back( h_slctllpdvtx_nRecoDesc         );
+	h_selLLPdVtx_nSelDesc            .push_back( h_slctllpdvtx_nSelDesc          );
+	h_recoMatchLLPdVtx_score         .push_back( h_matchllpdvtx_score            );
+	h_recoMatchLLPdVtx_x             .push_back( h_matchllpdvtx_x                );
+	h_recoMatchLLPdVtx_y             .push_back( h_matchllpdvtx_y                );
+	h_recoMatchLLPdVtx_z             .push_back( h_matchllpdvtx_z                );
+	h_recoMatchLLPdVtx_r             .push_back( h_matchllpdvtx_r                );
+	h_recoMatchLLPdVtx_pt            .push_back( h_matchllpdvtx_pt               );
+	h_recoMatchLLPdVtx_eta           .push_back( h_matchllpdvtx_eta              );
+	h_recoMatchLLPdVtx_phi           .push_back( h_matchllpdvtx_phi              );
+	h_recoMatchLLPdVtx_avgMu         .push_back( h_matchllpdvtx_avgMu            );
+	h_recoMatchLLPdVtx_descM         .push_back( h_matchllpdvtx_descM            );
+	h_recoMatchLLPdVtx_nDesc         .push_back( h_matchllpdvtx_nDesc            );
+	h_recoMatchLLPdVtx_nRecoDesc     .push_back( h_matchllpdvtx_nRecoDesc        );
+	h_recoMatchLLPdVtx_nSelDesc      .push_back( h_matchllpdvtx_nSelDesc         );
+	h_recoMatchLLPdVtx_resid_x       .push_back( h_matchllpdvtx_resid_x          );
+	h_recoMatchLLPdVtx_resid_y       .push_back( h_matchllpdvtx_resid_y          );
+	h_recoMatchLLPdVtx_resid_z       .push_back( h_matchllpdvtx_resid_z          );
+	h_recoMatchLLPdVtx_resid_r       .push_back( h_matchllpdvtx_resid_r          );
+	h_recoMatchLLPdVtx_resid_rphi    .push_back( h_matchllpdvtx_resid_rphi       );
+	h_recoMatchLLPdVtx_resid_z_r          .push_back( h_matchllpdvtx_resid_z_r          );
+	h_recoMatchLLPdVtx_resid_z_z          .push_back( h_matchllpdvtx_resid_z_z          );
+	h_recoMatchLLPdVtx_resid_z_ntrk       .push_back( h_matchllpdvtx_resid_z_ntrk       );
+	h_recoMatchLLPdVtx_resid_z_nseltrk    .push_back( h_matchllpdvtx_resid_z_nseltrk    );
+	h_recoMatchLLPdVtx_resid_r_r          .push_back( h_matchllpdvtx_resid_r_r          );
+	h_recoMatchLLPdVtx_resid_r_z          .push_back( h_matchllpdvtx_resid_r_z          );
+	h_recoMatchLLPdVtx_resid_r_ntrk       .push_back( h_matchllpdvtx_resid_r_ntrk       );
+	h_recoMatchLLPdVtx_resid_r_nseltrk    .push_back( h_matchllpdvtx_resid_r_nseltrk    );
+	h_recoMatchLLPdVtx_resid_rphi_r       .push_back( h_matchllpdvtx_resid_rphi_r       );
+	h_recoMatchLLPdVtx_resid_rphi_z       .push_back( h_matchllpdvtx_resid_rphi_z       );
+	h_recoMatchLLPdVtx_resid_rphi_ntrk    .push_back( h_matchllpdvtx_resid_rphi_ntrk    );
+	h_recoMatchLLPdVtx_resid_rphi_nseltrk .push_back( h_matchllpdvtx_resid_rphi_nseltrk );
+	h_fiducLLPdVtx_x                 .push_back( h_recofllpdvtx_x                );
+	h_fiducLLPdVtx_y                 .push_back( h_recofllpdvtx_y                );
+	h_fiducLLPdVtx_z                 .push_back( h_recofllpdvtx_z                );
+	h_fiducLLPdVtx_r                 .push_back( h_recofllpdvtx_r                );
+	h_fiducLLPdVtx_pt                .push_back( h_recofllpdvtx_pt               );
+	h_fiducLLPdVtx_eta               .push_back( h_recofllpdvtx_eta              );
+	h_fiducLLPdVtx_phi               .push_back( h_recofllpdvtx_phi              );
+	h_fiducLLPdVtx_avgMu             .push_back( h_recofllpdvtx_avgMu            );
+	h_fiducLLPdVtx_descM             .push_back( h_recofllpdvtx_descM            );
+	h_fiducLLPdVtx_nDesc             .push_back( h_recofllpdvtx_nDesc            );
+	h_fiducLLPdVtx_nRecoDesc         .push_back( h_recofllpdvtx_nRecoDesc        );
+	h_fiducLLPdVtx_nSelDesc          .push_back( h_recofllpdvtx_nSelDesc         );
+	h_fiducLLPdVtx_nDesc_r           .push_back( h_recofllpdvtx_nDesc_r          );
+	h_fiducLLPdVtx_nDesc_z           .push_back( h_recofllpdvtx_nDesc_z          );
+	h_fiducLLPdVtx_descM_r           .push_back( h_recofllpdvtx_descM_r          );
+	h_fiducLLPdVtx_descM_z           .push_back( h_recofllpdvtx_descM_z          );
+	h_fiducLLPdVtx_nRecoDesc_r       .push_back( h_recofllpdvtx_nRecoDesc_r      );
+	h_fiducLLPdVtx_nRecoDesc_z       .push_back( h_recofllpdvtx_nRecoDesc_z      );
+	h_fiducLLPdVtx_recoDescM_r       .push_back( h_recofllpdvtx_recoDescM_r      );
+	h_fiducLLPdVtx_recoDescM_z       .push_back( h_recofllpdvtx_recoDescM_z      );
+	h_fiducLLPdVtx_nVtxDesc_r        .push_back( h_recofllpdvtx_nVtxDesc_r       );
+	h_fiducLLPdVtx_nVtxDesc_z        .push_back( h_recofllpdvtx_nVtxDesc_z       );
+	h_fiducLLPdVtx_vtxDescM_r        .push_back( h_recofllpdvtx_vtxDescM_r       );
+	h_fiducLLPdVtx_vtxDescM_z        .push_back( h_recofllpdvtx_vtxDescM_z       );
+	h_fiducLLPdVtx_fracRecoDesc_r    .push_back( h_recofllpdvtx_fracRecoDesc_r   );
+	h_fiducLLPdVtx_fracRecoDesc_z    .push_back( h_recofllpdvtx_fracRecoDesc_z   );
+	h_fiducLLPdVtx_fracRecoDescM_r   .push_back( h_recofllpdvtx_fracRecoDescM_r  );
+	h_fiducLLPdVtx_fracRecoDescM_z   .push_back( h_recofllpdvtx_fracRecoDescM_z  );
+	h_fiducLLPdVtx_fracVtxDesc_r     .push_back( h_recofllpdvtx_fracVtxDesc_r    );
+	h_fiducLLPdVtx_fracVtxDesc_z     .push_back( h_recofllpdvtx_fracVtxDesc_z    );
+	h_fiducLLPdVtx_fracVtxDescM_r    .push_back( h_recofllpdvtx_fracVtxDescM_r   );
+	h_fiducLLPdVtx_fracVtxDescM_z    .push_back( h_recofllpdvtx_fracVtxDescM_z   );
+	h_recoFiducLLPdVtx_x             .push_back( h_reco2fllpdvtx_x               );
+	h_recoFiducLLPdVtx_y             .push_back( h_reco2fllpdvtx_y               );
+	h_recoFiducLLPdVtx_z             .push_back( h_reco2fllpdvtx_z               );
+	h_recoFiducLLPdVtx_r             .push_back( h_reco2fllpdvtx_r               );
+	h_recoFiducLLPdVtx_pt            .push_back( h_reco2fllpdvtx_pt              );
+	h_recoFiducLLPdVtx_eta           .push_back( h_reco2fllpdvtx_eta             );
+	h_recoFiducLLPdVtx_phi           .push_back( h_reco2fllpdvtx_phi             );
+	h_recoFiducLLPdVtx_avgMu         .push_back( h_reco2fllpdvtx_avgMu           );
+	h_recoFiducLLPdVtx_descM         .push_back( h_reco2fllpdvtx_descM           );
+	h_recoFiducLLPdVtx_nDesc         .push_back( h_reco2fllpdvtx_nDesc           );
+	h_recoFiducLLPdVtx_nRecoDesc     .push_back( h_reco2fllpdvtx_nRecoDesc       );
+	h_recoFiducLLPdVtx_nSelDesc      .push_back( h_reco2fllpdvtx_nSelDesc        );
+	h_selFiducLLPdVtx_x              .push_back( h_slctfllpdvtx_x                );
+	h_selFiducLLPdVtx_y              .push_back( h_slctfllpdvtx_y                );
+	h_selFiducLLPdVtx_z              .push_back( h_slctfllpdvtx_z                );
+	h_selFiducLLPdVtx_r              .push_back( h_slctfllpdvtx_r                );
+	h_selFiducLLPdVtx_pt             .push_back( h_slctfllpdvtx_pt               );
+	h_selFiducLLPdVtx_eta            .push_back( h_slctfllpdvtx_eta              );
+	h_selFiducLLPdVtx_phi            .push_back( h_slctfllpdvtx_phi              );
+	h_selFiducLLPdVtx_avgMu          .push_back( h_slctfllpdvtx_avgMu            );
+	h_selFiducLLPdVtx_descM          .push_back( h_slctfllpdvtx_descM            );
+	h_selFiducLLPdVtx_nDesc          .push_back( h_slctfllpdvtx_nDesc            );
+	h_selFiducLLPdVtx_nRecoDesc      .push_back( h_slctfllpdvtx_nRecoDesc        );
+	h_selFiducLLPdVtx_nSelDesc       .push_back( h_slctfllpdvtx_nSelDesc         );
+	h_sgnlRecoMatchLLPdVtx_score     .push_back( h_smatchllpdvtx_score           );
+	h_sgnlRecoMatchLLPdVtx_x         .push_back( h_smatchllpdvtx_x               );
+	h_sgnlRecoMatchLLPdVtx_y         .push_back( h_smatchllpdvtx_y               );
+	h_sgnlRecoMatchLLPdVtx_z         .push_back( h_smatchllpdvtx_z               );
+	h_sgnlRecoMatchLLPdVtx_r         .push_back( h_smatchllpdvtx_r               );
+	h_sgnlRecoMatchLLPdVtx_pt        .push_back( h_smatchllpdvtx_pt              );
+	h_sgnlRecoMatchLLPdVtx_eta       .push_back( h_smatchllpdvtx_eta             );
+	h_sgnlRecoMatchLLPdVtx_phi       .push_back( h_smatchllpdvtx_phi             );
+	h_sgnlRecoMatchLLPdVtx_avgMu     .push_back( h_smatchllpdvtx_avgMu           );
+	h_sgnlRecoMatchLLPdVtx_descM     .push_back( h_smatchllpdvtx_descM           );
+	h_sgnlRecoMatchLLPdVtx_nDesc     .push_back( h_smatchllpdvtx_nDesc           );
+	h_sgnlRecoMatchLLPdVtx_nRecoDesc .push_back( h_smatchllpdvtx_nRecoDesc       );
+	h_sgnlRecoMatchLLPdVtx_nSelDesc  .push_back( h_smatchllpdvtx_nSelDesc        );
+	h_sgnlRecoMatchLLPdVtx_resid_x   .push_back( h_smatchllpdvtx_resid_x         );
+	h_sgnlRecoMatchLLPdVtx_resid_y   .push_back( h_smatchllpdvtx_resid_y         );
+	h_sgnlRecoMatchLLPdVtx_resid_z   .push_back( h_smatchllpdvtx_resid_z         );
+	h_sgnlRecoMatchLLPdVtx_resid_r   .push_back( h_smatchllpdvtx_resid_r         );
+	h_sgnlRecoMatchLLPdVtx_resid_rphi.push_back( h_smatchllpdvtx_resid_rphi      );
+	h_sgnlRecoMatchLLPdVtx_resid_z_r          .push_back( h_smatchllpdvtx_resid_z_r          );
+	h_sgnlRecoMatchLLPdVtx_resid_z_z          .push_back( h_smatchllpdvtx_resid_z_z          );
+	h_sgnlRecoMatchLLPdVtx_resid_z_ntrk       .push_back( h_smatchllpdvtx_resid_z_ntrk       );
+	h_sgnlRecoMatchLLPdVtx_resid_z_nseltrk    .push_back( h_smatchllpdvtx_resid_z_nseltrk    );
+	h_sgnlRecoMatchLLPdVtx_resid_r_r          .push_back( h_smatchllpdvtx_resid_r_r          );
+	h_sgnlRecoMatchLLPdVtx_resid_r_z          .push_back( h_smatchllpdvtx_resid_r_z          );
+	h_sgnlRecoMatchLLPdVtx_resid_r_ntrk       .push_back( h_smatchllpdvtx_resid_r_ntrk       );
+	h_sgnlRecoMatchLLPdVtx_resid_r_nseltrk    .push_back( h_smatchllpdvtx_resid_r_nseltrk    );
+	h_sgnlRecoMatchLLPdVtx_resid_rphi_r       .push_back( h_smatchllpdvtx_resid_rphi_r       );
+	h_sgnlRecoMatchLLPdVtx_resid_rphi_z       .push_back( h_smatchllpdvtx_resid_rphi_z       );
+	h_sgnlRecoMatchLLPdVtx_resid_rphi_ntrk    .push_back( h_smatchllpdvtx_resid_rphi_ntrk    );
+	h_sgnlRecoMatchLLPdVtx_resid_rphi_nseltrk .push_back( h_smatchllpdvtx_resid_rphi_nseltrk );
+	h_LLPdVtx_accept_x               .push_back( h_llpdvtx_accept_x              );
+	h_LLPdVtx_accept_y               .push_back( h_llpdvtx_accept_y              );
+	h_LLPdVtx_accept_z               .push_back( h_llpdvtx_accept_z              );
+	h_LLPdVtx_accept_r               .push_back( h_llpdvtx_accept_r              );
+	h_LLPdVtx_accept_pt              .push_back( h_llpdvtx_accept_pt             );
+	h_LLPdVtx_accept_eta             .push_back( h_llpdvtx_accept_eta            );
+	h_LLPdVtx_accept_phi             .push_back( h_llpdvtx_accept_phi            );
+	h_LLPdVtx_accept_avgMu           .push_back( h_llpdvtx_accept_avgMu          );
+	h_LLPdVtx_accept_descM           .push_back( h_llpdvtx_accept_descM          );
+	h_LLPdVtx_accept_nDesc           .push_back( h_llpdvtx_accept_nDesc          );
+	h_LLPdVtx_accept_nRecoDesc       .push_back( h_llpdvtx_accept_nRecoDesc      );
+	h_LLPdVtx_accept_nSelDesc        .push_back( h_llpdvtx_accept_nSelDesc       );
+	h_LLPdVtx_recoEff_x              .push_back( h_llpdvtx_recoEff_x             );
+	h_LLPdVtx_recoEff_y              .push_back( h_llpdvtx_recoEff_y             );
+	h_LLPdVtx_recoEff_z              .push_back( h_llpdvtx_recoEff_z             );
+	h_LLPdVtx_recoEff_r              .push_back( h_llpdvtx_recoEff_r             );
+	h_LLPdVtx_recoEff_pt             .push_back( h_llpdvtx_recoEff_pt            );
+	h_LLPdVtx_recoEff_eta            .push_back( h_llpdvtx_recoEff_eta           );
+	h_LLPdVtx_recoEff_phi            .push_back( h_llpdvtx_recoEff_phi           );
+	h_LLPdVtx_recoEff_avgMu          .push_back( h_llpdvtx_recoEff_avgMu         );
+	h_LLPdVtx_recoEff_descM          .push_back( h_llpdvtx_recoEff_descM         );
+	h_LLPdVtx_recoEff_nDesc          .push_back( h_llpdvtx_recoEff_nDesc         );
+	h_LLPdVtx_recoEff_nRecoDesc      .push_back( h_llpdvtx_recoEff_nRecoDesc     );
+	h_LLPdVtx_recoEff_nSelDesc       .push_back( h_llpdvtx_recoEff_nSelDesc      );
+	h_LLPdVtx_algEff_x               .push_back( h_llpdvtx_algEff_x              );
+	h_LLPdVtx_algEff_y               .push_back( h_llpdvtx_algEff_y              );
+	h_LLPdVtx_algEff_z               .push_back( h_llpdvtx_algEff_z              );
+	h_LLPdVtx_algEff_r               .push_back( h_llpdvtx_algEff_r              );
+	h_LLPdVtx_algEff_pt              .push_back( h_llpdvtx_algEff_pt             );
+	h_LLPdVtx_algEff_eta             .push_back( h_llpdvtx_algEff_eta            );
+	h_LLPdVtx_algEff_phi             .push_back( h_llpdvtx_algEff_phi            );
+	h_LLPdVtx_algEff_avgMu           .push_back( h_llpdvtx_algEff_avgMu          );
+	h_LLPdVtx_algEff_descM           .push_back( h_llpdvtx_algEff_descM          );
+	h_LLPdVtx_algEff_nDesc           .push_back( h_llpdvtx_algEff_nDesc          );
+	h_LLPdVtx_algEff_nRecoDesc       .push_back( h_llpdvtx_algEff_nRecoDesc      );
+	h_LLPdVtx_algEff_nSelDesc        .push_back( h_llpdvtx_algEff_nSelDesc       );
+	h_LLPdVtx_coreEff_x              .push_back( h_llpdvtx_coreEff_x             );
+	h_LLPdVtx_coreEff_y              .push_back( h_llpdvtx_coreEff_y             );
+	h_LLPdVtx_coreEff_z              .push_back( h_llpdvtx_coreEff_z             );
+	h_LLPdVtx_coreEff_r              .push_back( h_llpdvtx_coreEff_r             );
+	h_LLPdVtx_coreEff_pt             .push_back( h_llpdvtx_coreEff_pt            );
+	h_LLPdVtx_coreEff_eta            .push_back( h_llpdvtx_coreEff_eta           );
+	h_LLPdVtx_coreEff_phi            .push_back( h_llpdvtx_coreEff_phi           );
+	h_LLPdVtx_coreEff_avgMu          .push_back( h_llpdvtx_coreEff_avgMu         );
+	h_LLPdVtx_coreEff_descM          .push_back( h_llpdvtx_coreEff_descM         );
+	h_LLPdVtx_coreEff_nDesc          .push_back( h_llpdvtx_coreEff_nDesc         );
+	h_LLPdVtx_coreEff_nRecoDesc      .push_back( h_llpdvtx_coreEff_nRecoDesc     );
+	h_LLPdVtx_coreEff_nSelDesc       .push_back( h_llpdvtx_coreEff_nSelDesc      );
+	h_LLPdVtx_seedEff_x              .push_back( h_llpdvtx_seedEff_x             );
+	h_LLPdVtx_seedEff_y              .push_back( h_llpdvtx_seedEff_y             );
+	h_LLPdVtx_seedEff_z              .push_back( h_llpdvtx_seedEff_z             );
+	h_LLPdVtx_seedEff_r              .push_back( h_llpdvtx_seedEff_r             );
+	h_LLPdVtx_seedEff_pt             .push_back( h_llpdvtx_seedEff_pt            );
+	h_LLPdVtx_seedEff_eta            .push_back( h_llpdvtx_seedEff_eta           );
+	h_LLPdVtx_seedEff_phi            .push_back( h_llpdvtx_seedEff_phi           );
+	h_LLPdVtx_seedEff_avgMu          .push_back( h_llpdvtx_seedEff_avgMu         );
+	h_LLPdVtx_seedEff_descM          .push_back( h_llpdvtx_seedEff_descM         );
+	h_LLPdVtx_seedEff_nDesc          .push_back( h_llpdvtx_seedEff_nDesc         );
+	h_LLPdVtx_seedEff_nRecoDesc      .push_back( h_llpdvtx_seedEff_nRecoDesc     );
+	h_LLPdVtx_seedEff_nSelDesc       .push_back( h_llpdvtx_seedEff_nSelDesc      );
+	h_LLPdVtx_sgnlAccept_x           .push_back( h_llpdvtx_sgnlaccept_x          );
+	h_LLPdVtx_sgnlAccept_y           .push_back( h_llpdvtx_sgnlaccept_y          );
+	h_LLPdVtx_sgnlAccept_z           .push_back( h_llpdvtx_sgnlaccept_z          );
+	h_LLPdVtx_sgnlAccept_r           .push_back( h_llpdvtx_sgnlaccept_r          );
+	h_LLPdVtx_sgnlAccept_pt          .push_back( h_llpdvtx_sgnlaccept_pt         );
+	h_LLPdVtx_sgnlAccept_eta         .push_back( h_llpdvtx_sgnlaccept_eta        );
+	h_LLPdVtx_sgnlAccept_phi         .push_back( h_llpdvtx_sgnlaccept_phi        );
+	h_LLPdVtx_sgnlAccept_avgMu       .push_back( h_llpdvtx_sgnlaccept_avgMu      );
+	h_LLPdVtx_sgnlAccept_descM       .push_back( h_llpdvtx_sgnlaccept_descM      );
+	h_LLPdVtx_sgnlAccept_nDesc       .push_back( h_llpdvtx_sgnlaccept_nDesc      );
+	h_LLPdVtx_sgnlAccept_nRecoDesc   .push_back( h_llpdvtx_sgnlaccept_nRecoDesc  );
+	h_LLPdVtx_sgnlAccept_nSelDesc    .push_back( h_llpdvtx_sgnlaccept_nSelDesc   );	
+	h_LLPdVtx_sgnlRecoEff_x          .push_back( h_llpdvtx_sgnlrecoEff_x         );
+	h_LLPdVtx_sgnlRecoEff_y          .push_back( h_llpdvtx_sgnlrecoEff_y         );
+	h_LLPdVtx_sgnlRecoEff_z          .push_back( h_llpdvtx_sgnlrecoEff_z         );
+	h_LLPdVtx_sgnlRecoEff_r          .push_back( h_llpdvtx_sgnlrecoEff_r         );
+	h_LLPdVtx_sgnlRecoEff_pt         .push_back( h_llpdvtx_sgnlrecoEff_pt        );
+	h_LLPdVtx_sgnlRecoEff_eta        .push_back( h_llpdvtx_sgnlrecoEff_eta       );
+	h_LLPdVtx_sgnlRecoEff_phi        .push_back( h_llpdvtx_sgnlrecoEff_phi       );
+	h_LLPdVtx_sgnlRecoEff_avgMu      .push_back( h_llpdvtx_sgnlrecoEff_avgMu     );
+	h_LLPdVtx_sgnlRecoEff_descM      .push_back( h_llpdvtx_sgnlrecoEff_descM     );
+	h_LLPdVtx_sgnlRecoEff_nDesc      .push_back( h_llpdvtx_sgnlrecoEff_nDesc     );
+	h_LLPdVtx_sgnlRecoEff_nRecoDesc  .push_back( h_llpdvtx_sgnlrecoEff_nRecoDesc );
+	h_LLPdVtx_sgnlRecoEff_nSelDesc   .push_back( h_llpdvtx_sgnlrecoEff_nSelDesc  );
+	h_LLPdVtx_sgnlAlgEff_x           .push_back( h_llpdvtx_sgnlalgEff_x          );
+	h_LLPdVtx_sgnlAlgEff_y           .push_back( h_llpdvtx_sgnlalgEff_y          );
+	h_LLPdVtx_sgnlAlgEff_z           .push_back( h_llpdvtx_sgnlalgEff_z          );
+	h_LLPdVtx_sgnlAlgEff_r           .push_back( h_llpdvtx_sgnlalgEff_r          );
+	h_LLPdVtx_sgnlAlgEff_pt          .push_back( h_llpdvtx_sgnlalgEff_pt         );
+	h_LLPdVtx_sgnlAlgEff_eta         .push_back( h_llpdvtx_sgnlalgEff_eta        );
+	h_LLPdVtx_sgnlAlgEff_phi         .push_back( h_llpdvtx_sgnlalgEff_phi        );
+	h_LLPdVtx_sgnlAlgEff_avgMu       .push_back( h_llpdvtx_sgnlalgEff_avgMu      );
+	h_LLPdVtx_sgnlAlgEff_descM       .push_back( h_llpdvtx_sgnlalgEff_descM      );
+	h_LLPdVtx_sgnlAlgEff_nDesc       .push_back( h_llpdvtx_sgnlalgEff_nDesc      );
+	h_LLPdVtx_sgnlAlgEff_nRecoDesc   .push_back( h_llpdvtx_sgnlalgEff_nRecoDesc  );
+	h_LLPdVtx_sgnlAlgEff_nSelDesc    .push_back( h_llpdvtx_sgnlalgEff_nSelDesc   );
+	h_LLPdVtx_sgnlCoreEff_x          .push_back( h_llpdvtx_sgnlcoreEff_x         );
+	h_LLPdVtx_sgnlCoreEff_y          .push_back( h_llpdvtx_sgnlcoreEff_y         );
+	h_LLPdVtx_sgnlCoreEff_z          .push_back( h_llpdvtx_sgnlcoreEff_z         );
+	h_LLPdVtx_sgnlCoreEff_r          .push_back( h_llpdvtx_sgnlcoreEff_r         );
+	h_LLPdVtx_sgnlCoreEff_pt         .push_back( h_llpdvtx_sgnlcoreEff_pt        );
+	h_LLPdVtx_sgnlCoreEff_eta        .push_back( h_llpdvtx_sgnlcoreEff_eta       );
+	h_LLPdVtx_sgnlCoreEff_phi        .push_back( h_llpdvtx_sgnlcoreEff_phi       );
+	h_LLPdVtx_sgnlCoreEff_avgMu      .push_back( h_llpdvtx_sgnlcoreEff_avgMu     );
+	h_LLPdVtx_sgnlCoreEff_descM      .push_back( h_llpdvtx_sgnlcoreEff_descM     );
+	h_LLPdVtx_sgnlCoreEff_nDesc      .push_back( h_llpdvtx_sgnlcoreEff_nDesc     );
+	h_LLPdVtx_sgnlCoreEff_nRecoDesc  .push_back( h_llpdvtx_sgnlcoreEff_nRecoDesc );
+	h_LLPdVtx_sgnlCoreEff_nSelDesc   .push_back( h_llpdvtx_sgnlcoreEff_nSelDesc  );
+	h_LLPdVtx_sgnlSeedEff_x          .push_back( h_llpdvtx_sgnlseedEff_x         );
+	h_LLPdVtx_sgnlSeedEff_y          .push_back( h_llpdvtx_sgnlseedEff_y         );
+	h_LLPdVtx_sgnlSeedEff_z          .push_back( h_llpdvtx_sgnlseedEff_z         );
+	h_LLPdVtx_sgnlSeedEff_r          .push_back( h_llpdvtx_sgnlseedEff_r         );
+	h_LLPdVtx_sgnlSeedEff_pt         .push_back( h_llpdvtx_sgnlseedEff_pt        );
+	h_LLPdVtx_sgnlSeedEff_eta        .push_back( h_llpdvtx_sgnlseedEff_eta       );
+	h_LLPdVtx_sgnlSeedEff_phi        .push_back( h_llpdvtx_sgnlseedEff_phi       );
+	h_LLPdVtx_sgnlSeedEff_avgMu      .push_back( h_llpdvtx_sgnlseedEff_avgMu     );
+	h_LLPdVtx_sgnlSeedEff_descM      .push_back( h_llpdvtx_sgnlseedEff_descM     );
+	h_LLPdVtx_sgnlSeedEff_nDesc      .push_back( h_llpdvtx_sgnlseedEff_nDesc     );
+	h_LLPdVtx_sgnlSeedEff_nRecoDesc  .push_back( h_llpdvtx_sgnlseedEff_nRecoDesc );
+	h_LLPdVtx_sgnlSeedEff_nSelDesc   .push_back( h_llpdvtx_sgnlseedEff_nSelDesc  );
       }
     }
 
@@ -4352,6 +6058,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<TH1F*> h_dv_sumSignifP_sv;
       std::vector<TH1F*> h_dv_mind0;
       std::vector<TH1F*> h_dv_minz0;
+      std::vector<TH1F*> h_dv_mind0_s;
+      std::vector<TH1F*> h_dv_minz0_s;
       std::vector<TH1F*> h_dv_minP;
       std::vector<TH1F*> h_dv_minsqrtd0;
       std::vector<TH1F*> h_dv_minsqrtz0;
@@ -4361,6 +6069,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<TH1F*> h_dv_minErrP;
       std::vector<TH1F*> h_dv_minSqrterrd0;
       std::vector<TH1F*> h_dv_minSqrterrz0;
+      std::vector<TH1F*> h_dv_minSqrterrd0_s;
+      std::vector<TH1F*> h_dv_minSqrterrz0_s;
       std::vector<TH1F*> h_dv_minSqrterrP;
       std::vector<TH1F*> h_dv_minFracerrd0;
       std::vector<TH1F*> h_dv_minFracerrz0;
@@ -4440,6 +6150,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<TH2F*> h_dv_z_chi2_s;
       std::vector<TH2F*> h_dv_r_chi2_s;
       std::vector<TH2F*> h_dv_mass_chi2_s;
+      std::vector<TH2F*> h_dv_mind0_r;
+      std::vector<TH2F*> h_dv_minz0_z;
+      std::vector<TH2F*> h_dv_mind0z0;
+      std::vector<TH2F*> h_dv_mind0_r_s;
+      std::vector<TH2F*> h_dv_minz0_z_s;
+      std::vector<TH2F*> h_dv_mind0z0_s;
       std::vector<TH2F*> h_dv_errx_x;
       std::vector<TH2F*> h_dv_erry_y;
       std::vector<TH2F*> h_dv_errz_z;
@@ -4467,6 +6183,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<TH2F*> h_dv_minErrP_pt;
       std::vector<TH2F*> h_dv_minSqrterrd0_r;
       std::vector<TH2F*> h_dv_minSqrterrz0_z;
+      std::vector<TH2F*> h_dv_minSqrterrd0_mind0;
+      std::vector<TH2F*> h_dv_minSqrterrz0_minz0;
+      std::vector<TH2F*> h_dv_minSqrterrd0z0;
+      std::vector<TH2F*> h_dv_minSqrterrd0_mind0_s;
+      std::vector<TH2F*> h_dv_minSqrterrz0_minz0_s;
+      std::vector<TH2F*> h_dv_minSqrterrd0z0_s;
       std::vector<TH2F*> h_dv_minSqrterrP_pt;
       std::vector<TH2F*> h_dv_minErrd0sv_r;
       std::vector<TH2F*> h_dv_minErrz0sv_z;
@@ -4715,7 +6437,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	    h_dv_trk_chiSq_sv     .push_back( book( name, hDVtrk + "_chiSq_sv",     hDVtrkstr + " chi2 to SV",              100,     0,   100 ) );
 	    h_dv_seltrk_d0        .push_back( book( name, hDVseltrk + "_d0",        hDVseltrkstr + " d0 [mm]",              100,  -300,   300 ) );
 	    h_dv_seltrk_d0_xs     .push_back( book( name, hDVseltrk + "_d0_xs",     hDVseltrkstr + " d0 [mm]",              100,    -5,     5 ) );
-	    h_dv_assoctrk_d0      .push_back( book( name, hDVassoctrk + "_d0",      hDVassoctrkstr + " d0 [mm]",            100,     0,   300 ) );
+	    h_dv_assoctrk_d0      .push_back( book( name, hDVassoctrk + "_d0",      hDVassoctrkstr + " d0 [mm]",            100,  -300,   300 ) );
 	    h_dv_assoctrk_eta     .push_back( book( name, hDVassoctrk + "_eta",     hDVassoctrkstr + " eta",                100,  -3.5,   3.5 ) );
 	    h_dv_assoctrk_phi     .push_back( book( name, hDVassoctrk + "_phi",     hDVassoctrkstr + " phi",                100,  -3.5,   3.5 ) );
 	  }
@@ -4742,6 +6464,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	    h_dv_sumsqrtP_sv     .push_back( book( name, hDVsum + "sqrtP_sv",     hDVsumstr + " sqrt |q/p| wrt SV [e/GeV]",100,0, 2.25 ) );
 	    h_dv_mind0           .push_back( book( name, hDVmin + "d0",           hDVminstr + " |d0| [mm]",               100, 0,  200 ) );
 	    h_dv_minz0           .push_back( book( name, hDVmin + "z0",           hDVminstr + " |z0| [mm]",               100, 0, 1000 ) );
+	    h_dv_mind0_s         .push_back( book( name, hDVmin + "d0_s",         hDVminstr + " |d0| [mm]",               100, 0,   10 ) );
+	    h_dv_minz0_s         .push_back( book( name, hDVmin + "z0_s",         hDVminstr + " |z0| [mm]",               100, 0,  100 ) );
 	    h_dv_minP            .push_back( book( name, hDVmin + "P",            hDVminstr + " |q/p| [e/GeV]",           100, 0,    1 ) );
 	    h_dv_mind0_sv        .push_back( book( name, hDVmin + "d0_sv",        hDVminstr + " |d0| wrt SV [mm]",        100, 0,   15 ) );
 	    h_dv_minz0_sv        .push_back( book( name, hDVmin + "z0_sv",        hDVminstr + " |z0| wrt SV [mm]",        100, 0,   50 ) );
@@ -4797,6 +6521,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	    h_dv_minErrP         .push_back( book( name, hDVmin + "ErrP",         hDVminstr + " q/p uncert.",             100, 0, 0.02 ) );
 	    h_dv_minSqrterrd0    .push_back( book( name, hDVmin + "Sqrterrd0",    hDVminstr + " d0 sqrt-uncert.",         100, 0,  1.5 ) );
 	    h_dv_minSqrterrz0    .push_back( book( name, hDVmin + "Sqrterrz0",    hDVminstr + " z0 sqrt-uncert.",         100, 0,  3.5 ) );
+	    h_dv_minSqrterrd0_s  .push_back( book( name, hDVmin + "Sqrterrd0_s",  hDVminstr + " d0 sqrt-uncert.",         100, 0,  0.5 ) );
+	    h_dv_minSqrterrz0_s  .push_back( book( name, hDVmin + "Sqrterrz0_s",  hDVminstr + " z0 sqrt-uncert.",         100, 0,  1.5 ) );
 	    h_dv_minSqrterrP     .push_back( book( name, hDVmin + "SqrterrP",     hDVminstr + " q/p sqrt-uncert.",        100, 0, 0.15 ) );
 	    h_dv_minFracerrd0    .push_back( book( name, hDVmin + "Fracerrd0",    hDVminstr + " d0 fractional uncert.",   100, 0, 0.15 ) );
 	    h_dv_minFracerrz0    .push_back( book( name, hDVmin + "Fracerrz0",    hDVminstr + " z0 fractional uncert.",   100, 0, 0.15 ) );
@@ -4885,6 +6611,20 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 							  hdvstr + " r-pos [mm]",           100,     0,  300 ) );
 	    h_dv_mass_chi2_s            .push_back( book( name, hdv + "_mass_chi2_s",     hdvstr + " chi2 / nDoF",     100,     0,    5,
 							  hdvstr + " mass [GeV]",           100,     0,   25 ) );
+	    if ( m_histoInfoSwitch->m_vtxOverallTrk ) {
+	      h_dv_mind0_r              .push_back( book( name, hdv + "_mind0_r",         hdvstr + " r-pos [mm]",      100,     0,  400,
+							  hdvstr + " min-d0 [mm]",          100,     0,  200 ) );
+	      h_dv_minz0_z              .push_back( book( name, hdv + "_minz0_z",         hdvstr + " z-pos [mm]",      100,  -800,  800,
+							  hdvstr + " min-z0 [mm]",          100,     0, 1000 ) );
+	      h_dv_mind0z0              .push_back( book( name, hdv + "_mind0z0",         hdvstr + " min-z0 [mm]",     100,     0, 1000,
+							  hdvstr + " min-d0 [mm]",          100,     0,  200 ) );
+	      h_dv_mind0_r_s            .push_back( book( name, hdv + "_mind0_r_s",       hdvstr + " r-pos [mm]",      100,     0,  300,
+							  hdvstr + " min-d0 [mm]",          100,     0,   10 ) );
+	      h_dv_minz0_z_s            .push_back( book( name, hdv + "_minz0_z_s",       hdvstr + " z-pos [mm]",      100,  -300,  300,
+							  hdvstr + " min-z0 [mm]",          100,     0,  100 ) );
+	      h_dv_mind0z0_s            .push_back( book( name, hdv + "_mind0z0_s",       hdvstr + " min-z0 [mm]",     100,     0,  100,
+							  hdvstr + " min-d0 [mm]",          100,     0,   10 ) );
+	    }
 	  }
 	  if ( m_histoInfoSwitch->m_vtx2D && m_histoInfoSwitch->m_vtxErrors ) {
 	    h_dv_errx_x                 .push_back( book( name, hdv + "_errx_x",          hdvstr + " x-pos [mm]",      100,  -400,  400,
@@ -4943,6 +6683,18 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 							  hDVminstr + " z0 sqrt-uncert.",         100,     0,  3.5 ) );
 	    h_dv_minSqrterrP_pt         .push_back( book( name, hDVmin + "SqrterrP_pt",         hdvstr + " p_{T} [GeV]",     100,     0,  100,
 							  hDVminstr + " q/p sqrt-uncert.",        100,     0, 0.15 ) );
+	    h_dv_minSqrterrd0_mind0     .push_back( book( name, hDVmin + "Sqrterrd0_mind0",     hdvstr + " min-d0 [mm]",     100,     0,  200,
+							  hDVminstr + " d0 sqrt-uncert.",         100,     0,  1.5 ) );
+	    h_dv_minSqrterrz0_minz0     .push_back( book( name, hDVmin + "Sqrterrz0_minz0",     hdvstr + " min-z0 [mm]",     100,     0, 1000,
+							  hDVminstr + " z0 sqrt-uncert.",         100,     0,  3.5 ) );
+	    h_dv_minSqrterrd0z0         .push_back( book( name, hDVmin + "Sqrterrd0z0",         hDVminstr+" z0 sqrt-uncert.",100,     0,  3.5,
+							  hDVminstr + " d0 sqrt-uncert.",         100,     0,  1.5 ) );
+	    h_dv_minSqrterrd0_mind0_s   .push_back( book( name, hDVmin + "Sqrterrd0_mind0_s",   hdvstr + " min-d0 [mm]",     100,     0,   10,
+							  hDVminstr + " d0 sqrt-uncert.",         100,     0,  0.5 ) );
+	    h_dv_minSqrterrz0_minz0_s   .push_back( book( name, hDVmin + "Sqrterrz0_minz0_s",   hdvstr + " min-z0 [mm]",     100,     0,  100,
+							  hDVminstr + " z0 sqrt-uncert.",         100,     0,  1.5 ) );
+	    h_dv_minSqrterrd0z0_s       .push_back( book( name, hDVmin + "Sqrterrd0z0_s",       hDVminstr+" z0 sqrt-uncert.",100,     0,  1.5,
+							  hDVminstr + " d0 sqrt-uncert.",         100,     0,  0.5 ) );
 	    h_dv_minErrd0sv_r           .push_back( book( name, hDVmin + "Errd0sv_r",           hdvstr + " r-pos [mm]",      100,     0,  400,
 							  hDVminstr + " d0 wrt SV uncert.",       100,     0,    2 ) );
 	    h_dv_minErrz0sv_z           .push_back( book( name, hDVmin + "Errz0sv_z",           hdvstr + " z-pos [mm]",      100,  -800,  800,
@@ -5042,7 +6794,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	    h_dv_trkSqrterrPsv_trkPsv   .push_back( book( name, hDVtrk + "SqrterrPsv_trkPsv",   hDVtrkstr + " q/p wrt SV [e/GeV]", 100,  -1.1,  1.1,
 							  hDVtrkstr + " q/p wrt SV sqrt-uncert.", 100,     0, 0.25 ) );
 	    h_dv_assoctrk_d0_phi        .push_back( book( name, hDVassoctrk + "_d0_phi",        hDVassoctrkstr + " phi",           100,  -3.5,  3.5,
-							  hDVassoctrkstr + " d0 [mm]",            100,     0,  300 ) );
+							  hDVassoctrkstr + " d0 [mm]",            100,  -300,  300 ) );
 	    h_dv_assoctrk_eta_phi       .push_back( book( name, hDVassoctrk + "_eta_phi",       hDVassoctrkstr + " phi",           100,  -3.5,  3.5,
 							  hDVassoctrkstr + " eta",                100,  -3.5,  3.5 ) );
 	    h_dv_assoctrk_phi_eta       .push_back( book( name, hDVassoctrk + "_phi_eta",       hDVassoctrkstr + " eta",           100,  -3.5,  3.5,
@@ -5424,6 +7176,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  h_DV_sumsqrtP_sv            .push_back( h_dv_sumsqrtP_sv            );
 	  h_DV_mind0                  .push_back( h_dv_mind0                  );
 	  h_DV_minz0                  .push_back( h_dv_minz0                  );
+	  h_DV_mind0_s                .push_back( h_dv_mind0_s                );
+	  h_DV_minz0_s                .push_back( h_dv_minz0_s                );
 	  h_DV_minP                   .push_back( h_dv_minP                   );
 	  h_DV_mind0_sv               .push_back( h_dv_mind0_sv               );
 	  h_DV_minz0_sv               .push_back( h_dv_minz0_sv               );
@@ -5477,6 +7231,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  h_DV_minErrP                .push_back( h_dv_minErrP                );
 	  h_DV_minSqrterrd0           .push_back( h_dv_minSqrterrd0           );
 	  h_DV_minSqrterrz0           .push_back( h_dv_minSqrterrz0           );
+	  h_DV_minSqrterrd0_s         .push_back( h_dv_minSqrterrd0_s         );
+	  h_DV_minSqrterrz0_s         .push_back( h_dv_minSqrterrz0_s         );
 	  h_DV_minSqrterrP            .push_back( h_dv_minSqrterrP            );
 	  h_DV_minFracerrd0           .push_back( h_dv_minFracerrd0           );
 	  h_DV_minFracerrz0           .push_back( h_dv_minFracerrz0           );
@@ -5540,6 +7296,14 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  h_DV_z_chi2_s               .push_back( h_dv_z_chi2_s               );
 	  h_DV_r_chi2_s               .push_back( h_dv_r_chi2_s               );
 	  h_DV_mass_chi2_s            .push_back( h_dv_mass_chi2_s            );
+	  if ( m_histoInfoSwitch->m_vtxOverallTrk ) {
+	    h_DV_mind0_r              .push_back( h_dv_mind0_r                );
+	    h_DV_minz0_z              .push_back( h_dv_minz0_z                );
+	    h_DV_mind0z0              .push_back( h_dv_mind0z0                );
+	    h_DV_mind0_r_s            .push_back( h_dv_mind0_r_s              );
+	    h_DV_minz0_z_s            .push_back( h_dv_minz0_z_s              );
+	    h_DV_mind0z0_s            .push_back( h_dv_mind0z0_s              );
+	  }
 	}
 	if ( m_histoInfoSwitch->m_vtx2D && m_histoInfoSwitch->m_vtxErrors ) {
 	  h_DV_errx_x                 .push_back( h_dv_errx_x                 );
@@ -5570,6 +7334,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  h_DV_minSqrterrd0_r         .push_back( h_dv_minSqrterrd0_r         );
 	  h_DV_minSqrterrz0_z         .push_back( h_dv_minSqrterrz0_z         );
 	  h_DV_minSqrterrP_pt         .push_back( h_dv_minSqrterrP_pt         );
+	  h_DV_minSqrterrd0_mind0     .push_back( h_dv_minSqrterrd0_mind0     );
+	  h_DV_minSqrterrz0_minz0     .push_back( h_dv_minSqrterrz0_minz0     );
+	  h_DV_minSqrterrd0z0         .push_back( h_dv_minSqrterrd0z0         );
+	  h_DV_minSqrterrd0_mind0_s   .push_back( h_dv_minSqrterrd0_mind0_s   );
+	  h_DV_minSqrterrz0_minz0_s   .push_back( h_dv_minSqrterrz0_minz0_s   );
+	  h_DV_minSqrterrd0z0_s       .push_back( h_dv_minSqrterrd0z0_s       );
 	  h_DV_minErrd0sv_r           .push_back( h_dv_minErrd0sv_r           );
 	  h_DV_minErrz0sv_z           .push_back( h_dv_minErrz0sv_z           );
 	  h_DV_minErrPsv_pt           .push_back( h_dv_minErrPsv_pt           );
@@ -6494,8 +8264,10 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 
 	      h_truthJet_llpdv_dR    [ireg][itj][tjtv] ->Fill( m_truthJet_TV_dR ->at(i)[tjv], weight );
 	      h_truthJet_llpdv_ndesc [ireg][itj][tjtv] ->Fill( n_tv_desc,                     weight );
-	      h_truthJet_llpdv_z     [ireg][itj][tjtv] ->Fill( m_truthJet_TV_z  ->at(i)[tjv], weight );
-	      h_truthJet_llpdv_r     [ireg][itj][tjtv] ->Fill( m_truthJet_TV_r  ->at(i)[tjv], weight );
+	      if ( m_histoInfoSwitch->m_tjetVerts ) {
+		h_truthJet_llpdv_z   [ireg][itj][tjtv] ->Fill( m_truthJet_TV_z  ->at(i)[tjv], weight );
+		h_truthJet_llpdv_r   [ireg][itj][tjtv] ->Fill( m_truthJet_TV_r  ->at(i)[tjv], weight );
+	      }
 	    } // end loop over matched LLP decay types
 	    
 	  } // end loop over matched truth vertices
@@ -6618,8 +8390,10 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 
 	      h_darkJet_llpdv_dR    [ireg][idj][djtv] ->Fill( m_darkJet_TV_dR ->at(i)[djv], weight );
 	      h_darkJet_llpdv_ndesc [ireg][idj][djtv] ->Fill( n_tv_desc,                    weight );
-	      h_darkJet_llpdv_z     [ireg][idj][djtv] ->Fill( m_darkJet_TV_z  ->at(i)[djv], weight );
-	      h_darkJet_llpdv_r     [ireg][idj][djtv] ->Fill( m_darkJet_TV_r  ->at(i)[djv], weight );
+	      if ( m_histoInfoSwitch->m_djetVerts ) {
+		h_darkJet_llpdv_z   [ireg][idj][djtv] ->Fill( m_darkJet_TV_z  ->at(i)[djv], weight );
+		h_darkJet_llpdv_r   [ireg][idj][djtv] ->Fill( m_darkJet_TV_r  ->at(i)[djv], weight );
+	      }
 	    } // end loop over matched LLP decay types
 	    
 	  } // end loop over matched truth vertices
@@ -7930,6 +9704,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     // ----------------------- //
     // --- TRUTH PARTICLES --- //
     // ----------------------- //
+
+    // --> ADD IF NOT ABCD-ONLY (FOR TRUTH VERTS TOO)
     
     double truthPart_sumPt     = 0;
     double truthPartDark_sumPt = 0;
@@ -7979,6 +9755,163 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  for ( int j = 0; j != m_tp_nChildren->at(i); ++j )
 	    h_tp_childPdgId  [ireg][itp] ->Fill( fabs( m_tp_child_pdgId  ->at(i).at(j) ), weight );
       	} // end loop over truth particle types
+
+	// do reconstruction efficiency studies
+	if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llptrkRecoEff ) {
+	  // do fiducial selections: pt > 1 GeV, |eta| < 2.5, r-prod < 440 mm, charge = +-1, from llp decay
+	  if ( m_tp_pt ->at(i) <  1 )           continue;
+	  if ( fabs( m_tp_eta ->at(i) ) > 2.5 ) continue;
+	  if ( !m_tp_pvtx   ->at(i) )           continue;
+	  if (  m_tp_pvtx_r ->at(i) > 440 )     continue;
+	  if ( !m_tp_charge ->at(i) )           continue;
+	  if ( !m_tp_isDesc ->at(i) )           continue;
+
+	  // look for (standard/lrt) reco track and get track parameters
+	  bool   isRecoTrk      = false;
+	  bool   isStdTrk       = false;
+	  bool   isLrtTrk       = false;
+	  double recoTrk_d0     = 0;
+	  double recoTrk_z0     = 0;
+	  double recoTrk_qOverP = 0;
+	  if ( m_tp_isReco ->at(i) ) {
+	    isRecoTrk = true;
+	    int trkIx = -1;
+	    for ( int itrk = 0; itrk != m_trk_n; ++itrk )
+	      if ( m_trk_ID ->at(itrk) == m_tp_recoID ->at(i) ) trkIx = itrk;
+	    if ( trkIx != -1 ) {
+	      if ( m_trk_isLRT ->at(trkIx) ) isLrtTrk = true;
+	      else                           isStdTrk = true;
+	      recoTrk_d0     = m_trk_d0     ->at(trkIx);
+	      recoTrk_z0     = m_trk_z0     ->at(trkIx);
+	      recoTrk_qOverP = m_trk_qOverP ->at(trkIx);
+	    }
+	  }
+
+	  // get production vertex if available in ntuple --> otherwise use ancestor vertex (close enough)
+	  int prodVtx_index = -1;
+	  for ( int itv = 0; itv != m_truthVtx_n; ++itv )
+	    if ( m_tp_pvtx_ID ->at(i) == m_truthVtx_ID ->at(itv) ) prodVtx_index = itv;
+	    
+	  std::vector<int> llptrk;
+	  int ancestor_index = getLLPDescTypes( m_tp_ID ->at(i), llptrk );
+
+	  // get nearest track from same ancestor
+	  double minTrkDR = AlgConsts::maxValue;
+	  for ( int llpd = 0; llpd != m_truthVtx_nDesc ->at(ancestor_index); ++llpd ) {
+	    if ( m_tp_ID ->at(i) == m_truthVtx_desc_ID ->at(ancestor_index)[llpd] ) continue;
+	    double trkDR = EJsHelper::deltaR( m_tp_eta ->at(i), m_truthVtx_desc_eta ->at(ancestor_index)[llpd],
+					      m_tp_phi ->at(i), m_truthVtx_desc_phi ->at(ancestor_index)[llpd] );
+	    if ( trkDR < minTrkDR ) minTrkDR = trkDR;
+	  }
+	  
+	  for ( size_t illp = 0; illp != llptrk.size(); ++illp ) {
+	    
+	    if ( !llptrk[illp] ) continue;
+	    
+	    h_LLPtrk_r           [ireg][illp] ->Fill( m_tp_pvtx_r  ->at(i), weight );
+	    h_LLPtrk_pt          [ireg][illp] ->Fill( m_tp_pt      ->at(i), weight );
+	    h_LLPtrk_eta         [ireg][illp] ->Fill( m_tp_eta     ->at(i), weight );
+	    h_LLPtrk_phi         [ireg][illp] ->Fill( m_tp_phi     ->at(i), weight );
+	    h_LLPtrk_avgMu       [ireg][illp] ->Fill( m_averageMu,          weight );
+	    h_LLPtrk_minDR       [ireg][illp] ->Fill( minTrkDR,             weight );
+	    if ( isRecoTrk ) {
+	      h_recoLLPtrk_r     [ireg][illp] ->Fill( m_tp_pvtx_r  ->at(i), weight );
+	      h_recoLLPtrk_pt    [ireg][illp] ->Fill( m_tp_pt      ->at(i), weight );
+	      h_recoLLPtrk_eta   [ireg][illp] ->Fill( m_tp_eta     ->at(i), weight );
+	      h_recoLLPtrk_phi   [ireg][illp] ->Fill( m_tp_phi     ->at(i), weight );
+	      h_recoLLPtrk_avgMu [ireg][illp] ->Fill( m_averageMu,          weight );
+	      h_recoLLPtrk_minDR [ireg][illp] ->Fill( minTrkDR,             weight );
+	    }
+	    if ( isStdTrk ) {
+	      h_stdLLPtrk_r      [ireg][illp] ->Fill( m_tp_pvtx_r  ->at(i), weight );
+	      h_stdLLPtrk_pt     [ireg][illp] ->Fill( m_tp_pt      ->at(i), weight );
+	      h_stdLLPtrk_eta    [ireg][illp] ->Fill( m_tp_eta     ->at(i), weight );
+	      h_stdLLPtrk_phi    [ireg][illp] ->Fill( m_tp_phi     ->at(i), weight );
+	      h_stdLLPtrk_avgMu  [ireg][illp] ->Fill( m_averageMu,          weight );
+	      h_stdLLPtrk_minDR  [ireg][illp] ->Fill( minTrkDR,             weight );
+	    }
+	    if ( isLrtTrk ) {
+	      h_lrtLLPtrk_r      [ireg][illp] ->Fill( m_tp_pvtx_r  ->at(i), weight );
+	      h_lrtLLPtrk_pt     [ireg][illp] ->Fill( m_tp_pt      ->at(i), weight );
+	      h_lrtLLPtrk_eta    [ireg][illp] ->Fill( m_tp_eta     ->at(i), weight );
+	      h_lrtLLPtrk_phi    [ireg][illp] ->Fill( m_tp_phi     ->at(i), weight );
+	      h_lrtLLPtrk_avgMu  [ireg][illp] ->Fill( m_averageMu,          weight );
+	      h_lrtLLPtrk_minDR  [ireg][illp] ->Fill( minTrkDR,             weight );
+	    }
+
+	    int pvtx_index = prodVtx_index;
+	    if ( pvtx_index == -1 ) pvtx_index = ancestor_index;
+
+	    double llptrk_d0 = 0;
+	    double llptrk_z0 = 0;
+	    TVector3 pointvec
+	      ( m_truthVtx_x ->at(pvtx_index) - m_pv_x, m_truthVtx_y ->at(pvtx_index) - m_pv_y, m_truthVtx_z ->at(pvtx_index) - m_pv_z );
+	    double dphi_llptrk_pointvec = EJsHelper::deltaPhi( m_tp_phi ->at(i), pointvec.Phi() );
+	    llptrk_d0 = m_tp_pvtx_r ->at(i) * TMath::Sin( dphi_llptrk_pointvec );
+	    llptrk_z0 = m_tp_pvtx_r ->at(i) / TMath::Tan( pointvec.Theta()     );
+
+	    // residual d0, z0, q/p
+	    double resid_d0     = recoTrk_d0 - llptrk_d0;
+	    double resid_z0     = recoTrk_z0 - llptrk_z0;
+	    double resid_qOverP = recoTrk_qOverP - ( m_tp_charge ->at(i) / tp_p4.Vect().Mag() );
+	    
+	    h_LLPtrk_x        [ireg][illp] ->Fill( m_truthVtx_x ->at(pvtx_index), weight );
+	    h_LLPtrk_y        [ireg][illp] ->Fill( m_truthVtx_y ->at(pvtx_index), weight );
+	    h_LLPtrk_z        [ireg][illp] ->Fill( m_truthVtx_z ->at(pvtx_index), weight );
+	    h_LLPtrk_d0       [ireg][illp] ->Fill( llptrk_d0,                     weight );
+	    h_LLPtrk_z0       [ireg][illp] ->Fill( llptrk_z0,                     weight );
+	    if ( isRecoTrk ) {
+	      h_recoLLPtrk_x  [ireg][illp] ->Fill( m_truthVtx_x ->at(pvtx_index), weight );
+	      h_recoLLPtrk_y  [ireg][illp] ->Fill( m_truthVtx_y ->at(pvtx_index), weight );
+	      h_recoLLPtrk_z  [ireg][illp] ->Fill( m_truthVtx_z ->at(pvtx_index), weight );
+	      h_recoLLPtrk_d0 [ireg][illp] ->Fill( llptrk_d0,                     weight );
+	      h_recoLLPtrk_z0 [ireg][illp] ->Fill( llptrk_z0,                     weight );
+	      h_recoLLPtrk_resid_d0        [ireg][illp] ->Fill( resid_d0,     weight );
+	      h_recoLLPtrk_resid_z0        [ireg][illp] ->Fill( resid_z0,     weight );
+	      h_recoLLPtrk_resid_qOverP    [ireg][illp] ->Fill( resid_qOverP, weight );
+	      h_recoLLPtrk_resid_d0_r      [ireg][illp] ->Fill( m_tp_pvtx_r ->at(i), resid_d0,     weight );
+	      h_recoLLPtrk_resid_d0_pt     [ireg][illp] ->Fill( m_tp_pt     ->at(i), resid_d0,     weight );
+	      h_recoLLPtrk_resid_z0_r      [ireg][illp] ->Fill( m_tp_pvtx_r ->at(i), resid_z0,     weight );
+	      h_recoLLPtrk_resid_z0_pt     [ireg][illp] ->Fill( m_tp_pt     ->at(i), resid_z0,     weight );
+	      h_recoLLPtrk_resid_qOverP_r  [ireg][illp] ->Fill( m_tp_pvtx_r ->at(i), resid_qOverP, weight );
+	      h_recoLLPtrk_resid_qOverP_pt [ireg][illp] ->Fill( m_tp_pt     ->at(i), resid_qOverP, weight );
+	    }
+	    if ( isStdTrk ) {
+	      h_stdLLPtrk_x   [ireg][illp] ->Fill( m_truthVtx_x ->at(pvtx_index), weight );
+	      h_stdLLPtrk_y   [ireg][illp] ->Fill( m_truthVtx_y ->at(pvtx_index), weight );
+	      h_stdLLPtrk_z   [ireg][illp] ->Fill( m_truthVtx_z ->at(pvtx_index), weight );
+	      h_stdLLPtrk_d0  [ireg][illp] ->Fill( llptrk_d0,                     weight );
+	      h_stdLLPtrk_z0  [ireg][illp] ->Fill( llptrk_z0,                     weight );
+	      h_stdLLPtrk_resid_d0        [ireg][illp] ->Fill( resid_d0,     weight );
+	      h_stdLLPtrk_resid_z0        [ireg][illp] ->Fill( resid_z0,     weight );
+	      h_stdLLPtrk_resid_qOverP    [ireg][illp] ->Fill( resid_qOverP, weight );
+	      h_stdLLPtrk_resid_d0_r      [ireg][illp] ->Fill( m_tp_pvtx_r ->at(i), resid_d0,     weight );
+	      h_stdLLPtrk_resid_d0_pt     [ireg][illp] ->Fill( m_tp_pt     ->at(i), resid_d0,     weight );
+	      h_stdLLPtrk_resid_z0_r      [ireg][illp] ->Fill( m_tp_pvtx_r ->at(i), resid_z0,     weight );
+	      h_stdLLPtrk_resid_z0_pt     [ireg][illp] ->Fill( m_tp_pt     ->at(i), resid_z0,     weight );
+	      h_stdLLPtrk_resid_qOverP_r  [ireg][illp] ->Fill( m_tp_pvtx_r ->at(i), resid_qOverP, weight );
+	      h_stdLLPtrk_resid_qOverP_pt [ireg][illp] ->Fill( m_tp_pt     ->at(i), resid_qOverP, weight );
+	    }
+	    if ( isLrtTrk ) {
+	      h_lrtLLPtrk_x   [ireg][illp] ->Fill( m_truthVtx_x ->at(pvtx_index), weight );
+	      h_lrtLLPtrk_y   [ireg][illp] ->Fill( m_truthVtx_y ->at(pvtx_index), weight );
+	      h_lrtLLPtrk_z   [ireg][illp] ->Fill( m_truthVtx_z ->at(pvtx_index), weight );
+	      h_lrtLLPtrk_d0  [ireg][illp] ->Fill( llptrk_d0,                     weight );
+	      h_lrtLLPtrk_z0  [ireg][illp] ->Fill( llptrk_z0,                     weight );
+	      h_lrtLLPtrk_resid_d0        [ireg][illp] ->Fill( resid_d0,     weight );
+	      h_lrtLLPtrk_resid_z0        [ireg][illp] ->Fill( resid_z0,     weight );
+	      h_lrtLLPtrk_resid_qOverP    [ireg][illp] ->Fill( resid_qOverP, weight );
+	      h_lrtLLPtrk_resid_d0_r      [ireg][illp] ->Fill( m_tp_pvtx_r ->at(i), resid_d0,     weight );
+	      h_lrtLLPtrk_resid_d0_pt     [ireg][illp] ->Fill( m_tp_pt     ->at(i), resid_d0,     weight );
+	      h_lrtLLPtrk_resid_z0_r      [ireg][illp] ->Fill( m_tp_pvtx_r ->at(i), resid_z0,     weight );
+	      h_lrtLLPtrk_resid_z0_pt     [ireg][illp] ->Fill( m_tp_pt     ->at(i), resid_z0,     weight );
+	      h_lrtLLPtrk_resid_qOverP_r  [ireg][illp] ->Fill( m_tp_pvtx_r ->at(i), resid_qOverP, weight );
+	      h_lrtLLPtrk_resid_qOverP_pt [ireg][illp] ->Fill( m_tp_pt     ->at(i), resid_qOverP, weight );
+	    }
+	  } // end loop over llp descendant types
+	  
+	} // end reconstruction efficiency studies
+	
       } // end loop over truth particles
 
       // fill truth particle count histoograms
@@ -8047,14 +9980,15 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  h_LLPdVtx_mass       [ireg][illp] ->Fill( m_truthVtx_mass       ->at(i), weight );
 	  h_LLPdVtx_childOpAng [ireg][illp] ->Fill( m_truthVtx_childOpAng ->at(i), weight );
 	  h_LLPdVtx_nOutP      [ireg][illp] ->Fill( m_truthVtx_nOutP      ->at(i), weight );
+	  h_LLPdVtx_ndesc      [ireg][illp] ->Fill( m_truthVtx_nDesc      ->at(i), weight );
+
 	  if ( m_histoInfoSwitch->m_llpDesc ) {
-	    h_LLPdVtx_ndesc    [ireg][illp] ->Fill( m_truthVtx_nDesc      ->at(i), weight );
 	    h_LLPdVtx_descPt   [ireg][illp] ->Fill( m_truthVtx_descPt     ->at(i), weight );
 	    h_LLPdVtx_descEta  [ireg][illp] ->Fill( m_truthVtx_descEta    ->at(i), weight );
 	    h_LLPdVtx_descPhi  [ireg][illp] ->Fill( m_truthVtx_descPhi    ->at(i), weight );
 	    h_LLPdVtx_descE    [ireg][illp] ->Fill( m_truthVtx_descE      ->at(i), weight );
 	    h_LLPdVtx_descM    [ireg][illp] ->Fill( m_truthVtx_descM      ->at(i), weight );
-
+	    
 	    TVector3 pointvec ( m_truthVtx_x ->at(i) - m_pv_x, m_truthVtx_y ->at(i) - m_pv_y, m_truthVtx_z ->at(i) - m_pv_z );
 	    // loop over descendants
 	    for ( int llpd = 0; llpd != m_truthVtx_nDesc ->at(i); ++llpd ) {
@@ -8068,6 +10002,348 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	      h_LLPdVtx_desc_z0  [ireg][illp] ->Fill( z0,                                weight );
 	    } // end loop over descendants
 	  } // end if llpDesc
+
+	  // do reconstruction efficiency studies
+	  if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llpvtxRecoEff ) {
+
+	    // get matched vertices
+	    bool hasRecoMatch_nonzero = false;
+	    bool hasRecoMatch         = false;
+	    std::vector<int> hasSgnlRecoMatch_nonzero ( m_nTypeSgnlDVs, 0 );
+	    std::vector<int> hasSgnlRecoMatch         ( m_nTypeSgnlDVs, 0 );
+	    if ( m_truthVtx_reco_n ->at(i) ) {
+	      for ( size_t k = 0; k != m_truthVtx_reco_score ->at(i).size(); ++k ) {
+		//if ( !m_secVtx_passMatVeto ->empty() )
+		//  if ( !m_secVtx_passMatVeto ->at(m_truthVtx_reco_index ->at(i)[k]) ) continue;
+		std::vector<int> reco_dv;
+		getDVTypes( m_truthVtx_reco_index ->at(i)[k], reco_dv, base_dv, false, false, true, true, true );
+		hasRecoMatch_nonzero = true;
+		for ( size_t jj = 0; jj != reco_dv.size(); ++jj ) {
+		  if ( !reco_dv[jj] ) continue;
+		  hasSgnlRecoMatch_nonzero[jj] = 1;
+		}
+	    	if ( m_truthVtx_reco_score ->at(i)[k] < 0.5 ) continue;
+	    	hasRecoMatch = true;
+		for ( size_t kk = 0; kk != reco_dv.size(); ++kk ) {
+		  if ( !reco_dv[kk] ) continue;
+		  hasSgnlRecoMatch[kk] = 1;
+		}  
+	      }
+	    }
+
+	    // count reconstructed + vertexed descendants
+	    int n_vtxDesc = 0;
+	    std::vector<int> n_sgnlVtxDesc ( m_nTypeSgnlDVs, 0 );
+	    TLorentzVector llp_recoDesc_sump4;
+	    llp_recoDesc_sump4.SetPtEtaPhiM( 0, 0, 0, 0 );
+	    TLorentzVector llp_vtxDesc_sump4;
+	    llp_vtxDesc_sump4 .SetPtEtaPhiM( 0, 0, 0, 0 );
+	    TLorentzVector llp_sgnlVtxDesc_p4;
+	    llp_sgnlVtxDesc_p4.SetPtEtaPhiM( 0, 0, 0, 0 );
+	    std::vector<TLorentzVector> llp_sgnlVtxDesc_sump4 ( m_nTypeSgnlDVs, llp_sgnlVtxDesc_p4 );
+	    // loop over descendants
+	    for ( int llpd = 0; llpd != m_truthVtx_nDesc ->at(i); ++llpd ) {
+	      bool isVtxDesc  = false;
+	      std::vector<int> isSgnlVtxDesc ( m_nTypeSgnlDVs, 0 );
+	      // reco descendants
+	      if ( m_truthVtx_desc_isReco ->at(i)[llpd] ) {
+		TLorentzVector recoDesc_p4;
+		recoDesc_p4.SetPtEtaPhiM( m_truthVtx_desc_pt  ->at(i)[llpd], m_truthVtx_desc_eta  ->at(i)[llpd],
+					  m_truthVtx_desc_phi ->at(i)[llpd], m_truthVtx_desc_M    ->at(i)[llpd] );
+		llp_recoDesc_sump4 += recoDesc_p4;
+		// loop over matched vertices
+		int  recoDescID = m_truthVtx_desc_recoID ->at(i)[llpd];
+		for ( size_t k = 0; k != m_truthVtx_reco_index ->at(i).size(); ++k ) {
+		  int dv_ix = m_truthVtx_reco_index ->at(i)[k];
+		  //if ( !m_secVtx_passMatVeto ->empty() )
+		  //  if ( !m_secVtx_passMatVeto ->at(dv_ix) ) continue;
+		  std::vector<int> reco_dv;
+		  getDVTypes( dv_ix, reco_dv, base_dv, false, false, true, true, true );
+		  for ( size_t idvtrk = 0; idvtrk != m_secVtx_trk_ID ->at(dv_ix).size(); ++idvtrk )
+		    if ( m_secVtx_trk_ID ->at(dv_ix)[idvtrk] == recoDescID ) {
+		      isVtxDesc = true;
+		      for ( size_t kk = 0; kk != reco_dv.size(); ++kk )
+			if ( reco_dv[kk] ) isSgnlVtxDesc[kk] = true;
+		    }
+		}
+		if ( isVtxDesc ) {
+		  TLorentzVector vtxDesc_p4;
+		  vtxDesc_p4.SetPtEtaPhiM( m_truthVtx_desc_pt  ->at(i)[llpd], m_truthVtx_desc_eta  ->at(i)[llpd],
+					   m_truthVtx_desc_phi ->at(i)[llpd], m_truthVtx_desc_M    ->at(i)[llpd] );
+		  llp_vtxDesc_sump4 += vtxDesc_p4;
+		  ++n_vtxDesc;
+		}
+		for ( size_t isv = 0; isv != isSgnlVtxDesc.size(); ++isv ) {
+		  if ( isSgnlVtxDesc[isv] ) {
+		    TLorentzVector sgnlVtxDesc_p4;
+		    sgnlVtxDesc_p4.SetPtEtaPhiM( m_truthVtx_desc_pt  ->at(i)[llpd], m_truthVtx_desc_eta  ->at(i)[llpd],
+						 m_truthVtx_desc_phi ->at(i)[llpd], m_truthVtx_desc_M    ->at(i)[llpd] );
+		    llp_sgnlVtxDesc_sump4 [isv] += sgnlVtxDesc_p4;
+		    ++n_sgnlVtxDesc [isv];
+		  }
+		}
+	      }
+	    }
+	    float fracRecoDesc  = m_truthVtx_nRecoDesc ->at(i) / float( m_truthVtx_nDesc ->at(i) );
+	    float fracRecoDescM = llp_recoDesc_sump4.M()       / float( m_truthVtx_descM ->at(i) );
+	    float fracVtxDesc   = n_vtxDesc                    / float( m_truthVtx_nDesc ->at(i) );
+	    float fracVtxDescM  = llp_vtxDesc_sump4 .M()       / float( m_truthVtx_descM ->at(i) );
+	    std::vector<float> fracSgnlVtxDesc  ( m_nTypeSgnlDVs, 0 );
+	    std::vector<float> fracSgnlVtxDescM ( m_nTypeSgnlDVs, 0 );
+	    for ( size_t isvd = 0; isvd != m_nTypeSgnlDVs; ++isvd ) {
+	      fracSgnlVtxDesc [isvd] = n_sgnlVtxDesc[isvd]              / float( m_truthVtx_nDesc ->at(i) );
+	      fracSgnlVtxDescM[isvd] = llp_sgnlVtxDesc_sump4[isvd] .M() / float( m_truthVtx_descM ->at(i) );
+	    }
+
+	    // do tracking efficiency studies
+	    // run with and without material map veto on inclusive studies
+
+	    TVector3 truthPos ( m_truthVtx_x ->at(i), m_truthVtx_y ->at(i), m_truthVtx_z ->at(i) );
+	    
+	    // reconstructible LLP decays
+	    if ( m_truthVtx_isRecoble ->at(i) ) {
+	      h_recobleLLPdVtx_x               [ireg][illp] ->Fill( m_truthVtx_x         ->at(i), weight );
+	      h_recobleLLPdVtx_y               [ireg][illp] ->Fill( m_truthVtx_y         ->at(i), weight );
+	      h_recobleLLPdVtx_z               [ireg][illp] ->Fill( m_truthVtx_z         ->at(i), weight );
+	      h_recobleLLPdVtx_r               [ireg][illp] ->Fill( m_truthVtx_r         ->at(i), weight );
+	      h_recobleLLPdVtx_pt              [ireg][illp] ->Fill( m_truthVtx_pt        ->at(i), weight );
+	      h_recobleLLPdVtx_eta             [ireg][illp] ->Fill( m_truthVtx_eta       ->at(i), weight );
+	      h_recobleLLPdVtx_phi             [ireg][illp] ->Fill( m_truthVtx_phi       ->at(i), weight );
+	      h_recobleLLPdVtx_avgMu           [ireg][illp] ->Fill( m_averageMu,                  weight );
+	      h_recobleLLPdVtx_descM           [ireg][illp] ->Fill( m_truthVtx_descM     ->at(i), weight );
+	      h_recobleLLPdVtx_nDesc           [ireg][illp] ->Fill( m_truthVtx_nDesc     ->at(i), weight );
+	      h_recobleLLPdVtx_nRecoDesc       [ireg][illp] ->Fill( m_truthVtx_nRecoDesc ->at(i), weight );
+	      h_recobleLLPdVtx_nSelDesc        [ireg][illp] ->Fill( m_truthVtx_nSelDesc  ->at(i), weight );
+	      h_recobleLLPdVtx_nDesc_r         [ireg][illp] ->Fill( m_truthVtx_r ->at(i), m_truthVtx_nDesc     ->at(i), weight );
+	      h_recobleLLPdVtx_nDesc_z         [ireg][illp] ->Fill( m_truthVtx_z ->at(i), m_truthVtx_nDesc     ->at(i), weight );
+	      h_recobleLLPdVtx_descM_r         [ireg][illp] ->Fill( m_truthVtx_r ->at(i), m_truthVtx_descM     ->at(i), weight );
+	      h_recobleLLPdVtx_descM_z         [ireg][illp] ->Fill( m_truthVtx_z ->at(i), m_truthVtx_descM     ->at(i), weight );
+	      h_recobleLLPdVtx_nRecoDesc_r     [ireg][illp] ->Fill( m_truthVtx_r ->at(i), m_truthVtx_nRecoDesc ->at(i), weight );
+	      h_recobleLLPdVtx_nRecoDesc_z     [ireg][illp] ->Fill( m_truthVtx_z ->at(i), m_truthVtx_nRecoDesc ->at(i), weight );
+	      h_recobleLLPdVtx_recoDescM_r     [ireg][illp] ->Fill( m_truthVtx_r ->at(i), llp_recoDesc_sump4.M(),       weight );
+	      h_recobleLLPdVtx_recoDescM_z     [ireg][illp] ->Fill( m_truthVtx_z ->at(i), llp_recoDesc_sump4.M(),       weight );
+	      h_recobleLLPdVtx_nVtxDesc_r      [ireg][illp] ->Fill( m_truthVtx_r ->at(i), n_vtxDesc,                    weight );
+	      h_recobleLLPdVtx_nVtxDesc_z      [ireg][illp] ->Fill( m_truthVtx_z ->at(i), n_vtxDesc,                    weight );
+	      h_recobleLLPdVtx_vtxDescM_r      [ireg][illp] ->Fill( m_truthVtx_r ->at(i), llp_vtxDesc_sump4 .M(),       weight );
+	      h_recobleLLPdVtx_vtxDescM_z      [ireg][illp] ->Fill( m_truthVtx_z ->at(i), llp_vtxDesc_sump4 .M(),       weight );
+	      h_recobleLLPdVtx_fracRecoDesc_r  [ireg][illp] ->Fill( m_truthVtx_r ->at(i), fracRecoDesc,                 weight );
+	      h_recobleLLPdVtx_fracRecoDesc_z  [ireg][illp] ->Fill( m_truthVtx_z ->at(i), fracRecoDesc,                 weight );
+	      h_recobleLLPdVtx_fracRecoDescM_r [ireg][illp] ->Fill( m_truthVtx_r ->at(i), fracRecoDescM,                weight );
+	      h_recobleLLPdVtx_fracRecoDescM_z [ireg][illp] ->Fill( m_truthVtx_z ->at(i), fracRecoDescM,                weight );
+	      h_recobleLLPdVtx_fracVtxDesc_r   [ireg][illp] ->Fill( m_truthVtx_r ->at(i), fracVtxDesc,                  weight );
+	      h_recobleLLPdVtx_fracVtxDesc_z   [ireg][illp] ->Fill( m_truthVtx_z ->at(i), fracVtxDesc,                  weight );
+	      h_recobleLLPdVtx_fracVtxDescM_r  [ireg][illp] ->Fill( m_truthVtx_r ->at(i), fracVtxDescM,                 weight );
+	      h_recobleLLPdVtx_fracVtxDescM_z  [ireg][illp] ->Fill( m_truthVtx_z ->at(i), fracVtxDescM,                 weight );
+	      // matched reconstructible LLP decays
+	      if ( hasRecoMatch_nonzero )
+		for ( size_t j = 0; j != m_truthVtx_reco_score ->at(i).size(); ++j )
+		  h_recoMatchLLPdVtx_score   [ireg][illp] ->Fill( m_truthVtx_reco_score ->at(i)[j], weight );
+	      if ( hasRecoMatch ) {
+		h_recoMatchLLPdVtx_x         [ireg][illp] ->Fill( m_truthVtx_x              ->at(i), weight );
+		h_recoMatchLLPdVtx_y         [ireg][illp] ->Fill( m_truthVtx_y              ->at(i), weight );
+		h_recoMatchLLPdVtx_z         [ireg][illp] ->Fill( m_truthVtx_z              ->at(i), weight );
+		h_recoMatchLLPdVtx_r         [ireg][illp] ->Fill( m_truthVtx_r              ->at(i), weight );
+		h_recoMatchLLPdVtx_pt        [ireg][illp] ->Fill( m_truthVtx_pt             ->at(i), weight );
+		h_recoMatchLLPdVtx_eta       [ireg][illp] ->Fill( m_truthVtx_eta            ->at(i), weight );
+		h_recoMatchLLPdVtx_phi       [ireg][illp] ->Fill( m_truthVtx_phi            ->at(i), weight );
+		h_recoMatchLLPdVtx_avgMu     [ireg][illp] ->Fill( m_averageMu,                       weight );
+		h_recoMatchLLPdVtx_descM     [ireg][illp] ->Fill( m_truthVtx_descM          ->at(i), weight );
+		h_recoMatchLLPdVtx_nDesc     [ireg][illp] ->Fill( m_truthVtx_nDesc          ->at(i), weight );
+		h_recoMatchLLPdVtx_nRecoDesc [ireg][illp] ->Fill( m_truthVtx_nRecoDesc      ->at(i), weight );
+		h_recoMatchLLPdVtx_nSelDesc  [ireg][illp] ->Fill( m_truthVtx_nSelDesc       ->at(i), weight );
+		for ( size_t j = 0; j != m_truthVtx_reco_x ->at(i).size(); ++j ) {
+		  TVector3 recoPos  ( m_truthVtx_reco_x ->at(i)[j], m_truthVtx_reco_y ->at(i)[j], m_truthVtx_reco_z ->at(i)[j] );
+		  float resid_phi    = recoPos.Phi() - truthPos.Phi();
+		  float resid_x      = m_truthVtx_reco_x       ->at(i)[j] - m_truthVtx_x ->at(i);
+		  float resid_y      = m_truthVtx_reco_y       ->at(i)[j] - m_truthVtx_y ->at(i);
+		  float resid_z      = m_truthVtx_reco_z       ->at(i)[j] - m_truthVtx_z ->at(i);
+		  float resid_r      = m_truthVtx_reco_r       ->at(i)[j] - m_truthVtx_r ->at(i);
+		  int   reco_ntrk    = m_truthVtx_reco_ntrk    ->at(i)[j];
+		  int   reco_nseltrk = m_truthVtx_reco_nseltrk ->at(i)[j];
+		  h_recoMatchLLPdVtx_resid_x            [ireg][illp] ->Fill( resid_x, weight );
+		  h_recoMatchLLPdVtx_resid_y            [ireg][illp] ->Fill( resid_y, weight );
+		  h_recoMatchLLPdVtx_resid_z            [ireg][illp] ->Fill( resid_z, weight );
+		  h_recoMatchLLPdVtx_resid_r            [ireg][illp] ->Fill( resid_r, weight );
+		  h_recoMatchLLPdVtx_resid_rphi         [ireg][illp] ->Fill( resid_phi * m_truthVtx_r ->at(i), weight );
+		  h_recoMatchLLPdVtx_resid_z_r          [ireg][illp] ->Fill( m_truthVtx_r ->at(i), resid_z, weight );
+		  h_recoMatchLLPdVtx_resid_z_z          [ireg][illp] ->Fill( m_truthVtx_z ->at(i), resid_z, weight );
+		  h_recoMatchLLPdVtx_resid_z_ntrk       [ireg][illp] ->Fill( reco_ntrk,            resid_z, weight );
+		  h_recoMatchLLPdVtx_resid_z_nseltrk    [ireg][illp] ->Fill( reco_nseltrk,         resid_z, weight );
+		  h_recoMatchLLPdVtx_resid_r_r          [ireg][illp] ->Fill( m_truthVtx_r ->at(i), resid_r, weight );
+		  h_recoMatchLLPdVtx_resid_r_z          [ireg][illp] ->Fill( m_truthVtx_z ->at(i), resid_r, weight );
+		  h_recoMatchLLPdVtx_resid_r_ntrk       [ireg][illp] ->Fill( reco_ntrk,            resid_r, weight );
+		  h_recoMatchLLPdVtx_resid_r_nseltrk    [ireg][illp] ->Fill( reco_nseltrk,         resid_r, weight );
+		  h_recoMatchLLPdVtx_resid_rphi_r       [ireg][illp] ->Fill( m_truthVtx_r ->at(i), resid_phi * m_truthVtx_r ->at(i), weight );
+		  h_recoMatchLLPdVtx_resid_rphi_z       [ireg][illp] ->Fill( m_truthVtx_z ->at(i), resid_phi * m_truthVtx_r ->at(i), weight );
+		  h_recoMatchLLPdVtx_resid_rphi_ntrk    [ireg][illp] ->Fill( reco_ntrk,            resid_phi * m_truthVtx_r ->at(i), weight );
+		  h_recoMatchLLPdVtx_resid_rphi_nseltrk [ireg][illp] ->Fill( reco_nseltrk,         resid_phi * m_truthVtx_r ->at(i), weight );
+		}
+	      }
+	    }
+	    // reconstructed LLP decays
+	    if ( m_truthVtx_nRecoDesc ->at(i) > 1 ) {
+	      h_recoLLPdVtx_x             [ireg][illp] ->Fill( m_truthVtx_x         ->at(i), weight );
+	      h_recoLLPdVtx_y             [ireg][illp] ->Fill( m_truthVtx_y         ->at(i), weight );
+	      h_recoLLPdVtx_z             [ireg][illp] ->Fill( m_truthVtx_z         ->at(i), weight );
+	      h_recoLLPdVtx_r             [ireg][illp] ->Fill( m_truthVtx_r         ->at(i), weight );
+	      h_recoLLPdVtx_pt            [ireg][illp] ->Fill( m_truthVtx_pt        ->at(i), weight );
+	      h_recoLLPdVtx_eta           [ireg][illp] ->Fill( m_truthVtx_eta       ->at(i), weight );
+	      h_recoLLPdVtx_phi           [ireg][illp] ->Fill( m_truthVtx_phi       ->at(i), weight );
+	      h_recoLLPdVtx_avgMu         [ireg][illp] ->Fill( m_averageMu,                  weight );
+	      h_recoLLPdVtx_descM         [ireg][illp] ->Fill( m_truthVtx_descM     ->at(i), weight );
+	      h_recoLLPdVtx_nDesc         [ireg][illp] ->Fill( m_truthVtx_nDesc     ->at(i), weight );
+	      h_recoLLPdVtx_nRecoDesc     [ireg][illp] ->Fill( m_truthVtx_nRecoDesc ->at(i), weight );
+	      h_recoLLPdVtx_nSelDesc      [ireg][illp] ->Fill( m_truthVtx_nSelDesc  ->at(i), weight );
+	    }
+	    // selected LLP decays
+	    if ( m_truthVtx_nSelDesc  ->at(i) > 1 ) {
+	      h_selLLPdVtx_x              [ireg][illp] ->Fill( m_truthVtx_x         ->at(i), weight );
+	      h_selLLPdVtx_y              [ireg][illp] ->Fill( m_truthVtx_y         ->at(i), weight );
+	      h_selLLPdVtx_z              [ireg][illp] ->Fill( m_truthVtx_z         ->at(i), weight );
+	      h_selLLPdVtx_r              [ireg][illp] ->Fill( m_truthVtx_r         ->at(i), weight );
+	      h_selLLPdVtx_pt             [ireg][illp] ->Fill( m_truthVtx_pt        ->at(i), weight );
+	      h_selLLPdVtx_eta            [ireg][illp] ->Fill( m_truthVtx_eta       ->at(i), weight );
+	      h_selLLPdVtx_phi            [ireg][illp] ->Fill( m_truthVtx_phi       ->at(i), weight );
+	      h_selLLPdVtx_avgMu          [ireg][illp] ->Fill( m_averageMu,                  weight );
+	      h_selLLPdVtx_descM          [ireg][illp] ->Fill( m_truthVtx_descM     ->at(i), weight );
+	      h_selLLPdVtx_nDesc          [ireg][illp] ->Fill( m_truthVtx_nDesc     ->at(i), weight );
+	      h_selLLPdVtx_nRecoDesc      [ireg][illp] ->Fill( m_truthVtx_nRecoDesc ->at(i), weight );
+	      h_selLLPdVtx_nSelDesc       [ireg][illp] ->Fill( m_truthVtx_nSelDesc  ->at(i), weight );
+	    }
+
+	    // cut on analysis fiducial volume for signal vertex efficiency
+	    if ( m_truthVtx_r ->at(i) > 300 || fabs( m_truthVtx_z ->at(i) ) > 300 ) continue;
+
+	    // reconstructible LLP decays in analysis fiducial volume
+	    if ( m_truthVtx_isRecoble ->at(i) ) {
+	      h_fiducLLPdVtx_x                   [ireg][illp]    ->Fill( m_truthVtx_x         ->at(i), weight );
+	      h_fiducLLPdVtx_y                   [ireg][illp]    ->Fill( m_truthVtx_y         ->at(i), weight );
+	      h_fiducLLPdVtx_z                   [ireg][illp]    ->Fill( m_truthVtx_z         ->at(i), weight );
+	      h_fiducLLPdVtx_r                   [ireg][illp]    ->Fill( m_truthVtx_r         ->at(i), weight );
+	      h_fiducLLPdVtx_pt                  [ireg][illp]    ->Fill( m_truthVtx_pt        ->at(i), weight );
+	      h_fiducLLPdVtx_eta                 [ireg][illp]    ->Fill( m_truthVtx_eta       ->at(i), weight );
+	      h_fiducLLPdVtx_phi                 [ireg][illp]    ->Fill( m_truthVtx_phi       ->at(i), weight );
+	      h_fiducLLPdVtx_avgMu               [ireg][illp]    ->Fill( m_averageMu,                  weight );
+	      h_fiducLLPdVtx_descM               [ireg][illp]    ->Fill( m_truthVtx_descM     ->at(i), weight );
+	      h_fiducLLPdVtx_nDesc               [ireg][illp]    ->Fill( m_truthVtx_nDesc     ->at(i), weight );
+	      h_fiducLLPdVtx_nRecoDesc           [ireg][illp]    ->Fill( m_truthVtx_nRecoDesc ->at(i), weight );
+	      h_fiducLLPdVtx_nSelDesc            [ireg][illp]    ->Fill( m_truthVtx_nSelDesc  ->at(i), weight );
+	      h_fiducLLPdVtx_nDesc_r             [ireg][illp]    ->Fill( m_truthVtx_r ->at(i), m_truthVtx_nDesc     ->at(i), weight );
+	      h_fiducLLPdVtx_nDesc_z             [ireg][illp]    ->Fill( m_truthVtx_z ->at(i), m_truthVtx_nDesc     ->at(i), weight );
+	      h_fiducLLPdVtx_descM_r             [ireg][illp]    ->Fill( m_truthVtx_r ->at(i), m_truthVtx_descM     ->at(i), weight );
+	      h_fiducLLPdVtx_descM_z             [ireg][illp]    ->Fill( m_truthVtx_z ->at(i), m_truthVtx_descM     ->at(i), weight );
+	      h_fiducLLPdVtx_nRecoDesc_r         [ireg][illp]    ->Fill( m_truthVtx_r ->at(i), m_truthVtx_nRecoDesc ->at(i), weight );
+	      h_fiducLLPdVtx_nRecoDesc_z         [ireg][illp]    ->Fill( m_truthVtx_z ->at(i), m_truthVtx_nRecoDesc ->at(i), weight );
+	      h_fiducLLPdVtx_recoDescM_r         [ireg][illp]    ->Fill( m_truthVtx_r ->at(i), llp_recoDesc_sump4.M(),       weight );
+	      h_fiducLLPdVtx_recoDescM_z         [ireg][illp]    ->Fill( m_truthVtx_z ->at(i), llp_recoDesc_sump4.M(),       weight );
+	      h_fiducLLPdVtx_fracRecoDesc_r      [ireg][illp]    ->Fill( m_truthVtx_r ->at(i), fracRecoDesc,                 weight );
+	      h_fiducLLPdVtx_fracRecoDesc_z      [ireg][illp]    ->Fill( m_truthVtx_z ->at(i), fracRecoDesc,                 weight );
+	      h_fiducLLPdVtx_fracRecoDescM_r     [ireg][illp]    ->Fill( m_truthVtx_r ->at(i), fracRecoDescM,                weight );
+	      h_fiducLLPdVtx_fracRecoDescM_z     [ireg][illp]    ->Fill( m_truthVtx_z ->at(i), fracRecoDescM,                weight );
+	      for ( size_t k = 0; k != n_sgnlVtxDesc.size() + 1; ++k ) {
+		int    n_vdesc      = 0;
+		double vdesc_m      = 0;
+		double frac_vdesc   = 0;
+		double frac_vdesc_m = 0;
+		if ( k == 0 ) {
+		  n_vdesc      = n_vtxDesc;
+		  vdesc_m      = llp_vtxDesc_sump4.M();
+		  frac_vdesc   = fracVtxDesc;
+		  frac_vdesc_m = fracVtxDescM;
+		}
+		else {
+		  n_vdesc      = n_sgnlVtxDesc        [k-1];
+		  vdesc_m      = llp_sgnlVtxDesc_sump4[k-1].M();
+		  frac_vdesc   = fracSgnlVtxDesc      [k-1];
+		  frac_vdesc_m = fracSgnlVtxDescM     [k-1];
+		}
+		h_fiducLLPdVtx_nVtxDesc_r        [ireg][illp][k] ->Fill( m_truthVtx_r ->at(i), n_vdesc,                      weight );
+		h_fiducLLPdVtx_nVtxDesc_z        [ireg][illp][k] ->Fill( m_truthVtx_z ->at(i), n_vdesc,                      weight );
+		h_fiducLLPdVtx_vtxDescM_r        [ireg][illp][k] ->Fill( m_truthVtx_r ->at(i), vdesc_m,                      weight );
+		h_fiducLLPdVtx_vtxDescM_z        [ireg][illp][k] ->Fill( m_truthVtx_z ->at(i), vdesc_m,                      weight );
+		h_fiducLLPdVtx_fracVtxDesc_r     [ireg][illp][k] ->Fill( m_truthVtx_r ->at(i), frac_vdesc,                   weight );
+		h_fiducLLPdVtx_fracVtxDesc_z     [ireg][illp][k] ->Fill( m_truthVtx_z ->at(i), frac_vdesc,                   weight );
+		h_fiducLLPdVtx_fracVtxDescM_r    [ireg][illp][k] ->Fill( m_truthVtx_r ->at(i), frac_vdesc_m,                 weight );
+		h_fiducLLPdVtx_fracVtxDescM_z    [ireg][illp][k] ->Fill( m_truthVtx_z ->at(i), frac_vdesc_m,                 weight );
+	      }
+	      for ( size_t k = 0; k != hasSgnlRecoMatch.size(); ++k ) {
+		if ( !hasSgnlRecoMatch_nonzero[k] ) continue;
+		for ( size_t j = 0; j != m_truthVtx_reco_score ->at(i).size(); ++j )
+		  h_sgnlRecoMatchLLPdVtx_score   [ireg][illp][k] ->Fill( m_truthVtx_reco_score ->at(i)[j], weight );
+		if ( !hasSgnlRecoMatch[k] ) continue;
+		h_sgnlRecoMatchLLPdVtx_x         [ireg][illp][k] ->Fill( m_truthVtx_x         ->at(i), weight );
+		h_sgnlRecoMatchLLPdVtx_y         [ireg][illp][k] ->Fill( m_truthVtx_y         ->at(i), weight );
+		h_sgnlRecoMatchLLPdVtx_z         [ireg][illp][k] ->Fill( m_truthVtx_z         ->at(i), weight );
+		h_sgnlRecoMatchLLPdVtx_r         [ireg][illp][k] ->Fill( m_truthVtx_r         ->at(i), weight );
+		h_sgnlRecoMatchLLPdVtx_pt        [ireg][illp][k] ->Fill( m_truthVtx_pt        ->at(i), weight );
+		h_sgnlRecoMatchLLPdVtx_eta       [ireg][illp][k] ->Fill( m_truthVtx_eta       ->at(i), weight );
+		h_sgnlRecoMatchLLPdVtx_phi       [ireg][illp][k] ->Fill( m_truthVtx_phi       ->at(i), weight );
+		h_sgnlRecoMatchLLPdVtx_avgMu     [ireg][illp][k] ->Fill( m_averageMu,                  weight );
+		h_sgnlRecoMatchLLPdVtx_descM     [ireg][illp][k] ->Fill( m_truthVtx_descM     ->at(i), weight );
+		h_sgnlRecoMatchLLPdVtx_nDesc     [ireg][illp][k] ->Fill( m_truthVtx_nDesc     ->at(i), weight );
+		h_sgnlRecoMatchLLPdVtx_nRecoDesc [ireg][illp][k] ->Fill( m_truthVtx_nRecoDesc ->at(i), weight );
+		h_sgnlRecoMatchLLPdVtx_nSelDesc  [ireg][illp][k] ->Fill( m_truthVtx_nSelDesc  ->at(i), weight );
+		for ( size_t j = 0; j != m_truthVtx_reco_x ->at(i).size(); ++j ) {
+		  TVector3 recoPos  ( m_truthVtx_reco_x ->at(i)[j], m_truthVtx_reco_y ->at(i)[j], m_truthVtx_reco_z ->at(i)[j] );
+		  float resid_phi    = recoPos.Phi() - truthPos.Phi();
+		  float resid_x      = m_truthVtx_reco_x       ->at(i)[j] - m_truthVtx_x ->at(i);
+		  float resid_y      = m_truthVtx_reco_y       ->at(i)[j] - m_truthVtx_y ->at(i);
+		  float resid_z      = m_truthVtx_reco_z       ->at(i)[j] - m_truthVtx_z ->at(i);
+		  float resid_r      = m_truthVtx_reco_r       ->at(i)[j] - m_truthVtx_r ->at(i);
+		  int   reco_ntrk    = m_truthVtx_reco_ntrk    ->at(i)[j];
+		  int   reco_nseltrk = m_truthVtx_reco_nseltrk ->at(i)[j];
+		  h_sgnlRecoMatchLLPdVtx_resid_x            [ireg][illp][k] ->Fill( resid_x, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_y            [ireg][illp][k] ->Fill( resid_y, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_z            [ireg][illp][k] ->Fill( resid_z, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_r            [ireg][illp][k] ->Fill( resid_r, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_rphi         [ireg][illp][k] ->Fill( resid_phi * m_truthVtx_r ->at(i), weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_z_r          [ireg][illp][k] ->Fill( m_truthVtx_r ->at(i), resid_z, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_z_z          [ireg][illp][k] ->Fill( m_truthVtx_z ->at(i), resid_z, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_z_ntrk       [ireg][illp][k] ->Fill( reco_ntrk,            resid_z, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_z_nseltrk    [ireg][illp][k] ->Fill( reco_nseltrk,         resid_z, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_r_r          [ireg][illp][k] ->Fill( m_truthVtx_r ->at(i), resid_r, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_r_z          [ireg][illp][k] ->Fill( m_truthVtx_z ->at(i), resid_r, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_r_ntrk       [ireg][illp][k] ->Fill( reco_ntrk,            resid_r, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_r_nseltrk    [ireg][illp][k] ->Fill( reco_nseltrk,         resid_r, weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_rphi_r       [ireg][illp][k] ->Fill( m_truthVtx_r ->at(i), resid_phi * m_truthVtx_r ->at(i), weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_rphi_z       [ireg][illp][k] ->Fill( m_truthVtx_z ->at(i), resid_phi * m_truthVtx_r ->at(i), weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_rphi_ntrk    [ireg][illp][k] ->Fill( reco_ntrk,            resid_phi * m_truthVtx_r ->at(i), weight );
+		  h_sgnlRecoMatchLLPdVtx_resid_rphi_nseltrk [ireg][illp][k] ->Fill( reco_nseltrk,         resid_phi * m_truthVtx_r ->at(i), weight );
+		}
+	      }
+	    }
+	    // reconstructed LLP decays
+	    if ( m_truthVtx_nRecoDesc ->at(i) > 1 ) {
+	      h_recoFiducLLPdVtx_x        [ireg][illp] ->Fill( m_truthVtx_x         ->at(i), weight );
+	      h_recoFiducLLPdVtx_y        [ireg][illp] ->Fill( m_truthVtx_y         ->at(i), weight );
+	      h_recoFiducLLPdVtx_z        [ireg][illp] ->Fill( m_truthVtx_z         ->at(i), weight );
+	      h_recoFiducLLPdVtx_r        [ireg][illp] ->Fill( m_truthVtx_r         ->at(i), weight );
+	      h_recoFiducLLPdVtx_pt       [ireg][illp] ->Fill( m_truthVtx_pt        ->at(i), weight );
+	      h_recoFiducLLPdVtx_eta      [ireg][illp] ->Fill( m_truthVtx_eta       ->at(i), weight );
+	      h_recoFiducLLPdVtx_phi      [ireg][illp] ->Fill( m_truthVtx_phi       ->at(i), weight );
+	      h_recoFiducLLPdVtx_avgMu    [ireg][illp] ->Fill( m_averageMu,                  weight );
+	      h_recoFiducLLPdVtx_descM    [ireg][illp] ->Fill( m_truthVtx_descM     ->at(i), weight );
+	      h_recoFiducLLPdVtx_nDesc    [ireg][illp] ->Fill( m_truthVtx_nDesc     ->at(i), weight );
+	      h_recoFiducLLPdVtx_nRecoDesc[ireg][illp] ->Fill( m_truthVtx_nRecoDesc ->at(i), weight );
+	      h_recoFiducLLPdVtx_nSelDesc [ireg][illp] ->Fill( m_truthVtx_nSelDesc  ->at(i), weight );
+	    }
+	    // selected LLP decays
+	    if ( m_truthVtx_nSelDesc  ->at(i) > 1 ) {
+	      h_selFiducLLPdVtx_x         [ireg][illp] ->Fill( m_truthVtx_x         ->at(i), weight );
+	      h_selFiducLLPdVtx_y         [ireg][illp] ->Fill( m_truthVtx_y         ->at(i), weight );
+	      h_selFiducLLPdVtx_z         [ireg][illp] ->Fill( m_truthVtx_z         ->at(i), weight );
+	      h_selFiducLLPdVtx_r         [ireg][illp] ->Fill( m_truthVtx_r         ->at(i), weight );
+	      h_selFiducLLPdVtx_pt        [ireg][illp] ->Fill( m_truthVtx_pt        ->at(i), weight );
+	      h_selFiducLLPdVtx_eta       [ireg][illp] ->Fill( m_truthVtx_eta       ->at(i), weight );
+	      h_selFiducLLPdVtx_phi       [ireg][illp] ->Fill( m_truthVtx_phi       ->at(i), weight );
+	      h_selFiducLLPdVtx_avgMu     [ireg][illp] ->Fill( m_averageMu,                  weight );
+	      h_selFiducLLPdVtx_descM     [ireg][illp] ->Fill( m_truthVtx_descM     ->at(i), weight );
+	      h_selFiducLLPdVtx_nDesc     [ireg][illp] ->Fill( m_truthVtx_nDesc     ->at(i), weight );
+	      h_selFiducLLPdVtx_nRecoDesc [ireg][illp] ->Fill( m_truthVtx_nRecoDesc ->at(i), weight );
+	      h_selFiducLLPdVtx_nSelDesc  [ireg][illp] ->Fill( m_truthVtx_nSelDesc  ->at(i), weight );
+	    }
+	    
+	  } // end efficiency studies
 	  
 	} // end loop over llp types
 
@@ -8643,6 +10919,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    h_DV_sumsqrtP_sv     [ireg][idv] ->Fill( sqrt(secVtx_sumP_sv),           weight );
 	    h_DV_mind0           [ireg][idv] ->Fill( secVtx_mind0,                   weight );
 	    h_DV_minz0           [ireg][idv] ->Fill( secVtx_minz0,                   weight );
+	    h_DV_mind0_s         [ireg][idv] ->Fill( secVtx_mind0,                   weight );
+	    h_DV_minz0_s         [ireg][idv] ->Fill( secVtx_minz0,                   weight );
 	    h_DV_minP            [ireg][idv] ->Fill( secVtx_minP,                    weight );
 	    h_DV_mind0_sv        [ireg][idv] ->Fill( secVtx_mind0_sv,                weight );
 	    h_DV_minz0_sv        [ireg][idv] ->Fill( secVtx_minz0_sv,                weight );
@@ -8665,6 +10943,14 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    h_DV_maxsqrtd0_sv    [ireg][idv] ->Fill( sqrt(secVtx_maxd0_sv),          weight );
 	    h_DV_maxsqrtz0_sv    [ireg][idv] ->Fill( sqrt(secVtx_maxz0_sv),          weight );
 	    h_DV_maxsqrtP_sv     [ireg][idv] ->Fill( sqrt(secVtx_maxP_sv),           weight );
+	    if ( m_histoInfoSwitch->m_vtx2D ) {
+	      h_DV_mind0_r       [ireg][idv] ->Fill( m_secVtx_r ->at(i), secVtx_mind0, weight );
+	      h_DV_minz0_z       [ireg][idv] ->Fill( m_secVtx_z ->at(i), secVtx_minz0, weight );
+	      h_DV_mind0z0       [ireg][idv] ->Fill( secVtx_minz0,       secVtx_mind0, weight );
+	      h_DV_mind0_r_s     [ireg][idv] ->Fill( m_secVtx_r ->at(i), secVtx_mind0, weight );
+	      h_DV_minz0_z_s     [ireg][idv] ->Fill( m_secVtx_z ->at(i), secVtx_minz0, weight );
+	      h_DV_mind0z0_s     [ireg][idv] ->Fill( secVtx_minz0,       secVtx_mind0, weight );
+	    }
 	  }
 	  if ( m_histoInfoSwitch->m_vtxErrors ) {
 	    h_DV_sumErrd0        [ireg][idv] ->Fill( sqrt(secVtx_sumerrd0),          weight );
@@ -8697,6 +10983,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    h_DV_minErrP         [ireg][idv] ->Fill( sqrt(secVtx_minerrP),           weight );
 	    h_DV_minSqrterrd0    [ireg][idv] ->Fill( sqrt(sqrt(secVtx_minerrd0)),    weight );
 	    h_DV_minSqrterrz0    [ireg][idv] ->Fill( sqrt(sqrt(secVtx_minerrz0)),    weight );
+	    h_DV_minSqrterrd0_s  [ireg][idv] ->Fill( sqrt(sqrt(secVtx_minerrd0)),    weight );
+	    h_DV_minSqrterrz0_s  [ireg][idv] ->Fill( sqrt(sqrt(secVtx_minerrz0)),    weight );
 	    h_DV_minSqrterrP     [ireg][idv] ->Fill( sqrt(sqrt(secVtx_minerrP)),     weight );
 	    h_DV_minFracerrd0    [ireg][idv] ->Fill( sqrt(secVtx_minfracerrd0),      weight );
 	    h_DV_minFracerrz0    [ireg][idv] ->Fill( sqrt(secVtx_minfracerrz0),      weight );
@@ -8770,6 +11058,13 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    h_DV_minSqrterrd0sv_r [ireg][idv] ->Fill( m_secVtx_r ->at(i), sqrt(sqrt(secVtx_minerrd0_sv)), weight );
 	    h_DV_minSqrterrz0sv_z [ireg][idv] ->Fill( m_secVtx_z ->at(i), sqrt(sqrt(secVtx_minerrz0_sv)), weight );
 	    h_DV_minSqrterrPsv_pt [ireg][idv] ->Fill( secVtx_pt,          sqrt(sqrt(secVtx_minerrP_sv)),  weight );
+
+	    h_DV_minSqrterrd0_mind0   [ireg][idv] ->Fill( secVtx_mind0,                sqrt(sqrt(secVtx_minerrd0)), weight );
+	    h_DV_minSqrterrz0_minz0   [ireg][idv] ->Fill( secVtx_minz0,                sqrt(sqrt(secVtx_minerrz0)), weight );
+	    h_DV_minSqrterrd0z0       [ireg][idv] ->Fill( sqrt(sqrt(secVtx_minerrz0)), sqrt(sqrt(secVtx_minerrd0)), weight );
+	    h_DV_minSqrterrd0_mind0_s [ireg][idv] ->Fill( secVtx_mind0,                sqrt(sqrt(secVtx_minerrd0)), weight );
+	    h_DV_minSqrterrz0_minz0_s [ireg][idv] ->Fill( secVtx_minz0,                sqrt(sqrt(secVtx_minerrz0)), weight );
+	    h_DV_minSqrterrd0z0_s     [ireg][idv] ->Fill( sqrt(sqrt(secVtx_minerrz0)), sqrt(sqrt(secVtx_minerrd0)), weight );
 
 	    h_DV_maxErrd0_r       [ireg][idv] ->Fill( m_secVtx_r ->at(i), sqrt(secVtx_maxerrd0),          weight );
 	    h_DV_maxErrz0_z       [ireg][idv] ->Fill( m_secVtx_z ->at(i), sqrt(secVtx_maxerrz0),          weight );
@@ -8866,7 +11161,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	
 	} // end loop over DV types
 
-	// do DV cutflows --> should be able to fix so we can set doCombos to true and just grab ith element (already has combo built in)
+	// do DV cutflows
 	if ( m_histoInfoSwitch->m_cutflow || m_histoInfoSwitch->m_abcdcutOnly ) {
 	  // --> test cuts
 	  if ( m_nType1DVs ) {
@@ -9123,7 +11418,342 @@ StatusCode EJsHistogramManager :: finalize ( const std::vector<EJsHelper::Region
 	h_evt_cutEfficiency_DV      [ireg][ihdv] ->Divide( h_evt_count_DV [ireg][ihdv], h_evt_count_DV [ireg][0]                            );
 	h_evt_matchcutEfficiency_DV [ireg][ihdv] ->Divide( h_evt_count_DV [ireg][ihdv], h_evt_count_DV [ireg][ihdv/m_nTypeBDVs*m_nTypeBDVs] );
       }
+    } // end if cutflow / abcd
+
+
+    // track reconstruction efficiency
+    if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llptrkRecoEff ) {
+      for ( size_t illp = 0; illp != h_LLPtrk_r [ireg].size(); ++illp ) {
+	// --> inclusive tracking efficiency
+	h_LLPtrk_recoEff_x     [ireg][illp] ->Divide( h_recoLLPtrk_x     [ireg][illp],
+						      h_LLPtrk_x         [ireg][illp] );
+	h_LLPtrk_recoEff_y     [ireg][illp] ->Divide( h_recoLLPtrk_y     [ireg][illp],
+						      h_LLPtrk_y         [ireg][illp] );
+	h_LLPtrk_recoEff_z     [ireg][illp] ->Divide( h_recoLLPtrk_z     [ireg][illp],
+						      h_LLPtrk_z         [ireg][illp] );
+	h_LLPtrk_recoEff_r     [ireg][illp] ->Divide( h_recoLLPtrk_r     [ireg][illp],
+						      h_LLPtrk_r         [ireg][illp] );
+	h_LLPtrk_recoEff_pt    [ireg][illp] ->Divide( h_recoLLPtrk_pt    [ireg][illp],
+						      h_LLPtrk_pt        [ireg][illp] );
+	h_LLPtrk_recoEff_eta   [ireg][illp] ->Divide( h_recoLLPtrk_eta   [ireg][illp],
+						      h_LLPtrk_eta       [ireg][illp] );
+	h_LLPtrk_recoEff_phi   [ireg][illp] ->Divide( h_recoLLPtrk_phi   [ireg][illp],
+						      h_LLPtrk_phi       [ireg][illp] );
+	h_LLPtrk_recoEff_d0    [ireg][illp] ->Divide( h_recoLLPtrk_d0    [ireg][illp],
+						      h_LLPtrk_d0        [ireg][illp] );
+	h_LLPtrk_recoEff_z0    [ireg][illp] ->Divide( h_recoLLPtrk_z0    [ireg][illp],
+						      h_LLPtrk_z0        [ireg][illp] );
+	h_LLPtrk_recoEff_avgMu [ireg][illp] ->Divide( h_recoLLPtrk_avgMu [ireg][illp],
+						      h_LLPtrk_avgMu     [ireg][illp] );
+	h_LLPtrk_recoEff_minDR [ireg][illp] ->Divide( h_recoLLPtrk_minDR [ireg][illp],
+						      h_LLPtrk_minDR     [ireg][illp] );
+	// --> standard tracking efficiency
+	h_LLPtrk_stdEff_x      [ireg][illp] ->Divide( h_stdLLPtrk_x      [ireg][illp],
+						      h_LLPtrk_x         [ireg][illp] );
+	h_LLPtrk_stdEff_y      [ireg][illp] ->Divide( h_stdLLPtrk_y      [ireg][illp],
+						      h_LLPtrk_y         [ireg][illp] );
+	h_LLPtrk_stdEff_z      [ireg][illp] ->Divide( h_stdLLPtrk_z      [ireg][illp],
+						      h_LLPtrk_z         [ireg][illp] );
+	h_LLPtrk_stdEff_r      [ireg][illp] ->Divide( h_stdLLPtrk_r      [ireg][illp],
+						      h_LLPtrk_r         [ireg][illp] );
+	h_LLPtrk_stdEff_pt     [ireg][illp] ->Divide( h_stdLLPtrk_pt     [ireg][illp],
+						      h_LLPtrk_pt        [ireg][illp] );
+	h_LLPtrk_stdEff_eta    [ireg][illp] ->Divide( h_stdLLPtrk_eta    [ireg][illp],
+						      h_LLPtrk_eta       [ireg][illp] );
+	h_LLPtrk_stdEff_phi    [ireg][illp] ->Divide( h_stdLLPtrk_phi    [ireg][illp],
+						      h_LLPtrk_phi       [ireg][illp] );
+	h_LLPtrk_stdEff_d0     [ireg][illp] ->Divide( h_stdLLPtrk_d0     [ireg][illp],
+						      h_LLPtrk_d0        [ireg][illp] );
+	h_LLPtrk_stdEff_z0     [ireg][illp] ->Divide( h_stdLLPtrk_z0     [ireg][illp],
+						      h_LLPtrk_z0        [ireg][illp] );
+	h_LLPtrk_stdEff_avgMu  [ireg][illp] ->Divide( h_stdLLPtrk_avgMu  [ireg][illp],
+						      h_LLPtrk_avgMu     [ireg][illp] );
+	h_LLPtrk_stdEff_minDR  [ireg][illp] ->Divide( h_stdLLPtrk_minDR  [ireg][illp],
+						      h_LLPtrk_minDR     [ireg][illp] );
+	// --> large-radius tracking efficiency
+	h_LLPtrk_lrtEff_x      [ireg][illp] ->Divide( h_lrtLLPtrk_x      [ireg][illp],
+						      h_LLPtrk_x         [ireg][illp] );
+	h_LLPtrk_lrtEff_y      [ireg][illp] ->Divide( h_lrtLLPtrk_y      [ireg][illp],
+						      h_LLPtrk_y         [ireg][illp] );
+	h_LLPtrk_lrtEff_z      [ireg][illp] ->Divide( h_lrtLLPtrk_z      [ireg][illp],
+						      h_LLPtrk_z         [ireg][illp] );
+	h_LLPtrk_lrtEff_r      [ireg][illp] ->Divide( h_lrtLLPtrk_r      [ireg][illp],
+						      h_LLPtrk_r         [ireg][illp] );
+	h_LLPtrk_lrtEff_pt     [ireg][illp] ->Divide( h_lrtLLPtrk_pt     [ireg][illp],
+						      h_LLPtrk_pt        [ireg][illp] );
+	h_LLPtrk_lrtEff_eta    [ireg][illp] ->Divide( h_lrtLLPtrk_eta    [ireg][illp],
+						      h_LLPtrk_eta       [ireg][illp] );
+	h_LLPtrk_lrtEff_phi    [ireg][illp] ->Divide( h_lrtLLPtrk_phi    [ireg][illp],
+						      h_LLPtrk_phi       [ireg][illp] );
+	h_LLPtrk_lrtEff_d0     [ireg][illp] ->Divide( h_lrtLLPtrk_d0     [ireg][illp],
+						      h_LLPtrk_d0        [ireg][illp] );
+	h_LLPtrk_lrtEff_z0     [ireg][illp] ->Divide( h_lrtLLPtrk_z0     [ireg][illp],
+						      h_LLPtrk_z0        [ireg][illp] );
+	h_LLPtrk_lrtEff_avgMu  [ireg][illp] ->Divide( h_lrtLLPtrk_avgMu  [ireg][illp],
+						      h_LLPtrk_avgMu     [ireg][illp] );
+	h_LLPtrk_lrtEff_minDR  [ireg][illp] ->Divide( h_lrtLLPtrk_minDR  [ireg][illp],
+						      h_LLPtrk_minDR     [ireg][illp] );
+      }
     }
+    
+    // vertex reconstruction efficiency
+    if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llpvtxRecoEff ) {
+      for ( size_t illp = 0; illp != h_recobleLLPdVtx_r [ireg].size(); ++illp ) {
+	// --> inclusive acceptance
+	h_LLPdVtx_accept_x                [ireg][illp]    ->Divide( h_recoLLPdVtx_x                  [ireg][illp],
+								    h_recobleLLPdVtx_x               [ireg][illp] );
+	h_LLPdVtx_accept_y                [ireg][illp]    ->Divide( h_recoLLPdVtx_y                  [ireg][illp],
+								    h_recobleLLPdVtx_y               [ireg][illp] );
+	h_LLPdVtx_accept_z                [ireg][illp]    ->Divide( h_recoLLPdVtx_z                  [ireg][illp],
+								    h_recobleLLPdVtx_z               [ireg][illp] );
+    	h_LLPdVtx_accept_r                [ireg][illp]    ->Divide( h_recoLLPdVtx_r                  [ireg][illp],
+								    h_recobleLLPdVtx_r               [ireg][illp] );
+	h_LLPdVtx_accept_pt               [ireg][illp]    ->Divide( h_recoLLPdVtx_pt                 [ireg][illp],
+								    h_recobleLLPdVtx_pt              [ireg][illp] );
+	h_LLPdVtx_accept_eta              [ireg][illp]    ->Divide( h_recoLLPdVtx_eta                [ireg][illp],
+								    h_recobleLLPdVtx_eta             [ireg][illp] );
+	h_LLPdVtx_accept_phi              [ireg][illp]    ->Divide( h_recoLLPdVtx_phi                [ireg][illp],
+								    h_recobleLLPdVtx_phi             [ireg][illp] );
+	h_LLPdVtx_accept_avgMu            [ireg][illp]    ->Divide( h_recoLLPdVtx_avgMu              [ireg][illp],
+								    h_recobleLLPdVtx_avgMu           [ireg][illp] );
+	h_LLPdVtx_accept_descM            [ireg][illp]    ->Divide( h_recoLLPdVtx_descM              [ireg][illp],
+								    h_recobleLLPdVtx_descM           [ireg][illp] );
+	h_LLPdVtx_accept_nDesc            [ireg][illp]    ->Divide( h_recoLLPdVtx_nDesc              [ireg][illp],
+								    h_recobleLLPdVtx_nDesc           [ireg][illp] );
+	h_LLPdVtx_accept_nRecoDesc        [ireg][illp]    ->Divide( h_recoLLPdVtx_nRecoDesc          [ireg][illp],
+								    h_recobleLLPdVtx_nRecoDesc       [ireg][illp] );
+	h_LLPdVtx_accept_nSelDesc         [ireg][illp]    ->Divide( h_recoLLPdVtx_nSelDesc           [ireg][illp],
+								    h_recobleLLPdVtx_nSelDesc        [ireg][illp] );
+	// --> inclusive total efficiency
+	h_LLPdVtx_recoEff_x               [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_x             [ireg][illp],
+								    h_recobleLLPdVtx_x               [ireg][illp] );
+	h_LLPdVtx_recoEff_y               [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_y             [ireg][illp],
+								    h_recobleLLPdVtx_y               [ireg][illp] );
+	h_LLPdVtx_recoEff_z               [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_z             [ireg][illp],
+								    h_recobleLLPdVtx_z               [ireg][illp] );
+	h_LLPdVtx_recoEff_r               [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_r             [ireg][illp],
+								    h_recobleLLPdVtx_r               [ireg][illp] );
+	h_LLPdVtx_recoEff_pt              [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_pt            [ireg][illp],
+								    h_recobleLLPdVtx_pt              [ireg][illp] );
+	h_LLPdVtx_recoEff_eta             [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_eta           [ireg][illp],
+								    h_recobleLLPdVtx_eta             [ireg][illp] );
+	h_LLPdVtx_recoEff_phi             [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_phi           [ireg][illp],
+								    h_recobleLLPdVtx_phi             [ireg][illp] );
+	h_LLPdVtx_recoEff_avgMu           [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_avgMu         [ireg][illp],
+								    h_recobleLLPdVtx_avgMu           [ireg][illp] );
+	h_LLPdVtx_recoEff_descM           [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_descM         [ireg][illp],
+								    h_recobleLLPdVtx_descM           [ireg][illp] );
+	h_LLPdVtx_recoEff_nDesc           [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_nDesc         [ireg][illp],
+								    h_recobleLLPdVtx_nDesc           [ireg][illp] );
+	h_LLPdVtx_recoEff_nRecoDesc       [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_nRecoDesc     [ireg][illp],
+								    h_recobleLLPdVtx_nRecoDesc       [ireg][illp] );
+	h_LLPdVtx_recoEff_nSelDesc        [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_nSelDesc      [ireg][illp],
+								    h_recobleLLPdVtx_nSelDesc        [ireg][illp] );
+	// --> inclusive algorithmic efficiency
+	h_LLPdVtx_algEff_x                [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_x             [ireg][illp],
+								    h_recoLLPdVtx_x                  [ireg][illp] );
+	h_LLPdVtx_algEff_y                [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_y             [ireg][illp],
+								    h_recoLLPdVtx_y                  [ireg][illp] );
+	h_LLPdVtx_algEff_z                [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_z             [ireg][illp],
+								    h_recoLLPdVtx_z                  [ireg][illp] );
+	h_LLPdVtx_algEff_r                [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_r             [ireg][illp],
+								    h_recoLLPdVtx_r                  [ireg][illp] );
+	h_LLPdVtx_algEff_pt               [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_pt            [ireg][illp],
+								    h_recoLLPdVtx_pt                 [ireg][illp] );
+	h_LLPdVtx_algEff_eta              [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_eta           [ireg][illp],
+								    h_recoLLPdVtx_eta                [ireg][illp] );
+	h_LLPdVtx_algEff_phi              [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_phi           [ireg][illp],
+								    h_recoLLPdVtx_phi                [ireg][illp] );
+	h_LLPdVtx_algEff_avgMu            [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_avgMu         [ireg][illp],
+								    h_recoLLPdVtx_avgMu              [ireg][illp] );
+	h_LLPdVtx_algEff_descM            [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_descM         [ireg][illp],
+								    h_recoLLPdVtx_descM              [ireg][illp] );
+	h_LLPdVtx_algEff_nDesc            [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_nDesc         [ireg][illp],
+								    h_recoLLPdVtx_nDesc              [ireg][illp] );
+	h_LLPdVtx_algEff_nRecoDesc        [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_nRecoDesc     [ireg][illp],
+								    h_recoLLPdVtx_nRecoDesc          [ireg][illp] );
+	h_LLPdVtx_algEff_nSelDesc         [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_nSelDesc      [ireg][illp],
+								    h_recoLLPdVtx_nSelDesc           [ireg][illp] );
+	// --> inclusive core efficiency
+	h_LLPdVtx_coreEff_x               [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_x             [ireg][illp],
+								    h_selLLPdVtx_x                   [ireg][illp] );
+	h_LLPdVtx_coreEff_y               [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_y             [ireg][illp],
+								    h_selLLPdVtx_y                   [ireg][illp] );
+	h_LLPdVtx_coreEff_z               [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_z             [ireg][illp],
+								    h_selLLPdVtx_z                   [ireg][illp] );
+	h_LLPdVtx_coreEff_r               [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_r             [ireg][illp],
+								    h_selLLPdVtx_r                   [ireg][illp] );
+	h_LLPdVtx_coreEff_pt              [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_pt            [ireg][illp],
+								    h_selLLPdVtx_pt                  [ireg][illp] );
+	h_LLPdVtx_coreEff_eta             [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_eta           [ireg][illp],
+								    h_selLLPdVtx_eta                 [ireg][illp] );
+	h_LLPdVtx_coreEff_phi             [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_phi           [ireg][illp],
+								    h_selLLPdVtx_phi                 [ireg][illp] );
+	h_LLPdVtx_coreEff_avgMu           [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_avgMu         [ireg][illp],
+								    h_selLLPdVtx_avgMu               [ireg][illp] );
+	h_LLPdVtx_coreEff_descM           [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_descM         [ireg][illp],
+								    h_selLLPdVtx_descM               [ireg][illp] );
+	h_LLPdVtx_coreEff_nDesc           [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_nDesc         [ireg][illp],
+								    h_selLLPdVtx_nDesc               [ireg][illp] );
+	h_LLPdVtx_coreEff_nRecoDesc       [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_nRecoDesc     [ireg][illp],
+								    h_selLLPdVtx_nRecoDesc           [ireg][illp] );
+	h_LLPdVtx_coreEff_nSelDesc        [ireg][illp]    ->Divide( h_recoMatchLLPdVtx_nSelDesc      [ireg][illp],
+								    h_selLLPdVtx_nSelDesc            [ireg][illp] );
+	// --> inclusive seed efficiency
+	h_LLPdVtx_seedEff_x               [ireg][illp]    ->Divide( h_selLLPdVtx_x                   [ireg][illp],
+								    h_recoLLPdVtx_x                  [ireg][illp] );
+	h_LLPdVtx_seedEff_y               [ireg][illp]    ->Divide( h_selLLPdVtx_y                   [ireg][illp],
+								    h_recoLLPdVtx_y                  [ireg][illp] );
+	h_LLPdVtx_seedEff_z               [ireg][illp]    ->Divide( h_selLLPdVtx_z                   [ireg][illp],
+								    h_recoLLPdVtx_z                  [ireg][illp] );
+	h_LLPdVtx_seedEff_r               [ireg][illp]    ->Divide( h_selLLPdVtx_r                   [ireg][illp],
+								    h_recoLLPdVtx_r                  [ireg][illp] );
+	h_LLPdVtx_seedEff_pt              [ireg][illp]    ->Divide( h_selLLPdVtx_pt                  [ireg][illp],
+								    h_recoLLPdVtx_pt                 [ireg][illp] );
+	h_LLPdVtx_seedEff_eta             [ireg][illp]    ->Divide( h_selLLPdVtx_eta                 [ireg][illp],
+								    h_recoLLPdVtx_eta                [ireg][illp] );
+	h_LLPdVtx_seedEff_phi             [ireg][illp]    ->Divide( h_selLLPdVtx_phi                 [ireg][illp],
+								    h_recoLLPdVtx_phi                [ireg][illp] );
+	h_LLPdVtx_seedEff_avgMu           [ireg][illp]    ->Divide( h_selLLPdVtx_avgMu               [ireg][illp],
+								    h_recoLLPdVtx_avgMu              [ireg][illp] );
+	h_LLPdVtx_seedEff_descM           [ireg][illp]    ->Divide( h_selLLPdVtx_descM               [ireg][illp],
+								    h_recoLLPdVtx_descM              [ireg][illp] );
+	h_LLPdVtx_seedEff_nDesc           [ireg][illp]    ->Divide( h_selLLPdVtx_nDesc               [ireg][illp],
+								    h_recoLLPdVtx_nDesc              [ireg][illp] );
+	h_LLPdVtx_seedEff_nRecoDesc       [ireg][illp]    ->Divide( h_selLLPdVtx_nRecoDesc           [ireg][illp],
+								    h_recoLLPdVtx_nRecoDesc          [ireg][illp] );
+	h_LLPdVtx_seedEff_nSelDesc        [ireg][illp]    ->Divide( h_selLLPdVtx_nSelDesc            [ireg][illp],
+								    h_recoLLPdVtx_nSelDesc           [ireg][illp] );
+	// --> signal acceptance
+	h_LLPdVtx_sgnlAccept_x            [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_x             [ireg][illp],
+								    h_fiducLLPdVtx_x                 [ireg][illp] );
+	h_LLPdVtx_sgnlAccept_y            [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_y             [ireg][illp],
+								    h_fiducLLPdVtx_y                 [ireg][illp] );
+	h_LLPdVtx_sgnlAccept_z            [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_z             [ireg][illp],
+								    h_fiducLLPdVtx_z                 [ireg][illp] );
+    	h_LLPdVtx_sgnlAccept_r            [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_r             [ireg][illp],
+								    h_fiducLLPdVtx_r                 [ireg][illp] );
+	h_LLPdVtx_sgnlAccept_pt           [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_pt            [ireg][illp],
+								    h_fiducLLPdVtx_pt                [ireg][illp] );
+	h_LLPdVtx_sgnlAccept_eta          [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_eta           [ireg][illp],
+								    h_fiducLLPdVtx_eta               [ireg][illp] );
+	h_LLPdVtx_sgnlAccept_phi          [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_phi           [ireg][illp],
+								    h_fiducLLPdVtx_phi               [ireg][illp] );
+	h_LLPdVtx_sgnlAccept_avgMu        [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_avgMu         [ireg][illp],
+								    h_fiducLLPdVtx_avgMu             [ireg][illp] );
+	h_LLPdVtx_sgnlAccept_descM        [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_descM         [ireg][illp],
+								    h_fiducLLPdVtx_descM             [ireg][illp] );
+	h_LLPdVtx_sgnlAccept_nDesc        [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_nDesc         [ireg][illp],
+								    h_fiducLLPdVtx_nDesc             [ireg][illp] );
+	h_LLPdVtx_sgnlAccept_nRecoDesc    [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_nRecoDesc     [ireg][illp],
+								    h_fiducLLPdVtx_nRecoDesc         [ireg][illp] );
+	h_LLPdVtx_sgnlAccept_nSelDesc     [ireg][illp]    ->Divide( h_recoFiducLLPdVtx_nSelDesc      [ireg][illp],
+								    h_fiducLLPdVtx_nSelDesc          [ireg][illp] );
+	for ( size_t k = 0; k != m_nTypeSgnlDVs; ++k ) {
+	  // --> total signal efficiency
+	  h_LLPdVtx_sgnlRecoEff_x         [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_x         [ireg][illp][k],
+								    h_fiducLLPdVtx_x                 [ireg][illp] );
+	  h_LLPdVtx_sgnlRecoEff_y         [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_y         [ireg][illp][k],
+								    h_fiducLLPdVtx_y                 [ireg][illp] );
+	  h_LLPdVtx_sgnlRecoEff_z         [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_z         [ireg][illp][k],
+								    h_fiducLLPdVtx_z                 [ireg][illp] );
+	  h_LLPdVtx_sgnlRecoEff_r         [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_r         [ireg][illp][k],
+								    h_fiducLLPdVtx_r                 [ireg][illp] );
+	  h_LLPdVtx_sgnlRecoEff_pt        [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_pt        [ireg][illp][k],
+								    h_fiducLLPdVtx_pt                [ireg][illp] );
+	  h_LLPdVtx_sgnlRecoEff_eta       [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_eta       [ireg][illp][k],
+								    h_fiducLLPdVtx_eta               [ireg][illp] );
+	  h_LLPdVtx_sgnlRecoEff_phi       [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_phi       [ireg][illp][k],
+								    h_fiducLLPdVtx_phi               [ireg][illp] );
+	  h_LLPdVtx_sgnlRecoEff_avgMu     [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_avgMu     [ireg][illp][k],
+								    h_fiducLLPdVtx_avgMu             [ireg][illp] );
+	  h_LLPdVtx_sgnlRecoEff_descM     [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_descM     [ireg][illp][k],
+								    h_fiducLLPdVtx_descM             [ireg][illp] );
+	  h_LLPdVtx_sgnlRecoEff_nDesc     [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_nDesc     [ireg][illp][k],
+								    h_fiducLLPdVtx_nDesc             [ireg][illp] );
+	  h_LLPdVtx_sgnlRecoEff_nRecoDesc [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_nRecoDesc [ireg][illp][k],
+								    h_fiducLLPdVtx_nRecoDesc         [ireg][illp] );
+	  h_LLPdVtx_sgnlRecoEff_nSelDesc  [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_nSelDesc  [ireg][illp][k],
+								    h_fiducLLPdVtx_nSelDesc          [ireg][illp] );
+	  // --> algorithmic signal efficiency
+	  h_LLPdVtx_sgnlAlgEff_x          [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_x         [ireg][illp][k],
+								    h_recoFiducLLPdVtx_x             [ireg][illp] );
+	  h_LLPdVtx_sgnlAlgEff_y          [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_y         [ireg][illp][k],
+								    h_recoFiducLLPdVtx_y             [ireg][illp] );
+	  h_LLPdVtx_sgnlAlgEff_z          [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_z         [ireg][illp][k],
+								    h_recoFiducLLPdVtx_z             [ireg][illp] );
+	  h_LLPdVtx_sgnlAlgEff_r          [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_r         [ireg][illp][k],
+								    h_recoFiducLLPdVtx_r             [ireg][illp] );
+	  h_LLPdVtx_sgnlAlgEff_pt         [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_pt        [ireg][illp][k],
+								    h_recoFiducLLPdVtx_pt            [ireg][illp] );
+	  h_LLPdVtx_sgnlAlgEff_eta        [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_eta       [ireg][illp][k],
+								    h_recoFiducLLPdVtx_eta           [ireg][illp] );
+	  h_LLPdVtx_sgnlAlgEff_phi        [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_phi       [ireg][illp][k],
+								    h_recoFiducLLPdVtx_phi           [ireg][illp] );
+	  h_LLPdVtx_sgnlAlgEff_avgMu      [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_avgMu     [ireg][illp][k],
+								    h_recoFiducLLPdVtx_avgMu         [ireg][illp] );
+	  h_LLPdVtx_sgnlAlgEff_descM      [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_descM     [ireg][illp][k],
+								    h_recoFiducLLPdVtx_descM         [ireg][illp] );
+	  h_LLPdVtx_sgnlAlgEff_nDesc      [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_nDesc     [ireg][illp][k],
+								    h_recoFiducLLPdVtx_nDesc         [ireg][illp] );
+	  h_LLPdVtx_sgnlAlgEff_nRecoDesc  [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_nRecoDesc [ireg][illp][k],
+								    h_recoFiducLLPdVtx_nRecoDesc     [ireg][illp] );
+	  h_LLPdVtx_sgnlAlgEff_nSelDesc   [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_nSelDesc  [ireg][illp][k],
+								    h_recoFiducLLPdVtx_nSelDesc      [ireg][illp] );
+	  // --> core signal efficiency
+	  h_LLPdVtx_sgnlCoreEff_x         [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_x         [ireg][illp][k],
+								    h_selFiducLLPdVtx_x              [ireg][illp] );
+	  h_LLPdVtx_sgnlCoreEff_y         [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_y         [ireg][illp][k],
+								    h_selFiducLLPdVtx_y              [ireg][illp] );
+	  h_LLPdVtx_sgnlCoreEff_z         [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_z         [ireg][illp][k],
+								    h_selFiducLLPdVtx_z              [ireg][illp] );
+	  h_LLPdVtx_sgnlCoreEff_r         [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_r         [ireg][illp][k],
+								    h_selFiducLLPdVtx_r              [ireg][illp] );
+	  h_LLPdVtx_sgnlCoreEff_pt        [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_pt        [ireg][illp][k],
+								    h_selFiducLLPdVtx_pt             [ireg][illp] );
+	  h_LLPdVtx_sgnlCoreEff_eta       [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_eta       [ireg][illp][k],
+								    h_selFiducLLPdVtx_eta            [ireg][illp] );
+	  h_LLPdVtx_sgnlCoreEff_phi       [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_phi       [ireg][illp][k],
+								    h_selFiducLLPdVtx_phi            [ireg][illp] );
+	  h_LLPdVtx_sgnlCoreEff_avgMu     [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_avgMu     [ireg][illp][k],
+								    h_selFiducLLPdVtx_avgMu          [ireg][illp] );
+	  h_LLPdVtx_sgnlCoreEff_descM     [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_descM     [ireg][illp][k],
+								    h_selFiducLLPdVtx_descM          [ireg][illp] );
+	  h_LLPdVtx_sgnlCoreEff_nDesc     [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_nDesc     [ireg][illp][k],
+								    h_selFiducLLPdVtx_nDesc          [ireg][illp] );
+	  h_LLPdVtx_sgnlCoreEff_nRecoDesc [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_nRecoDesc [ireg][illp][k],
+								    h_selFiducLLPdVtx_nRecoDesc      [ireg][illp] );
+	  h_LLPdVtx_sgnlCoreEff_nSelDesc  [ireg][illp][k] ->Divide( h_sgnlRecoMatchLLPdVtx_nSelDesc  [ireg][illp][k],
+								    h_selFiducLLPdVtx_nSelDesc       [ireg][illp] );
+	}
+	// --> seed signal efficiency
+	h_LLPdVtx_sgnlSeedEff_x           [ireg][illp]    ->Divide( h_selFiducLLPdVtx_x              [ireg][illp],
+								    h_recoFiducLLPdVtx_x             [ireg][illp] );
+	h_LLPdVtx_sgnlSeedEff_y           [ireg][illp]    ->Divide( h_selFiducLLPdVtx_y              [ireg][illp],
+								    h_recoFiducLLPdVtx_y             [ireg][illp] );
+	h_LLPdVtx_sgnlSeedEff_z           [ireg][illp]    ->Divide( h_selFiducLLPdVtx_z              [ireg][illp],
+								    h_recoFiducLLPdVtx_z             [ireg][illp] );
+	h_LLPdVtx_sgnlSeedEff_r           [ireg][illp]    ->Divide( h_selFiducLLPdVtx_r              [ireg][illp],
+								    h_recoFiducLLPdVtx_r             [ireg][illp] );
+	h_LLPdVtx_sgnlSeedEff_pt          [ireg][illp]    ->Divide( h_selFiducLLPdVtx_pt             [ireg][illp],
+								    h_recoFiducLLPdVtx_pt            [ireg][illp] );
+	h_LLPdVtx_sgnlSeedEff_eta         [ireg][illp]    ->Divide( h_selFiducLLPdVtx_eta            [ireg][illp],
+								    h_recoFiducLLPdVtx_eta           [ireg][illp] );
+	h_LLPdVtx_sgnlSeedEff_phi         [ireg][illp]    ->Divide( h_selFiducLLPdVtx_phi            [ireg][illp],
+								    h_recoFiducLLPdVtx_phi           [ireg][illp] );
+	h_LLPdVtx_sgnlSeedEff_avgMu       [ireg][illp]    ->Divide( h_selFiducLLPdVtx_avgMu          [ireg][illp],
+								    h_recoFiducLLPdVtx_avgMu         [ireg][illp] );
+	h_LLPdVtx_sgnlSeedEff_descM       [ireg][illp]    ->Divide( h_selFiducLLPdVtx_descM          [ireg][illp],
+								    h_recoFiducLLPdVtx_descM         [ireg][illp] );
+	h_LLPdVtx_sgnlSeedEff_nDesc       [ireg][illp]    ->Divide( h_selFiducLLPdVtx_nDesc          [ireg][illp],
+								    h_recoFiducLLPdVtx_nDesc         [ireg][illp] );
+	h_LLPdVtx_sgnlSeedEff_nRecoDesc   [ireg][illp]    ->Divide( h_selFiducLLPdVtx_nRecoDesc      [ireg][illp],
+								    h_recoFiducLLPdVtx_nRecoDesc     [ireg][illp] );
+	h_LLPdVtx_sgnlSeedEff_nSelDesc    [ireg][illp]    ->Divide( h_selFiducLLPdVtx_nSelDesc       [ireg][illp],
+								    h_recoFiducLLPdVtx_nSelDesc      [ireg][illp] );
+      }
+    }
+    
     
   } // end loop over regions
   
@@ -9781,9 +12411,9 @@ void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, con
   bool tightGoodDV = baseDV && matmapDV && fiducDV && chi2DV && ksmDV && ptDV && mind0DV && minz0DV && minsqerrd0DV && minsqerrz0DV;
   if ( doGood ) {
     if      ( !jetDV && !skipJetCuts ) {
-      dv .push_back( looseGoodDV && byNJetDV );
-      dv .push_back(   midGoodDV && byNJetDV );
-      dv .push_back( tightGoodDV && byNJetDV );
+      dv .push_back( looseGoodDV && byJetDV ); // byNJetDV
+      dv .push_back(   midGoodDV && byJetDV );
+      dv .push_back( tightGoodDV && byJetDV );
     }
     else if (  jetDV || skipJetCuts ) {
       dv .push_back( looseGoodDV );

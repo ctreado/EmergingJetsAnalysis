@@ -77,7 +77,7 @@ parser.add_argument( "--sbdVars", dest = "sbdVars", default = "",
                          To omit given sample type, leave blank space. Colons can be used to submit multiple cases. \
                          For example: '--sbdVars 2trkDV,,3trkDV:darkPionDV,nomatchDV' will plot 2-track signal DVs \
                          vs 3-track data DVs and dark pion signal DVs vs unmatched background DVs." )
-parser.add_argument( "--varEnum", dest = "varEnum", type = int, default = 1,
+parser.add_argument( "--varEnum", dest = "varEnum", type = int, default = 5,
                          help = "Enumerator for variable histogram type (i.e. DV, DV_NTRK). Input must be integer." )
 parser.add_argument( "--baseDV", dest = "baseDV", default = "bare", help = "Base DV type." )
 # output combined histograms
@@ -100,6 +100,8 @@ parser.add_argument( "--drawOptMulti1D", dest = "drawOptMulti1D", default = "nos
                          help = "Draw option(s) for 1D multivariate stack plots." )
 parser.add_argument( "--doMultiSmpl", dest = "doMultiSmpl", action = "store_true", default = False,
                          help = "Plot histograms from different samples against each other." )
+parser.add_argument( "--doProfileX", dest = "doProfileX", action = "store_true", default = False, help = "Project 2d histogram into profile along x-axis." )
+parser.add_argument( "--doProfileY", dest = "doProfileY", action = "store_true", default = False, help = "Project 2d histogram into profile along y-axis." )
 parser.add_argument( "--doTruthSvB", dest = "doTruthSvB", action = "store_true", default = False,
                          help = "Do truth-matched signal vs background plots (for purposes of default legend, out-name strings)." )
 parser.add_argument( "--legLenEnum", dest = "legLenEnum", type = int, default = 1,
@@ -114,6 +116,7 @@ parser.add_argument( "--lstyleEnum", dest = "lstyleEnum", type = int, default = 
                          by mediator mass and varies the lifetime color around the base color. MOD sets the base color by \
                          lifetime and keeps the colors the same between models, and CTAU varies the base color by model and \
                          keeps the colors the same across all lifetimes." )
+parser.add_argument( "--fillBkgd", dest = "fillBkgd", action = "store_true", default = False, help = "Fill in background." )
 # --> add argument to override sampleDict colors -- just grab colors from plotHelpers instead; change legend to print strings in black in this case
 
 args = parser.parse_args()
@@ -168,11 +171,14 @@ class varType( Enum ):
     DV      = 1
     DV_NTRK = 2
     JET     = 3
+    TRK     = 4
+    NONE    = 5
 class lineStyleType( Enum ):
     ALL  = 1
-    MOD  = 2
-    CTAU = 3
-    MIX  = 4
+    CTAU = 2
+    XDM  = 3
+    MOOD = 4
+    MIX  = 5
 
 
 ### SKIP NORM FOR CUTFLOWS AND/OR EFFICIENCIES ?? ###
@@ -252,13 +258,24 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, histNames, hists ):
         
         # draw 1D stack plots (multiple samples per plot)
         if args.draw1D:
-            if isinstance( hists[0], ROOT.TH1 ) and not isinstance( hists[0], ROOT.TH2 ):
-                plot1D( hists, name, sampleNames, sampleTypes, sampleDicts )
-                plot1D( hists, name, sampleNames, sampleTypes, sampleDicts, True ) # log-y
+            plot1D(     hists, name, sampleNames, sampleTypes, sampleDicts )
+            if not isinstance( hists[0], ROOT.TH2 ):
+                if "eff" not in name.lower() and "accept" not in name.lower():
+                    plot1D( hists, name, sampleNames, sampleTypes, sampleDicts, True        ) # log-y
+                else:
+                    plot1D( hists, name, sampleNames, sampleTypes, sampleDicts, False, True ) # log-x
+            # do s/b plots 
+            if args.drawSOverB:
+                plot1D(     hists, name, sampleNames, sampleTypes, sampleDicts, False, False, True )
+                if not isinstance( hists[0], ROOT.TH2 ):
+                    if "eff" not in name.lower() and "accept" not in name.lower():
+                        plot1D( hists, name, sampleNames, sampleTypes, sampleDicts, True,  False, True ) # log-y
+                    else:
+                        plot1D( hists, name, sampleNames, sampleTypes, sampleDicts, False, True,  True ) # log-x
 
         # draw 2D plots (one histo per plot) -- add handling of 2d projections (grab 3d histos and make projections, if applicable)
         if args.draw2D:
-            if isinstance( hists[0], ROOT.TH2 ):
+            if isinstance( hists[0], ROOT.TH2 ) and not isinstance( hists[0], ROOT.TH3 ):
                 for iH, hist in enumerate( hists ):
                     plot2D( hist, name, sampleNames[iH], sampleTypes[iH], sampleDicts[iH] )
 
@@ -270,33 +287,43 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, histNames, hists ):
         if len(hists) <= 0: continue
 
         if args.drawMulti1D:
-            if isinstance( hists[0], ROOT.TH1 ) and not isinstance( hists[0], ROOT.TH2 ):
-                # draw 1D multi-variate stack plots from SAME samples (multiple histos, single samples per plot)
-                if not args.doMultiSmpl:
-                    for iS, sample in enumerate( sampleNames ):
-                        hb = iS    * len( args.histVars.split(',') )
-                        he = (iS+1)* len( args.histVars.split(',') )
-                        plotMulti1D( hists[hb:he], base, sample, sampleTypes[iS], sampleDicts[iS] )
-                        plotMulti1D( hists[hb:he], base, sample, sampleTypes[iS], sampleDicts[iS], True ) # log-y
-                # draw 1D multi-variate stack plots from DIFFERENT samples (multiple histos, multiple samples per plot)
-                elif args.doMultiSmpl:
-                    for iSBD, sbd in enumerate( args.sbdVars.split(':') ):
-                        htitle = args.histTitle.split(':')[iSBD]
+            #if isinstance( hists[0], ROOT.TH1 ) and not isinstance( hists[0], ROOT.TH2 ) and not isinstance( hists[0], ROOT.TH3 ):
+            # draw 1D multi-variate stack plots from SAME samples (multiple histos, single samples per plot)
+            if not args.doMultiSmpl:
+                for iS, sample in enumerate( sampleNames ):
+                    hb = iS    * len( args.histVars.split(',') )
+                    he = (iS+1)* len( args.histVars.split(',') )
+                    plotMulti1D( hists[hb:he], base, sample, sampleTypes[iS], sampleDicts[iS] )
+                    if not isinstance( hists[0], ROOT.TH2 ):
+                        if "eff" not in name.lower() and "accept" not in name.lower():
+                            plotMulti1D( hists[hb:he], base, sample, sampleTypes[iS], sampleDicts[iS], True        ) # log-y
+                        else:
+                            plotMulti1D( hists[hb:he], base, sample, sampleTypes[iS], sampleDicts[iS], False, True ) # log-x
+            # draw 1D multi-variate stack plots from DIFFERENT samples (multiple histos, multiple samples per plot)
+            elif args.doMultiSmpl:
+                for iSBD, sbd in enumerate( args.sbdVars.split(':') ):
+                    htitle = args.histTitle.split(':')[iSBD]
+                    # --> need to update plotMultiSmpl1D to handle profile plots; for now, just exclude 2d/3d histos
+                    if isinstance( hists[0], ROOT.TH1 ) and not isinstance( hists[0], ROOT.TH2 ) and not isinstance( hists[0], ROOT.TH3 ):
                         plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle )
                         plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, True ) # log-y
                         # do s/b plots --> EVENTUALLY WANT TO CHANGE TO GENERAL 'doRatio' WITH CONFIGURABLE ENUM FOR RATIO TYPE AND 
                         if args.drawSOverB:
-                            if hists[0].GetName().split('_')[-1] == "n": # can make this configurable if we want to look at other variables...
-                                #plotSOverB( hists, sampleTypes )
-                                plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, False, True )
-                                plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, True,  True ) # log-y
+                            #if hists[0].GetName().split('_')[-1] == "n" or "count" in base or "cut" in base:
+                            plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, False, True )
+                            plotMultiSmpl1D( hists, base, sampleTypes, sampleDicts, sbd, htitle, True,  True ) # log-y
                         # --> eventually want to add "doRatio" option to other plotting functions...
                 
 
 
 ## --- DRAW 1D STACK PLOTS --- ##
-def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = False ):
+def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = False, doLogx = False, doSOverB = False ):
 
+    iBkgd = -1
+    for iS, stype in enumerate( sampleTypes ):
+        if stype == plotHelpers.sampleType.BKGD:
+            iBkgd = iS
+            
     # set canvas
     c = ROOT.TCanvas( histName )
     # set stack
@@ -304,23 +331,56 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     # set legend
     l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value, args.lxint, args.lyint )
 
+    if doSOverB:
+        c.SetCanvasSize( 400, 400 )
+        p1 = ROOT.TPad( "p1", "p1", 0,  0.3, 1,   1 )
+        p2 = ROOT.TPad( "p2", "p2", 0, 0.01, 1, 0.3 )
+        p1.Draw()
+        p2.Draw()
+        p1.cd()
+
+    isProfileX = False
+    isProfileY = False
+
     hslen = 0
-    for iH, hist in enumerate( hists ):
+    for iH, tmpHist in enumerate( hists ):
+        # copy histogram
+        hist = tmpHist.Clone()
+        if isinstance( hist, ROOT.TH2 ):
+            if   args.doProfileX:
+                hist = hist.ProfileX()
+                isProfileX = True
+            elif args.doProfileY:
+                hist = hist.ProfileY()
+                isProfileY = True
+            else:
+                continue
+
         # skip empty histograms
         if not hist.GetEntries():
             continue
-        
+
         # set line attributes
         hist.SetLineColorAlpha( sampleDicts[iH]["lcolor"], sampleDicts[iH]["lalpha"] )
         hist.SetLineStyle( sampleDicts[iH]["lstyle"] )
         hist.SetLineWidth( plotHelpers.setLineWidth( sampleDicts[iH]["lstyle"] ) )
+        if iBkgd >= 0 and iBkgd == iH and args.fillBkgd:
+            hist.SetFillColorAlpha( sampleDicts[iH]["lcolor"], 0.15 )
+
         # normalize
-        if hist.Integral():
+        if hist.Integral() and not isProfileX and not isProfileY:
             plotHelpers.doNorm( hist )
-        
-        # set maximum --> may want to play around with scale factors...
-        max_scale     = 1.2
-        max_scale_log = len( hists )
+
+        # set maximum
+        max_scale      = 1.2
+        max_scale_log  = len( hists )
+        max_scale_logx = max_scale
+        if "Vtx" in histName or "Trk" in histName:
+            if "avgMu" in histName or "phi" in histName or "eta" in histName or "score" in histName or \
+                ( isProfileX and "resid" in histName or "desc" in histName ):
+                max_scale       = 1.5
+            if "recoeff_r" in histName.lower() or "seedeff_r" in histName.lower() or ( "nSelDesc" in histName and "eff" in histName.lower() ):
+                max_scale_log_x = 1.5
         if len( hists ) > 12:
             if "_dR" in histName or "eta" in histName or "rapid" in histName or "phi" in histName or "pt_s" in histName:
                 max_scale_log *= 7
@@ -335,7 +395,7 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
         # add legend entry
         l.AddEntry( hist, plotHelpers.setLegStr( sampleTypes[iH], sampleDicts[iH], legStrLen( args.legLenEnum ).value ) ) \
           .SetTextColor( sampleDicts[iH]["lcolor"] )
-        
+
         # add histo to stack
         hs.Add( hist )
         hslen += 1
@@ -348,16 +408,139 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     
     # draw legend
     l.Draw()
-    
-    # set axes
-    hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist ) )
-    hs.GetXaxis().SetTitleSize( 0.03 )
-    hs.GetXaxis().SetTitleOffset( 1.4 )
 
+    # set axes
+    if "cutflow" not in histName or "_N" in histName:
+        xtitle = plotHelpers.setXaxisTitle( hist, True, args.histTitle, varType( args.varEnum ).value ).lstrip()
+        hs.GetXaxis().SetTitle( xtitle    ) 
+        hs.GetXaxis().SetTitleSize( 0.03  )
+        hs.GetXaxis().SetTitleOffset( 1.4 )
+        ytitle = hists[0].GetYaxis().GetTitle()
+        ytitle_pre = ""
+        if ytitle.startswith('n') or ytitle.startswith('fraction'):
+            ytitle_pre = ytitle.split( ' ' )[0]
+            ytitle     = ' '.join( ytitle.split( ' ' )[1:] )
+        for iw, word in enumerate( ytitle.split( ' ' ) ):
+            if word != xtitle.split( ' ' )[iw]:
+                ytitle = ' '.join( ytitle.split( ' ' )[iw:] )
+                break
+        if ytitle_pre: ytitle = ytitle_pre + " " + ytitle
+        if "Trk" in histName or "Vtx" in histName:
+            if "accept" in histName.lower() or "eff" in histName.lower():
+                if   "accept"  in histName.lower():
+                    ytitle = "acceptance"
+                elif "recoeff" in histName.lower():
+                    if   "Trk" in histName:
+                        ytitle = "inclusive tracking efficiency"
+                    elif "Vtx" in histName:
+                        ytitle = "reconstruction efficiency"
+                elif "stdeff"  in histName.lower():
+                    ytitle = "standard tracking efficiency"
+                elif "lrteff"  in histName.lower():
+                    ytitle = "large-radius tracking efficiency"
+                elif "algeff"  in histName.lower():
+                    ytitle = "algorithmic efficiency"
+                elif "coreeff" in histName.lower():
+                    ytitle = "core efficiency"
+                elif "seedeff" in histName.lower():
+                    ytitle = "seed efficiency"
+                if   "sgnl"    in histName.lower():
+                    ytitle = "signal " + ytitle
+                elif "loose"   in histName.lower():
+                    ytitle = "loose "  + ytitle
+                elif "mid"     in histName.lower():
+                    ytitle = "medium " + ytitle
+                elif "tight"   in histName.lower():
+                    ytitle = "tight "  + ytitle
+                hs.GetYaxis().SetTitle( ytitle )
+        if isProfileX:
+            ytitle = "average " + ytitle
+            hs.GetYaxis().SetTitle( ytitle )
+    else:
+        obj = ""
+        if "DV" in histName:
+            obj = "DV"
+        elif "Jet" in histName or "jet" in histName:
+            obj = "jet"
+        ytitle = " of overall " + obj + "s in all events"
+        if "Efficiency" in histName:
+            ytitle = "fraction" + ytitle
+        else:
+            ytitle = "number" + ytitle
+        hs.GetYaxis().SetTitle( ytitle )
+
+    
     # add text
     text = plotHelpers.configText( args.histTitle, args.regionDir )
     for txt in text:
         txt.Draw("same")
+
+    if doLogy:
+        ROOT.gPad.SetLogy()
+    if doLogx:
+        ROOT.gPad.SetLogx()
+
+        
+    # draw ratios
+    if doSOverB:
+        rhs = ROOT.THStack( histName, "" )
+        iBkgd = -1
+        for iS, stype in enumerate( sampleTypes ):
+            if stype == plotHelpers.sampleType.BKGD:
+                iBkgd = iS
+        p2.cd()
+        for iH, tmpHist in enumerate( hists ):
+            # copy histogram
+            rhist = tmpHist.Clone()
+            if isinstance( hist, ROOT.TH2 ):
+                if   args.doProfileX:
+                    rhist = hist.ProfileX()
+                    isProfileX = True
+                elif args.doProfileY:
+                    rhist = hist.ProfileY()
+                    isProfileY = True
+                else:
+                    continue
+            
+            # skip empty histograms
+            if not rhist.GetEntries():
+                continue
+            
+            # set line attributes
+            rhist.SetLineColorAlpha( sampleDicts[iH]["lcolor"], sampleDicts[iH]["lalpha"] )
+            rhist.SetLineStyle( sampleDicts[iH]["lstyle"] )
+            rhist.SetLineWidth( plotHelpers.setLineWidth( sampleDicts[iH]["lstyle"] ) )
+            rhist.SetMarkerColor( sampleDicts[iH]["lcolor"] )
+            rhist.SetMarkerStyle(20)
+            rhist.SetMarkerSize(0.6)
+            
+            # divide by background for S/B plots
+            if doSOverB and iBkgd >= 0:
+                bkgdHist = hists[iBkgd]
+                if rhist != bkgdHist: # don't divide background histogram
+                    rhist.Divide( rhist, bkgdHist )
+        
+            # normalize
+            if rhist.Integral() and not isProfileX and not isProfileY:
+                plotHelpers.doNorm( rhist )
+
+            # skip background histograms for S/B plots
+            if doSOverB and iH == iBkgd: continue
+
+            # add histo to stack
+            rhs.Add( rhist )
+
+        # draw stack
+        rhs.Draw( "nostack p" )
+
+        rhs.GetYaxis().SetNdivisions(5,2,1)
+        rhs.GetYaxis().SetLabelSize(0.075)
+        rhs.GetXaxis().SetLabelOffset(999)
+        rhs.GetXaxis().SetLabelSize(0)
+        rhs.GetYaxis().SetTitle( "S/B" )
+        rhs.GetYaxis().SetTitleSize( 0.1 )
+        rhs.GetYaxis().SetTitleOffset( 0.5 )
+        
 
     # print plot
     # --> set output plot name
@@ -370,10 +553,17 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
         bname = args.histVars.split(',')[0] + "."
     else:
         bname = ""
-    cname = "1d." + histName + "." + rOutName
+    hname = histName
+    if doSOverB:   hname += "-SOverB"
+    if isProfileX: hname += ".profx"
+    if isProfileY: hname += ".profy"
+    cname = "1d." + hname + "." + rOutName
     if doLogy:
         ROOT.gPad.SetLogy()
         cname += "_logy"
+    if doLogx:
+        ROOT.gPad.SetLogx()
+        cname += "_logx"
     # --> set output subdirectory
     poutDir = os.path.join(  outDir, rOutName )
     coutDir = os.path.join( poutDir, outName + bname + args.regionDir )
@@ -387,7 +577,7 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     c.Clear()
     c.Close()
     del c
-
+    
 
 
 ## --- DRAW 2D PLOTS --- ##
@@ -400,13 +590,14 @@ def plot2D( hist, histName, sampleName, sampleType, sampleDict ):
         histName = '_'.join( histName.split('_')[1:] )
 
     # set canvas
-    c = ROOT.TCanvas( histName )
+    c = ROOT.TCanvas( histName, histName, 500, 400 )
 
     # draw 2D plot
-    hist.SetContour(1000) # change for certain 2d histos?
+    hist.SetContour(10000) # change for certain 2d histos?
     hist.Draw( args.drawOpt2D )
     hist.SetStats(0)
     hist.SetTitle("")
+    c.SetRightMargin(0.125)
 
     # set axes
     hist.GetXaxis().SetTitleSize( 0.03  )
@@ -424,10 +615,16 @@ def plot2D( hist, histName, sampleName, sampleType, sampleDict ):
     outName = args.outName
     if outName and not outName.endswith('.'):
         outName += "."
-    outName = tname + "." + outName + sampleName + "." + args.regionDir
-    cname = "2d." + histName + "." + outName
+    outName = tname + "." + outName + sampleName + "."
+    rOutName = outName + args.regionDir
+    if args.histVars:
+        bname = args.histVars.split(',')[0] + "."
+    else:
+        bname = ""
+    cname = "2d." + histName + "." + rOutName
     # --> set output subdirectory
-    coutDir = os.path.join( outDir, outName )
+    poutDir = os.path.join(  outDir, rOutName )
+    coutDir = os.path.join( poutDir,  outName + bname + args.regionDir )
     if not os.path.exists( coutDir ):
         os.makedirs( coutDir )
     # --> save
@@ -442,7 +639,7 @@ def plot2D( hist, histName, sampleName, sampleType, sampleDict ):
 
 
 ## --- DRAW 1D MULTIVARIATE STACK PLOTS --- ##
-def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = False ):
+def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = False, doLogx = False ):
 
     # fill tmp sampleTypes, sampleDicts lists for configuring legend
     sampleTypes, sampleDicts = [], []
@@ -457,14 +654,33 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
     # set legend
     l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value, args.lxint, args.lyint, [], args.lxl )
 
+    isProfileX = False
+    isProfileY = False
+    
     hslen = 0
-    for iH, hist in enumerate( hists ):
+    for iH, tmpHist in enumerate( hists ):
+        # copy histogram
+        hist = tmpHist.Clone()
+        if isinstance( hist, ROOT.TH2 ):
+            if   args.doProfileX:
+                hist = hist.ProfileX()
+                isProfileX = True
+            elif args.doProfileY:
+                hist = hist.ProfileY()
+                isProfileY = True
+            else:
+                continue
+        
         # skip empty histograms
         if not hist.GetEntries():
             continue
 
+        iH_ix = iH
+        for ihvar, hvar in enumerate( args.histVars.split(',') ):
+            if hvar in hist.GetName(): iH_ix = ihvar
+
         # set line attributes
-        lcolor = plotHelpers.sgnlColors()[iH]
+        lcolor = plotHelpers.sgnlColors()[iH_ix]
         lalpha = 1.00
         #if iH: lalpha = 0.65
         lstyle = 1
@@ -473,17 +689,21 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
         hist.SetLineWidth( plotHelpers.setLineWidth( lstyle ) )
         
         # normalize
-        if hist.Integral():
+        if hist.Integral() and not isProfileX and not isProfileY:
             plotHelpers.doNorm( hist )
 
         # set maximum
+        max_scale     = 1.2
+        max_scale_log = 4
+        if isProfileX and "DarkPionDecayVtx" in hist.GetName() and "desc" in hist.GetName().lower() and "frac" not in hist.GetName():
+            max_scale = 1.5
         maxy = hist.GetMaximum()
-        if doLogy: maxy *= 4
-        else:      maxy *= 1.2
+        if doLogy: maxy *= max_scale_log
+        else:      maxy *= max_scale 
         hist.SetMaximum( maxy )
 
         # add legend entry
-        l.AddEntry( hist, plotHelpers.setMultiLegStr( hist.GetName().split('_')[1],
+        l.AddEntry( hist, plotHelpers.setMultiLegStr( hist.GetName(),
               sampleType, sampleDict, varType( args.varEnum ).value, False, args.doTruthSvB ) ).SetTextColor( lcolor )
  
         # add histo to stack
@@ -500,10 +720,28 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
     l.Draw()
 
     # set titles and axes
-    hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist, True, args.histTitle, varType( args.varEnum ).value ) )
+    xtitle = plotHelpers.setXaxisTitle( hist, True, args.histTitle, varType( args.varEnum ).value ).lstrip() # add if isProfileY option (to include 'average' in x-axis title)
+    hs.GetXaxis().SetTitle( xtitle    ) 
     hs.GetXaxis().SetTitleSize( 0.03  )
     hs.GetXaxis().SetTitleOffset( 1.4 )
-
+    ytitle = hists[0].GetYaxis().GetTitle()
+    ytitle_pre = ""
+    if ytitle.startswith('n') or ytitle.startswith('fraction'):
+        ytitle_pre = ytitle.split( ' ' )[0]
+        ytitle     = ' '.join( ytitle.split( ' ' )[1:] )
+    for iw, word in enumerate( ytitle.split( ' ' ) ):
+        if word != xtitle.split( ' ' )[iw]:
+            ytitle = ' '.join( ytitle.split( ' ' )[iw:] )
+            break
+    if ytitle_pre: ytitle = ytitle_pre + " " + ytitle
+    if "Trk" in hist.GetName() and "eff" in hist.GetName().lower():
+        ytitle = "tracking efficiency"
+        hs.GetYaxis().SetTitle( ytitle )
+    if isProfileX:
+        ytitle = "average " + ytitle
+        hs.GetYaxis().SetTitle( ytitle )
+        
+    
     # add text
     text = plotHelpers.configText( plotHelpers.setLegStr( sampleType, sampleDict, 1 ), args.regionDir )
     for txt in text:
@@ -520,11 +758,21 @@ def plotMulti1D( hists, baseName, sampleName, sampleType, sampleDict, doLogy = F
         outName = "ntrkdv-" + outName
     elif varType( args.varEnum ) == varType.JET:
         outName = "jettype-" + outName
+    elif varType( args.varEnum ) == varType.TRK:
+        outName = "trk-" + outName
     outName = tname + "." + sampleName + "." + outName + args.regionDir
-    cname = "multi1d." + baseName + "." + outName
+    cname = "multi1d." + baseName
+    if isProfileX:
+        cname += ".profx"
+    if isProfileY:
+        cname += ".profy"
+    cname += "." + outName
     if doLogy:
         ROOT.gPad.SetLogy()
         cname += "_logy"
+    if doLogx:
+        ROOT.gPad.SetLogx()
+        cname += "_logx"
     # --> set output directory
     poutDir = os.path.join( outDir, tname + "." + sampleName + "." + args.regionDir )
     coutDir = os.path.join( poutDir, outName )
@@ -574,58 +822,56 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
     l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value,
                                    args.lxint, args.lyint, doPlotTypes, args.lxl )
 
+    if doSOverB:
+        c.SetCanvasSize( 400, 400 )
+        p1 = ROOT.TPad( "p1", "p1", 0,  0.3, 1,   1 )
+        p2 = ROOT.TPad( "p2", "p2", 0, 0.01, 1, 0.3 )
+        p1.Draw()
+        p2.Draw()
+        p1.cd()
+
     hslen = 0
-    for iH, hist in enumerate( hists ):
+    for iH, tmpHist in enumerate( hists ):
+        # copy histogram
+        hist = tmpHist.Clone()
         
         # skip empty histograms
         if not hist.GetEntries():
             continue
 
-        # skip histograms not corresponding to give sbdVar, sampleType
+        # skip histograms not corresponding to given sbdVar, sampleType
         sampleHistMatch = False
         for iSBD, sbd in enumerate( sbdVars.split(',') ):
-            if sampleTypes[iH/len(args.histVars.split(','))] == iSBD+1:
+            if sampleTypes[int(iH/len(args.histVars.split(',')))] == iSBD+1:
                 #if sbd and sbd.lower() in hist.GetName().lower():
                 if sbd and sbd in hist.GetName(): # --> check this works! may have to change back or make sure sbd case sensitive
                     sampleHistMatch = True
         if not sampleHistMatch: continue
 
         # set line attributes
-        lcolor = sampleDicts[iH/len(args.histVars.split(','))]["lcolor"]
-        lalpha = sampleDicts[iH/len(args.histVars.split(','))]["lalpha"]
-        lstyle = sampleDicts[iH/len(args.histVars.split(','))]["lstyle"]
+        lcolor = sampleDicts[int(iH/len(args.histVars.split(',')))]["lcolor"]
+        lalpha = sampleDicts[int(iH/len(args.histVars.split(',')))]["lalpha"]
+        lstyle = sampleDicts[int(iH/len(args.histVars.split(',')))]["lstyle"]
         hist.SetLineColorAlpha( lcolor, lalpha )
         hist.SetLineStyle( lstyle )
         hist.SetLineWidth( plotHelpers.setLineWidth( lstyle ) )
-
-        # divide by background for S/B plots
-        if doSOverB and iBkgd >= 0:
-            bkgdHist = hists[iBkgd*len(args.histVars.split(','))+isbd_b]
-            if hist != bkgdHist: # don't divide background histogram
-                hist.Divide( hist, bkgdHist )
+        if iBkgd >= 0 and int(iH/len(args.histVars.split(','))) == iBkgd and args.fillBkgd:
+            hist.SetFillColorAlpha( sampleDicts[int(iH/len(args.histVars.split(',')))]["lcolor"], 0.15 )
 
         # normalize
         if hist.Integral():
             plotHelpers.doNorm( hist )
 
-        # skip background histograms for S/B plots
-        if doSOverB and iH/len(args.histVars.split(',')) == iBkgd:
-            continue
-
         # set maximum
         maxy = hist.GetMaximum()
-        if doLogy:
-            if doSOverB: maxy *= 100 # modify
-            else:        maxy *= 4
-        else:
-            if doSOverB: maxy *= 1.3
-            else:        maxy *= 1.2
+        if   doLogy: maxy *= 4
+        else:        maxy *= 1.2
         hist.SetMaximum( maxy )
 
         # add legend entry
         l.AddEntry( hist, plotHelpers.setMultiLegStr( hist.GetName().split('_')[1],
-              sampleTypes[iH/len(args.histVars.split(','))], sampleDicts[iH/len(args.histVars.split(','))],
-              varType( args.varEnum ).value, True, args.doTruthSvB ) ).SetTextColor( lcolor )
+              sampleTypes[int(iH/len(args.histVars.split(',')))], sampleDicts[int(iH/len(args.histVars.split(',')))],
+              varType( args.varEnum ).value, True, args.doTruthSvB, legStrLen( args.legLenEnum ).value ) ).SetTextColor( lcolor )
 
         # add histo to stack
         hs.Add( hist )
@@ -641,15 +887,85 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
     l.Draw()
 
     # set titles and axes
-    hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist, True, "", varType( args.varEnum ).value, doSOverB ) )
-    hs.GetXaxis().SetTitleSize( 0.03  )
-    hs.GetXaxis().SetTitleOffset( 1.4 )
+    if "cutflow" not in baseName or "_N" in baseName:
+        hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist, True, "", varType( args.varEnum ).value ) )
+        hs.GetXaxis().SetTitleSize( 0.03  )
+        hs.GetXaxis().SetTitleOffset( 1.4 )
+    else:
+        obj = ""
+        if "DV" in hist.GetName():
+            obj = "DV"
+        elif "Jet" in hist.GetName() or "jet" in hist.GetName():
+            obj = "jet"
+        ytitle = " of overall " + obj + "s in all events"
+        if "Efficiency" in baseName:
+            ytitle = "fraction" + ytitle
+        else:
+            ytitle = "number" + ytitle
+        hs.GetYaxis().SetTitle( ytitle )
 
     # add text
-    if doSOverB: htitle += " (S/B)"
     text = plotHelpers.configText( htitle, args.regionDir )
     for txt in text:
         txt.Draw("same")
+        
+    if doLogy:
+        ROOT.gPad.SetLogy()
+
+
+    # draw ratios
+    if doSOverB:
+        rhs = ROOT.THStack( baseName, "" )
+        iBkgd = -1
+        for iS, stype in enumerate( sampleTypes ):
+            if stype == plotHelpers.sampleType.BKGD:
+                iBkgd = iS
+        p2.cd()
+        for iH, tmpHist in enumerate( hists ):
+            # copy histogram
+            rhist = tmpHist.Clone()
+            
+            # skip empty histograms
+            if not rhist.GetEntries():
+                continue
+            
+            # set line attributes
+            lcolor = sampleDicts[int(iH/len(args.histVars.split(',')))]["lcolor"]
+            lalpha = sampleDicts[int(iH/len(args.histVars.split(',')))]["lalpha"]
+            lstyle = sampleDicts[int(iH/len(args.histVars.split(',')))]["lstyle"]
+            rhist.SetLineColorAlpha( lcolor, lalpha )
+            rhist.SetLineStyle( lstyle )
+            rhist.SetLineWidth( plotHelpers.setLineWidth( lstyle ) )
+            rhist.SetMarkerColor( lcolor )
+            rhist.SetMarkerStyle(20)
+            rhist.SetMarkerSize(0.6)
+            
+            # divide by background for S/B plots
+            if doSOverB and iBkgd >= 0:
+                bkgdHist = hists[iBkgd*len(args.histVars.split(','))+isbd_b]
+                if rhist != bkgdHist: # don't divide background histogram
+                    rhist.Divide( rhist, bkgdHist )
+        
+            # normalize
+            if rhist.Integral(): plotHelpers.doNorm( rhist )
+
+            # skip background histograms for S/B plots
+            if doSOverB and int(iH/len(args.histVars.split(','))) == iBkgd: continue
+
+            # add histo to stack
+            rhs.Add( rhist )
+
+        # draw stack
+        rhs.Draw( "nostack p" )
+
+        rhs.GetYaxis().SetNdivisions(5,2,1)
+        rhs.GetYaxis().SetLabelSize(0.075)
+        rhs.GetXaxis().SetLabelOffset(999)
+        rhs.GetXaxis().SetLabelSize(0)
+        rhs.GetYaxis().SetTitle( "S/B" )
+        rhs.GetYaxis().SetTitleSize( 0.1 )
+        rhs.GetYaxis().SetTitleOffset( 0.5 )
+
 
     # print plot
     # --> set output plot name
