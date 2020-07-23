@@ -1317,12 +1317,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
   m_LJix = hJ.size();
 
   // --> "tight" jet cuts
-  std::string tightptJ       = "TightPt";
-  std::string tightetaJ      = "TightEta";
-  std::string tightmJ        = "TightMass";
-  std::string tightptJstr    = "tight-pt";
-  std::string tightetaJstr   = "tight-eta";
-  std::string tightmJstr     = "tight-mass";
+  std::string tightptJ       = "HardPt";
+  std::string tightetaJ      = "HardEta";
+  std::string tightmJ        = "HardMass";
+  std::string tightptJstr    = "hard-pt";
+  std::string tightetaJstr   = "hard-eta";
+  std::string tightmJstr     = "hard-mass";
   if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_tightJets ) {
     // tight-pt jets
     hJ      .push_back( tightptJ    );
@@ -1594,20 +1594,40 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	}
   }
 
-  // // --> "EJ" jets -- tentative set of cuts to define emerging-like jet
-  // std::vector<std::string> hEJstr;
-  // hEJstr .push_back( baseJstr      );
-  // hEJstr .push_back( tightptJstr   );
-  // hEJstr .push_back( tightetaJstr  );
-  // hEJstr .push_back( tightmJstr    );
-  // hEJstr .push_back( ngoodsv1Jstr  );
-  // hEJstr .push_back( ngoodsv2Jstr  );
-  // std::string EJ    = "Emerging";
-  // std::string EJstr = "emerging";
-  // hJ    .push_back(                  EJ    );
-  // hJ    .push_back( leadJ    +       EJ    );
-  // hJstr .push_back(                  EJstr );
-  // hJstr .push_back( leadJstr + " " + EJstr );
+  // --> "EJ" jets -- tentative set of cuts to define emerging-like jet
+  std::vector<std::string> hEJstr;
+  for ( size_t ijsv = 0; ijsv != JSV.size(); ++ijsv ) {
+    std::string svptlJstr  = JSVstr[ijsv] + "-" + m_nJSVkin[0] + "-pt";
+    std::string svtrkl     = std::to_string( m_nJSVtrk[0] );
+    std::string svtrklJstr = svtrkl + "-" + JSVstr[ijsv] + "-Njtrk";
+    std::string svpttJstr  = JSVstr[ijsv] + "-" + m_nJSVkin[1] + "-pt";
+    std::string svtrkt     = std::to_string( m_nJSVtrk[1] );
+    std::string svtrktJstr = svtrkt + "-" + JSVstr[ijsv] + "-Njtrk";
+    hEJstr .push_back( baseJstr                      );
+    hEJstr .push_back( leadJstr                      );
+    hEJstr .push_back( tightptJstr                   );
+    hEJstr .push_back( leadJstr + " " + tightptJstr  );
+    hEJstr .push_back( tightetaJstr                  );
+    hEJstr .push_back( leadJstr + " " + tightetaJstr );
+    hEJstr .push_back( tightmJstr                    );
+    hEJstr .push_back( leadJstr + " " + tightmJstr   );
+    hEJstr .push_back( svptlJstr                     );
+    hEJstr .push_back( leadJstr + " " + svptlJstr    );
+    hEJstr .push_back( svtrklJstr                    );
+    hEJstr .push_back( leadJstr + " " + svtrklJstr   );
+    hEJstr .push_back( svpttJstr                     );
+    hEJstr .push_back( leadJstr + " " + svpttJstr    );
+    hEJstr .push_back( svtrktJstr                    );
+    hEJstr .push_back( leadJstr + " " + svtrktJstr   );
+    hJ    .push_back(              "LooseEmerging"   + JSV   [ijsv]       );
+    hJ    .push_back( leadJ    +   "LooseEmerging"   + JSV   [ijsv]       );
+    hJ    .push_back(              "TightEmerging"   + JSV   [ijsv]       );
+    hJ    .push_back( leadJ    +   "TightEmerging"   + JSV   [ijsv]       );
+    hJstr .push_back(            " Loose Emerging (" + JSVstr[ijsv] + ")" );
+    hJstr .push_back( leadJstr + " Loose Emerging (" + JSVstr[ijsv] + ")" );
+    hJstr .push_back(            " Tight Emerging (" + JSVstr[ijsv] + ")" );
+    hJstr .push_back( leadJstr + " Tight Emerging (" + JSVstr[ijsv] + ")" ); 
+  }
   
   // number of jet types excluding truth matching
   m_nTypeBJs = hJ.size();
@@ -4138,6 +4158,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	std::string htp    = hTP    [i];
 	std::string htpstr = hTPstr [i];
 	h_tpart_n           .push_back( book( name, htp + "_n",           "n " + htpstr + "s",           ntp[i],         0,    ntp[i] ) );
+	if ( m_histoInfoSwitch->m_abcdcutOnly ) continue;
 	h_tpart_pt          .push_back( book( name, htp + "_pt",          htpstr + " p_{T} [GeV]",          100,         0,   tppt[i] ) );
 	h_tpart_eta         .push_back( book( name, htp + "_eta",         htpstr + " eta",                  100,        -5,         5 ) );
 	h_tpart_phi         .push_back( book( name, htp + "_phi",         htpstr + " phi",                  100,      -3.5,       3.5 ) );
@@ -4151,388 +4172,390 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	h_tpart_childPdgId  .push_back( book( name, htp + "_childPdgId",  htpstr + " child pdgId",    ptch_n[i], ptch_l[i], ptch_h[i] ) );
       } // end loop over truth particle types
       h_tp_n           .push_back( h_tpart_n           );
-      h_tp_pt          .push_back( h_tpart_pt          );
-      h_tp_eta         .push_back( h_tpart_eta         );
-      h_tp_phi         .push_back( h_tpart_phi         );
-      h_tp_E           .push_back( h_tpart_E           );
-      h_tp_M           .push_back( h_tpart_M           );
-      h_tp_betagamma   .push_back( h_tpart_betagamma   );
-      h_tp_charge      .push_back( h_tpart_charge      );
-      h_tp_nParents    .push_back( h_tpart_nParents    );
-      h_tp_parentPdgId .push_back( h_tpart_parentPdgId );
-      h_tp_nChildren   .push_back( h_tpart_nChildren   );
-      h_tp_childPdgId  .push_back( h_tpart_childPdgId  );
-      if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llptrkRecoEff ) {
-	std::vector<TH1F*> h_llptrk_x;
-	std::vector<TH1F*> h_llptrk_y;
-	std::vector<TH1F*> h_llptrk_z;
-	std::vector<TH1F*> h_llptrk_r;
-	std::vector<TH1F*> h_llptrk_pt;
-	std::vector<TH1F*> h_llptrk_eta;
-	std::vector<TH1F*> h_llptrk_phi;
-	std::vector<TH1F*> h_llptrk_d0;
-	std::vector<TH1F*> h_llptrk_z0;
-	std::vector<TH1F*> h_llptrk_avgMu;
-	std::vector<TH1F*> h_llptrk_minDR;
-	std::vector<TH1F*> h_rllptrk_x;
-	std::vector<TH1F*> h_rllptrk_y;
-	std::vector<TH1F*> h_rllptrk_z;
-	std::vector<TH1F*> h_rllptrk_r;
-	std::vector<TH1F*> h_rllptrk_pt;
-	std::vector<TH1F*> h_rllptrk_eta;
-	std::vector<TH1F*> h_rllptrk_phi;
-	std::vector<TH1F*> h_rllptrk_d0;
-	std::vector<TH1F*> h_rllptrk_z0;
-	std::vector<TH1F*> h_rllptrk_avgMu;
-	std::vector<TH1F*> h_rllptrk_minDR;
-	std::vector<TH1F*> h_rllptrk_resid_d0;
-	std::vector<TH1F*> h_rllptrk_resid_z0;
-	std::vector<TH1F*> h_rllptrk_resid_qOverP;
-	std::vector<TH2F*> h_rllptrk_resid_d0_r;
-	std::vector<TH2F*> h_rllptrk_resid_d0_pt;
-	std::vector<TH2F*> h_rllptrk_resid_z0_r;
-	std::vector<TH2F*> h_rllptrk_resid_z0_pt;
-	std::vector<TH2F*> h_rllptrk_resid_qOverP_r;
-	std::vector<TH2F*> h_rllptrk_resid_qOverP_pt;
-	std::vector<TH1F*> h_sllptrk_x;
-	std::vector<TH1F*> h_sllptrk_y;
-	std::vector<TH1F*> h_sllptrk_z;
-	std::vector<TH1F*> h_sllptrk_r;
-	std::vector<TH1F*> h_sllptrk_pt;
-	std::vector<TH1F*> h_sllptrk_eta;
-	std::vector<TH1F*> h_sllptrk_phi;
-	std::vector<TH1F*> h_sllptrk_d0;
-	std::vector<TH1F*> h_sllptrk_z0;
-	std::vector<TH1F*> h_sllptrk_avgMu;
-	std::vector<TH1F*> h_sllptrk_minDR;
-	std::vector<TH1F*> h_sllptrk_resid_d0;
-	std::vector<TH1F*> h_sllptrk_resid_z0;
-	std::vector<TH1F*> h_sllptrk_resid_qOverP;
-	std::vector<TH2F*> h_sllptrk_resid_d0_r;
-	std::vector<TH2F*> h_sllptrk_resid_d0_pt;
-	std::vector<TH2F*> h_sllptrk_resid_z0_r;
-	std::vector<TH2F*> h_sllptrk_resid_z0_pt;
-	std::vector<TH2F*> h_sllptrk_resid_qOverP_r;
-	std::vector<TH2F*> h_sllptrk_resid_qOverP_pt;
-	std::vector<TH1F*> h_lllptrk_x;
-	std::vector<TH1F*> h_lllptrk_y;
-	std::vector<TH1F*> h_lllptrk_z;
-	std::vector<TH1F*> h_lllptrk_r;
-	std::vector<TH1F*> h_lllptrk_pt;
-	std::vector<TH1F*> h_lllptrk_eta;
-	std::vector<TH1F*> h_lllptrk_phi;
-	std::vector<TH1F*> h_lllptrk_d0;
-	std::vector<TH1F*> h_lllptrk_z0;
-	std::vector<TH1F*> h_lllptrk_avgMu;
-	std::vector<TH1F*> h_lllptrk_minDR;
-	std::vector<TH1F*> h_lllptrk_resid_d0;
-	std::vector<TH1F*> h_lllptrk_resid_z0;
-	std::vector<TH1F*> h_lllptrk_resid_qOverP;
-	std::vector<TH2F*> h_lllptrk_resid_d0_r;
-	std::vector<TH2F*> h_lllptrk_resid_d0_pt;
-	std::vector<TH2F*> h_lllptrk_resid_z0_r;
-	std::vector<TH2F*> h_lllptrk_resid_z0_pt;
-	std::vector<TH2F*> h_lllptrk_resid_qOverP_r;
-	std::vector<TH2F*> h_lllptrk_resid_qOverP_pt;
-	std::vector<TH1F*> h_llptrk_reff_x;
-	std::vector<TH1F*> h_llptrk_reff_y;
-	std::vector<TH1F*> h_llptrk_reff_z;
-	std::vector<TH1F*> h_llptrk_reff_r;
-	std::vector<TH1F*> h_llptrk_reff_pt;
-	std::vector<TH1F*> h_llptrk_reff_eta;
-	std::vector<TH1F*> h_llptrk_reff_phi;
-	std::vector<TH1F*> h_llptrk_reff_d0;
-	std::vector<TH1F*> h_llptrk_reff_z0;
-	std::vector<TH1F*> h_llptrk_reff_avgMu;
-	std::vector<TH1F*> h_llptrk_reff_minDR;
-	std::vector<TH1F*> h_llptrk_seff_x;
-	std::vector<TH1F*> h_llptrk_seff_y;
-	std::vector<TH1F*> h_llptrk_seff_z;
-	std::vector<TH1F*> h_llptrk_seff_r;
-	std::vector<TH1F*> h_llptrk_seff_pt;
-	std::vector<TH1F*> h_llptrk_seff_eta;
-	std::vector<TH1F*> h_llptrk_seff_phi;
-	std::vector<TH1F*> h_llptrk_seff_d0;
-	std::vector<TH1F*> h_llptrk_seff_z0;
-	std::vector<TH1F*> h_llptrk_seff_avgMu;
-	std::vector<TH1F*> h_llptrk_seff_minDR;
-	std::vector<TH1F*> h_llptrk_leff_x;
-	std::vector<TH1F*> h_llptrk_leff_y;
-	std::vector<TH1F*> h_llptrk_leff_z;
-	std::vector<TH1F*> h_llptrk_leff_r;
-	std::vector<TH1F*> h_llptrk_leff_pt;
-	std::vector<TH1F*> h_llptrk_leff_eta;
-	std::vector<TH1F*> h_llptrk_leff_phi;
-	std::vector<TH1F*> h_llptrk_leff_d0;
-	std::vector<TH1F*> h_llptrk_leff_z0;
-	std::vector<TH1F*> h_llptrk_leff_avgMu;
-	std::vector<TH1F*> h_llptrk_leff_minDR;
-	// loop over descendant types
-	for ( size_t i = 0; i != hLLP.size(); ++i ) {
-	  std::string hllpstr = hLLPstr[i]; hllpstr.pop_back();
-	  std::string htp     = hLLP[i] + "Trk"; htp[0] = tolower(htp[0]);
-	  std::string htpstr  = hllpstr + " truth track";
-	  std::string hrtp    = "reco"  + hLLP[i] + "Trk";
-	  std::string hrtpstr = "reconstructed "              + htpstr;
-	  std::string hstp    = "std"   + hLLP[i] + "Trk";
-	  std::string hstpstr = "standard reconstructed "     + htpstr;
-	  std::string hltp    = "lrt"   + hLLP[i] + "Trk";
-	  std::string hltpstr = "large-radius reconstructed " + htpstr;
-	  h_llptrk_x          .push_back( book( name, htp  + "_x",             htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
-	  h_llptrk_y          .push_back( book( name, htp  + "_y",             htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
-	  h_llptrk_z          .push_back( book( name, htp  + "_z",             htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
-	  h_llptrk_r          .push_back( book( name, htp  + "_r",             htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
-	  h_llptrk_pt         .push_back( book( name, htp  + "_pt",            htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
-	  h_llptrk_eta        .push_back( book( name, htp  + "_eta",           htpstr  + " eta",                   100,    -3,    3 ) );
-	  h_llptrk_phi        .push_back( book( name, htp  + "_phi",           htpstr  + " phi",                   100,  -3.5,  3.5 ) );
-	  h_llptrk_d0         .push_back( book( name, htp  + "_d0",            htpstr  + " d0 [mm]",               100,  -300,  300 ) );
-	  h_llptrk_z0         .push_back( book( name, htp  + "_z0",            htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
-	  h_llptrk_avgMu      .push_back( book( name, htp  + "_avgMu",         htpstr  + " average pp interactions",90,     0,   90 ) );
-	  h_llptrk_minDR      .push_back( book( name, htp  + "_minDR",         htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
-	  h_rllptrk_x         .push_back( book( name, hrtp + "_x",             hrtpstr + " production x-pos [mm]", 100,  -450,  450 ) );
-	  h_rllptrk_y         .push_back( book( name, hrtp + "_y",             hrtpstr + " production y-pos [mm]", 100,  -450,  450 ) );
-	  h_rllptrk_z         .push_back( book( name, hrtp + "_z",             hrtpstr + " production z-pos [mm]", 100, -2000, 2000 ) );
-	  h_rllptrk_r         .push_back( book( name, hrtp + "_r",             hrtpstr + " production r-pos [mm]", 100,     0,  450 ) );
-	  h_rllptrk_pt        .push_back( book( name, hrtp + "_pt",            hrtpstr + " p_{T} [GeV]",           100,     0,  300 ) ); // 100
-	  h_rllptrk_eta       .push_back( book( name, hrtp + "_eta",           hrtpstr + " eta",                   100,    -3,    3 ) );
-	  h_rllptrk_phi       .push_back( book( name, hrtp + "_phi",           hrtpstr + " phi",                   100,  -3.5,  3.5 ) );
-	  h_rllptrk_d0        .push_back( book( name, hrtp + "_d0",            hrtpstr + " d0 [mm]",               100,  -300,  300 ) );
-	  h_rllptrk_z0        .push_back( book( name, hrtp + "_z0",            hrtpstr + " z0 [mm]",               100, -1500, 1500 ) );
-	  h_rllptrk_avgMu     .push_back( book( name, hrtp + "_avgMu",         hrtpstr + " average pp interactions",90,     0,   90 ) );
-	  h_rllptrk_minDR     .push_back( book( name, hrtp + "_minDR",         hrtpstr + " nearest truth track dR",100,     0,  1.0 ) );
-	  h_rllptrk_resid_d0
-	    .push_back( book( name, hrtp + "_resid_d0",         hrtpstr + " residual d0 [mm]",      100,  -30,   30 ) ); // 10
-	  h_rllptrk_resid_z0
-	    .push_back( book( name, hrtp + "_resid_z0",         hrtpstr + " residual z0 [mm]",      100, -100,  100 ) ); // 10
-	  h_rllptrk_resid_qOverP
-	    .push_back( book( name, hrtp + "_resid_qOverP",     hrtpstr + " residual q/p [e/GeV]",  100, -0.5,  0.5 ) ); // 1
-	  h_rllptrk_resid_d0_r
-	    .push_back( book( name, hrtp + "_resid_d0_r",       hrtpstr + " production r-pos [mm]", 100,    0,  450,
-			      hrtpstr + " residual d0 [mm]",     100,  -30,  30 ) );
-	  h_rllptrk_resid_d0_pt
-	    .push_back( book( name, hrtp + "_resid_d0_pt",      hrtpstr + " p_{T} [GeV]",           100,    0,  300,
-			      hrtpstr + " residual d0 [mm]",     100,  -30,  30 ) );
-	  h_rllptrk_resid_z0_r
-	    .push_back( book( name, hrtp + "_resid_z0_r",       hrtpstr + " production r-pos [mm]", 100,    0,  450,
-			      hrtpstr + " residual z0 [mm]",     100, -100, 100 ) );
-	  h_rllptrk_resid_z0_pt
-	    .push_back( book( name, hrtp + "_resid_z0_pt",      hrtpstr + " p_{T} [GeV]",           100,    0,  300,
-			      hrtpstr + " residual z0 [mm]",     100, -100, 100 ) );
-	  h_rllptrk_resid_qOverP_r
-	    .push_back( book( name, hrtp + "_resid_qOverP_r",   hrtpstr + " production r-pos [mm]", 100,    0,  450,
-			      hrtpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
-	  h_rllptrk_resid_qOverP_pt
-	    .push_back( book( name, hrtp + "_resid_qOverP_pt",  hrtpstr + " p_{T} [GeV]",           100,    0,  300,
-			      hrtpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
-	  h_sllptrk_x         .push_back( book( name, hstp + "_x",             hstpstr + " production x-pos [mm]", 100,  -450,  450 ) );
-	  h_sllptrk_y         .push_back( book( name, hstp + "_y",             hstpstr + " production y-pos [mm]", 100,  -450,  450 ) );
-	  h_sllptrk_z         .push_back( book( name, hstp + "_z",             hstpstr + " production z-pos [mm]", 100, -2000, 2000 ) );
-	  h_sllptrk_r         .push_back( book( name, hstp + "_r",             hstpstr + " production r-pos [mm]", 100,     0,  450 ) );
-	  h_sllptrk_pt        .push_back( book( name, hstp + "_pt",            hstpstr + " p_{T} [GeV]",           100,     0,  300 ) );
-	  h_sllptrk_eta       .push_back( book( name, hstp + "_eta",           hstpstr + " eta",                   100,    -3,    3 ) );
-	  h_sllptrk_phi       .push_back( book( name, hstp + "_phi",           hstpstr + " phi",                   100,  -3.5,  3.5 ) );
-	  h_sllptrk_d0        .push_back( book( name, hstp + "_d0",            hstpstr + " d0 [mm]",               100,  -300,  300 ) );
-	  h_sllptrk_z0        .push_back( book( name, hstp + "_z0",            hstpstr + " z0 [mm]",               100, -1500, 1500 ) );
-	  h_sllptrk_avgMu     .push_back( book( name, hstp + "_avgMu",         hstpstr + " average pp interactions",90,     0,   90 ) );
-	  h_sllptrk_minDR     .push_back( book( name, hstp + "_minDR",         hstpstr + " nearest truth track dR",100,     0,  1.0 ) );
-	  h_sllptrk_resid_d0
-	    .push_back( book( name, hstp + "_resid_d0",         hstpstr + " residual d0 [mm]",      100,  -30,  30 ) );
-	  h_sllptrk_resid_z0
-	    .push_back( book( name, hstp + "_resid_z0",         hstpstr + " residual z0 [mm]",      100, -100, 100 ) );
-	  h_sllptrk_resid_qOverP
-	    .push_back( book( name, hstp + "_resid_qOverP",     hstpstr + " residual q/p [e/GeV]",  100, -0.5, 0.5 ) );
-	  h_sllptrk_resid_d0_r
-	    .push_back( book( name, hstp + "_resid_d0_r",       hstpstr + " production r-pos [mm]", 100,    0, 450,
-			      hstpstr + " residual d0 [mm]",     100,  -30,  30 ) );
-	  h_sllptrk_resid_d0_pt
-	    .push_back( book( name, hstp + "_resid_d0_pt",       hstpstr + " p_{T} [GeV]",          100,    0, 300,
-			      hstpstr + " residual d0 [mm]",     100,  -30,  30 ) );
-	  h_sllptrk_resid_z0_r
-	    .push_back( book( name, hstp + "_resid_z0_r",       hstpstr + " production r-pos [mm]", 100,    0, 450,
-			      hstpstr + " residual z0 [mm]",     100, -100, 100 ) );
-	  h_sllptrk_resid_z0_pt
-	    .push_back( book( name, hstp + "_resid_z0_pt",      hstpstr + " p_{T} [GeV]",           100,    0, 300,
-			      hstpstr + " residual z0 [mm]",     100, -100, 100 ) );
-	  h_sllptrk_resid_qOverP_r
-	    .push_back( book( name, hstp + "_resid_qOverP_r",   hstpstr + " production r-pos [mm]", 100,    0, 450,
-			      hstpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
-	  h_sllptrk_resid_qOverP_pt
-	    .push_back( book( name, hstp + "_resid_qOverP_pt",  hstpstr + " p_{T} [GeV]",           100,    0, 300,
-			      hstpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
-	  h_lllptrk_x         .push_back( book( name, hltp + "_x",             hltpstr + " production x-pos [mm]", 100,  -450,  450 ) );
-	  h_lllptrk_y         .push_back( book( name, hltp + "_y",             hltpstr + " production y-pos [mm]", 100,  -450,  450 ) );
-	  h_lllptrk_z         .push_back( book( name, hltp + "_z",             hltpstr + " production z-pos [mm]", 100, -2000, 2000 ) );
-	  h_lllptrk_r         .push_back( book( name, hltp + "_r",             hltpstr + " production r-pos [mm]", 100,     0,  450 ) );
-	  h_lllptrk_pt        .push_back( book( name, hltp + "_pt",            hltpstr + " p_{T} [GeV]",           100,     0,  300 ) );
-	  h_lllptrk_eta       .push_back( book( name, hltp + "_eta",           hltpstr + " eta",                   100,    -3,    3 ) );
-	  h_lllptrk_phi       .push_back( book( name, hltp + "_phi",           hltpstr + " phi",                   100,  -3.5,  3.5 ) );
-	  h_lllptrk_d0        .push_back( book( name, hltp + "_d0",            hltpstr + " d0 [mm]",               100,  -300,  300 ) );
-	  h_lllptrk_z0        .push_back( book( name, hltp + "_z0",            hltpstr + " z0 [mm]",               100, -1500, 1500 ) );
-	  h_lllptrk_avgMu     .push_back( book( name, hltp + "_avgMu",         hltpstr + " average pp interactions",90,     0,   90 ) );
-	  h_lllptrk_minDR     .push_back( book( name, hltp  + "_minDR",        hltpstr + " nearest truth track dR",100,     0,  1.0 ) );
-	  h_lllptrk_resid_d0
-	    .push_back( book( name, hltp + "_resid_d0",         hltpstr + " residual d0 [mm]",      100,  -30,  30 ) );
-	  h_lllptrk_resid_z0
-	    .push_back( book( name, hltp + "_resid_z0",         hltpstr + " residual z0 [mm]",      100, -100, 100 ) );
-	  h_lllptrk_resid_qOverP
-	    .push_back( book( name, hltp + "_resid_qOverP",     hltpstr + " residual q/p [e/GeV]",  100, -0.5, 0.5 ) );
-	  h_lllptrk_resid_d0_r
-	    .push_back( book( name, hltp + "_resid_d0_r",       hltpstr + " production r-pos [mm]", 100,    0, 450,
-			      hltpstr + " residual d0 [mm]",     100,  -30,  30 ) );
-	  h_lllptrk_resid_d0_pt
-	    .push_back( book( name, hltp + "_resid_d0_pt",      hltpstr + " p_{T} [GeV]",           100,    0, 300,
-			      hltpstr + " residual d0 [mm]",     100,  -30,  30 ) );
-	  h_lllptrk_resid_z0_r
-	    .push_back( book( name, hltp + "_resid_z0_r",       hltpstr + " production r-pos [mm]", 100,    0, 450,
-			      hltpstr + " residual z0 [mm]",     100, -100, 100 ) );
-	  h_lllptrk_resid_z0_pt
-	    .push_back( book( name, hltp + "_resid_z0_pt",      hltpstr + " p_{T} [GeV]",           100,    0, 300,
-			      hltpstr + " residual z0 [mm]",     100, -100, 100 ) );
-	  h_lllptrk_resid_qOverP_r
-	    .push_back( book( name, hltp + "_resid_qOverP_r",   hltpstr + " production r-pos [mm]", 100,    0, 450,
-			      hltpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
-	  h_lllptrk_resid_qOverP_pt
-	    .push_back( book( name, hltp + "_resid_qOverP_pt",  hltpstr + " p_{T} [GeV]",           100,    0, 300,
-			      hltpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
-	  h_llptrk_reff_x     .push_back( book( name, htp  + "_recoEff_x",     htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
-	  h_llptrk_reff_y     .push_back( book( name, htp  + "_recoEff_y",     htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
-	  h_llptrk_reff_z     .push_back( book( name, htp  + "_recoEff_z",     htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
-	  h_llptrk_reff_r     .push_back( book( name, htp  + "_recoEff_r",     htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
-	  h_llptrk_reff_pt    .push_back( book( name, htp  + "_recoEff_pt",    htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
-	  h_llptrk_reff_eta   .push_back( book( name, htp  + "_recoEff_eta",   htpstr  + " eta",                   100,    -3,    3 ) );
-	  h_llptrk_reff_phi   .push_back( book( name, htp  + "_recoEff_phi",   htpstr  + " phi",                   100,  -3.5,  3.5 ) );
-	  h_llptrk_reff_d0    .push_back( book( name, htp  + "_recoEff_d0",    htpstr  + " d0 [mm]",               100,  -300,  300 ) );
-	  h_llptrk_reff_z0    .push_back( book( name, htp  + "_recoEff_z0",    htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
-	  h_llptrk_reff_avgMu .push_back( book( name, htp  + "_recoEff_avgMu", htpstr  + " average pp interactions",90,     0,   90 ) );
-	  h_llptrk_reff_minDR .push_back( book( name, htp  + "_recoEff_minDR", htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
-	  h_llptrk_seff_x     .push_back( book( name, htp  + "_stdEff_x",      htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
-	  h_llptrk_seff_y     .push_back( book( name, htp  + "_stdEff_y",      htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
-	  h_llptrk_seff_z     .push_back( book( name, htp  + "_stdEff_z",      htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
-	  h_llptrk_seff_r     .push_back( book( name, htp  + "_stdEff_r",      htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
-	  h_llptrk_seff_pt    .push_back( book( name, htp  + "_stdEff_pt",     htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
-	  h_llptrk_seff_eta   .push_back( book( name, htp  + "_stdEff_eta",    htpstr  + " eta",                   100,    -3,    3 ) );
-	  h_llptrk_seff_phi   .push_back( book( name, htp  + "_stdEff_phi",    htpstr  + " phi",                   100,  -3.5,  3.5 ) );
-	  h_llptrk_seff_d0    .push_back( book( name, htp  + "_stdEff_d0",     htpstr  + " d0 [mm]",               100,  -300,  300 ) );
-	  h_llptrk_seff_z0    .push_back( book( name, htp  + "_stdEff_z0",     htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
-	  h_llptrk_seff_avgMu .push_back( book( name, htp  + "_stdEff_avgMu",  htpstr  + " average pp interactions",90,     0,   90 ) );
-	  h_llptrk_seff_minDR .push_back( book( name, htp  + "_stdEff_minDR",  htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
-	  h_llptrk_leff_x     .push_back( book( name, htp  + "_lrtEff_x",      htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
-	  h_llptrk_leff_y     .push_back( book( name, htp  + "_lrtEff_y",      htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
-	  h_llptrk_leff_z     .push_back( book( name, htp  + "_lrtEff_z",      htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
-	  h_llptrk_leff_r     .push_back( book( name, htp  + "_lrtEff_r",      htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
-	  h_llptrk_leff_pt    .push_back( book( name, htp  + "_lrtEff_pt",     htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
-	  h_llptrk_leff_eta   .push_back( book( name, htp  + "_lrtEff_eta",    htpstr  + " eta",                   100,    -3,    3 ) );
-	  h_llptrk_leff_phi   .push_back( book( name, htp  + "_lrtEff_phi",    htpstr  + " phi",                   100,  -3.5,  3.5 ) );
-	  h_llptrk_leff_d0    .push_back( book( name, htp  + "_lrtEff_d0",     htpstr  + " d0 [mm]",               100,  -300,  300 ) );
-	  h_llptrk_leff_z0    .push_back( book( name, htp  + "_lrtEff_z0",     htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
-	  h_llptrk_leff_avgMu .push_back( book( name, htp  + "_lrtEff_avgMu",  htpstr  + " average pp interactions",90,     0,   90 ) );
-	  h_llptrk_leff_minDR .push_back( book( name, htp  + "_lrtEff_minDR",  htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
-	}
-	h_LLPtrk_x             .push_back( h_llptrk_x          );
-	h_LLPtrk_y             .push_back( h_llptrk_y          );
-	h_LLPtrk_z             .push_back( h_llptrk_z          );
-	h_LLPtrk_r             .push_back( h_llptrk_r          );
-	h_LLPtrk_pt            .push_back( h_llptrk_pt         );
-	h_LLPtrk_eta           .push_back( h_llptrk_eta        );
-	h_LLPtrk_phi           .push_back( h_llptrk_phi        );
-	h_LLPtrk_d0            .push_back( h_llptrk_d0         );
-	h_LLPtrk_z0            .push_back( h_llptrk_z0         );
-	h_LLPtrk_avgMu         .push_back( h_llptrk_avgMu      );
-	h_LLPtrk_minDR         .push_back( h_llptrk_minDR      );
-	h_recoLLPtrk_x         .push_back( h_rllptrk_x         );
-	h_recoLLPtrk_y         .push_back( h_rllptrk_y         );
-	h_recoLLPtrk_z         .push_back( h_rllptrk_z         );
-	h_recoLLPtrk_r         .push_back( h_rllptrk_r         );
-	h_recoLLPtrk_pt        .push_back( h_rllptrk_pt        );
-	h_recoLLPtrk_eta       .push_back( h_rllptrk_eta       );
-	h_recoLLPtrk_phi       .push_back( h_rllptrk_phi       );
-	h_recoLLPtrk_d0        .push_back( h_rllptrk_d0        );
-	h_recoLLPtrk_z0        .push_back( h_rllptrk_z0        );
-	h_recoLLPtrk_avgMu     .push_back( h_rllptrk_avgMu     );
-	h_recoLLPtrk_minDR     .push_back( h_rllptrk_minDR     );
-	h_recoLLPtrk_resid_d0        .push_back( h_rllptrk_resid_d0        );
-	h_recoLLPtrk_resid_z0        .push_back( h_rllptrk_resid_z0        );
-	h_recoLLPtrk_resid_qOverP    .push_back( h_rllptrk_resid_qOverP    );
-	h_recoLLPtrk_resid_d0_r      .push_back( h_rllptrk_resid_d0_r      );
-	h_recoLLPtrk_resid_d0_pt     .push_back( h_rllptrk_resid_d0_pt     );
-	h_recoLLPtrk_resid_z0_r      .push_back( h_rllptrk_resid_z0_r      );
-	h_recoLLPtrk_resid_z0_pt     .push_back( h_rllptrk_resid_z0_pt     );
-	h_recoLLPtrk_resid_qOverP_r  .push_back( h_rllptrk_resid_qOverP_r  );
-	h_recoLLPtrk_resid_qOverP_pt .push_back( h_rllptrk_resid_qOverP_pt );
-	h_stdLLPtrk_x          .push_back( h_sllptrk_x         );
-	h_stdLLPtrk_y          .push_back( h_sllptrk_y         );
-	h_stdLLPtrk_z          .push_back( h_sllptrk_z         );
-	h_stdLLPtrk_r          .push_back( h_sllptrk_r         );
-	h_stdLLPtrk_pt         .push_back( h_sllptrk_pt        );
-	h_stdLLPtrk_eta        .push_back( h_sllptrk_eta       );
-	h_stdLLPtrk_phi        .push_back( h_sllptrk_phi       );
-	h_stdLLPtrk_d0         .push_back( h_sllptrk_d0        );
-	h_stdLLPtrk_z0         .push_back( h_sllptrk_z0        );
-	h_stdLLPtrk_avgMu      .push_back( h_sllptrk_avgMu     );
-	h_stdLLPtrk_minDR      .push_back( h_sllptrk_minDR     );
-	h_stdLLPtrk_resid_d0         .push_back( h_sllptrk_resid_d0        );
-	h_stdLLPtrk_resid_z0         .push_back( h_sllptrk_resid_z0        );
-	h_stdLLPtrk_resid_qOverP     .push_back( h_sllptrk_resid_qOverP    );
-	h_stdLLPtrk_resid_d0_r       .push_back( h_sllptrk_resid_d0_r      );
-	h_stdLLPtrk_resid_d0_pt      .push_back( h_sllptrk_resid_d0_pt     );
-	h_stdLLPtrk_resid_z0_r       .push_back( h_sllptrk_resid_z0_r      );
-	h_stdLLPtrk_resid_z0_pt      .push_back( h_sllptrk_resid_z0_pt     );
-	h_stdLLPtrk_resid_qOverP_r   .push_back( h_sllptrk_resid_qOverP_r  );
-	h_stdLLPtrk_resid_qOverP_pt  .push_back( h_sllptrk_resid_qOverP_pt );
-	h_lrtLLPtrk_x          .push_back( h_lllptrk_x         );
-	h_lrtLLPtrk_y          .push_back( h_lllptrk_y         );
-	h_lrtLLPtrk_z          .push_back( h_lllptrk_z         );
-	h_lrtLLPtrk_r          .push_back( h_lllptrk_r         );
-	h_lrtLLPtrk_pt         .push_back( h_lllptrk_pt        );
-	h_lrtLLPtrk_eta        .push_back( h_lllptrk_eta       );
-	h_lrtLLPtrk_phi        .push_back( h_lllptrk_phi       );
-	h_lrtLLPtrk_d0         .push_back( h_lllptrk_d0        );
-	h_lrtLLPtrk_z0         .push_back( h_lllptrk_z0        );
-	h_lrtLLPtrk_avgMu      .push_back( h_lllptrk_avgMu     );
-	h_lrtLLPtrk_minDR      .push_back( h_lllptrk_minDR     );
-	h_lrtLLPtrk_resid_d0         .push_back( h_lllptrk_resid_d0        );
-	h_lrtLLPtrk_resid_z0         .push_back( h_lllptrk_resid_z0        );
-	h_lrtLLPtrk_resid_qOverP     .push_back( h_lllptrk_resid_qOverP    );
-	h_lrtLLPtrk_resid_d0_r       .push_back( h_lllptrk_resid_d0_r      );
-	h_lrtLLPtrk_resid_d0_pt      .push_back( h_lllptrk_resid_d0_pt     );
-	h_lrtLLPtrk_resid_z0_r       .push_back( h_lllptrk_resid_z0_r      );
-	h_lrtLLPtrk_resid_z0_pt      .push_back( h_lllptrk_resid_z0_pt     );
-	h_lrtLLPtrk_resid_qOverP_r   .push_back( h_lllptrk_resid_qOverP_r  );
-	h_lrtLLPtrk_resid_qOverP_pt  .push_back( h_lllptrk_resid_qOverP_pt );
-	h_LLPtrk_recoEff_x     .push_back( h_llptrk_reff_x     );
-	h_LLPtrk_recoEff_y     .push_back( h_llptrk_reff_y     );
-	h_LLPtrk_recoEff_z     .push_back( h_llptrk_reff_z     );
-	h_LLPtrk_recoEff_r     .push_back( h_llptrk_reff_r     );
-	h_LLPtrk_recoEff_pt    .push_back( h_llptrk_reff_pt    );
-	h_LLPtrk_recoEff_eta   .push_back( h_llptrk_reff_eta   );
-	h_LLPtrk_recoEff_phi   .push_back( h_llptrk_reff_phi   );
-	h_LLPtrk_recoEff_d0    .push_back( h_llptrk_reff_d0    );
-	h_LLPtrk_recoEff_z0    .push_back( h_llptrk_reff_z0    );
-	h_LLPtrk_recoEff_avgMu .push_back( h_llptrk_reff_avgMu );
-	h_LLPtrk_recoEff_minDR .push_back( h_llptrk_reff_minDR );
-	h_LLPtrk_stdEff_x      .push_back( h_llptrk_seff_x     );
-	h_LLPtrk_stdEff_y      .push_back( h_llptrk_seff_y     );
-	h_LLPtrk_stdEff_z      .push_back( h_llptrk_seff_z     );
-	h_LLPtrk_stdEff_r      .push_back( h_llptrk_seff_r     );
-	h_LLPtrk_stdEff_pt     .push_back( h_llptrk_seff_pt    );
-	h_LLPtrk_stdEff_eta    .push_back( h_llptrk_seff_eta   );
-	h_LLPtrk_stdEff_phi    .push_back( h_llptrk_seff_phi   );
-	h_LLPtrk_stdEff_d0     .push_back( h_llptrk_seff_d0    );
-	h_LLPtrk_stdEff_z0     .push_back( h_llptrk_seff_z0    );
-	h_LLPtrk_stdEff_avgMu  .push_back( h_llptrk_seff_avgMu );
-	h_LLPtrk_stdEff_minDR  .push_back( h_llptrk_seff_minDR );
-	h_LLPtrk_lrtEff_x      .push_back( h_llptrk_leff_x     );
-	h_LLPtrk_lrtEff_y      .push_back( h_llptrk_leff_y     );
-	h_LLPtrk_lrtEff_z      .push_back( h_llptrk_leff_z     );
-	h_LLPtrk_lrtEff_r      .push_back( h_llptrk_leff_r     );
-	h_LLPtrk_lrtEff_pt     .push_back( h_llptrk_leff_pt    );
-	h_LLPtrk_lrtEff_eta    .push_back( h_llptrk_leff_eta   );
-	h_LLPtrk_lrtEff_phi    .push_back( h_llptrk_leff_phi   );
-	h_LLPtrk_lrtEff_d0     .push_back( h_llptrk_leff_d0    );
-	h_LLPtrk_lrtEff_z0     .push_back( h_llptrk_leff_z0    );
-	h_LLPtrk_lrtEff_avgMu  .push_back( h_llptrk_leff_avgMu );
-	h_LLPtrk_lrtEff_minDR  .push_back( h_llptrk_leff_minDR );
-      } // end reconstruction efficiency
+      if ( !m_histoInfoSwitch->m_abcdcutOnly ) {
+	h_tp_pt          .push_back( h_tpart_pt          );
+	h_tp_eta         .push_back( h_tpart_eta         );
+	h_tp_phi         .push_back( h_tpart_phi         );
+	h_tp_E           .push_back( h_tpart_E           );
+	h_tp_M           .push_back( h_tpart_M           );
+	h_tp_betagamma   .push_back( h_tpart_betagamma   );
+	h_tp_charge      .push_back( h_tpart_charge      );
+	h_tp_nParents    .push_back( h_tpart_nParents    );
+	h_tp_parentPdgId .push_back( h_tpart_parentPdgId );
+	h_tp_nChildren   .push_back( h_tpart_nChildren   );
+	h_tp_childPdgId  .push_back( h_tpart_childPdgId  );
+	if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llptrkRecoEff ) {
+	  std::vector<TH1F*> h_llptrk_x;
+	  std::vector<TH1F*> h_llptrk_y;
+	  std::vector<TH1F*> h_llptrk_z;
+	  std::vector<TH1F*> h_llptrk_r;
+	  std::vector<TH1F*> h_llptrk_pt;
+	  std::vector<TH1F*> h_llptrk_eta;
+	  std::vector<TH1F*> h_llptrk_phi;
+	  std::vector<TH1F*> h_llptrk_d0;
+	  std::vector<TH1F*> h_llptrk_z0;
+	  std::vector<TH1F*> h_llptrk_avgMu;
+	  std::vector<TH1F*> h_llptrk_minDR;
+	  std::vector<TH1F*> h_rllptrk_x;
+	  std::vector<TH1F*> h_rllptrk_y;
+	  std::vector<TH1F*> h_rllptrk_z;
+	  std::vector<TH1F*> h_rllptrk_r;
+	  std::vector<TH1F*> h_rllptrk_pt;
+	  std::vector<TH1F*> h_rllptrk_eta;
+	  std::vector<TH1F*> h_rllptrk_phi;
+	  std::vector<TH1F*> h_rllptrk_d0;
+	  std::vector<TH1F*> h_rllptrk_z0;
+	  std::vector<TH1F*> h_rllptrk_avgMu;
+	  std::vector<TH1F*> h_rllptrk_minDR;
+	  std::vector<TH1F*> h_rllptrk_resid_d0;
+	  std::vector<TH1F*> h_rllptrk_resid_z0;
+	  std::vector<TH1F*> h_rllptrk_resid_qOverP;
+	  std::vector<TH2F*> h_rllptrk_resid_d0_r;
+	  std::vector<TH2F*> h_rllptrk_resid_d0_pt;
+	  std::vector<TH2F*> h_rllptrk_resid_z0_r;
+	  std::vector<TH2F*> h_rllptrk_resid_z0_pt;
+	  std::vector<TH2F*> h_rllptrk_resid_qOverP_r;
+	  std::vector<TH2F*> h_rllptrk_resid_qOverP_pt;
+	  std::vector<TH1F*> h_sllptrk_x;
+	  std::vector<TH1F*> h_sllptrk_y;
+	  std::vector<TH1F*> h_sllptrk_z;
+	  std::vector<TH1F*> h_sllptrk_r;
+	  std::vector<TH1F*> h_sllptrk_pt;
+	  std::vector<TH1F*> h_sllptrk_eta;
+	  std::vector<TH1F*> h_sllptrk_phi;
+	  std::vector<TH1F*> h_sllptrk_d0;
+	  std::vector<TH1F*> h_sllptrk_z0;
+	  std::vector<TH1F*> h_sllptrk_avgMu;
+	  std::vector<TH1F*> h_sllptrk_minDR;
+	  std::vector<TH1F*> h_sllptrk_resid_d0;
+	  std::vector<TH1F*> h_sllptrk_resid_z0;
+	  std::vector<TH1F*> h_sllptrk_resid_qOverP;
+	  std::vector<TH2F*> h_sllptrk_resid_d0_r;
+	  std::vector<TH2F*> h_sllptrk_resid_d0_pt;
+	  std::vector<TH2F*> h_sllptrk_resid_z0_r;
+	  std::vector<TH2F*> h_sllptrk_resid_z0_pt;
+	  std::vector<TH2F*> h_sllptrk_resid_qOverP_r;
+	  std::vector<TH2F*> h_sllptrk_resid_qOverP_pt;
+	  std::vector<TH1F*> h_lllptrk_x;
+	  std::vector<TH1F*> h_lllptrk_y;
+	  std::vector<TH1F*> h_lllptrk_z;
+	  std::vector<TH1F*> h_lllptrk_r;
+	  std::vector<TH1F*> h_lllptrk_pt;
+	  std::vector<TH1F*> h_lllptrk_eta;
+	  std::vector<TH1F*> h_lllptrk_phi;
+	  std::vector<TH1F*> h_lllptrk_d0;
+	  std::vector<TH1F*> h_lllptrk_z0;
+	  std::vector<TH1F*> h_lllptrk_avgMu;
+	  std::vector<TH1F*> h_lllptrk_minDR;
+	  std::vector<TH1F*> h_lllptrk_resid_d0;
+	  std::vector<TH1F*> h_lllptrk_resid_z0;
+	  std::vector<TH1F*> h_lllptrk_resid_qOverP;
+	  std::vector<TH2F*> h_lllptrk_resid_d0_r;
+	  std::vector<TH2F*> h_lllptrk_resid_d0_pt;
+	  std::vector<TH2F*> h_lllptrk_resid_z0_r;
+	  std::vector<TH2F*> h_lllptrk_resid_z0_pt;
+	  std::vector<TH2F*> h_lllptrk_resid_qOverP_r;
+	  std::vector<TH2F*> h_lllptrk_resid_qOverP_pt;
+	  std::vector<TH1F*> h_llptrk_reff_x;
+	  std::vector<TH1F*> h_llptrk_reff_y;
+	  std::vector<TH1F*> h_llptrk_reff_z;
+	  std::vector<TH1F*> h_llptrk_reff_r;
+	  std::vector<TH1F*> h_llptrk_reff_pt;
+	  std::vector<TH1F*> h_llptrk_reff_eta;
+	  std::vector<TH1F*> h_llptrk_reff_phi;
+	  std::vector<TH1F*> h_llptrk_reff_d0;
+	  std::vector<TH1F*> h_llptrk_reff_z0;
+	  std::vector<TH1F*> h_llptrk_reff_avgMu;
+	  std::vector<TH1F*> h_llptrk_reff_minDR;
+	  std::vector<TH1F*> h_llptrk_seff_x;
+	  std::vector<TH1F*> h_llptrk_seff_y;
+	  std::vector<TH1F*> h_llptrk_seff_z;
+	  std::vector<TH1F*> h_llptrk_seff_r;
+	  std::vector<TH1F*> h_llptrk_seff_pt;
+	  std::vector<TH1F*> h_llptrk_seff_eta;
+	  std::vector<TH1F*> h_llptrk_seff_phi;
+	  std::vector<TH1F*> h_llptrk_seff_d0;
+	  std::vector<TH1F*> h_llptrk_seff_z0;
+	  std::vector<TH1F*> h_llptrk_seff_avgMu;
+	  std::vector<TH1F*> h_llptrk_seff_minDR;
+	  std::vector<TH1F*> h_llptrk_leff_x;
+	  std::vector<TH1F*> h_llptrk_leff_y;
+	  std::vector<TH1F*> h_llptrk_leff_z;
+	  std::vector<TH1F*> h_llptrk_leff_r;
+	  std::vector<TH1F*> h_llptrk_leff_pt;
+	  std::vector<TH1F*> h_llptrk_leff_eta;
+	  std::vector<TH1F*> h_llptrk_leff_phi;
+	  std::vector<TH1F*> h_llptrk_leff_d0;
+	  std::vector<TH1F*> h_llptrk_leff_z0;
+	  std::vector<TH1F*> h_llptrk_leff_avgMu;
+	  std::vector<TH1F*> h_llptrk_leff_minDR;
+	  // loop over descendant types
+	  for ( size_t i = 0; i != hLLP.size(); ++i ) {
+	    std::string hllpstr = hLLPstr[i]; hllpstr.pop_back();
+	    std::string htp     = hLLP[i] + "Trk"; htp[0] = tolower(htp[0]);
+	    std::string htpstr  = hllpstr + " truth track";
+	    std::string hrtp    = "reco"  + hLLP[i] + "Trk";
+	    std::string hrtpstr = "reconstructed "              + htpstr;
+	    std::string hstp    = "std"   + hLLP[i] + "Trk";
+	    std::string hstpstr = "standard reconstructed "     + htpstr;
+	    std::string hltp    = "lrt"   + hLLP[i] + "Trk";
+	    std::string hltpstr = "large-radius reconstructed " + htpstr;
+	    h_llptrk_x          .push_back( book( name, htp  + "_x",             htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
+	    h_llptrk_y          .push_back( book( name, htp  + "_y",             htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
+	    h_llptrk_z          .push_back( book( name, htp  + "_z",             htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
+	    h_llptrk_r          .push_back( book( name, htp  + "_r",             htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
+	    h_llptrk_pt         .push_back( book( name, htp  + "_pt",            htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
+	    h_llptrk_eta        .push_back( book( name, htp  + "_eta",           htpstr  + " eta",                   100,    -3,    3 ) );
+	    h_llptrk_phi        .push_back( book( name, htp  + "_phi",           htpstr  + " phi",                   100,  -3.5,  3.5 ) );
+	    h_llptrk_d0         .push_back( book( name, htp  + "_d0",            htpstr  + " d0 [mm]",               100,  -300,  300 ) );
+	    h_llptrk_z0         .push_back( book( name, htp  + "_z0",            htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
+	    h_llptrk_avgMu      .push_back( book( name, htp  + "_avgMu",         htpstr  + " average pp interactions",90,     0,   90 ) );
+	    h_llptrk_minDR      .push_back( book( name, htp  + "_minDR",         htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
+	    h_rllptrk_x         .push_back( book( name, hrtp + "_x",             hrtpstr + " production x-pos [mm]", 100,  -450,  450 ) );
+	    h_rllptrk_y         .push_back( book( name, hrtp + "_y",             hrtpstr + " production y-pos [mm]", 100,  -450,  450 ) );
+	    h_rllptrk_z         .push_back( book( name, hrtp + "_z",             hrtpstr + " production z-pos [mm]", 100, -2000, 2000 ) );
+	    h_rllptrk_r         .push_back( book( name, hrtp + "_r",             hrtpstr + " production r-pos [mm]", 100,     0,  450 ) );
+	    h_rllptrk_pt        .push_back( book( name, hrtp + "_pt",            hrtpstr + " p_{T} [GeV]",           100,     0,  300 ) ); // 100
+	    h_rllptrk_eta       .push_back( book( name, hrtp + "_eta",           hrtpstr + " eta",                   100,    -3,    3 ) );
+	    h_rllptrk_phi       .push_back( book( name, hrtp + "_phi",           hrtpstr + " phi",                   100,  -3.5,  3.5 ) );
+	    h_rllptrk_d0        .push_back( book( name, hrtp + "_d0",            hrtpstr + " d0 [mm]",               100,  -300,  300 ) );
+	    h_rllptrk_z0        .push_back( book( name, hrtp + "_z0",            hrtpstr + " z0 [mm]",               100, -1500, 1500 ) );
+	    h_rllptrk_avgMu     .push_back( book( name, hrtp + "_avgMu",         hrtpstr + " average pp interactions",90,     0,   90 ) );
+	    h_rllptrk_minDR     .push_back( book( name, hrtp + "_minDR",         hrtpstr + " nearest truth track dR",100,     0,  1.0 ) );
+	    h_rllptrk_resid_d0
+	      .push_back( book( name, hrtp + "_resid_d0",         hrtpstr + " residual d0 [mm]",      100,  -30,   30 ) ); // 10
+	    h_rllptrk_resid_z0
+	      .push_back( book( name, hrtp + "_resid_z0",         hrtpstr + " residual z0 [mm]",      100, -100,  100 ) ); // 10
+	    h_rllptrk_resid_qOverP
+	      .push_back( book( name, hrtp + "_resid_qOverP",     hrtpstr + " residual q/p [e/GeV]",  100, -0.5,  0.5 ) ); // 1
+	    h_rllptrk_resid_d0_r
+	      .push_back( book( name, hrtp + "_resid_d0_r",       hrtpstr + " production r-pos [mm]", 100,    0,  450,
+				hrtpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	    h_rllptrk_resid_d0_pt
+	      .push_back( book( name, hrtp + "_resid_d0_pt",      hrtpstr + " p_{T} [GeV]",           100,    0,  300,
+				hrtpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	    h_rllptrk_resid_z0_r
+	      .push_back( book( name, hrtp + "_resid_z0_r",       hrtpstr + " production r-pos [mm]", 100,    0,  450,
+				hrtpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	    h_rllptrk_resid_z0_pt
+	      .push_back( book( name, hrtp + "_resid_z0_pt",      hrtpstr + " p_{T} [GeV]",           100,    0,  300,
+				hrtpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	    h_rllptrk_resid_qOverP_r
+	      .push_back( book( name, hrtp + "_resid_qOverP_r",   hrtpstr + " production r-pos [mm]", 100,    0,  450,
+				hrtpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	    h_rllptrk_resid_qOverP_pt
+	      .push_back( book( name, hrtp + "_resid_qOverP_pt",  hrtpstr + " p_{T} [GeV]",           100,    0,  300,
+				hrtpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	    h_sllptrk_x         .push_back( book( name, hstp + "_x",             hstpstr + " production x-pos [mm]", 100,  -450,  450 ) );
+	    h_sllptrk_y         .push_back( book( name, hstp + "_y",             hstpstr + " production y-pos [mm]", 100,  -450,  450 ) );
+	    h_sllptrk_z         .push_back( book( name, hstp + "_z",             hstpstr + " production z-pos [mm]", 100, -2000, 2000 ) );
+	    h_sllptrk_r         .push_back( book( name, hstp + "_r",             hstpstr + " production r-pos [mm]", 100,     0,  450 ) );
+	    h_sllptrk_pt        .push_back( book( name, hstp + "_pt",            hstpstr + " p_{T} [GeV]",           100,     0,  300 ) );
+	    h_sllptrk_eta       .push_back( book( name, hstp + "_eta",           hstpstr + " eta",                   100,    -3,    3 ) );
+	    h_sllptrk_phi       .push_back( book( name, hstp + "_phi",           hstpstr + " phi",                   100,  -3.5,  3.5 ) );
+	    h_sllptrk_d0        .push_back( book( name, hstp + "_d0",            hstpstr + " d0 [mm]",               100,  -300,  300 ) );
+	    h_sllptrk_z0        .push_back( book( name, hstp + "_z0",            hstpstr + " z0 [mm]",               100, -1500, 1500 ) );
+	    h_sllptrk_avgMu     .push_back( book( name, hstp + "_avgMu",         hstpstr + " average pp interactions",90,     0,   90 ) );
+	    h_sllptrk_minDR     .push_back( book( name, hstp + "_minDR",         hstpstr + " nearest truth track dR",100,     0,  1.0 ) );
+	    h_sllptrk_resid_d0
+	      .push_back( book( name, hstp + "_resid_d0",         hstpstr + " residual d0 [mm]",      100,  -30,  30 ) );
+	    h_sllptrk_resid_z0
+	      .push_back( book( name, hstp + "_resid_z0",         hstpstr + " residual z0 [mm]",      100, -100, 100 ) );
+	    h_sllptrk_resid_qOverP
+	      .push_back( book( name, hstp + "_resid_qOverP",     hstpstr + " residual q/p [e/GeV]",  100, -0.5, 0.5 ) );
+	    h_sllptrk_resid_d0_r
+	      .push_back( book( name, hstp + "_resid_d0_r",       hstpstr + " production r-pos [mm]", 100,    0, 450,
+				hstpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	    h_sllptrk_resid_d0_pt
+	      .push_back( book( name, hstp + "_resid_d0_pt",       hstpstr + " p_{T} [GeV]",          100,    0, 300,
+				hstpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	    h_sllptrk_resid_z0_r
+	      .push_back( book( name, hstp + "_resid_z0_r",       hstpstr + " production r-pos [mm]", 100,    0, 450,
+				hstpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	    h_sllptrk_resid_z0_pt
+	      .push_back( book( name, hstp + "_resid_z0_pt",      hstpstr + " p_{T} [GeV]",           100,    0, 300,
+				hstpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	    h_sllptrk_resid_qOverP_r
+	      .push_back( book( name, hstp + "_resid_qOverP_r",   hstpstr + " production r-pos [mm]", 100,    0, 450,
+				hstpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	    h_sllptrk_resid_qOverP_pt
+	      .push_back( book( name, hstp + "_resid_qOverP_pt",  hstpstr + " p_{T} [GeV]",           100,    0, 300,
+				hstpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	    h_lllptrk_x         .push_back( book( name, hltp + "_x",             hltpstr + " production x-pos [mm]", 100,  -450,  450 ) );
+	    h_lllptrk_y         .push_back( book( name, hltp + "_y",             hltpstr + " production y-pos [mm]", 100,  -450,  450 ) );
+	    h_lllptrk_z         .push_back( book( name, hltp + "_z",             hltpstr + " production z-pos [mm]", 100, -2000, 2000 ) );
+	    h_lllptrk_r         .push_back( book( name, hltp + "_r",             hltpstr + " production r-pos [mm]", 100,     0,  450 ) );
+	    h_lllptrk_pt        .push_back( book( name, hltp + "_pt",            hltpstr + " p_{T} [GeV]",           100,     0,  300 ) );
+	    h_lllptrk_eta       .push_back( book( name, hltp + "_eta",           hltpstr + " eta",                   100,    -3,    3 ) );
+	    h_lllptrk_phi       .push_back( book( name, hltp + "_phi",           hltpstr + " phi",                   100,  -3.5,  3.5 ) );
+	    h_lllptrk_d0        .push_back( book( name, hltp + "_d0",            hltpstr + " d0 [mm]",               100,  -300,  300 ) );
+	    h_lllptrk_z0        .push_back( book( name, hltp + "_z0",            hltpstr + " z0 [mm]",               100, -1500, 1500 ) );
+	    h_lllptrk_avgMu     .push_back( book( name, hltp + "_avgMu",         hltpstr + " average pp interactions",90,     0,   90 ) );
+	    h_lllptrk_minDR     .push_back( book( name, hltp  + "_minDR",        hltpstr + " nearest truth track dR",100,     0,  1.0 ) );
+	    h_lllptrk_resid_d0
+	      .push_back( book( name, hltp + "_resid_d0",         hltpstr + " residual d0 [mm]",      100,  -30,  30 ) );
+	    h_lllptrk_resid_z0
+	      .push_back( book( name, hltp + "_resid_z0",         hltpstr + " residual z0 [mm]",      100, -100, 100 ) );
+	    h_lllptrk_resid_qOverP
+	      .push_back( book( name, hltp + "_resid_qOverP",     hltpstr + " residual q/p [e/GeV]",  100, -0.5, 0.5 ) );
+	    h_lllptrk_resid_d0_r
+	      .push_back( book( name, hltp + "_resid_d0_r",       hltpstr + " production r-pos [mm]", 100,    0, 450,
+				hltpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	    h_lllptrk_resid_d0_pt
+	      .push_back( book( name, hltp + "_resid_d0_pt",      hltpstr + " p_{T} [GeV]",           100,    0, 300,
+				hltpstr + " residual d0 [mm]",     100,  -30,  30 ) );
+	    h_lllptrk_resid_z0_r
+	      .push_back( book( name, hltp + "_resid_z0_r",       hltpstr + " production r-pos [mm]", 100,    0, 450,
+				hltpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	    h_lllptrk_resid_z0_pt
+	      .push_back( book( name, hltp + "_resid_z0_pt",      hltpstr + " p_{T} [GeV]",           100,    0, 300,
+				hltpstr + " residual z0 [mm]",     100, -100, 100 ) );
+	    h_lllptrk_resid_qOverP_r
+	      .push_back( book( name, hltp + "_resid_qOverP_r",   hltpstr + " production r-pos [mm]", 100,    0, 450,
+				hltpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	    h_lllptrk_resid_qOverP_pt
+	      .push_back( book( name, hltp + "_resid_qOverP_pt",  hltpstr + " p_{T} [GeV]",           100,    0, 300,
+				hltpstr + " residual q/p [e/GeV]", 100, -0.5, 0.5 ) );
+	    h_llptrk_reff_x     .push_back( book( name, htp  + "_recoEff_x",     htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
+	    h_llptrk_reff_y     .push_back( book( name, htp  + "_recoEff_y",     htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
+	    h_llptrk_reff_z     .push_back( book( name, htp  + "_recoEff_z",     htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
+	    h_llptrk_reff_r     .push_back( book( name, htp  + "_recoEff_r",     htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
+	    h_llptrk_reff_pt    .push_back( book( name, htp  + "_recoEff_pt",    htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
+	    h_llptrk_reff_eta   .push_back( book( name, htp  + "_recoEff_eta",   htpstr  + " eta",                   100,    -3,    3 ) );
+	    h_llptrk_reff_phi   .push_back( book( name, htp  + "_recoEff_phi",   htpstr  + " phi",                   100,  -3.5,  3.5 ) );
+	    h_llptrk_reff_d0    .push_back( book( name, htp  + "_recoEff_d0",    htpstr  + " d0 [mm]",               100,  -300,  300 ) );
+	    h_llptrk_reff_z0    .push_back( book( name, htp  + "_recoEff_z0",    htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
+	    h_llptrk_reff_avgMu .push_back( book( name, htp  + "_recoEff_avgMu", htpstr  + " average pp interactions",90,     0,   90 ) );
+	    h_llptrk_reff_minDR .push_back( book( name, htp  + "_recoEff_minDR", htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
+	    h_llptrk_seff_x     .push_back( book( name, htp  + "_stdEff_x",      htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
+	    h_llptrk_seff_y     .push_back( book( name, htp  + "_stdEff_y",      htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
+	    h_llptrk_seff_z     .push_back( book( name, htp  + "_stdEff_z",      htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
+	    h_llptrk_seff_r     .push_back( book( name, htp  + "_stdEff_r",      htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
+	    h_llptrk_seff_pt    .push_back( book( name, htp  + "_stdEff_pt",     htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
+	    h_llptrk_seff_eta   .push_back( book( name, htp  + "_stdEff_eta",    htpstr  + " eta",                   100,    -3,    3 ) );
+	    h_llptrk_seff_phi   .push_back( book( name, htp  + "_stdEff_phi",    htpstr  + " phi",                   100,  -3.5,  3.5 ) );
+	    h_llptrk_seff_d0    .push_back( book( name, htp  + "_stdEff_d0",     htpstr  + " d0 [mm]",               100,  -300,  300 ) );
+	    h_llptrk_seff_z0    .push_back( book( name, htp  + "_stdEff_z0",     htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
+	    h_llptrk_seff_avgMu .push_back( book( name, htp  + "_stdEff_avgMu",  htpstr  + " average pp interactions",90,     0,   90 ) );
+	    h_llptrk_seff_minDR .push_back( book( name, htp  + "_stdEff_minDR",  htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
+	    h_llptrk_leff_x     .push_back( book( name, htp  + "_lrtEff_x",      htpstr  + " production x-pos [mm]", 100,  -450,  450 ) );
+	    h_llptrk_leff_y     .push_back( book( name, htp  + "_lrtEff_y",      htpstr  + " production y-pos [mm]", 100,  -450,  450 ) );
+	    h_llptrk_leff_z     .push_back( book( name, htp  + "_lrtEff_z",      htpstr  + " production z-pos [mm]", 100, -2000, 2000 ) );
+	    h_llptrk_leff_r     .push_back( book( name, htp  + "_lrtEff_r",      htpstr  + " production r-pos [mm]", 100,     0,  450 ) );
+	    h_llptrk_leff_pt    .push_back( book( name, htp  + "_lrtEff_pt",     htpstr  + " p_{T} [GeV]",           100,     0,  300 ) );
+	    h_llptrk_leff_eta   .push_back( book( name, htp  + "_lrtEff_eta",    htpstr  + " eta",                   100,    -3,    3 ) );
+	    h_llptrk_leff_phi   .push_back( book( name, htp  + "_lrtEff_phi",    htpstr  + " phi",                   100,  -3.5,  3.5 ) );
+	    h_llptrk_leff_d0    .push_back( book( name, htp  + "_lrtEff_d0",     htpstr  + " d0 [mm]",               100,  -300,  300 ) );
+	    h_llptrk_leff_z0    .push_back( book( name, htp  + "_lrtEff_z0",     htpstr  + " z0 [mm]",               100, -1500, 1500 ) );
+	    h_llptrk_leff_avgMu .push_back( book( name, htp  + "_lrtEff_avgMu",  htpstr  + " average pp interactions",90,     0,   90 ) );
+	    h_llptrk_leff_minDR .push_back( book( name, htp  + "_lrtEff_minDR",  htpstr  + " nearest truth track dR",100,     0,  1.0 ) );
+	  }
+	  h_LLPtrk_x             .push_back( h_llptrk_x          );
+	  h_LLPtrk_y             .push_back( h_llptrk_y          );
+	  h_LLPtrk_z             .push_back( h_llptrk_z          );
+	  h_LLPtrk_r             .push_back( h_llptrk_r          );
+	  h_LLPtrk_pt            .push_back( h_llptrk_pt         );
+	  h_LLPtrk_eta           .push_back( h_llptrk_eta        );
+	  h_LLPtrk_phi           .push_back( h_llptrk_phi        );
+	  h_LLPtrk_d0            .push_back( h_llptrk_d0         );
+	  h_LLPtrk_z0            .push_back( h_llptrk_z0         );
+	  h_LLPtrk_avgMu         .push_back( h_llptrk_avgMu      );
+	  h_LLPtrk_minDR         .push_back( h_llptrk_minDR      );
+	  h_recoLLPtrk_x         .push_back( h_rllptrk_x         );
+	  h_recoLLPtrk_y         .push_back( h_rllptrk_y         );
+	  h_recoLLPtrk_z         .push_back( h_rllptrk_z         );
+	  h_recoLLPtrk_r         .push_back( h_rllptrk_r         );
+	  h_recoLLPtrk_pt        .push_back( h_rllptrk_pt        );
+	  h_recoLLPtrk_eta       .push_back( h_rllptrk_eta       );
+	  h_recoLLPtrk_phi       .push_back( h_rllptrk_phi       );
+	  h_recoLLPtrk_d0        .push_back( h_rllptrk_d0        );
+	  h_recoLLPtrk_z0        .push_back( h_rllptrk_z0        );
+	  h_recoLLPtrk_avgMu     .push_back( h_rllptrk_avgMu     );
+	  h_recoLLPtrk_minDR     .push_back( h_rllptrk_minDR     );
+	  h_recoLLPtrk_resid_d0        .push_back( h_rllptrk_resid_d0        );
+	  h_recoLLPtrk_resid_z0        .push_back( h_rllptrk_resid_z0        );
+	  h_recoLLPtrk_resid_qOverP    .push_back( h_rllptrk_resid_qOverP    );
+	  h_recoLLPtrk_resid_d0_r      .push_back( h_rllptrk_resid_d0_r      );
+	  h_recoLLPtrk_resid_d0_pt     .push_back( h_rllptrk_resid_d0_pt     );
+	  h_recoLLPtrk_resid_z0_r      .push_back( h_rllptrk_resid_z0_r      );
+	  h_recoLLPtrk_resid_z0_pt     .push_back( h_rllptrk_resid_z0_pt     );
+	  h_recoLLPtrk_resid_qOverP_r  .push_back( h_rllptrk_resid_qOverP_r  );
+	  h_recoLLPtrk_resid_qOverP_pt .push_back( h_rllptrk_resid_qOverP_pt );
+	  h_stdLLPtrk_x          .push_back( h_sllptrk_x         );
+	  h_stdLLPtrk_y          .push_back( h_sllptrk_y         );
+	  h_stdLLPtrk_z          .push_back( h_sllptrk_z         );
+	  h_stdLLPtrk_r          .push_back( h_sllptrk_r         );
+	  h_stdLLPtrk_pt         .push_back( h_sllptrk_pt        );
+	  h_stdLLPtrk_eta        .push_back( h_sllptrk_eta       );
+	  h_stdLLPtrk_phi        .push_back( h_sllptrk_phi       );
+	  h_stdLLPtrk_d0         .push_back( h_sllptrk_d0        );
+	  h_stdLLPtrk_z0         .push_back( h_sllptrk_z0        );
+	  h_stdLLPtrk_avgMu      .push_back( h_sllptrk_avgMu     );
+	  h_stdLLPtrk_minDR      .push_back( h_sllptrk_minDR     );
+	  h_stdLLPtrk_resid_d0         .push_back( h_sllptrk_resid_d0        );
+	  h_stdLLPtrk_resid_z0         .push_back( h_sllptrk_resid_z0        );
+	  h_stdLLPtrk_resid_qOverP     .push_back( h_sllptrk_resid_qOverP    );
+	  h_stdLLPtrk_resid_d0_r       .push_back( h_sllptrk_resid_d0_r      );
+	  h_stdLLPtrk_resid_d0_pt      .push_back( h_sllptrk_resid_d0_pt     );
+	  h_stdLLPtrk_resid_z0_r       .push_back( h_sllptrk_resid_z0_r      );
+	  h_stdLLPtrk_resid_z0_pt      .push_back( h_sllptrk_resid_z0_pt     );
+	  h_stdLLPtrk_resid_qOverP_r   .push_back( h_sllptrk_resid_qOverP_r  );
+	  h_stdLLPtrk_resid_qOverP_pt  .push_back( h_sllptrk_resid_qOverP_pt );
+	  h_lrtLLPtrk_x          .push_back( h_lllptrk_x         );
+	  h_lrtLLPtrk_y          .push_back( h_lllptrk_y         );
+	  h_lrtLLPtrk_z          .push_back( h_lllptrk_z         );
+	  h_lrtLLPtrk_r          .push_back( h_lllptrk_r         );
+	  h_lrtLLPtrk_pt         .push_back( h_lllptrk_pt        );
+	  h_lrtLLPtrk_eta        .push_back( h_lllptrk_eta       );
+	  h_lrtLLPtrk_phi        .push_back( h_lllptrk_phi       );
+	  h_lrtLLPtrk_d0         .push_back( h_lllptrk_d0        );
+	  h_lrtLLPtrk_z0         .push_back( h_lllptrk_z0        );
+	  h_lrtLLPtrk_avgMu      .push_back( h_lllptrk_avgMu     );
+	  h_lrtLLPtrk_minDR      .push_back( h_lllptrk_minDR     );
+	  h_lrtLLPtrk_resid_d0         .push_back( h_lllptrk_resid_d0        );
+	  h_lrtLLPtrk_resid_z0         .push_back( h_lllptrk_resid_z0        );
+	  h_lrtLLPtrk_resid_qOverP     .push_back( h_lllptrk_resid_qOverP    );
+	  h_lrtLLPtrk_resid_d0_r       .push_back( h_lllptrk_resid_d0_r      );
+	  h_lrtLLPtrk_resid_d0_pt      .push_back( h_lllptrk_resid_d0_pt     );
+	  h_lrtLLPtrk_resid_z0_r       .push_back( h_lllptrk_resid_z0_r      );
+	  h_lrtLLPtrk_resid_z0_pt      .push_back( h_lllptrk_resid_z0_pt     );
+	  h_lrtLLPtrk_resid_qOverP_r   .push_back( h_lllptrk_resid_qOverP_r  );
+	  h_lrtLLPtrk_resid_qOverP_pt  .push_back( h_lllptrk_resid_qOverP_pt );
+	  h_LLPtrk_recoEff_x     .push_back( h_llptrk_reff_x     );
+	  h_LLPtrk_recoEff_y     .push_back( h_llptrk_reff_y     );
+	  h_LLPtrk_recoEff_z     .push_back( h_llptrk_reff_z     );
+	  h_LLPtrk_recoEff_r     .push_back( h_llptrk_reff_r     );
+	  h_LLPtrk_recoEff_pt    .push_back( h_llptrk_reff_pt    );
+	  h_LLPtrk_recoEff_eta   .push_back( h_llptrk_reff_eta   );
+	  h_LLPtrk_recoEff_phi   .push_back( h_llptrk_reff_phi   );
+	  h_LLPtrk_recoEff_d0    .push_back( h_llptrk_reff_d0    );
+	  h_LLPtrk_recoEff_z0    .push_back( h_llptrk_reff_z0    );
+	  h_LLPtrk_recoEff_avgMu .push_back( h_llptrk_reff_avgMu );
+	  h_LLPtrk_recoEff_minDR .push_back( h_llptrk_reff_minDR );
+	  h_LLPtrk_stdEff_x      .push_back( h_llptrk_seff_x     );
+	  h_LLPtrk_stdEff_y      .push_back( h_llptrk_seff_y     );
+	  h_LLPtrk_stdEff_z      .push_back( h_llptrk_seff_z     );
+	  h_LLPtrk_stdEff_r      .push_back( h_llptrk_seff_r     );
+	  h_LLPtrk_stdEff_pt     .push_back( h_llptrk_seff_pt    );
+	  h_LLPtrk_stdEff_eta    .push_back( h_llptrk_seff_eta   );
+	  h_LLPtrk_stdEff_phi    .push_back( h_llptrk_seff_phi   );
+	  h_LLPtrk_stdEff_d0     .push_back( h_llptrk_seff_d0    );
+	  h_LLPtrk_stdEff_z0     .push_back( h_llptrk_seff_z0    );
+	  h_LLPtrk_stdEff_avgMu  .push_back( h_llptrk_seff_avgMu );
+	  h_LLPtrk_stdEff_minDR  .push_back( h_llptrk_seff_minDR );
+	  h_LLPtrk_lrtEff_x      .push_back( h_llptrk_leff_x     );
+	  h_LLPtrk_lrtEff_y      .push_back( h_llptrk_leff_y     );
+	  h_LLPtrk_lrtEff_z      .push_back( h_llptrk_leff_z     );
+	  h_LLPtrk_lrtEff_r      .push_back( h_llptrk_leff_r     );
+	  h_LLPtrk_lrtEff_pt     .push_back( h_llptrk_leff_pt    );
+	  h_LLPtrk_lrtEff_eta    .push_back( h_llptrk_leff_eta   );
+	  h_LLPtrk_lrtEff_phi    .push_back( h_llptrk_leff_phi   );
+	  h_LLPtrk_lrtEff_d0     .push_back( h_llptrk_leff_d0    );
+	  h_LLPtrk_lrtEff_z0     .push_back( h_llptrk_leff_z0    );
+	  h_LLPtrk_lrtEff_avgMu  .push_back( h_llptrk_leff_avgMu );
+	  h_LLPtrk_lrtEff_minDR  .push_back( h_llptrk_leff_minDR );
+	} // end reconstruction efficiency
+      } // end if not abcdcutOnly
     }
     
 
@@ -4888,6 +4911,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	std::string hsfllp     = "selFiduc"  + hLLP[i] + "DecayVtx";
 	std::string hsfllpstr  = "selected fiducial "        + hllpstr;
 	h_llpdvtx_n          .push_back( book( name, hllp + "_n",          "n " + hllpstrpl,                  100,     0,  100 ) );
+	if ( m_histoInfoSwitch->m_abcdcutOnly ) continue;
 	h_llpdvtx_z          .push_back( book( name, hllp + "_z",          hllpstr + " z-pos [mm]",           100, -2500, 2500 ) );
 	h_llpdvtx_r          .push_back( book( name, hllp + "_r",          hllpstr + " r-pos [mm]",           100,     0,  600 ) );
 	h_llpdvtx_pt         .push_back( book( name, hllp + "_pt",         hllpstr + " p_{T} [GeV]",          100,     0,  500 ) );
@@ -5095,8 +5119,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	      hsvtmp_str = " " + hsvtmp_low;
 	    }
 	    std::string hsv_desc = "";
-	    if ( !hsvtmp ) hsv_desc = "vtxDesc";
-	    else           hsv_desc = "VtxDesc";
+	    if ( hsvtmp.empty() ) hsv_desc = "vtxDesc";
+	    else                  hsv_desc = "VtxDesc";
 	    h_recofllpdv_nVtxDesc_r    .push_back( book( name, hrfllp + "_n" + hsvtmp + hsv_desc + "_r", hrfllpstr + " r-pos [mm]",     100,   0, 300,
 							 "n " + hrfllpstr + hsvtmp_str + " vertexed descendants",        20, 0, 20 ) );
 	    h_recofllpdv_nVtxDesc_z    .push_back( book( name, hrfllp + "_n" + hsvtmp + hsv_desc + "_z", hrfllpstr + " z-pos [mm]",     100,-300, 300,
@@ -5591,321 +5615,323 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       } // end loop over llp decay types
       
       h_LLPdVtx_n          .push_back( h_llpdvtx_n          );
-      h_LLPdVtx_z          .push_back( h_llpdvtx_z          );
-      h_LLPdVtx_r          .push_back( h_llpdvtx_r          );
-      h_LLPdVtx_pt         .push_back( h_llpdvtx_pt         );
-      h_LLPdVtx_eta        .push_back( h_llpdvtx_eta        );
-      h_LLPdVtx_phi        .push_back( h_llpdvtx_phi        );
-      h_LLPdVtx_mass       .push_back( h_llpdvtx_mass       );
-      h_LLPdVtx_childOpAng .push_back( h_llpdvtx_childOpAng );
-      h_LLPdVtx_nOutP      .push_back( h_llpdvtx_nOutP      );
-      h_LLPdVtx_ndesc      .push_back( h_llpdvtx_ndesc      );
-      if ( m_histoInfoSwitch->m_llpDesc ) {
-	h_LLPdVtx_descPt   .push_back( h_llpdvtx_descPt     );
-	h_LLPdVtx_descEta  .push_back( h_llpdvtx_descEta    );
-	h_LLPdVtx_descPhi  .push_back( h_llpdvtx_descPhi    );
-	h_LLPdVtx_descE    .push_back( h_llpdvtx_descE      );
-	h_LLPdVtx_descM    .push_back( h_llpdvtx_descM      );
-	h_LLPdVtx_desc_pt  .push_back( h_llpdvtx_desc_pt    );
-	h_LLPdVtx_desc_eta .push_back( h_llpdvtx_desc_eta   );
-	h_LLPdVtx_desc_phi .push_back( h_llpdvtx_desc_phi   );
-	h_LLPdVtx_desc_d0  .push_back( h_llpdvtx_desc_d0    );
-	h_LLPdVtx_desc_z0  .push_back( h_llpdvtx_desc_z0    );
-      }
-      if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llpvtxRecoEff ) {
-	h_recobleLLPdVtx_x               .push_back( h_recollpdvtx_x                 );
-	h_recobleLLPdVtx_y               .push_back( h_recollpdvtx_y                 );
-	h_recobleLLPdVtx_z               .push_back( h_recollpdvtx_z                 );
-	h_recobleLLPdVtx_r               .push_back( h_recollpdvtx_r                 );
-	h_recobleLLPdVtx_pt              .push_back( h_recollpdvtx_pt                );
-	h_recobleLLPdVtx_eta             .push_back( h_recollpdvtx_eta               );
-	h_recobleLLPdVtx_phi             .push_back( h_recollpdvtx_phi               );
-	h_recobleLLPdVtx_avgMu           .push_back( h_recollpdvtx_avgMu             );
-	h_recobleLLPdVtx_descM           .push_back( h_recollpdvtx_descM             );
-	h_recobleLLPdVtx_nDesc           .push_back( h_recollpdvtx_nDesc             );
-	h_recobleLLPdVtx_nRecoDesc       .push_back( h_recollpdvtx_nRecoDesc         );
-	h_recobleLLPdVtx_nSelDesc        .push_back( h_recollpdvtx_nSelDesc          );
-	h_recobleLLPdVtx_nDesc_r         .push_back( h_recollpdvtx_nDesc_r           );
-	h_recobleLLPdVtx_nDesc_z         .push_back( h_recollpdvtx_nDesc_z           );
-	h_recobleLLPdVtx_descM_r         .push_back( h_recollpdvtx_descM_r           );
-	h_recobleLLPdVtx_descM_z         .push_back( h_recollpdvtx_descM_z           );
-	h_recobleLLPdVtx_nRecoDesc_r     .push_back( h_recollpdvtx_nRecoDesc_r       );
-	h_recobleLLPdVtx_nRecoDesc_z     .push_back( h_recollpdvtx_nRecoDesc_z       );
-	h_recobleLLPdVtx_recoDescM_r     .push_back( h_recollpdvtx_recoDescM_r       );
-	h_recobleLLPdVtx_recoDescM_z     .push_back( h_recollpdvtx_recoDescM_z       );
-	h_recobleLLPdVtx_nVtxDesc_r      .push_back( h_recollpdvtx_nVtxDesc_r        );
-	h_recobleLLPdVtx_nVtxDesc_z      .push_back( h_recollpdvtx_nVtxDesc_z        );
-	h_recobleLLPdVtx_vtxDescM_r      .push_back( h_recollpdvtx_vtxDescM_r        );
-	h_recobleLLPdVtx_vtxDescM_z      .push_back( h_recollpdvtx_vtxDescM_z        );
-	h_recobleLLPdVtx_fracRecoDesc_r  .push_back( h_recollpdvtx_fracRecoDesc_r    );
-	h_recobleLLPdVtx_fracRecoDesc_z  .push_back( h_recollpdvtx_fracRecoDesc_z    );
-	h_recobleLLPdVtx_fracRecoDescM_r .push_back( h_recollpdvtx_fracRecoDescM_r   );
-	h_recobleLLPdVtx_fracRecoDescM_z .push_back( h_recollpdvtx_fracRecoDescM_z   );
-	h_recobleLLPdVtx_fracVtxDesc_r   .push_back( h_recollpdvtx_fracVtxDesc_r     );
-	h_recobleLLPdVtx_fracVtxDesc_z   .push_back( h_recollpdvtx_fracVtxDesc_z     );
-	h_recobleLLPdVtx_fracVtxDescM_r  .push_back( h_recollpdvtx_fracVtxDescM_r    );
-	h_recobleLLPdVtx_fracVtxDescM_z  .push_back( h_recollpdvtx_fracVtxDescM_z    );
-	h_recoLLPdVtx_x                  .push_back( h_reco2llpdvtx_x                );
-	h_recoLLPdVtx_y                  .push_back( h_reco2llpdvtx_y                );
-	h_recoLLPdVtx_z                  .push_back( h_reco2llpdvtx_z                );
-	h_recoLLPdVtx_r                  .push_back( h_reco2llpdvtx_r                );
-	h_recoLLPdVtx_pt                 .push_back( h_reco2llpdvtx_pt               );
-	h_recoLLPdVtx_eta                .push_back( h_reco2llpdvtx_eta              );
-	h_recoLLPdVtx_phi                .push_back( h_reco2llpdvtx_phi              );
-	h_recoLLPdVtx_avgMu              .push_back( h_reco2llpdvtx_avgMu            );
-	h_recoLLPdVtx_descM              .push_back( h_reco2llpdvtx_descM            );
-	h_recoLLPdVtx_nDesc              .push_back( h_reco2llpdvtx_nDesc            );
-	h_recoLLPdVtx_nRecoDesc          .push_back( h_reco2llpdvtx_nRecoDesc        );
-	h_recoLLPdVtx_nSelDesc           .push_back( h_reco2llpdvtx_nSelDesc         );
-	h_selLLPdVtx_x                   .push_back( h_slctllpdvtx_x                 );
-	h_selLLPdVtx_y                   .push_back( h_slctllpdvtx_y                 );
-	h_selLLPdVtx_z                   .push_back( h_slctllpdvtx_z                 );
-	h_selLLPdVtx_r                   .push_back( h_slctllpdvtx_r                 );
-	h_selLLPdVtx_pt                  .push_back( h_slctllpdvtx_pt                ); 
-	h_selLLPdVtx_eta                 .push_back( h_slctllpdvtx_eta               );
-	h_selLLPdVtx_phi                 .push_back( h_slctllpdvtx_phi               );
-	h_selLLPdVtx_avgMu               .push_back( h_slctllpdvtx_avgMu             );
-	h_selLLPdVtx_descM               .push_back( h_slctllpdvtx_descM             );
-	h_selLLPdVtx_nDesc               .push_back( h_slctllpdvtx_nDesc             );
-	h_selLLPdVtx_nRecoDesc           .push_back( h_slctllpdvtx_nRecoDesc         );
-	h_selLLPdVtx_nSelDesc            .push_back( h_slctllpdvtx_nSelDesc          );
-	h_recoMatchLLPdVtx_score         .push_back( h_matchllpdvtx_score            );
-	h_recoMatchLLPdVtx_x             .push_back( h_matchllpdvtx_x                );
-	h_recoMatchLLPdVtx_y             .push_back( h_matchllpdvtx_y                );
-	h_recoMatchLLPdVtx_z             .push_back( h_matchllpdvtx_z                );
-	h_recoMatchLLPdVtx_r             .push_back( h_matchllpdvtx_r                );
-	h_recoMatchLLPdVtx_pt            .push_back( h_matchllpdvtx_pt               );
-	h_recoMatchLLPdVtx_eta           .push_back( h_matchllpdvtx_eta              );
-	h_recoMatchLLPdVtx_phi           .push_back( h_matchllpdvtx_phi              );
-	h_recoMatchLLPdVtx_avgMu         .push_back( h_matchllpdvtx_avgMu            );
-	h_recoMatchLLPdVtx_descM         .push_back( h_matchllpdvtx_descM            );
-	h_recoMatchLLPdVtx_nDesc         .push_back( h_matchllpdvtx_nDesc            );
-	h_recoMatchLLPdVtx_nRecoDesc     .push_back( h_matchllpdvtx_nRecoDesc        );
-	h_recoMatchLLPdVtx_nSelDesc      .push_back( h_matchllpdvtx_nSelDesc         );
-	h_recoMatchLLPdVtx_resid_x       .push_back( h_matchllpdvtx_resid_x          );
-	h_recoMatchLLPdVtx_resid_y       .push_back( h_matchllpdvtx_resid_y          );
-	h_recoMatchLLPdVtx_resid_z       .push_back( h_matchllpdvtx_resid_z          );
-	h_recoMatchLLPdVtx_resid_r       .push_back( h_matchllpdvtx_resid_r          );
-	h_recoMatchLLPdVtx_resid_rphi    .push_back( h_matchllpdvtx_resid_rphi       );
-	h_recoMatchLLPdVtx_resid_z_r          .push_back( h_matchllpdvtx_resid_z_r          );
-	h_recoMatchLLPdVtx_resid_z_z          .push_back( h_matchllpdvtx_resid_z_z          );
-	h_recoMatchLLPdVtx_resid_z_ntrk       .push_back( h_matchllpdvtx_resid_z_ntrk       );
-	h_recoMatchLLPdVtx_resid_z_nseltrk    .push_back( h_matchllpdvtx_resid_z_nseltrk    );
-	h_recoMatchLLPdVtx_resid_r_r          .push_back( h_matchllpdvtx_resid_r_r          );
-	h_recoMatchLLPdVtx_resid_r_z          .push_back( h_matchllpdvtx_resid_r_z          );
-	h_recoMatchLLPdVtx_resid_r_ntrk       .push_back( h_matchllpdvtx_resid_r_ntrk       );
-	h_recoMatchLLPdVtx_resid_r_nseltrk    .push_back( h_matchllpdvtx_resid_r_nseltrk    );
-	h_recoMatchLLPdVtx_resid_rphi_r       .push_back( h_matchllpdvtx_resid_rphi_r       );
-	h_recoMatchLLPdVtx_resid_rphi_z       .push_back( h_matchllpdvtx_resid_rphi_z       );
-	h_recoMatchLLPdVtx_resid_rphi_ntrk    .push_back( h_matchllpdvtx_resid_rphi_ntrk    );
-	h_recoMatchLLPdVtx_resid_rphi_nseltrk .push_back( h_matchllpdvtx_resid_rphi_nseltrk );
-	h_fiducLLPdVtx_x                 .push_back( h_recofllpdvtx_x                );
-	h_fiducLLPdVtx_y                 .push_back( h_recofllpdvtx_y                );
-	h_fiducLLPdVtx_z                 .push_back( h_recofllpdvtx_z                );
-	h_fiducLLPdVtx_r                 .push_back( h_recofllpdvtx_r                );
-	h_fiducLLPdVtx_pt                .push_back( h_recofllpdvtx_pt               );
-	h_fiducLLPdVtx_eta               .push_back( h_recofllpdvtx_eta              );
-	h_fiducLLPdVtx_phi               .push_back( h_recofllpdvtx_phi              );
-	h_fiducLLPdVtx_avgMu             .push_back( h_recofllpdvtx_avgMu            );
-	h_fiducLLPdVtx_descM             .push_back( h_recofllpdvtx_descM            );
-	h_fiducLLPdVtx_nDesc             .push_back( h_recofllpdvtx_nDesc            );
-	h_fiducLLPdVtx_nRecoDesc         .push_back( h_recofllpdvtx_nRecoDesc        );
-	h_fiducLLPdVtx_nSelDesc          .push_back( h_recofllpdvtx_nSelDesc         );
-	h_fiducLLPdVtx_nDesc_r           .push_back( h_recofllpdvtx_nDesc_r          );
-	h_fiducLLPdVtx_nDesc_z           .push_back( h_recofllpdvtx_nDesc_z          );
-	h_fiducLLPdVtx_descM_r           .push_back( h_recofllpdvtx_descM_r          );
-	h_fiducLLPdVtx_descM_z           .push_back( h_recofllpdvtx_descM_z          );
-	h_fiducLLPdVtx_nRecoDesc_r       .push_back( h_recofllpdvtx_nRecoDesc_r      );
-	h_fiducLLPdVtx_nRecoDesc_z       .push_back( h_recofllpdvtx_nRecoDesc_z      );
-	h_fiducLLPdVtx_recoDescM_r       .push_back( h_recofllpdvtx_recoDescM_r      );
-	h_fiducLLPdVtx_recoDescM_z       .push_back( h_recofllpdvtx_recoDescM_z      );
-	h_fiducLLPdVtx_nVtxDesc_r        .push_back( h_recofllpdvtx_nVtxDesc_r       );
-	h_fiducLLPdVtx_nVtxDesc_z        .push_back( h_recofllpdvtx_nVtxDesc_z       );
-	h_fiducLLPdVtx_vtxDescM_r        .push_back( h_recofllpdvtx_vtxDescM_r       );
-	h_fiducLLPdVtx_vtxDescM_z        .push_back( h_recofllpdvtx_vtxDescM_z       );
-	h_fiducLLPdVtx_fracRecoDesc_r    .push_back( h_recofllpdvtx_fracRecoDesc_r   );
-	h_fiducLLPdVtx_fracRecoDesc_z    .push_back( h_recofllpdvtx_fracRecoDesc_z   );
-	h_fiducLLPdVtx_fracRecoDescM_r   .push_back( h_recofllpdvtx_fracRecoDescM_r  );
-	h_fiducLLPdVtx_fracRecoDescM_z   .push_back( h_recofllpdvtx_fracRecoDescM_z  );
-	h_fiducLLPdVtx_fracVtxDesc_r     .push_back( h_recofllpdvtx_fracVtxDesc_r    );
-	h_fiducLLPdVtx_fracVtxDesc_z     .push_back( h_recofllpdvtx_fracVtxDesc_z    );
-	h_fiducLLPdVtx_fracVtxDescM_r    .push_back( h_recofllpdvtx_fracVtxDescM_r   );
-	h_fiducLLPdVtx_fracVtxDescM_z    .push_back( h_recofllpdvtx_fracVtxDescM_z   );
-	h_recoFiducLLPdVtx_x             .push_back( h_reco2fllpdvtx_x               );
-	h_recoFiducLLPdVtx_y             .push_back( h_reco2fllpdvtx_y               );
-	h_recoFiducLLPdVtx_z             .push_back( h_reco2fllpdvtx_z               );
-	h_recoFiducLLPdVtx_r             .push_back( h_reco2fllpdvtx_r               );
-	h_recoFiducLLPdVtx_pt            .push_back( h_reco2fllpdvtx_pt              );
-	h_recoFiducLLPdVtx_eta           .push_back( h_reco2fllpdvtx_eta             );
-	h_recoFiducLLPdVtx_phi           .push_back( h_reco2fllpdvtx_phi             );
-	h_recoFiducLLPdVtx_avgMu         .push_back( h_reco2fllpdvtx_avgMu           );
-	h_recoFiducLLPdVtx_descM         .push_back( h_reco2fllpdvtx_descM           );
-	h_recoFiducLLPdVtx_nDesc         .push_back( h_reco2fllpdvtx_nDesc           );
-	h_recoFiducLLPdVtx_nRecoDesc     .push_back( h_reco2fllpdvtx_nRecoDesc       );
-	h_recoFiducLLPdVtx_nSelDesc      .push_back( h_reco2fllpdvtx_nSelDesc        );
-	h_selFiducLLPdVtx_x              .push_back( h_slctfllpdvtx_x                );
-	h_selFiducLLPdVtx_y              .push_back( h_slctfllpdvtx_y                );
-	h_selFiducLLPdVtx_z              .push_back( h_slctfllpdvtx_z                );
-	h_selFiducLLPdVtx_r              .push_back( h_slctfllpdvtx_r                );
-	h_selFiducLLPdVtx_pt             .push_back( h_slctfllpdvtx_pt               );
-	h_selFiducLLPdVtx_eta            .push_back( h_slctfllpdvtx_eta              );
-	h_selFiducLLPdVtx_phi            .push_back( h_slctfllpdvtx_phi              );
-	h_selFiducLLPdVtx_avgMu          .push_back( h_slctfllpdvtx_avgMu            );
-	h_selFiducLLPdVtx_descM          .push_back( h_slctfllpdvtx_descM            );
-	h_selFiducLLPdVtx_nDesc          .push_back( h_slctfllpdvtx_nDesc            );
-	h_selFiducLLPdVtx_nRecoDesc      .push_back( h_slctfllpdvtx_nRecoDesc        );
-	h_selFiducLLPdVtx_nSelDesc       .push_back( h_slctfllpdvtx_nSelDesc         );
-	h_sgnlRecoMatchLLPdVtx_score     .push_back( h_smatchllpdvtx_score           );
-	h_sgnlRecoMatchLLPdVtx_x         .push_back( h_smatchllpdvtx_x               );
-	h_sgnlRecoMatchLLPdVtx_y         .push_back( h_smatchllpdvtx_y               );
-	h_sgnlRecoMatchLLPdVtx_z         .push_back( h_smatchllpdvtx_z               );
-	h_sgnlRecoMatchLLPdVtx_r         .push_back( h_smatchllpdvtx_r               );
-	h_sgnlRecoMatchLLPdVtx_pt        .push_back( h_smatchllpdvtx_pt              );
-	h_sgnlRecoMatchLLPdVtx_eta       .push_back( h_smatchllpdvtx_eta             );
-	h_sgnlRecoMatchLLPdVtx_phi       .push_back( h_smatchllpdvtx_phi             );
-	h_sgnlRecoMatchLLPdVtx_avgMu     .push_back( h_smatchllpdvtx_avgMu           );
-	h_sgnlRecoMatchLLPdVtx_descM     .push_back( h_smatchllpdvtx_descM           );
-	h_sgnlRecoMatchLLPdVtx_nDesc     .push_back( h_smatchllpdvtx_nDesc           );
-	h_sgnlRecoMatchLLPdVtx_nRecoDesc .push_back( h_smatchllpdvtx_nRecoDesc       );
-	h_sgnlRecoMatchLLPdVtx_nSelDesc  .push_back( h_smatchllpdvtx_nSelDesc        );
-	h_sgnlRecoMatchLLPdVtx_resid_x   .push_back( h_smatchllpdvtx_resid_x         );
-	h_sgnlRecoMatchLLPdVtx_resid_y   .push_back( h_smatchllpdvtx_resid_y         );
-	h_sgnlRecoMatchLLPdVtx_resid_z   .push_back( h_smatchllpdvtx_resid_z         );
-	h_sgnlRecoMatchLLPdVtx_resid_r   .push_back( h_smatchllpdvtx_resid_r         );
-	h_sgnlRecoMatchLLPdVtx_resid_rphi.push_back( h_smatchllpdvtx_resid_rphi      );
-	h_sgnlRecoMatchLLPdVtx_resid_z_r          .push_back( h_smatchllpdvtx_resid_z_r          );
-	h_sgnlRecoMatchLLPdVtx_resid_z_z          .push_back( h_smatchllpdvtx_resid_z_z          );
-	h_sgnlRecoMatchLLPdVtx_resid_z_ntrk       .push_back( h_smatchllpdvtx_resid_z_ntrk       );
-	h_sgnlRecoMatchLLPdVtx_resid_z_nseltrk    .push_back( h_smatchllpdvtx_resid_z_nseltrk    );
-	h_sgnlRecoMatchLLPdVtx_resid_r_r          .push_back( h_smatchllpdvtx_resid_r_r          );
-	h_sgnlRecoMatchLLPdVtx_resid_r_z          .push_back( h_smatchllpdvtx_resid_r_z          );
-	h_sgnlRecoMatchLLPdVtx_resid_r_ntrk       .push_back( h_smatchllpdvtx_resid_r_ntrk       );
-	h_sgnlRecoMatchLLPdVtx_resid_r_nseltrk    .push_back( h_smatchllpdvtx_resid_r_nseltrk    );
-	h_sgnlRecoMatchLLPdVtx_resid_rphi_r       .push_back( h_smatchllpdvtx_resid_rphi_r       );
-	h_sgnlRecoMatchLLPdVtx_resid_rphi_z       .push_back( h_smatchllpdvtx_resid_rphi_z       );
-	h_sgnlRecoMatchLLPdVtx_resid_rphi_ntrk    .push_back( h_smatchllpdvtx_resid_rphi_ntrk    );
-	h_sgnlRecoMatchLLPdVtx_resid_rphi_nseltrk .push_back( h_smatchllpdvtx_resid_rphi_nseltrk );
-	h_LLPdVtx_accept_x               .push_back( h_llpdvtx_accept_x              );
-	h_LLPdVtx_accept_y               .push_back( h_llpdvtx_accept_y              );
-	h_LLPdVtx_accept_z               .push_back( h_llpdvtx_accept_z              );
-	h_LLPdVtx_accept_r               .push_back( h_llpdvtx_accept_r              );
-	h_LLPdVtx_accept_pt              .push_back( h_llpdvtx_accept_pt             );
-	h_LLPdVtx_accept_eta             .push_back( h_llpdvtx_accept_eta            );
-	h_LLPdVtx_accept_phi             .push_back( h_llpdvtx_accept_phi            );
-	h_LLPdVtx_accept_avgMu           .push_back( h_llpdvtx_accept_avgMu          );
-	h_LLPdVtx_accept_descM           .push_back( h_llpdvtx_accept_descM          );
-	h_LLPdVtx_accept_nDesc           .push_back( h_llpdvtx_accept_nDesc          );
-	h_LLPdVtx_accept_nRecoDesc       .push_back( h_llpdvtx_accept_nRecoDesc      );
-	h_LLPdVtx_accept_nSelDesc        .push_back( h_llpdvtx_accept_nSelDesc       );
-	h_LLPdVtx_recoEff_x              .push_back( h_llpdvtx_recoEff_x             );
-	h_LLPdVtx_recoEff_y              .push_back( h_llpdvtx_recoEff_y             );
-	h_LLPdVtx_recoEff_z              .push_back( h_llpdvtx_recoEff_z             );
-	h_LLPdVtx_recoEff_r              .push_back( h_llpdvtx_recoEff_r             );
-	h_LLPdVtx_recoEff_pt             .push_back( h_llpdvtx_recoEff_pt            );
-	h_LLPdVtx_recoEff_eta            .push_back( h_llpdvtx_recoEff_eta           );
-	h_LLPdVtx_recoEff_phi            .push_back( h_llpdvtx_recoEff_phi           );
-	h_LLPdVtx_recoEff_avgMu          .push_back( h_llpdvtx_recoEff_avgMu         );
-	h_LLPdVtx_recoEff_descM          .push_back( h_llpdvtx_recoEff_descM         );
-	h_LLPdVtx_recoEff_nDesc          .push_back( h_llpdvtx_recoEff_nDesc         );
-	h_LLPdVtx_recoEff_nRecoDesc      .push_back( h_llpdvtx_recoEff_nRecoDesc     );
-	h_LLPdVtx_recoEff_nSelDesc       .push_back( h_llpdvtx_recoEff_nSelDesc      );
-	h_LLPdVtx_algEff_x               .push_back( h_llpdvtx_algEff_x              );
-	h_LLPdVtx_algEff_y               .push_back( h_llpdvtx_algEff_y              );
-	h_LLPdVtx_algEff_z               .push_back( h_llpdvtx_algEff_z              );
-	h_LLPdVtx_algEff_r               .push_back( h_llpdvtx_algEff_r              );
-	h_LLPdVtx_algEff_pt              .push_back( h_llpdvtx_algEff_pt             );
-	h_LLPdVtx_algEff_eta             .push_back( h_llpdvtx_algEff_eta            );
-	h_LLPdVtx_algEff_phi             .push_back( h_llpdvtx_algEff_phi            );
-	h_LLPdVtx_algEff_avgMu           .push_back( h_llpdvtx_algEff_avgMu          );
-	h_LLPdVtx_algEff_descM           .push_back( h_llpdvtx_algEff_descM          );
-	h_LLPdVtx_algEff_nDesc           .push_back( h_llpdvtx_algEff_nDesc          );
-	h_LLPdVtx_algEff_nRecoDesc       .push_back( h_llpdvtx_algEff_nRecoDesc      );
-	h_LLPdVtx_algEff_nSelDesc        .push_back( h_llpdvtx_algEff_nSelDesc       );
-	h_LLPdVtx_coreEff_x              .push_back( h_llpdvtx_coreEff_x             );
-	h_LLPdVtx_coreEff_y              .push_back( h_llpdvtx_coreEff_y             );
-	h_LLPdVtx_coreEff_z              .push_back( h_llpdvtx_coreEff_z             );
-	h_LLPdVtx_coreEff_r              .push_back( h_llpdvtx_coreEff_r             );
-	h_LLPdVtx_coreEff_pt             .push_back( h_llpdvtx_coreEff_pt            );
-	h_LLPdVtx_coreEff_eta            .push_back( h_llpdvtx_coreEff_eta           );
-	h_LLPdVtx_coreEff_phi            .push_back( h_llpdvtx_coreEff_phi           );
-	h_LLPdVtx_coreEff_avgMu          .push_back( h_llpdvtx_coreEff_avgMu         );
-	h_LLPdVtx_coreEff_descM          .push_back( h_llpdvtx_coreEff_descM         );
-	h_LLPdVtx_coreEff_nDesc          .push_back( h_llpdvtx_coreEff_nDesc         );
-	h_LLPdVtx_coreEff_nRecoDesc      .push_back( h_llpdvtx_coreEff_nRecoDesc     );
-	h_LLPdVtx_coreEff_nSelDesc       .push_back( h_llpdvtx_coreEff_nSelDesc      );
-	h_LLPdVtx_seedEff_x              .push_back( h_llpdvtx_seedEff_x             );
-	h_LLPdVtx_seedEff_y              .push_back( h_llpdvtx_seedEff_y             );
-	h_LLPdVtx_seedEff_z              .push_back( h_llpdvtx_seedEff_z             );
-	h_LLPdVtx_seedEff_r              .push_back( h_llpdvtx_seedEff_r             );
-	h_LLPdVtx_seedEff_pt             .push_back( h_llpdvtx_seedEff_pt            );
-	h_LLPdVtx_seedEff_eta            .push_back( h_llpdvtx_seedEff_eta           );
-	h_LLPdVtx_seedEff_phi            .push_back( h_llpdvtx_seedEff_phi           );
-	h_LLPdVtx_seedEff_avgMu          .push_back( h_llpdvtx_seedEff_avgMu         );
-	h_LLPdVtx_seedEff_descM          .push_back( h_llpdvtx_seedEff_descM         );
-	h_LLPdVtx_seedEff_nDesc          .push_back( h_llpdvtx_seedEff_nDesc         );
-	h_LLPdVtx_seedEff_nRecoDesc      .push_back( h_llpdvtx_seedEff_nRecoDesc     );
-	h_LLPdVtx_seedEff_nSelDesc       .push_back( h_llpdvtx_seedEff_nSelDesc      );
-	h_LLPdVtx_sgnlAccept_x           .push_back( h_llpdvtx_sgnlaccept_x          );
-	h_LLPdVtx_sgnlAccept_y           .push_back( h_llpdvtx_sgnlaccept_y          );
-	h_LLPdVtx_sgnlAccept_z           .push_back( h_llpdvtx_sgnlaccept_z          );
-	h_LLPdVtx_sgnlAccept_r           .push_back( h_llpdvtx_sgnlaccept_r          );
-	h_LLPdVtx_sgnlAccept_pt          .push_back( h_llpdvtx_sgnlaccept_pt         );
-	h_LLPdVtx_sgnlAccept_eta         .push_back( h_llpdvtx_sgnlaccept_eta        );
-	h_LLPdVtx_sgnlAccept_phi         .push_back( h_llpdvtx_sgnlaccept_phi        );
-	h_LLPdVtx_sgnlAccept_avgMu       .push_back( h_llpdvtx_sgnlaccept_avgMu      );
-	h_LLPdVtx_sgnlAccept_descM       .push_back( h_llpdvtx_sgnlaccept_descM      );
-	h_LLPdVtx_sgnlAccept_nDesc       .push_back( h_llpdvtx_sgnlaccept_nDesc      );
-	h_LLPdVtx_sgnlAccept_nRecoDesc   .push_back( h_llpdvtx_sgnlaccept_nRecoDesc  );
-	h_LLPdVtx_sgnlAccept_nSelDesc    .push_back( h_llpdvtx_sgnlaccept_nSelDesc   );	
-	h_LLPdVtx_sgnlRecoEff_x          .push_back( h_llpdvtx_sgnlrecoEff_x         );
-	h_LLPdVtx_sgnlRecoEff_y          .push_back( h_llpdvtx_sgnlrecoEff_y         );
-	h_LLPdVtx_sgnlRecoEff_z          .push_back( h_llpdvtx_sgnlrecoEff_z         );
-	h_LLPdVtx_sgnlRecoEff_r          .push_back( h_llpdvtx_sgnlrecoEff_r         );
-	h_LLPdVtx_sgnlRecoEff_pt         .push_back( h_llpdvtx_sgnlrecoEff_pt        );
-	h_LLPdVtx_sgnlRecoEff_eta        .push_back( h_llpdvtx_sgnlrecoEff_eta       );
-	h_LLPdVtx_sgnlRecoEff_phi        .push_back( h_llpdvtx_sgnlrecoEff_phi       );
-	h_LLPdVtx_sgnlRecoEff_avgMu      .push_back( h_llpdvtx_sgnlrecoEff_avgMu     );
-	h_LLPdVtx_sgnlRecoEff_descM      .push_back( h_llpdvtx_sgnlrecoEff_descM     );
-	h_LLPdVtx_sgnlRecoEff_nDesc      .push_back( h_llpdvtx_sgnlrecoEff_nDesc     );
-	h_LLPdVtx_sgnlRecoEff_nRecoDesc  .push_back( h_llpdvtx_sgnlrecoEff_nRecoDesc );
-	h_LLPdVtx_sgnlRecoEff_nSelDesc   .push_back( h_llpdvtx_sgnlrecoEff_nSelDesc  );
-	h_LLPdVtx_sgnlAlgEff_x           .push_back( h_llpdvtx_sgnlalgEff_x          );
-	h_LLPdVtx_sgnlAlgEff_y           .push_back( h_llpdvtx_sgnlalgEff_y          );
-	h_LLPdVtx_sgnlAlgEff_z           .push_back( h_llpdvtx_sgnlalgEff_z          );
-	h_LLPdVtx_sgnlAlgEff_r           .push_back( h_llpdvtx_sgnlalgEff_r          );
-	h_LLPdVtx_sgnlAlgEff_pt          .push_back( h_llpdvtx_sgnlalgEff_pt         );
-	h_LLPdVtx_sgnlAlgEff_eta         .push_back( h_llpdvtx_sgnlalgEff_eta        );
-	h_LLPdVtx_sgnlAlgEff_phi         .push_back( h_llpdvtx_sgnlalgEff_phi        );
-	h_LLPdVtx_sgnlAlgEff_avgMu       .push_back( h_llpdvtx_sgnlalgEff_avgMu      );
-	h_LLPdVtx_sgnlAlgEff_descM       .push_back( h_llpdvtx_sgnlalgEff_descM      );
-	h_LLPdVtx_sgnlAlgEff_nDesc       .push_back( h_llpdvtx_sgnlalgEff_nDesc      );
-	h_LLPdVtx_sgnlAlgEff_nRecoDesc   .push_back( h_llpdvtx_sgnlalgEff_nRecoDesc  );
-	h_LLPdVtx_sgnlAlgEff_nSelDesc    .push_back( h_llpdvtx_sgnlalgEff_nSelDesc   );
-	h_LLPdVtx_sgnlCoreEff_x          .push_back( h_llpdvtx_sgnlcoreEff_x         );
-	h_LLPdVtx_sgnlCoreEff_y          .push_back( h_llpdvtx_sgnlcoreEff_y         );
-	h_LLPdVtx_sgnlCoreEff_z          .push_back( h_llpdvtx_sgnlcoreEff_z         );
-	h_LLPdVtx_sgnlCoreEff_r          .push_back( h_llpdvtx_sgnlcoreEff_r         );
-	h_LLPdVtx_sgnlCoreEff_pt         .push_back( h_llpdvtx_sgnlcoreEff_pt        );
-	h_LLPdVtx_sgnlCoreEff_eta        .push_back( h_llpdvtx_sgnlcoreEff_eta       );
-	h_LLPdVtx_sgnlCoreEff_phi        .push_back( h_llpdvtx_sgnlcoreEff_phi       );
-	h_LLPdVtx_sgnlCoreEff_avgMu      .push_back( h_llpdvtx_sgnlcoreEff_avgMu     );
-	h_LLPdVtx_sgnlCoreEff_descM      .push_back( h_llpdvtx_sgnlcoreEff_descM     );
-	h_LLPdVtx_sgnlCoreEff_nDesc      .push_back( h_llpdvtx_sgnlcoreEff_nDesc     );
-	h_LLPdVtx_sgnlCoreEff_nRecoDesc  .push_back( h_llpdvtx_sgnlcoreEff_nRecoDesc );
-	h_LLPdVtx_sgnlCoreEff_nSelDesc   .push_back( h_llpdvtx_sgnlcoreEff_nSelDesc  );
-	h_LLPdVtx_sgnlSeedEff_x          .push_back( h_llpdvtx_sgnlseedEff_x         );
-	h_LLPdVtx_sgnlSeedEff_y          .push_back( h_llpdvtx_sgnlseedEff_y         );
-	h_LLPdVtx_sgnlSeedEff_z          .push_back( h_llpdvtx_sgnlseedEff_z         );
-	h_LLPdVtx_sgnlSeedEff_r          .push_back( h_llpdvtx_sgnlseedEff_r         );
-	h_LLPdVtx_sgnlSeedEff_pt         .push_back( h_llpdvtx_sgnlseedEff_pt        );
-	h_LLPdVtx_sgnlSeedEff_eta        .push_back( h_llpdvtx_sgnlseedEff_eta       );
-	h_LLPdVtx_sgnlSeedEff_phi        .push_back( h_llpdvtx_sgnlseedEff_phi       );
-	h_LLPdVtx_sgnlSeedEff_avgMu      .push_back( h_llpdvtx_sgnlseedEff_avgMu     );
-	h_LLPdVtx_sgnlSeedEff_descM      .push_back( h_llpdvtx_sgnlseedEff_descM     );
-	h_LLPdVtx_sgnlSeedEff_nDesc      .push_back( h_llpdvtx_sgnlseedEff_nDesc     );
-	h_LLPdVtx_sgnlSeedEff_nRecoDesc  .push_back( h_llpdvtx_sgnlseedEff_nRecoDesc );
-	h_LLPdVtx_sgnlSeedEff_nSelDesc   .push_back( h_llpdvtx_sgnlseedEff_nSelDesc  );
-      }
+      if ( !m_histoInfoSwitch->m_abcdcutOnly ) {
+	h_LLPdVtx_z          .push_back( h_llpdvtx_z          );
+	h_LLPdVtx_r          .push_back( h_llpdvtx_r          );
+	h_LLPdVtx_pt         .push_back( h_llpdvtx_pt         );
+	h_LLPdVtx_eta        .push_back( h_llpdvtx_eta        );
+	h_LLPdVtx_phi        .push_back( h_llpdvtx_phi        );
+	h_LLPdVtx_mass       .push_back( h_llpdvtx_mass       );
+	h_LLPdVtx_childOpAng .push_back( h_llpdvtx_childOpAng );
+	h_LLPdVtx_nOutP      .push_back( h_llpdvtx_nOutP      );
+	h_LLPdVtx_ndesc      .push_back( h_llpdvtx_ndesc      );
+	if ( m_histoInfoSwitch->m_llpDesc ) {
+	  h_LLPdVtx_descPt   .push_back( h_llpdvtx_descPt     );
+	  h_LLPdVtx_descEta  .push_back( h_llpdvtx_descEta    );
+	  h_LLPdVtx_descPhi  .push_back( h_llpdvtx_descPhi    );
+	  h_LLPdVtx_descE    .push_back( h_llpdvtx_descE      );
+	  h_LLPdVtx_descM    .push_back( h_llpdvtx_descM      );
+	  h_LLPdVtx_desc_pt  .push_back( h_llpdvtx_desc_pt    );
+	  h_LLPdVtx_desc_eta .push_back( h_llpdvtx_desc_eta   );
+	  h_LLPdVtx_desc_phi .push_back( h_llpdvtx_desc_phi   );
+	  h_LLPdVtx_desc_d0  .push_back( h_llpdvtx_desc_d0    );
+	  h_LLPdVtx_desc_z0  .push_back( h_llpdvtx_desc_z0    );
+	}
+	if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llpvtxRecoEff ) {
+	  h_recobleLLPdVtx_x               .push_back( h_recollpdvtx_x                 );
+	  h_recobleLLPdVtx_y               .push_back( h_recollpdvtx_y                 );
+	  h_recobleLLPdVtx_z               .push_back( h_recollpdvtx_z                 );
+	  h_recobleLLPdVtx_r               .push_back( h_recollpdvtx_r                 );
+	  h_recobleLLPdVtx_pt              .push_back( h_recollpdvtx_pt                );
+	  h_recobleLLPdVtx_eta             .push_back( h_recollpdvtx_eta               );
+	  h_recobleLLPdVtx_phi             .push_back( h_recollpdvtx_phi               );
+	  h_recobleLLPdVtx_avgMu           .push_back( h_recollpdvtx_avgMu             );
+	  h_recobleLLPdVtx_descM           .push_back( h_recollpdvtx_descM             );
+	  h_recobleLLPdVtx_nDesc           .push_back( h_recollpdvtx_nDesc             );
+	  h_recobleLLPdVtx_nRecoDesc       .push_back( h_recollpdvtx_nRecoDesc         );
+	  h_recobleLLPdVtx_nSelDesc        .push_back( h_recollpdvtx_nSelDesc          );
+	  h_recobleLLPdVtx_nDesc_r         .push_back( h_recollpdvtx_nDesc_r           );
+	  h_recobleLLPdVtx_nDesc_z         .push_back( h_recollpdvtx_nDesc_z           );
+	  h_recobleLLPdVtx_descM_r         .push_back( h_recollpdvtx_descM_r           );
+	  h_recobleLLPdVtx_descM_z         .push_back( h_recollpdvtx_descM_z           );
+	  h_recobleLLPdVtx_nRecoDesc_r     .push_back( h_recollpdvtx_nRecoDesc_r       );
+	  h_recobleLLPdVtx_nRecoDesc_z     .push_back( h_recollpdvtx_nRecoDesc_z       );
+	  h_recobleLLPdVtx_recoDescM_r     .push_back( h_recollpdvtx_recoDescM_r       );
+	  h_recobleLLPdVtx_recoDescM_z     .push_back( h_recollpdvtx_recoDescM_z       );
+	  h_recobleLLPdVtx_nVtxDesc_r      .push_back( h_recollpdvtx_nVtxDesc_r        );
+	  h_recobleLLPdVtx_nVtxDesc_z      .push_back( h_recollpdvtx_nVtxDesc_z        );
+	  h_recobleLLPdVtx_vtxDescM_r      .push_back( h_recollpdvtx_vtxDescM_r        );
+	  h_recobleLLPdVtx_vtxDescM_z      .push_back( h_recollpdvtx_vtxDescM_z        );
+	  h_recobleLLPdVtx_fracRecoDesc_r  .push_back( h_recollpdvtx_fracRecoDesc_r    );
+	  h_recobleLLPdVtx_fracRecoDesc_z  .push_back( h_recollpdvtx_fracRecoDesc_z    );
+	  h_recobleLLPdVtx_fracRecoDescM_r .push_back( h_recollpdvtx_fracRecoDescM_r   );
+	  h_recobleLLPdVtx_fracRecoDescM_z .push_back( h_recollpdvtx_fracRecoDescM_z   );
+	  h_recobleLLPdVtx_fracVtxDesc_r   .push_back( h_recollpdvtx_fracVtxDesc_r     );
+	  h_recobleLLPdVtx_fracVtxDesc_z   .push_back( h_recollpdvtx_fracVtxDesc_z     );
+	  h_recobleLLPdVtx_fracVtxDescM_r  .push_back( h_recollpdvtx_fracVtxDescM_r    );
+	  h_recobleLLPdVtx_fracVtxDescM_z  .push_back( h_recollpdvtx_fracVtxDescM_z    );
+	  h_recoLLPdVtx_x                  .push_back( h_reco2llpdvtx_x                );
+	  h_recoLLPdVtx_y                  .push_back( h_reco2llpdvtx_y                );
+	  h_recoLLPdVtx_z                  .push_back( h_reco2llpdvtx_z                );
+	  h_recoLLPdVtx_r                  .push_back( h_reco2llpdvtx_r                );
+	  h_recoLLPdVtx_pt                 .push_back( h_reco2llpdvtx_pt               );
+	  h_recoLLPdVtx_eta                .push_back( h_reco2llpdvtx_eta              );
+	  h_recoLLPdVtx_phi                .push_back( h_reco2llpdvtx_phi              );
+	  h_recoLLPdVtx_avgMu              .push_back( h_reco2llpdvtx_avgMu            );
+	  h_recoLLPdVtx_descM              .push_back( h_reco2llpdvtx_descM            );
+	  h_recoLLPdVtx_nDesc              .push_back( h_reco2llpdvtx_nDesc            );
+	  h_recoLLPdVtx_nRecoDesc          .push_back( h_reco2llpdvtx_nRecoDesc        );
+	  h_recoLLPdVtx_nSelDesc           .push_back( h_reco2llpdvtx_nSelDesc         );
+	  h_selLLPdVtx_x                   .push_back( h_slctllpdvtx_x                 );
+	  h_selLLPdVtx_y                   .push_back( h_slctllpdvtx_y                 );
+	  h_selLLPdVtx_z                   .push_back( h_slctllpdvtx_z                 );
+	  h_selLLPdVtx_r                   .push_back( h_slctllpdvtx_r                 );
+	  h_selLLPdVtx_pt                  .push_back( h_slctllpdvtx_pt                ); 
+	  h_selLLPdVtx_eta                 .push_back( h_slctllpdvtx_eta               );
+	  h_selLLPdVtx_phi                 .push_back( h_slctllpdvtx_phi               );
+	  h_selLLPdVtx_avgMu               .push_back( h_slctllpdvtx_avgMu             );
+	  h_selLLPdVtx_descM               .push_back( h_slctllpdvtx_descM             );
+	  h_selLLPdVtx_nDesc               .push_back( h_slctllpdvtx_nDesc             );
+	  h_selLLPdVtx_nRecoDesc           .push_back( h_slctllpdvtx_nRecoDesc         );
+	  h_selLLPdVtx_nSelDesc            .push_back( h_slctllpdvtx_nSelDesc          );
+	  h_recoMatchLLPdVtx_score         .push_back( h_matchllpdvtx_score            );
+	  h_recoMatchLLPdVtx_x             .push_back( h_matchllpdvtx_x                );
+	  h_recoMatchLLPdVtx_y             .push_back( h_matchllpdvtx_y                );
+	  h_recoMatchLLPdVtx_z             .push_back( h_matchllpdvtx_z                );
+	  h_recoMatchLLPdVtx_r             .push_back( h_matchllpdvtx_r                );
+	  h_recoMatchLLPdVtx_pt            .push_back( h_matchllpdvtx_pt               );
+	  h_recoMatchLLPdVtx_eta           .push_back( h_matchllpdvtx_eta              );
+	  h_recoMatchLLPdVtx_phi           .push_back( h_matchllpdvtx_phi              );
+	  h_recoMatchLLPdVtx_avgMu         .push_back( h_matchllpdvtx_avgMu            );
+	  h_recoMatchLLPdVtx_descM         .push_back( h_matchllpdvtx_descM            );
+	  h_recoMatchLLPdVtx_nDesc         .push_back( h_matchllpdvtx_nDesc            );
+	  h_recoMatchLLPdVtx_nRecoDesc     .push_back( h_matchllpdvtx_nRecoDesc        );
+	  h_recoMatchLLPdVtx_nSelDesc      .push_back( h_matchllpdvtx_nSelDesc         );
+	  h_recoMatchLLPdVtx_resid_x       .push_back( h_matchllpdvtx_resid_x          );
+	  h_recoMatchLLPdVtx_resid_y       .push_back( h_matchllpdvtx_resid_y          );
+	  h_recoMatchLLPdVtx_resid_z       .push_back( h_matchllpdvtx_resid_z          );
+	  h_recoMatchLLPdVtx_resid_r       .push_back( h_matchllpdvtx_resid_r          );
+	  h_recoMatchLLPdVtx_resid_rphi    .push_back( h_matchllpdvtx_resid_rphi       );
+	  h_recoMatchLLPdVtx_resid_z_r          .push_back( h_matchllpdvtx_resid_z_r          );
+	  h_recoMatchLLPdVtx_resid_z_z          .push_back( h_matchllpdvtx_resid_z_z          );
+	  h_recoMatchLLPdVtx_resid_z_ntrk       .push_back( h_matchllpdvtx_resid_z_ntrk       );
+	  h_recoMatchLLPdVtx_resid_z_nseltrk    .push_back( h_matchllpdvtx_resid_z_nseltrk    );
+	  h_recoMatchLLPdVtx_resid_r_r          .push_back( h_matchllpdvtx_resid_r_r          );
+	  h_recoMatchLLPdVtx_resid_r_z          .push_back( h_matchllpdvtx_resid_r_z          );
+	  h_recoMatchLLPdVtx_resid_r_ntrk       .push_back( h_matchllpdvtx_resid_r_ntrk       );
+	  h_recoMatchLLPdVtx_resid_r_nseltrk    .push_back( h_matchllpdvtx_resid_r_nseltrk    );
+	  h_recoMatchLLPdVtx_resid_rphi_r       .push_back( h_matchllpdvtx_resid_rphi_r       );
+	  h_recoMatchLLPdVtx_resid_rphi_z       .push_back( h_matchllpdvtx_resid_rphi_z       );
+	  h_recoMatchLLPdVtx_resid_rphi_ntrk    .push_back( h_matchllpdvtx_resid_rphi_ntrk    );
+	  h_recoMatchLLPdVtx_resid_rphi_nseltrk .push_back( h_matchllpdvtx_resid_rphi_nseltrk );
+	  h_fiducLLPdVtx_x                 .push_back( h_recofllpdvtx_x                );
+	  h_fiducLLPdVtx_y                 .push_back( h_recofllpdvtx_y                );
+	  h_fiducLLPdVtx_z                 .push_back( h_recofllpdvtx_z                );
+	  h_fiducLLPdVtx_r                 .push_back( h_recofllpdvtx_r                );
+	  h_fiducLLPdVtx_pt                .push_back( h_recofllpdvtx_pt               );
+	  h_fiducLLPdVtx_eta               .push_back( h_recofllpdvtx_eta              );
+	  h_fiducLLPdVtx_phi               .push_back( h_recofllpdvtx_phi              );
+	  h_fiducLLPdVtx_avgMu             .push_back( h_recofllpdvtx_avgMu            );
+	  h_fiducLLPdVtx_descM             .push_back( h_recofllpdvtx_descM            );
+	  h_fiducLLPdVtx_nDesc             .push_back( h_recofllpdvtx_nDesc            );
+	  h_fiducLLPdVtx_nRecoDesc         .push_back( h_recofllpdvtx_nRecoDesc        );
+	  h_fiducLLPdVtx_nSelDesc          .push_back( h_recofllpdvtx_nSelDesc         );
+	  h_fiducLLPdVtx_nDesc_r           .push_back( h_recofllpdvtx_nDesc_r          );
+	  h_fiducLLPdVtx_nDesc_z           .push_back( h_recofllpdvtx_nDesc_z          );
+	  h_fiducLLPdVtx_descM_r           .push_back( h_recofllpdvtx_descM_r          );
+	  h_fiducLLPdVtx_descM_z           .push_back( h_recofllpdvtx_descM_z          );
+	  h_fiducLLPdVtx_nRecoDesc_r       .push_back( h_recofllpdvtx_nRecoDesc_r      );
+	  h_fiducLLPdVtx_nRecoDesc_z       .push_back( h_recofllpdvtx_nRecoDesc_z      );
+	  h_fiducLLPdVtx_recoDescM_r       .push_back( h_recofllpdvtx_recoDescM_r      );
+	  h_fiducLLPdVtx_recoDescM_z       .push_back( h_recofllpdvtx_recoDescM_z      );
+	  h_fiducLLPdVtx_nVtxDesc_r        .push_back( h_recofllpdvtx_nVtxDesc_r       );
+	  h_fiducLLPdVtx_nVtxDesc_z        .push_back( h_recofllpdvtx_nVtxDesc_z       );
+	  h_fiducLLPdVtx_vtxDescM_r        .push_back( h_recofllpdvtx_vtxDescM_r       );
+	  h_fiducLLPdVtx_vtxDescM_z        .push_back( h_recofllpdvtx_vtxDescM_z       );
+	  h_fiducLLPdVtx_fracRecoDesc_r    .push_back( h_recofllpdvtx_fracRecoDesc_r   );
+	  h_fiducLLPdVtx_fracRecoDesc_z    .push_back( h_recofllpdvtx_fracRecoDesc_z   );
+	  h_fiducLLPdVtx_fracRecoDescM_r   .push_back( h_recofllpdvtx_fracRecoDescM_r  );
+	  h_fiducLLPdVtx_fracRecoDescM_z   .push_back( h_recofllpdvtx_fracRecoDescM_z  );
+	  h_fiducLLPdVtx_fracVtxDesc_r     .push_back( h_recofllpdvtx_fracVtxDesc_r    );
+	  h_fiducLLPdVtx_fracVtxDesc_z     .push_back( h_recofllpdvtx_fracVtxDesc_z    );
+	  h_fiducLLPdVtx_fracVtxDescM_r    .push_back( h_recofllpdvtx_fracVtxDescM_r   );
+	  h_fiducLLPdVtx_fracVtxDescM_z    .push_back( h_recofllpdvtx_fracVtxDescM_z   );
+	  h_recoFiducLLPdVtx_x             .push_back( h_reco2fllpdvtx_x               );
+	  h_recoFiducLLPdVtx_y             .push_back( h_reco2fllpdvtx_y               );
+	  h_recoFiducLLPdVtx_z             .push_back( h_reco2fllpdvtx_z               );
+	  h_recoFiducLLPdVtx_r             .push_back( h_reco2fllpdvtx_r               );
+	  h_recoFiducLLPdVtx_pt            .push_back( h_reco2fllpdvtx_pt              );
+	  h_recoFiducLLPdVtx_eta           .push_back( h_reco2fllpdvtx_eta             );
+	  h_recoFiducLLPdVtx_phi           .push_back( h_reco2fllpdvtx_phi             );
+	  h_recoFiducLLPdVtx_avgMu         .push_back( h_reco2fllpdvtx_avgMu           );
+	  h_recoFiducLLPdVtx_descM         .push_back( h_reco2fllpdvtx_descM           );
+	  h_recoFiducLLPdVtx_nDesc         .push_back( h_reco2fllpdvtx_nDesc           );
+	  h_recoFiducLLPdVtx_nRecoDesc     .push_back( h_reco2fllpdvtx_nRecoDesc       );
+	  h_recoFiducLLPdVtx_nSelDesc      .push_back( h_reco2fllpdvtx_nSelDesc        );
+	  h_selFiducLLPdVtx_x              .push_back( h_slctfllpdvtx_x                );
+	  h_selFiducLLPdVtx_y              .push_back( h_slctfllpdvtx_y                );
+	  h_selFiducLLPdVtx_z              .push_back( h_slctfllpdvtx_z                );
+	  h_selFiducLLPdVtx_r              .push_back( h_slctfllpdvtx_r                );
+	  h_selFiducLLPdVtx_pt             .push_back( h_slctfllpdvtx_pt               );
+	  h_selFiducLLPdVtx_eta            .push_back( h_slctfllpdvtx_eta              );
+	  h_selFiducLLPdVtx_phi            .push_back( h_slctfllpdvtx_phi              );
+	  h_selFiducLLPdVtx_avgMu          .push_back( h_slctfllpdvtx_avgMu            );
+	  h_selFiducLLPdVtx_descM          .push_back( h_slctfllpdvtx_descM            );
+	  h_selFiducLLPdVtx_nDesc          .push_back( h_slctfllpdvtx_nDesc            );
+	  h_selFiducLLPdVtx_nRecoDesc      .push_back( h_slctfllpdvtx_nRecoDesc        );
+	  h_selFiducLLPdVtx_nSelDesc       .push_back( h_slctfllpdvtx_nSelDesc         );
+	  h_sgnlRecoMatchLLPdVtx_score     .push_back( h_smatchllpdvtx_score           );
+	  h_sgnlRecoMatchLLPdVtx_x         .push_back( h_smatchllpdvtx_x               );
+	  h_sgnlRecoMatchLLPdVtx_y         .push_back( h_smatchllpdvtx_y               );
+	  h_sgnlRecoMatchLLPdVtx_z         .push_back( h_smatchllpdvtx_z               );
+	  h_sgnlRecoMatchLLPdVtx_r         .push_back( h_smatchllpdvtx_r               );
+	  h_sgnlRecoMatchLLPdVtx_pt        .push_back( h_smatchllpdvtx_pt              );
+	  h_sgnlRecoMatchLLPdVtx_eta       .push_back( h_smatchllpdvtx_eta             );
+	  h_sgnlRecoMatchLLPdVtx_phi       .push_back( h_smatchllpdvtx_phi             );
+	  h_sgnlRecoMatchLLPdVtx_avgMu     .push_back( h_smatchllpdvtx_avgMu           );
+	  h_sgnlRecoMatchLLPdVtx_descM     .push_back( h_smatchllpdvtx_descM           );
+	  h_sgnlRecoMatchLLPdVtx_nDesc     .push_back( h_smatchllpdvtx_nDesc           );
+	  h_sgnlRecoMatchLLPdVtx_nRecoDesc .push_back( h_smatchllpdvtx_nRecoDesc       );
+	  h_sgnlRecoMatchLLPdVtx_nSelDesc  .push_back( h_smatchllpdvtx_nSelDesc        );
+	  h_sgnlRecoMatchLLPdVtx_resid_x   .push_back( h_smatchllpdvtx_resid_x         );
+	  h_sgnlRecoMatchLLPdVtx_resid_y   .push_back( h_smatchllpdvtx_resid_y         );
+	  h_sgnlRecoMatchLLPdVtx_resid_z   .push_back( h_smatchllpdvtx_resid_z         );
+	  h_sgnlRecoMatchLLPdVtx_resid_r   .push_back( h_smatchllpdvtx_resid_r         );
+	  h_sgnlRecoMatchLLPdVtx_resid_rphi.push_back( h_smatchllpdvtx_resid_rphi      );
+	  h_sgnlRecoMatchLLPdVtx_resid_z_r          .push_back( h_smatchllpdvtx_resid_z_r          );
+	  h_sgnlRecoMatchLLPdVtx_resid_z_z          .push_back( h_smatchllpdvtx_resid_z_z          );
+	  h_sgnlRecoMatchLLPdVtx_resid_z_ntrk       .push_back( h_smatchllpdvtx_resid_z_ntrk       );
+	  h_sgnlRecoMatchLLPdVtx_resid_z_nseltrk    .push_back( h_smatchllpdvtx_resid_z_nseltrk    );
+	  h_sgnlRecoMatchLLPdVtx_resid_r_r          .push_back( h_smatchllpdvtx_resid_r_r          );
+	  h_sgnlRecoMatchLLPdVtx_resid_r_z          .push_back( h_smatchllpdvtx_resid_r_z          );
+	  h_sgnlRecoMatchLLPdVtx_resid_r_ntrk       .push_back( h_smatchllpdvtx_resid_r_ntrk       );
+	  h_sgnlRecoMatchLLPdVtx_resid_r_nseltrk    .push_back( h_smatchllpdvtx_resid_r_nseltrk    );
+	  h_sgnlRecoMatchLLPdVtx_resid_rphi_r       .push_back( h_smatchllpdvtx_resid_rphi_r       );
+	  h_sgnlRecoMatchLLPdVtx_resid_rphi_z       .push_back( h_smatchllpdvtx_resid_rphi_z       );
+	  h_sgnlRecoMatchLLPdVtx_resid_rphi_ntrk    .push_back( h_smatchllpdvtx_resid_rphi_ntrk    );
+	  h_sgnlRecoMatchLLPdVtx_resid_rphi_nseltrk .push_back( h_smatchllpdvtx_resid_rphi_nseltrk );
+	  h_LLPdVtx_accept_x               .push_back( h_llpdvtx_accept_x              );
+	  h_LLPdVtx_accept_y               .push_back( h_llpdvtx_accept_y              );
+	  h_LLPdVtx_accept_z               .push_back( h_llpdvtx_accept_z              );
+	  h_LLPdVtx_accept_r               .push_back( h_llpdvtx_accept_r              );
+	  h_LLPdVtx_accept_pt              .push_back( h_llpdvtx_accept_pt             );
+	  h_LLPdVtx_accept_eta             .push_back( h_llpdvtx_accept_eta            );
+	  h_LLPdVtx_accept_phi             .push_back( h_llpdvtx_accept_phi            );
+	  h_LLPdVtx_accept_avgMu           .push_back( h_llpdvtx_accept_avgMu          );
+	  h_LLPdVtx_accept_descM           .push_back( h_llpdvtx_accept_descM          );
+	  h_LLPdVtx_accept_nDesc           .push_back( h_llpdvtx_accept_nDesc          );
+	  h_LLPdVtx_accept_nRecoDesc       .push_back( h_llpdvtx_accept_nRecoDesc      );
+	  h_LLPdVtx_accept_nSelDesc        .push_back( h_llpdvtx_accept_nSelDesc       );
+	  h_LLPdVtx_recoEff_x              .push_back( h_llpdvtx_recoEff_x             );
+	  h_LLPdVtx_recoEff_y              .push_back( h_llpdvtx_recoEff_y             );
+	  h_LLPdVtx_recoEff_z              .push_back( h_llpdvtx_recoEff_z             );
+	  h_LLPdVtx_recoEff_r              .push_back( h_llpdvtx_recoEff_r             );
+	  h_LLPdVtx_recoEff_pt             .push_back( h_llpdvtx_recoEff_pt            );
+	  h_LLPdVtx_recoEff_eta            .push_back( h_llpdvtx_recoEff_eta           );
+	  h_LLPdVtx_recoEff_phi            .push_back( h_llpdvtx_recoEff_phi           );
+	  h_LLPdVtx_recoEff_avgMu          .push_back( h_llpdvtx_recoEff_avgMu         );
+	  h_LLPdVtx_recoEff_descM          .push_back( h_llpdvtx_recoEff_descM         );
+	  h_LLPdVtx_recoEff_nDesc          .push_back( h_llpdvtx_recoEff_nDesc         );
+	  h_LLPdVtx_recoEff_nRecoDesc      .push_back( h_llpdvtx_recoEff_nRecoDesc     );
+	  h_LLPdVtx_recoEff_nSelDesc       .push_back( h_llpdvtx_recoEff_nSelDesc      );
+	  h_LLPdVtx_algEff_x               .push_back( h_llpdvtx_algEff_x              );
+	  h_LLPdVtx_algEff_y               .push_back( h_llpdvtx_algEff_y              );
+	  h_LLPdVtx_algEff_z               .push_back( h_llpdvtx_algEff_z              );
+	  h_LLPdVtx_algEff_r               .push_back( h_llpdvtx_algEff_r              );
+	  h_LLPdVtx_algEff_pt              .push_back( h_llpdvtx_algEff_pt             );
+	  h_LLPdVtx_algEff_eta             .push_back( h_llpdvtx_algEff_eta            );
+	  h_LLPdVtx_algEff_phi             .push_back( h_llpdvtx_algEff_phi            );
+	  h_LLPdVtx_algEff_avgMu           .push_back( h_llpdvtx_algEff_avgMu          );
+	  h_LLPdVtx_algEff_descM           .push_back( h_llpdvtx_algEff_descM          );
+	  h_LLPdVtx_algEff_nDesc           .push_back( h_llpdvtx_algEff_nDesc          );
+	  h_LLPdVtx_algEff_nRecoDesc       .push_back( h_llpdvtx_algEff_nRecoDesc      );
+	  h_LLPdVtx_algEff_nSelDesc        .push_back( h_llpdvtx_algEff_nSelDesc       );
+	  h_LLPdVtx_coreEff_x              .push_back( h_llpdvtx_coreEff_x             );
+	  h_LLPdVtx_coreEff_y              .push_back( h_llpdvtx_coreEff_y             );
+	  h_LLPdVtx_coreEff_z              .push_back( h_llpdvtx_coreEff_z             );
+	  h_LLPdVtx_coreEff_r              .push_back( h_llpdvtx_coreEff_r             );
+	  h_LLPdVtx_coreEff_pt             .push_back( h_llpdvtx_coreEff_pt            );
+	  h_LLPdVtx_coreEff_eta            .push_back( h_llpdvtx_coreEff_eta           );
+	  h_LLPdVtx_coreEff_phi            .push_back( h_llpdvtx_coreEff_phi           );
+	  h_LLPdVtx_coreEff_avgMu          .push_back( h_llpdvtx_coreEff_avgMu         );
+	  h_LLPdVtx_coreEff_descM          .push_back( h_llpdvtx_coreEff_descM         );
+	  h_LLPdVtx_coreEff_nDesc          .push_back( h_llpdvtx_coreEff_nDesc         );
+	  h_LLPdVtx_coreEff_nRecoDesc      .push_back( h_llpdvtx_coreEff_nRecoDesc     );
+	  h_LLPdVtx_coreEff_nSelDesc       .push_back( h_llpdvtx_coreEff_nSelDesc      );
+	  h_LLPdVtx_seedEff_x              .push_back( h_llpdvtx_seedEff_x             );
+	  h_LLPdVtx_seedEff_y              .push_back( h_llpdvtx_seedEff_y             );
+	  h_LLPdVtx_seedEff_z              .push_back( h_llpdvtx_seedEff_z             );
+	  h_LLPdVtx_seedEff_r              .push_back( h_llpdvtx_seedEff_r             );
+	  h_LLPdVtx_seedEff_pt             .push_back( h_llpdvtx_seedEff_pt            );
+	  h_LLPdVtx_seedEff_eta            .push_back( h_llpdvtx_seedEff_eta           );
+	  h_LLPdVtx_seedEff_phi            .push_back( h_llpdvtx_seedEff_phi           );
+	  h_LLPdVtx_seedEff_avgMu          .push_back( h_llpdvtx_seedEff_avgMu         );
+	  h_LLPdVtx_seedEff_descM          .push_back( h_llpdvtx_seedEff_descM         );
+	  h_LLPdVtx_seedEff_nDesc          .push_back( h_llpdvtx_seedEff_nDesc         );
+	  h_LLPdVtx_seedEff_nRecoDesc      .push_back( h_llpdvtx_seedEff_nRecoDesc     );
+	  h_LLPdVtx_seedEff_nSelDesc       .push_back( h_llpdvtx_seedEff_nSelDesc      );
+	  h_LLPdVtx_sgnlAccept_x           .push_back( h_llpdvtx_sgnlaccept_x          );
+	  h_LLPdVtx_sgnlAccept_y           .push_back( h_llpdvtx_sgnlaccept_y          );
+	  h_LLPdVtx_sgnlAccept_z           .push_back( h_llpdvtx_sgnlaccept_z          );
+	  h_LLPdVtx_sgnlAccept_r           .push_back( h_llpdvtx_sgnlaccept_r          );
+	  h_LLPdVtx_sgnlAccept_pt          .push_back( h_llpdvtx_sgnlaccept_pt         );
+	  h_LLPdVtx_sgnlAccept_eta         .push_back( h_llpdvtx_sgnlaccept_eta        );
+	  h_LLPdVtx_sgnlAccept_phi         .push_back( h_llpdvtx_sgnlaccept_phi        );
+	  h_LLPdVtx_sgnlAccept_avgMu       .push_back( h_llpdvtx_sgnlaccept_avgMu      );
+	  h_LLPdVtx_sgnlAccept_descM       .push_back( h_llpdvtx_sgnlaccept_descM      );
+	  h_LLPdVtx_sgnlAccept_nDesc       .push_back( h_llpdvtx_sgnlaccept_nDesc      );
+	  h_LLPdVtx_sgnlAccept_nRecoDesc   .push_back( h_llpdvtx_sgnlaccept_nRecoDesc  );
+	  h_LLPdVtx_sgnlAccept_nSelDesc    .push_back( h_llpdvtx_sgnlaccept_nSelDesc   );	
+	  h_LLPdVtx_sgnlRecoEff_x          .push_back( h_llpdvtx_sgnlrecoEff_x         );
+	  h_LLPdVtx_sgnlRecoEff_y          .push_back( h_llpdvtx_sgnlrecoEff_y         );
+	  h_LLPdVtx_sgnlRecoEff_z          .push_back( h_llpdvtx_sgnlrecoEff_z         );
+	  h_LLPdVtx_sgnlRecoEff_r          .push_back( h_llpdvtx_sgnlrecoEff_r         );
+	  h_LLPdVtx_sgnlRecoEff_pt         .push_back( h_llpdvtx_sgnlrecoEff_pt        );
+	  h_LLPdVtx_sgnlRecoEff_eta        .push_back( h_llpdvtx_sgnlrecoEff_eta       );
+	  h_LLPdVtx_sgnlRecoEff_phi        .push_back( h_llpdvtx_sgnlrecoEff_phi       );
+	  h_LLPdVtx_sgnlRecoEff_avgMu      .push_back( h_llpdvtx_sgnlrecoEff_avgMu     );
+	  h_LLPdVtx_sgnlRecoEff_descM      .push_back( h_llpdvtx_sgnlrecoEff_descM     );
+	  h_LLPdVtx_sgnlRecoEff_nDesc      .push_back( h_llpdvtx_sgnlrecoEff_nDesc     );
+	  h_LLPdVtx_sgnlRecoEff_nRecoDesc  .push_back( h_llpdvtx_sgnlrecoEff_nRecoDesc );
+	  h_LLPdVtx_sgnlRecoEff_nSelDesc   .push_back( h_llpdvtx_sgnlrecoEff_nSelDesc  );
+	  h_LLPdVtx_sgnlAlgEff_x           .push_back( h_llpdvtx_sgnlalgEff_x          );
+	  h_LLPdVtx_sgnlAlgEff_y           .push_back( h_llpdvtx_sgnlalgEff_y          );
+	  h_LLPdVtx_sgnlAlgEff_z           .push_back( h_llpdvtx_sgnlalgEff_z          );
+	  h_LLPdVtx_sgnlAlgEff_r           .push_back( h_llpdvtx_sgnlalgEff_r          );
+	  h_LLPdVtx_sgnlAlgEff_pt          .push_back( h_llpdvtx_sgnlalgEff_pt         );
+	  h_LLPdVtx_sgnlAlgEff_eta         .push_back( h_llpdvtx_sgnlalgEff_eta        );
+	  h_LLPdVtx_sgnlAlgEff_phi         .push_back( h_llpdvtx_sgnlalgEff_phi        );
+	  h_LLPdVtx_sgnlAlgEff_avgMu       .push_back( h_llpdvtx_sgnlalgEff_avgMu      );
+	  h_LLPdVtx_sgnlAlgEff_descM       .push_back( h_llpdvtx_sgnlalgEff_descM      );
+	  h_LLPdVtx_sgnlAlgEff_nDesc       .push_back( h_llpdvtx_sgnlalgEff_nDesc      );
+	  h_LLPdVtx_sgnlAlgEff_nRecoDesc   .push_back( h_llpdvtx_sgnlalgEff_nRecoDesc  );
+	  h_LLPdVtx_sgnlAlgEff_nSelDesc    .push_back( h_llpdvtx_sgnlalgEff_nSelDesc   );
+	  h_LLPdVtx_sgnlCoreEff_x          .push_back( h_llpdvtx_sgnlcoreEff_x         );
+	  h_LLPdVtx_sgnlCoreEff_y          .push_back( h_llpdvtx_sgnlcoreEff_y         );
+	  h_LLPdVtx_sgnlCoreEff_z          .push_back( h_llpdvtx_sgnlcoreEff_z         );
+	  h_LLPdVtx_sgnlCoreEff_r          .push_back( h_llpdvtx_sgnlcoreEff_r         );
+	  h_LLPdVtx_sgnlCoreEff_pt         .push_back( h_llpdvtx_sgnlcoreEff_pt        );
+	  h_LLPdVtx_sgnlCoreEff_eta        .push_back( h_llpdvtx_sgnlcoreEff_eta       );
+	  h_LLPdVtx_sgnlCoreEff_phi        .push_back( h_llpdvtx_sgnlcoreEff_phi       );
+	  h_LLPdVtx_sgnlCoreEff_avgMu      .push_back( h_llpdvtx_sgnlcoreEff_avgMu     );
+	  h_LLPdVtx_sgnlCoreEff_descM      .push_back( h_llpdvtx_sgnlcoreEff_descM     );
+	  h_LLPdVtx_sgnlCoreEff_nDesc      .push_back( h_llpdvtx_sgnlcoreEff_nDesc     );
+	  h_LLPdVtx_sgnlCoreEff_nRecoDesc  .push_back( h_llpdvtx_sgnlcoreEff_nRecoDesc );
+	  h_LLPdVtx_sgnlCoreEff_nSelDesc   .push_back( h_llpdvtx_sgnlcoreEff_nSelDesc  );
+	  h_LLPdVtx_sgnlSeedEff_x          .push_back( h_llpdvtx_sgnlseedEff_x         );
+	  h_LLPdVtx_sgnlSeedEff_y          .push_back( h_llpdvtx_sgnlseedEff_y         );
+	  h_LLPdVtx_sgnlSeedEff_z          .push_back( h_llpdvtx_sgnlseedEff_z         );
+	  h_LLPdVtx_sgnlSeedEff_r          .push_back( h_llpdvtx_sgnlseedEff_r         );
+	  h_LLPdVtx_sgnlSeedEff_pt         .push_back( h_llpdvtx_sgnlseedEff_pt        );
+	  h_LLPdVtx_sgnlSeedEff_eta        .push_back( h_llpdvtx_sgnlseedEff_eta       );
+	  h_LLPdVtx_sgnlSeedEff_phi        .push_back( h_llpdvtx_sgnlseedEff_phi       );
+	  h_LLPdVtx_sgnlSeedEff_avgMu      .push_back( h_llpdvtx_sgnlseedEff_avgMu     );
+	  h_LLPdVtx_sgnlSeedEff_descM      .push_back( h_llpdvtx_sgnlseedEff_descM     );
+	  h_LLPdVtx_sgnlSeedEff_nDesc      .push_back( h_llpdvtx_sgnlseedEff_nDesc     );
+	  h_LLPdVtx_sgnlSeedEff_nRecoDesc  .push_back( h_llpdvtx_sgnlseedEff_nRecoDesc );
+	  h_LLPdVtx_sgnlSeedEff_nSelDesc   .push_back( h_llpdvtx_sgnlseedEff_nSelDesc  );
+	}
+      } // end if not abcdcutOnly
     }
 
 
@@ -7481,8 +7507,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
     // --- CUTFLOWS --- //
     if ( m_histoInfoSwitch->m_cutflow || m_histoInfoSwitch->m_abcdcutOnly ) {
       // --> jet cutflow
-      std::vector<TH1F*>              h_evt_testcutflow_j,           h_evt_testcutflow_leadj;
-      std::vector<TH1F*>              h_evt_testcutfloweff_j,        h_evt_testcutfloweff_leadj;
+      std::vector<std::vector<TH1F*>> h_evt_testcutflow_j,           h_evt_testcutflow_leadj;
       std::vector<std::vector<TH1F*>> h_evt_testcutflow_svp4j,       h_evt_testcutflow_leadsvp4j;
       std::vector<std::vector<TH1F*>> h_evt_testcutflow_svptj,       h_evt_testcutflow_leadsvptj;
       std::vector<std::vector<TH1F*>> h_evt_testcutflow_svhtj,       h_evt_testcutflow_leadsvhtj;
@@ -7491,6 +7516,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<std::vector<TH1F*>> h_evt_testcutflow_svnjtrkj,    h_evt_testcutflow_leadsvnjtrkj;
       std::vector<std::vector<TH1F*>> h_evt_testcutflow_svtrkj,      h_evt_testcutflow_leadsvtrkj;
       std::vector<std::vector<TH1F*>> h_evt_testcutflow_svnj,        h_evt_testcutflow_leadsvnj;
+      std::vector<std::vector<TH1F*>> h_evt_testcutfloweff_j,        h_evt_testcutfloweff_leadj;
       std::vector<std::vector<TH1F*>> h_evt_testcutfloweff_svp4j,    h_evt_testcutfloweff_leadsvp4j;
       std::vector<std::vector<TH1F*>> h_evt_testcutfloweff_svptj,    h_evt_testcutfloweff_leadsvptj;
       std::vector<std::vector<TH1F*>> h_evt_testcutfloweff_svhtj,    h_evt_testcutfloweff_leadsvhtj;
@@ -7499,16 +7525,16 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       std::vector<std::vector<TH1F*>> h_evt_testcutfloweff_svnjtrkj, h_evt_testcutfloweff_leadsvnjtrkj;
       std::vector<std::vector<TH1F*>> h_evt_testcutfloweff_svtrkj,   h_evt_testcutfloweff_leadsvtrkj;
       std::vector<std::vector<TH1F*>> h_evt_testcutfloweff_svnj,     h_evt_testcutfloweff_leadsvnj;
-      std::vector<TH1F*>              h_evt_cutflow_j,               h_evt_cutflow_leadj;
-      std::vector<TH1F*>              h_evt_cutfloweff_j,            h_evt_cutfloweff_leadj;
+      std::vector<std::vector<TH1F*>> h_evt_cutflow_ej,              h_evt_cutflow_leadej;
+      std::vector<std::vector<TH1F*>> h_evt_cutfloweff_ej,           h_evt_cutfloweff_leadej;
       std::vector<std::string> cj,    clj;
       std::vector<std::string> cjstr, cljstr;
-      cj     .push_back( "jet" );
-      cjstr  .push_back( "jet" );
-      clj    .push_back( "leadJet"  );
-      cljstr .push_back( "lead jet" );
+      cj     .push_back(  "Jet" );
+      cjstr  .push_back( " jet" );
+      clj    .push_back(  "LeadJet"  );
+      cljstr .push_back( " lead jet" );
       if ( m_mc && m_histoInfoSwitch->m_jetTruth ) {
-	std::vector<std::string> mJ    = { "darkMatch",    "nomatch"   };
+	std::vector<std::string> mJ    = { "DarkMatch",    "Nomatch"   };
 	std::vector<std::string> mJstr = { "dark-matched", "unmatched" };
 	for ( size_t imj = 0; imj != mJ.size(); ++imj ) {
 	  cj     .push_back( mJ    [imj] +       "Jet" );
@@ -7519,25 +7545,8 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
       }
       for ( size_t icj = 0; icj != cj.size(); ++icj ) {
 	if ( m_nType1Js ) {
-	  int nbin_cj    = m_nType1Js   / m_LJix;
-	  h_evt_testcutflow_j
-	    .push_back( book( name, "evt_testCutflow_"           + cj [icj], cjstr [icj] + " test cutflow",            nbin_cj, 0, nbin_cj ) );
-	  h_evt_testcutflow_leadj
-	    .push_back( book( name, "evt_testCutflow_"           + clj[icj], cljstr[icj] + " test cutflow",            nbin_cj, 0, nbin_cj ) );
-	  h_evt_testcutfloweff_j
-	    .push_back( book( name, "evt_testCutflowEfficiency_" + cj [icj], cjstr [icj] + " test cutflow efficiency", nbin_cj, 0, nbin_cj ) );
-	  h_evt_testcutfloweff_leadj
-	    .push_back( book( name, "evt_testCutflowEfficiency_" + clj[icj], cljstr[icj] + " test cutflow efficiency", nbin_cj, 0, nbin_cj ) );	
-	  for ( unsigned i1j = 0; i1j != m_nType1Js/m_LJix; ++i1j ) {
-	    std::string tmpjstr = hJstr[i1j*m_LJix];
-	    if ( tmpjstr.empty() ) tmpjstr = "all";
-	    h_evt_testcutflow_j        [icj] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
-	    h_evt_testcutflow_leadj    [icj] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
-	    h_evt_testcutfloweff_j     [icj] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
-	    h_evt_testcutfloweff_leadj [icj] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
-	  }
-	  
 	  unsigned ncjt         = ( m_nType1Js - m_nType1SVJs ) / m_LJix;
+	  unsigned ncjv         = m_nType1SVJs / m_nTypeJSVs    / m_LJix;
 	  unsigned ncjsvp4      = m_svP4J_ix    / m_LJix + ncjt;
 	  unsigned ncjsvpt      = m_svPtJ_ix    / m_LJix + ncjt;
 	  unsigned ncjsvht      = m_svHtJ_ix    / m_LJix + ncjt;
@@ -7546,10 +7555,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  unsigned ncjsvnjt     = m_svNjtrkJ_ix / m_LJix + ncjt;
 	  unsigned ncjsvt       = m_svTrkJ_ix   / m_LJix + ncjt;
 	  unsigned ncjsvn       = m_svNJ_ix     / m_LJix + ncjt;
+	  unsigned nbin_cj      = ncjv                   + ncjt;
 	  unsigned nbin_cjpt    = m_nJSVpt .size()       + ncjt;
 	  unsigned nbin_cjh     = m_nJSVh  .size()       + ncjt;
 	  unsigned nbin_cjsvtrk = m_nJSVtrk.size()       + ncjt;
 	  unsigned nbin_cjsv    = m_nJSV   .size()       + ncjt;
+	  std::vector<TH1F*> h_evt_testcut_j,           h_evt_testcut_leadj;
 	  std::vector<TH1F*> h_evt_testcut_svp4j,       h_evt_testcut_leadsvp4j;
 	  std::vector<TH1F*> h_evt_testcut_svptj,       h_evt_testcut_leadsvptj;
 	  std::vector<TH1F*> h_evt_testcut_svhtj,       h_evt_testcut_leadsvhtj;
@@ -7558,6 +7569,7 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  std::vector<TH1F*> h_evt_testcut_svnjtrkj,    h_evt_testcut_leadsvnjtrkj;
 	  std::vector<TH1F*> h_evt_testcut_svtrkj,      h_evt_testcut_leadsvtrkj;
 	  std::vector<TH1F*> h_evt_testcut_svnj,        h_evt_testcut_leadsvnj;
+	  std::vector<TH1F*> h_evt_testcuteff_j,        h_evt_testcuteff_leadj;
 	  std::vector<TH1F*> h_evt_testcuteff_svp4j,    h_evt_testcuteff_leadsvp4j;
 	  std::vector<TH1F*> h_evt_testcuteff_svptj,    h_evt_testcuteff_leadsvptj;
 	  std::vector<TH1F*> h_evt_testcuteff_svhtj,    h_evt_testcuteff_leadsvhtj;
@@ -7567,130 +7579,159 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  std::vector<TH1F*> h_evt_testcuteff_svtrkj,   h_evt_testcuteff_leadsvtrkj;
 	  std::vector<TH1F*> h_evt_testcuteff_svnj,     h_evt_testcuteff_leadsvnj;
 	  for ( size_t ijsv = 0; ijsv != JSV.size(); ++ijsv ) {
+	    std::string jsvlow = JSV[ijsv]; jsvlow[0] = tolower(jsvlow[0]);
+	    // all test cuts
+	    h_evt_testcut_j
+	      .push_back(   book( name, "evt_testCutflow_"           + jsvlow + cj [icj],
+	    			  JSVstr[ijsv]              + cjstr [icj] + " test cutflow",             nbin_cj,      0, nbin_cj      ) );
+	    h_evt_testcut_leadj
+	      .push_back(   book( name, "evt_testCutflow_"           + jsvlow + clj[icj],
+	    			  JSVstr[ijsv]              + cljstr[icj] + " test cutflow",             nbin_cj,      0, nbin_cj      ) );
+	    h_evt_testcuteff_j
+	      .push_back(   book( name, "evt_testCutflowEfficiency_" + jsvlow + cj [icj],
+	    			  JSVstr[ijsv]              + cjstr [icj] + " test cutflow efficiency",  nbin_cj,      0, nbin_cj      ) );
+	    h_evt_testcuteff_leadj
+	      .push_back(   book( name, "evt_testCutflowEfficiency_" + jsvlow + clj[icj],
+	    			  JSVstr[ijsv]              + cljstr[icj] + " test cutflow efficiency",  nbin_cj,      0, nbin_cj      ) );
 	    // nsv-pt
 	    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvP4Jets ) {
 	      h_evt_testcut_svp4j
-		.push_back( book( name, "evt_testCutflow_"           + cj [icj] + JSV[ijsv] + "P4",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "P4" + cj [icj],
 				  JSVstr[ijsv] + "-pt "     + cjstr [icj] + " test cutflow",            nbin_cjpt,    0, nbin_cjpt    ) );
 	      h_evt_testcut_leadsvp4j
-		.push_back( book( name, "evt_testCutflow_"           + clj[icj] + JSV[ijsv] + "P4",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "P4" + clj[icj],
 				  JSVstr[ijsv] + "-pt "     + cljstr[icj] + " test cutflow",            nbin_cjpt,    0, nbin_cjpt    ) );
 	      h_evt_testcuteff_svp4j
-		.push_back( book( name, "evt_testCutflowEfficiency_" + cj [icj] + JSV[ijsv] + "P4",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "P4" + cj [icj],
 				  JSVstr[ijsv] + "-pt "     + cjstr [icj] + " test cutflow efficiency", nbin_cjpt,    0, nbin_cjpt    ) );
 	      h_evt_testcuteff_leadsvp4j
-		.push_back( book( name, "evt_testCutflowEfficiency_" + clj[icj] + JSV[ijsv] + "P4",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "P4" + clj[icj],
 				  JSVstr[ijsv] + "-pt "     + cljstr[icj] + " test cutflow efficiency", nbin_cjpt,    0, nbin_cjpt    ) );
 	    }
 	    // nsv-sum-pt
 	    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvPtJets ) {
 	      h_evt_testcut_svptj
-		.push_back( book( name, "evt_testCutflow_"           + cj [icj] + JSV[ijsv] + "Pt",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "Pt" + cj [icj],
 				  JSVstr[ijsv] + "-sum-pt " + cjstr [icj] + " test cutflow",            nbin_cjpt,    0, nbin_cjpt    ) );
 	      h_evt_testcut_leadsvptj
-		.push_back( book( name, "evt_testCutflow_"           + clj[icj] + JSV[ijsv] + "Pt",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "Pt" + clj[icj],
 				  JSVstr[ijsv] + "-sum-pt " + cljstr[icj] + " test cutflow",            nbin_cjpt,    0, nbin_cjpt    ) );
 	      h_evt_testcuteff_svptj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + cj [icj] + JSV[ijsv] + "Pt",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "Pt" + cj [icj],
 				  JSVstr[ijsv] + "-sum-pt " + cjstr [icj] + " test cutflow efficiency", nbin_cjpt,    0, nbin_cjpt    ) );
 	      h_evt_testcuteff_leadsvptj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + clj[icj] + JSV[ijsv] + "Pt",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "Pt" + clj[icj],
 				  JSVstr[ijsv] + "-sum-pt " + cljstr[icj] + " test cutflow efficiency", nbin_cjpt,    0, nbin_cjpt    ) );
 	    }
 	    // nsv-sum-Ht
 	    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvHtJets ) {
 	      h_evt_testcut_svhtj
-		.push_back( book( name, "evt_testCutflow_"           + cj [icj] + JSV[ijsv] + "Ht",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "Ht" + cj [icj],
 				  JSVstr[ijsv] + "-sum-Ht " + cjstr [icj] + " test cutflow",            nbin_cjpt,    0, nbin_cjpt    ) );
 	      h_evt_testcut_leadsvhtj
-		.push_back( book( name, "evt_testCutflow_"           + clj[icj] + JSV[ijsv] + "Ht",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "Ht" + clj[icj],
 				  JSVstr[ijsv] + "-sum-Ht " + cljstr[icj] + " test cutflow",            nbin_cjpt,    0, nbin_cjpt    ) );
 	      h_evt_testcuteff_svhtj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + cj [icj] + JSV[ijsv] + "Ht",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "Ht" + cj [icj],
 				  JSVstr[ijsv] + "-sum-Ht " + cjstr [icj] + " test cutflow efficiency", nbin_cjpt,    0, nbin_cjpt    ) );
 	      h_evt_testcuteff_leadsvhtj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + clj[icj] + JSV[ijsv] + "Ht",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "Ht" + clj[icj],
 				  JSVstr[ijsv] + "-sum-Ht " + cljstr[icj] + " test cutflow efficiency", nbin_cjpt,    0, nbin_cjpt    ) );
 	    }
 	    // nsv-sum-H
 	    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvHJets ) {
 	      h_evt_testcut_svhj
-		.push_back( book( name, "evt_testCutflow_"           + cj [icj] + JSV[ijsv] + "H",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "H" + cj [icj],
 				  JSVstr[ijsv] + "-sum-H "  + cjstr [icj] + " test cutflow",            nbin_cjh,     0, nbin_cjh     ) );
 	      h_evt_testcut_leadsvhj
-		.push_back( book( name, "evt_testCutflow_"           + clj[icj] + JSV[ijsv] + "H",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "H" + clj[icj],
 				  JSVstr[ijsv] + "-sum-H "  + cljstr[icj] + " test cutflow",            nbin_cjh,     0, nbin_cjh     ) );
 	      h_evt_testcuteff_svhj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + cj [icj] + JSV[ijsv] + "H",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "H" + cj [icj],
 				  JSVstr[ijsv] + "-sum-H "  + cjstr [icj] + " test cutflow efficiency", nbin_cjh,     0, nbin_cjh     ) );
 	      h_evt_testcuteff_leadsvhj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + clj[icj] + JSV[ijsv] + "H",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "H" + clj[icj],
 				  JSVstr[ijsv] + "-sum-H "  + cljstr[icj] + " test cutflow efficiency", nbin_cjh,     0, nbin_cjh     ) );
 	    }
 	    // nsv-ntrk
 	    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvNtrkJets ) {
 	      h_evt_testcut_svntrkj
-		.push_back( book( name, "evt_testCutflow_"           + cj [icj] + JSV[ijsv] + "Ntrk",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "Ntrk" + cj [icj],
 				  JSVstr[ijsv] + "-Ntrk "   + cjstr [icj] + " test cutflow",            nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	      h_evt_testcut_leadsvntrkj
-		.push_back( book( name, "evt_testCutflow_"           + clj[icj] + JSV[ijsv] + "Ntrk",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "Ntrk" + clj[icj],
 				  JSVstr[ijsv] + "-Ntrk "   + cljstr[icj] + " test cutflow",            nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	      h_evt_testcuteff_svntrkj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + cj [icj] + JSV[ijsv] + "Ntrk",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "Ntrk" + cj [icj],
 				  JSVstr[ijsv] + "-Ntrk "   + cjstr [icj] + " test cutflow efficiency", nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	      h_evt_testcuteff_leadsvntrkj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + clj[icj] + JSV[ijsv] + "Ntrk",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "Ntrk" + clj[icj],
 				  JSVstr[ijsv] + "-Ntrk "   + cljstr[icj] + " test cutflow efficiency", nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	    }
 	    // nsv-njtrk
 	    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvNjtrkJets ) {
 	      h_evt_testcut_svnjtrkj
-		.push_back( book( name, "evt_testCutflow_"           + cj [icj] + JSV[ijsv] + "Njtrk",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "Njtrk" + cj [icj],
 				  JSVstr[ijsv] + "-Njtrk "  + cjstr [icj] + " test cutflow",            nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	      h_evt_testcut_leadsvnjtrkj
-		.push_back( book( name, "evt_testCutflow_"           + clj[icj] + JSV[ijsv] + "Njtrk",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "Njtrk" + clj[icj],
 				  JSVstr[ijsv] + "-Njtrk "  + cljstr[icj] + " test cutflow",            nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	      h_evt_testcuteff_svnjtrkj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + cj [icj] + JSV[ijsv] + "Njtrk",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "Njtrk" + cj [icj],
 				  JSVstr[ijsv] + "-Njtrk "  + cjstr [icj] + " test cutflow efficiency", nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	      h_evt_testcuteff_leadsvnjtrkj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + clj[icj] + JSV[ijsv] + "Njtrk",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "Njtrk" + clj[icj],
 				  JSVstr[ijsv] + "-Njtrk "  + cljstr[icj] + " test cutflow efficiency", nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	    }
 	    // nsv-trk
 	    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvTrkJets   ) {
 	      h_evt_testcut_svtrkj
-		.push_back( book( name, "evt_testCutflow_"           + cj[icj] + JSV[ijsv] + "Trk",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "Trk" + cj[icj],
 				  JSVstr[ijsv] + "-trk "    + cjstr [icj] + " test cutflow",            nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	      h_evt_testcut_leadsvtrkj
-		.push_back( book( name, "evt_testCutflow_"           + clj[icj] + JSV[ijsv] + "Trk",
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "Trk" + clj[icj],
 				  JSVstr[ijsv] + "-trk "    + cljstr[icj] + " test cutflow",            nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	      h_evt_testcuteff_svtrkj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + cj [icj] + JSV[ijsv] + "Trk",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "Trk" + cj [icj],
 				  JSVstr[ijsv] + "-trk "    + cjstr [icj] + " test cutflow efficiency", nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	      h_evt_testcuteff_leadsvtrkj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + clj[icj] + JSV[ijsv] + "Trk",
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "Trk" + clj[icj],
 				  JSVstr[ijsv] + "-trk "    + cljstr[icj] + " test cutflow efficiency", nbin_cjsvtrk, 0, nbin_cjsvtrk ) );
 	    }
 	    // nsv
 	    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvJets      ) {
 	      h_evt_testcut_svnj
-		.push_back( book( name, "evt_testCutflow_"           + cj [icj] + JSV[ijsv],
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "N" + cj [icj],
 				  JSVstr[ijsv] + " "        + cjstr[icj] + " test cutflow",             nbin_cjsv,    0, nbin_cjsv    ) );
 	      h_evt_testcut_leadsvnj
-		.push_back( book( name, "evt_testCutflow_"           + clj[icj] + JSV[ijsv],
+		.push_back( book( name, "evt_testCutflow_"           + jsvlow + "N" + clj[icj],
 				  JSVstr[ijsv] + " "        + cljstr[icj] + " test cutflow",            nbin_cjsv,    0, nbin_cjsv    ) );
 	      h_evt_testcuteff_svnj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + cj [icj] + JSV[ijsv],
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "N" + cj [icj],
 				  JSVstr[ijsv] + " "        + cjstr [icj] + " test cutflow efficiency", nbin_cjsv,    0, nbin_cjsv    ) );
 	      h_evt_testcuteff_leadsvnj
-		.push_back( book( name, "evt_testCutflowEfficiency_" + clj[icj] + JSV[ijsv],
+		.push_back( book( name, "evt_testCutflowEfficiency_" + jsvlow + "N" + clj[icj],
 				  JSVstr[ijsv] + " "        + cljstr[icj] + " test cutflow efficiency", nbin_cjsv,    0, nbin_cjsv    ) );
 	    }
 	    // --> label bins
 	    for ( unsigned i1j = 0; i1j != m_nType1Js/m_LJix; ++i1j ) {
 	      std::string tmpjstr = hJstr[i1j*m_LJix];
 	      if ( tmpjstr.empty() ) tmpjstr = "all";
+	      // all test cuts
+	      if ( ( i1j < ncjt ) ||
+		   ( i1j >=  ncjsvp4 + m_nJSVpt .size()*ijsv && i1j <  ncjsvp4 + m_nJSVpt .size() * (ijsv+1) ) ||
+		   ( i1j >=  ncjsvpt + m_nJSVpt .size()*ijsv && i1j <  ncjsvpt + m_nJSVpt .size() * (ijsv+1) ) ||
+		   ( i1j >=  ncjsvht + m_nJSVpt .size()*ijsv && i1j <  ncjsvht + m_nJSVpt .size() * (ijsv+1) ) ||
+		   ( i1j >=   ncjsvh + m_nJSVh  .size()*ijsv && i1j <   ncjsvh + m_nJSVh  .size() * (ijsv+1) ) ||
+		   ( i1j >=  ncjsvnt + m_nJSVtrk.size()*ijsv && i1j <  ncjsvnt + m_nJSVtrk.size() * (ijsv+1) ) ||
+		   ( i1j >= ncjsvnjt + m_nJSVtrk.size()*ijsv && i1j < ncjsvnjt + m_nJSVtrk.size() * (ijsv+1) ) ||
+		   ( i1j >=   ncjsvt + m_nJSVtrk.size()*ijsv && i1j <   ncjsvt + m_nJSVtrk.size() * (ijsv+1) ) ||
+		   ( i1j >=   ncjsvn + m_nJSV   .size()*ijsv && i1j <   ncjsvn + m_nJSV   .size() * (ijsv+1) ) ) {
+		h_evt_testcut_j              [ijsv] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
+		h_evt_testcut_leadj          [ijsv] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
+		h_evt_testcuteff_j           [ijsv] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
+		h_evt_testcuteff_leadj       [ijsv] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
+	      }
 	      // nsv-pt
 	      if ( ( i1j < ncjt ) || ( i1j >=  ncjsvp4+m_nJSVpt .size()*ijsv && i1j <  ncjsvp4+m_nJSVpt .size()*(ijsv+1) ) )
 		if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvP4Jets    ) {
@@ -7756,7 +7797,12 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 		  h_evt_testcuteff_leadsvnj     [ijsv] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
 		}
 	    }
-	  }
+	  } // end loop over JSVs
+	  // all test cuts
+	  h_evt_testcutflow_j                 .push_back( h_evt_testcut_j               );
+	  h_evt_testcutflow_leadj             .push_back( h_evt_testcut_leadj           );
+	  h_evt_testcutfloweff_j              .push_back( h_evt_testcuteff_j            );
+	  h_evt_testcutfloweff_leadj          .push_back( h_evt_testcuteff_leadj        );
 	  // nsv-pt
 	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvP4Jets    ) {
 	    h_evt_testcutflow_svp4j           .push_back( h_evt_testcut_svp4j           );
@@ -7813,32 +7859,47 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	    h_evt_testcutfloweff_svnj         .push_back( h_evt_testcuteff_svnj         );
 	    h_evt_testcutfloweff_leadsvnj     .push_back( h_evt_testcuteff_leadsvnj     );
 	  }
-	  
 	} // end if m_nType1Js
+
+	// --> emerging jet cuts
+	unsigned nbin_ej = hEJstr.size() / m_LJix;
+	std::vector<TH1F*> h_evt_cut_ej,    h_evt_cut_leadej;
+	std::vector<TH1F*> h_evt_cuteff_ej, h_evt_cuteff_leadej;
+	for ( size_t ijsv = 0; ijsv != JSV.size(); ++ijsv ) {
+	  h_evt_cut_ej
+	    .push_back( book( name, "evt_cutflow_emerging" + JSV[ijsv] + cj [icj],
+			      "Emerging (" + JSV[ijsv] + ") " + cjstr [icj] + " cutflow",            nbin_ej, 0, nbin_ej ) );
+	  h_evt_cut_leadej
+	    .push_back( book( name, "evt_cutflow_emerging" + JSV[ijsv] + clj[icj],
+			      "Emerging (" + JSV[ijsv] + ") " + cljstr[icj] + " cutflow",            nbin_ej, 0, nbin_ej ) );
+	  h_evt_cuteff_ej
+	    .push_back( book( name, "evt_cutflowEfficiency_emerging" + JSV[ijsv] + cj [icj],
+			      "Emerging (" + JSV[ijsv] + ") " + cjstr [icj] + " cutflow efficiency", nbin_ej, 0, nbin_ej ) );
+	  h_evt_cuteff_leadej
+	    .push_back( book( name, "evt_cutflowEfficiency_emerging" + JSV[ijsv] + clj[icj],
+			      "Emerging (" + JSV[ijsv] + ") " + cljstr[icj] + " cutflow efficiency", nbin_ej, 0, nbin_ej ) );
+	  // --> label bins
+	  for ( unsigned iej = 0; iej != nbin_ej; ++iej ) {
+	    std::string tmpjstr = hEJstr[iej*m_LJix];
+	    if ( tmpjstr.empty() ) tmpjstr = "all";
+	    h_evt_cut_ej        [ijsv] ->GetXaxis()->FindBin( (tmpjstr ).c_str() );
+	    h_evt_cut_leadej    [ijsv] ->GetXaxis()->FindBin( (tmpjstr ).c_str() );
+	    h_evt_cuteff_ej     [ijsv] ->GetXaxis()->FindBin( (tmpjstr ).c_str() );
+	    h_evt_cuteff_leadej [ijsv] ->GetXaxis()->FindBin( (tmpjstr ).c_str() );
+	  }
+	}
+	h_evt_cutflow_ej        .push_back( h_evt_cut_ej        );
+	h_evt_cutflow_leadej    .push_back( h_evt_cut_leadej    );
+	h_evt_cutfloweff_ej     .push_back( h_evt_cuteff_ej     );
+	h_evt_cutfloweff_leadej .push_back( h_evt_cuteff_leadej );
 	
-	// h_evt_cutflow_j
-	// 	.push_back( book( name, "evt_cutflow_"           + cj [icj], cjstr [icj] + " cutflow",            hEJstr.size(), 0, hEJstr.size() ) );
-	// h_evt_cutflow_leadj
-	// 	.push_back( book( name, "evt_cutflow_"           + clj[icj], cljstr[icj] + " cutflow",            hEJstr.size(), 0, hEJstr.size() ) );
-	// h_evt_cutfloweff_j
-	// 	.push_back( book( name, "evt_cutflowEfficiency_" + cj [icj], cjstr [icj] + " cutflow efficiency", hEJstr.size(), 0, hEJstr.size() ) );
-	// h_evt_cutfloweff_leadj
-	// 	.push_back( book( name, "evt_cutflowEfficiency_" + clj[icj], cljstr[icj] + " cutflow efficiency", hEJstr.size(), 0, hEJstr.size() ) );
-	// for ( const auto& ej : hEJstr ) {
-	// 	std::string tmpjstr = ej;
-	// 	if ( tmpjstr.empty() ) tmpjstr = "all";
-	// 	h_evt_cutflow_j        [icj] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
-	// 	h_evt_cutflow_leadj    [icj] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
-	// 	h_evt_cutfloweff_j     [icj] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
-	// 	h_evt_cutfloweff_leadj [icj] ->GetXaxis()->FindBin( ( tmpjstr ).c_str() );
-	// }
-      }
+      } // end loop over cutflow types
+      
       if ( m_nType1Js ) {
-	h_evt_testCutflow_jet               .push_back( h_evt_testcutflow_j        );
-	h_evt_testCutflow_leadjet           .push_back( h_evt_testcutflow_leadj    );
-	h_evt_testCutflowEfficiency_jet     .push_back( h_evt_testcutfloweff_j     );
-	h_evt_testCutflowEfficiency_leadjet .push_back( h_evt_testcutfloweff_leadj );
-	
+	h_evt_testCutflow_jet                        .push_back( h_evt_testcutflow_j               );
+	h_evt_testCutflow_leadJet                    .push_back( h_evt_testcutflow_leadj           );
+	h_evt_testCutflowEfficiency_jet              .push_back( h_evt_testcutfloweff_j            );
+	h_evt_testCutflowEfficiency_leadJet          .push_back( h_evt_testcutfloweff_leadj        );
 	if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvP4Jets    ) {
 	  h_evt_testCutflow_svP4Jet                  .push_back( h_evt_testcutflow_svp4j           );
 	  h_evt_testCutflow_leadSvP4Jet              .push_back( h_evt_testcutflow_leadsvp4j       );
@@ -7888,10 +7949,10 @@ StatusCode EJsHistogramManager :: initialize ( const std::string& outFileName, c
 	  h_evt_testCutflowEfficiency_leadSvNJet     .push_back( h_evt_testcutfloweff_leadsvnj     );
 	}
       }
-      // h_evt_cutflow_jet                     .push_back( h_evt_cutflow_j            );
-      // h_evt_cutflow_leadjet                 .push_back( h_evt_cutflow_leadj        );
-      // h_evt_cutflowEfficiency_jet           .push_back( h_evt_cutfloweff_j         );
-      // h_evt_cutflowEfficiency_leadjet       .push_back( h_evt_cutfloweff_leadj     );
+      h_evt_cutflow_emergingJet                      .push_back( h_evt_cutflow_ej                  );
+      h_evt_cutflow_leadEmergingJet                  .push_back( h_evt_cutflow_leadej              );
+      h_evt_cutflowEfficiency_emergingJet            .push_back( h_evt_cutfloweff_ej               );
+      h_evt_cutflowEfficiency_leadEmergingJet        .push_back( h_evt_cutfloweff_leadej           );
       
       // --> DV cutflow
       // --> ADD "ALL" BIN (so we can see how initial cleaning cuts affect cutflow)
@@ -8147,8 +8208,21 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
     if      ( region.type == EJsHelper::SEARCH_MINUS_ONE ) { if ( !m_searchMinusOne ) continue; }
     else if ( region.type == EJsHelper::SEARCH           ) { if ( !m_search         ) continue; }
     else if ( region.type == EJsHelper::VALIDATION       ) { if ( !m_valid          ) continue; }
-    else if ( region.type == EJsHelper::SIGNAL           ) { if ( !m_signal || ( !m_mc && !m_unblind ) ) continue; }
     // --> skip signal events in data until we unblind
+    else if ( region.type == EJsHelper::SIGNAL           ) { if ( !m_signal || ( !m_mc && !m_unblind ) ) continue; }
+    // --> isolate region of available mc dijet background pt-slice (lead jet b/w 400-800 GeV)
+    else if ( region.type == EJsHelper::JZ4W_SLICE_SEARCH_MINUS_ONE ) {
+      if ( !m_searchMinusOne ) continue; 
+      if ( m_jet_pt->at(0) < 400 || m_jet_pt ->at(0) > 800 ) continue;
+    }
+    else if ( region.type == EJsHelper::JZ4W_SLICE_SEARCH           ) {
+      if ( !m_search         ) continue; 
+      if ( m_jet_pt->at(0) < 400 || m_jet_pt ->at(0) > 800 ) continue;
+    }
+    else if ( region.type == EJsHelper::JZ4W_SLICE_VALIDATION       ) {
+      if ( !m_valid          ) continue; 
+      if ( m_jet_pt->at(0) < 400 || m_jet_pt ->at(0) > 800 ) continue;
+    }
 
     bool doHists = true;
     if ( region.type == EJsHelper::SEARCH || region.type == EJsHelper::SEARCH_MINUS_ONE )
@@ -9221,18 +9295,10 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	  if ( m_nType1Js ) {
 	    std::vector<int> jet_testCut;
 	    getJetTypes( i, jet_testCut, base_dv, false, false, false );
-	    std::vector<int>     jetTestCut ( jet_testCut.size() / m_nType1Js, 0 );
-	    std::vector<int> leadjetTestCut ( jet_testCut.size() / m_nType1Js, 0 );
-	    for ( size_t ijc = 0; ijc != jet_testCut.size() / m_LJix; ++ijc ) {
-	      unsigned imodjc = ijc % (m_nType1Js/m_LJix);
-	      jetTestCut    [ijc*m_LJix/m_nType1Js] += jet_testCut[ijc*m_LJix  ];
-	      leadjetTestCut[ijc*m_LJix/m_nType1Js] += jet_testCut[ijc*m_LJix+1];
-	      h_evt_testCutflow_jet       [ireg][ijc*m_LJix/m_nType1Js]
-		->Fill( imodjc, (     jetTestCut[ijc*m_LJix/m_nType1Js] / ( imodjc + 1 ) ) * weight );
-	      h_evt_testCutflow_leadjet   [ireg][ijc*m_LJix/m_nType1Js]
-		->Fill( imodjc, ( leadjetTestCut[ijc*m_LJix/m_nType1Js] / ( imodjc + 1 ) ) * weight );
-	    }
-
+	    std::vector<std::vector<int>>            jetTestCut
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
+	    std::vector<std::vector<int>>        leadJetTestCut
+	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>        svP4JetTestCut
 	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    std::vector<std::vector<int>>    leadSvP4JetTestCut
@@ -9266,6 +9332,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    std::vector<std::vector<int>>     leadSvNJetTestCut
 	      ( m_nTypeJSVs, std::vector<int> ( jet_testCut.size() / m_nType1Js, 0 ) );
 	    unsigned ncjt     = ( m_nType1Js - m_nType1SVJs ) / m_LJix;
+	    unsigned ncjv     = m_nType1SVJs / m_nTypeJSVs    / m_LJix;
 	    unsigned ncjsvp4  = m_svP4J_ix    / m_LJix + ncjt;
 	    unsigned ncjsvpt  = m_svPtJ_ix    / m_LJix + ncjt;
 	    unsigned ncjsvht  = m_svHtJ_ix    / m_LJix + ncjt;
@@ -9275,6 +9342,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    unsigned ncjsvt   = m_svTrkJ_ix   / m_LJix + ncjt;
 	    unsigned ncjsvn   = m_svNJ_ix     / m_LJix + ncjt;
 	    for ( unsigned ijsv = 0; ijsv != m_nTypeJSVs; ++ijsv ) {
+	      unsigned ibin         = 0;
 	      unsigned ibin_svp4    = 0;
 	      unsigned ibin_svpt    = 0;
 	      unsigned ibin_svht    = 0;
@@ -9285,6 +9353,7 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	      unsigned ibin_svn     = 0;
 	      for ( size_t ijc = 0; ijc != jet_testCut.size() / m_LJix; ++ijc ) {
 		unsigned imodjc          = ijc          % ( m_nType1Js / m_LJix     );
+		unsigned imodbin         = ibin         % ( ncjt + ncjv             );
 		unsigned imodbin_svp4    = ibin_svp4    % ( ncjt + m_nJSVpt .size() );
 		unsigned imodbin_svpt    = ibin_svpt    % ( ncjt + m_nJSVpt .size() );
 		unsigned imodbin_svht    = ibin_svht    % ( ncjt + m_nJSVpt .size() );
@@ -9293,6 +9362,24 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 		unsigned imodbin_svnjtrk = ibin_svnjtrk % ( ncjt + m_nJSVtrk.size() );
 		unsigned imodbin_svtrk   = ibin_svtrk   % ( ncjt + m_nJSVtrk.size() );
 		unsigned imodbin_svn     = ibin_svn     % ( ncjt + m_nJSV   .size() );
+		// all test cuts
+		if ( ( imodjc < ncjt ) ||
+		     ( imodjc >= ncjsvp4+m_nJSVpt  .size()*ijsv && imodjc < ncjsvp4+m_nJSVpt  .size()*(ijsv+1) ) ||
+		     ( imodjc >= ncjsvpt+m_nJSVpt  .size()*ijsv && imodjc < ncjsvpt+m_nJSVpt  .size()*(ijsv+1) ) ||
+		     ( imodjc >= ncjsvht+m_nJSVpt  .size()*ijsv && imodjc < ncjsvht+m_nJSVpt  .size()*(ijsv+1) ) ||
+		     ( imodjc >= ncjsvh+m_nJSVh    .size()*ijsv && imodjc < ncjsvh+m_nJSVh    .size()*(ijsv+1) ) ||
+		     ( imodjc >= ncjsvnt+m_nJSVtrk .size()*ijsv && imodjc < ncjsvnt+m_nJSVtrk .size()*(ijsv+1) ) ||
+		     ( imodjc >= ncjsvnjt+m_nJSVtrk.size()*ijsv && imodjc < ncjsvnjt+m_nJSVtrk.size()*(ijsv+1) ) ||
+		     ( imodjc >= ncjsvt+m_nJSVtrk  .size()*ijsv && imodjc < ncjsvt+m_nJSVtrk  .size()*(ijsv+1) ) ||
+		     ( imodjc >= ncjsvn+m_nJSV     .size()*ijsv && imodjc < ncjsvn+m_nJSV     .size()*(ijsv+1) ) ) {
+		  jetTestCut     [ijsv][ijc*m_LJix/m_nType1Js] += jet_testCut[ijc*m_LJix  ];
+		  leadJetTestCut [ijsv][ijc*m_LJix/m_nType1Js] += jet_testCut[ijc*m_LJix+1];
+		  h_evt_testCutflow_jet     [ireg][ijc*m_LJix/m_nType1Js][ijsv]
+		    ->Fill( imodbin, (     jetTestCut[ijsv][ijc*m_LJix/m_nType1Js] / ( imodbin + 1 ) ) * weight );
+		  h_evt_testCutflow_leadJet [ireg][ijc*m_LJix/m_nType1Js][ijsv]
+		    ->Fill( imodbin, ( leadJetTestCut[ijsv][ijc*m_LJix/m_nType1Js] / ( imodbin + 1 ) ) * weight );
+		  ++ibin;
+		}
 		// nsv-pt
 		if ( ( imodjc < ncjt ) ||
 		     ( imodjc >= ncjsvp4+m_nJSVpt.size()*ijsv && imodjc < ncjsvp4+m_nJSVpt.size()*(ijsv+1) ) ) {
@@ -9401,9 +9488,32 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    } // end loop over JSVs
 	  } // end if m_nType1Js
 	
-	  // // --> "emerging" cuts
-	  // std::vector<int> jet_cut;
-	  // getJetTypes( i, jet_cut, base_dv, false, true, true );
+	  // --> "emerging" cuts
+	  std::vector<int> jet_cut;
+	  getJetTypes( i, jet_cut, base_dv, false, false, true );
+	  unsigned n_ejcuts = jet_cut.size() / h_evt_cutflow_emergingJet [ireg].size();
+	  unsigned nbinej   = n_ejcuts / m_LJix / m_nTypeJSVs;
+	  std::vector<std::vector<int>> jetCut     ( m_nTypeJSVs, std::vector<int> ( jet_cut.size() / n_ejcuts, 0 ) );
+	  std::vector<std::vector<int>> leadJetCut ( m_nTypeJSVs, std::vector<int> ( jet_cut.size() / n_ejcuts, 0 ) );
+	  for ( unsigned ijsv = 0; ijsv != m_nTypeJSVs; ++ijsv ) {
+	    unsigned  ibin = 0;
+	    for ( size_t ijc = 0; ijc != jet_cut.size() / m_LJix; ++ijc ) {
+	      unsigned imodjc  = ijc % ( n_ejcuts / m_LJix );
+	      unsigned imodbin = ibin % nbinej;
+	      std::cout << ijsv << " " << ijc << " " << imodjc << " " << nbinej*ijsv << " " << nbinej*(ijsv+1) << " " << imodbin << std::endl;
+	      if ( imodjc >= nbinej*ijsv && imodjc < nbinej*(ijsv+1) ) {
+		jetCut     [ijsv][ijc*m_LJix/n_ejcuts] += jet_cut[ijc*m_LJix  ];
+		leadJetCut [ijsv][ijc*m_LJix/n_ejcuts] += jet_cut[ijc*m_LJix+1];
+		h_evt_cutflow_emergingJet     [ireg][ijc*m_LJix/n_ejcuts][ijsv]
+		  ->Fill( imodbin, (     jetCut[ijsv][ijc*m_LJix/n_ejcuts] / ( imodbin + 1 ) ) * weight );
+		h_evt_cutflow_leadEmergingJet [ireg][ijc*m_LJix/n_ejcuts][ijsv]
+		  ->Fill( imodbin, ( leadJetCut[ijsv][ijc*m_LJix/n_ejcuts] / ( imodbin + 1 ) ) * weight );
+		++ibin;
+	      }	
+	    }
+	  }
+
+
 	  // int n_ejCuts = jet_cut.size() / h_evt_cutflow_jet [ireg].size();
 	  // std::vector<int>     jetCut ( h_evt_cutflow_jet [ireg].size(), 0 );
 	  // std::vector<int> leadjetCut ( h_evt_cutflow_jet [ireg].size(), 0 );
@@ -9756,6 +9866,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    h_tp_childPdgId  [ireg][itp] ->Fill( fabs( m_tp_child_pdgId  ->at(i).at(j) ), weight );
       	} // end loop over truth particle types
 
+	if ( !doHists || m_histoInfoSwitch->m_abcdcutOnly ) continue;
+	
 	// do reconstruction efficiency studies
 	if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llptrkRecoEff ) {
 	  // do fiducial selections: pt > 1 GeV, |eta| < 2.5, r-prod < 440 mm, charge = +-1, from llp decay
@@ -10003,6 +10115,8 @@ StatusCode EJsHistogramManager :: execute ( TTree* tree, Long64_t treeEntry, con
 	    } // end loop over descendants
 	  } // end if llpDesc
 
+	  if ( !doHists || m_histoInfoSwitch->m_abcdcutOnly ) continue;
+	  
 	  // do reconstruction efficiency studies
 	  if ( m_histoInfoSwitch->m_llpRecoEff || m_histoInfoSwitch->m_llpvtxRecoEff ) {
 
@@ -11282,100 +11396,100 @@ StatusCode EJsHistogramManager :: finalize ( const std::vector<EJsHelper::Region
       //float  jcount = h_evt_cutflow_jet     [ireg][icj] ->GetBinContent(1);
       //float ljcount = h_evt_cutflow_leadjet [ireg][icj] ->GetBinContent(1);
       for ( size_t icj = 0; icj != h_evt_testCutflow_jet [ireg].size(); ++icj ) {
-	float  jcount = h_evt_testCutflow_jet     [ireg][icj] ->GetBinContent(1);
-	float ljcount = h_evt_testCutflow_leadjet [ireg][icj] ->GetBinContent(1);
+      	float  jcount = h_evt_testCutflow_jet     [ireg][icj][0] ->GetBinContent(1);
+      	float ljcount = h_evt_testCutflow_leadJet [ireg][icj][0] ->GetBinContent(1);
 	// --> test jet cuts
 	if ( m_nType1Js )
-	  for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_jet [ireg][icj] ->GetNbinsX(); ++ibin ) {
-	    float ibin_jcut  = h_evt_testCutflow_jet     [ireg][icj] ->GetBinContent(ibin+1);
-	    float ibin_ljcut = h_evt_testCutflow_leadjet [ireg][icj] ->GetBinContent(ibin+1);
-	    h_evt_testCutflowEfficiency_jet        [ireg][icj] ->Fill( ibin, ibin_jcut  /  jcount );
-	    h_evt_testCutflowEfficiency_leadjet    [ireg][icj] ->Fill( ibin, ibin_ljcut / ljcount );
+      	for ( unsigned ijsv = 0; ijsv != m_nTypeJSVs; ++ijsv ) {
+	  for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_jet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
+	    float ibin_jcut  = h_evt_testCutflow_jet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+	    float ibin_ljcut = h_evt_testCutflow_leadJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+	    h_evt_testCutflowEfficiency_jet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  /  jcount );
+	    h_evt_testCutflowEfficiency_leadJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
 	  }
-	for ( unsigned ijsv = 0; ijsv != m_nTypeJSVs; ++ijsv ) {
-	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvP4Jets ) {
-	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svP4Jet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
-	      float ibin_jcut  = h_evt_testCutflow_svP4Jet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      float ibin_ljcut = h_evt_testCutflow_leadSvP4Jet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      h_evt_testCutflowEfficiency_svP4Jet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
-	      h_evt_testCutflowEfficiency_leadSvP4Jet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
-	    }
-	  }
-	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvPtJets ) {
-	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svPtJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
-	      float ibin_jcut  = h_evt_testCutflow_svPtJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      float ibin_ljcut = h_evt_testCutflow_leadSvPtJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      h_evt_testCutflowEfficiency_svPtJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
-	      h_evt_testCutflowEfficiency_leadSvPtJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
-	    }
-	  }
-	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvHtJets ) {
-	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svHtJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
-	      float ibin_jcut  = h_evt_testCutflow_svHtJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      float ibin_ljcut = h_evt_testCutflow_leadSvHtJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      h_evt_testCutflowEfficiency_svHtJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
-	      h_evt_testCutflowEfficiency_leadSvHtJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
-	    }
-	  }
-	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvHJets ) {
-	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svHJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
-	      float ibin_jcut  = h_evt_testCutflow_svHJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      float ibin_ljcut = h_evt_testCutflow_leadSvHJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      h_evt_testCutflowEfficiency_svHJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
-	      h_evt_testCutflowEfficiency_leadSvHJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
-	    }
-	  }
-	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvNtrkJets ) {
-	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svNtrkJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
-	      float ibin_jcut  = h_evt_testCutflow_svNtrkJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      float ibin_ljcut = h_evt_testCutflow_leadSvNtrkJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      h_evt_testCutflowEfficiency_svNtrkJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
-	      h_evt_testCutflowEfficiency_leadSvNtrkJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
-	    }
-	  }
-	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvNjtrkJets ) {
-	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svNjtrkJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
-	      float ibin_jcut  = h_evt_testCutflow_svNjtrkJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      float ibin_ljcut = h_evt_testCutflow_leadSvNjtrkJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      h_evt_testCutflowEfficiency_svNjtrkJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
-	      h_evt_testCutflowEfficiency_leadSvNjtrkJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
-	    }
-	  }
-	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvTrkJets ) {
-	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svTrkJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
-	      float ibin_jcut  = h_evt_testCutflow_svTrkJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      float ibin_ljcut = h_evt_testCutflow_leadSvTrkJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      h_evt_testCutflowEfficiency_svTrkJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
-	      h_evt_testCutflowEfficiency_leadSvTrkJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
-	    }
-	  }
-	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvJets ) {
-	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svNJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
-	      float ibin_jcut  = h_evt_testCutflow_svNJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      float ibin_ljcut = h_evt_testCutflow_leadSvNJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
-	      h_evt_testCutflowEfficiency_svNJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
-	      h_evt_testCutflowEfficiency_leadSvNJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
-	    }
-	  }
-	}
-	// // --> emerging jet cuts
-	// for ( int ibin = 0; ibin != h_evt_cutflowEfficiency_jet [ireg][icj] ->GetNbinsX(); ++ibin ) {
-	// 	float ibin_jcut  = h_evt_cutflow_jet     [ireg][icj] ->GetBinContent(ibin+1);
-	// 	float ibin_ljcut = h_evt_cutflow_leadjet [ireg][icj] ->GetBinContent(ibin+1);
-	// 	h_evt_cutflowEfficiency_jet     [ireg][icj] ->Fill( ibin, ibin_jcut  /  jcount );
-	// 	h_evt_cutflowEfficiency_leadjet [ireg][icj] ->Fill( ibin, ibin_ljcut / ljcount );
-	// }
+      	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvP4Jets ) {
+      	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svP4Jet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
+      	      float ibin_jcut  = h_evt_testCutflow_svP4Jet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      float ibin_ljcut = h_evt_testCutflow_leadSvP4Jet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      h_evt_testCutflowEfficiency_svP4Jet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
+      	      h_evt_testCutflowEfficiency_leadSvP4Jet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
+      	    }
+      	  }
+      	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvPtJets ) {
+      	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svPtJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
+      	      float ibin_jcut  = h_evt_testCutflow_svPtJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      float ibin_ljcut = h_evt_testCutflow_leadSvPtJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      h_evt_testCutflowEfficiency_svPtJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
+      	      h_evt_testCutflowEfficiency_leadSvPtJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
+      	    }
+      	  }
+      	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvHtJets ) {
+      	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svHtJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
+      	      float ibin_jcut  = h_evt_testCutflow_svHtJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      float ibin_ljcut = h_evt_testCutflow_leadSvHtJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      h_evt_testCutflowEfficiency_svHtJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
+      	      h_evt_testCutflowEfficiency_leadSvHtJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
+      	    }
+      	  }
+      	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvHJets ) {
+      	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svHJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
+      	      float ibin_jcut  = h_evt_testCutflow_svHJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      float ibin_ljcut = h_evt_testCutflow_leadSvHJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      h_evt_testCutflowEfficiency_svHJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
+      	      h_evt_testCutflowEfficiency_leadSvHJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
+      	    }
+      	  }
+      	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvNtrkJets ) {
+      	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svNtrkJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
+      	      float ibin_jcut  = h_evt_testCutflow_svNtrkJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      float ibin_ljcut = h_evt_testCutflow_leadSvNtrkJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      h_evt_testCutflowEfficiency_svNtrkJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
+      	      h_evt_testCutflowEfficiency_leadSvNtrkJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
+      	    }
+      	  }
+      	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvNjtrkJets ) {
+      	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svNjtrkJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
+      	      float ibin_jcut  = h_evt_testCutflow_svNjtrkJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      float ibin_ljcut = h_evt_testCutflow_leadSvNjtrkJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      h_evt_testCutflowEfficiency_svNjtrkJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
+      	      h_evt_testCutflowEfficiency_leadSvNjtrkJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
+      	    }
+      	  }
+      	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvTrkJets ) {
+      	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svTrkJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
+      	      float ibin_jcut  = h_evt_testCutflow_svTrkJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      float ibin_ljcut = h_evt_testCutflow_leadSvTrkJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      h_evt_testCutflowEfficiency_svTrkJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
+      	      h_evt_testCutflowEfficiency_leadSvTrkJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
+      	    }
+      	  }
+      	  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvJets ) {
+      	    for ( int ibin = 0; ibin != h_evt_testCutflowEfficiency_svNJet [ireg][icj][ijsv] ->GetNbinsX(); ++ibin ) {
+      	      float ibin_jcut  = h_evt_testCutflow_svNJet     [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      float ibin_ljcut = h_evt_testCutflow_leadSvNJet [ireg][icj][ijsv] ->GetBinContent(ibin+1);
+      	      h_evt_testCutflowEfficiency_svNJet     [ireg][icj][ijsv] ->Fill( ibin, ibin_jcut  / jcount  );
+      	      h_evt_testCutflowEfficiency_leadSvNJet [ireg][icj][ijsv] ->Fill( ibin, ibin_ljcut / ljcount );
+      	    }
+      	  }
+      	}
+      	// // --> emerging jet cuts
+      	// for ( int ibin = 0; ibin != h_evt_cutflowEfficiency_jet [ireg][icj] ->GetNbinsX(); ++ibin ) {
+      	// 	float ibin_jcut  = h_evt_cutflow_jet     [ireg][icj] ->GetBinContent(ibin+1);
+      	// 	float ibin_ljcut = h_evt_cutflow_leadjet [ireg][icj] ->GetBinContent(ibin+1);
+      	// 	h_evt_cutflowEfficiency_jet     [ireg][icj] ->Fill( ibin, ibin_jcut  /  jcount );
+      	// 	h_evt_cutflowEfficiency_leadjet [ireg][icj] ->Fill( ibin, ibin_ljcut / ljcount );
+      	// }
       }
       // --> N-Jet cuts
       for ( size_t icnj = 0; icnj != h_evt_cutflow_NJet [ireg].size(); ++icnj ) {
-	for ( int ibin = 0; ibin != h_evt_cutflowEfficiency_NJet [ireg][icnj] ->GetNbinsX(); ++ibin ) {
-	  float ibin_cut     = h_evt_cutflow_NJet     [ireg][icnj] ->GetBinContent(ibin+1);
-	  float ileadbin_cut = h_evt_cutflow_NLeadJet [ireg][icnj] ->GetBinContent(ibin+1);
-	  h_evt_cutflowEfficiency_NJet          [ireg][icnj] ->Fill( ibin, ibin_cut     / reg_count   );
-	  h_evt_cutflowEfficiency_NLeadJet      [ireg][icnj] ->Fill( ibin, ileadbin_cut / reg_count   );
-	  h_evt_cutflowTotalEfficiency_NJet     [ireg][icnj] ->Fill( ibin, ibin_cut     / m_sumw_init );
-	  h_evt_cutflowTotalEfficiency_NLeadJet [ireg][icnj] ->Fill( ibin, ileadbin_cut / m_sumw_init );
-	}
+      	for ( int ibin = 0; ibin != h_evt_cutflowEfficiency_NJet [ireg][icnj] ->GetNbinsX(); ++ibin ) {
+      	  float ibin_cut     = h_evt_cutflow_NJet     [ireg][icnj] ->GetBinContent(ibin+1);
+      	  float ileadbin_cut = h_evt_cutflow_NLeadJet [ireg][icnj] ->GetBinContent(ibin+1);
+      	  h_evt_cutflowEfficiency_NJet          [ireg][icnj] ->Fill( ibin, ibin_cut     / reg_count   );
+      	  h_evt_cutflowEfficiency_NLeadJet      [ireg][icnj] ->Fill( ibin, ileadbin_cut / reg_count   );
+      	  h_evt_cutflowTotalEfficiency_NJet     [ireg][icnj] ->Fill( ibin, ibin_cut     / m_sumw_init );
+      	  h_evt_cutflowTotalEfficiency_NLeadJet [ireg][icnj] ->Fill( ibin, ileadbin_cut / m_sumw_init );
+      	}
       }
  
       // --> DVS
@@ -11787,8 +11901,6 @@ void EJsHistogramManager :: getJetTypes ( int jet_index, std::vector<int>& jet, 
 					  bool doCombos, bool doEJ, bool doEJCuts )
 {
 
-  if ( doEJCuts ) doCombos = false;
-
   // --- event-level variables to consider for signal-region cuts (i.e. in ABCD plane) --- //
   // plot on x-axis against nDV, nDVTrk, other DV event-level variables (like pt, ht?) in ABCD plane
   // implement test cuts in event-level cutflow
@@ -12002,7 +12114,7 @@ void EJsHistogramManager :: getJetTypes ( int jet_index, std::vector<int>& jet, 
   // --> n-sv sum-h cuts
   for ( size_t ijsvh = 0; ijsvh != svSumH.size(); ++ijsvh )
     for ( size_t insvh = 0; insvh != m_nJSVh.size(); ++insvh )
-      if ( svSumPt[ijsvh] > m_nJSVh[insvh] ) svSumHJet[ijsvh*m_nJSVh.size()+insvh] = 1;
+      if ( svSumH[ijsvh] > m_nJSVh[insvh] ) svSumHJet[ijsvh*m_nJSVh.size()+insvh] = 1;
   // --> n-sv ntrk cuts
   for ( size_t ijsvnt = 0; ijsvnt != n_svNtrk.size(); ++ijsvnt )
     for ( size_t insvt = 0; insvt != m_nJSVtrk.size(); ++insvt )
@@ -12019,145 +12131,177 @@ void EJsHistogramManager :: getJetTypes ( int jet_index, std::vector<int>& jet, 
   for ( size_t ijsv = 0; ijsv != n_sv.size(); ++ijsv )
     for ( size_t insv = 0; insv != m_nJSV.size(); ++insv )
       if ( n_sv[ijsv] > m_nJSV[insv]-1 ) svJet[ijsv*m_nJSV.size()+insv] = 1;
-
   
   // fill jet pass/fail cut vector
-  jet   .push_back( allJet   );
-  jet   .push_back( leadJet  );
-  // --> tight cuts
-  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_tightJets || doEJCuts ) {
-    jet   .push_back( tightPtJet               );
-    jet   .push_back( tightPtJet    && leadJet );
-    jet   .push_back( tightEtaJet              );
-    jet   .push_back( tightEtaJet   && leadJet );
-    jet   .push_back( tightMassJet             );
-    jet   .push_back( tightMassJet  && leadJet );
+  // --> do cuts for EJ cutflows
+  if ( doEJCuts ) {
+    // loop over sv types -- easiest to just fill all jet types for each cutflow, rather than common ones for all and sv-specific ones for some
+    for ( size_t isv = 0; isv != svSumP4.size(); ++isv ) {
+      jet .push_back( allJet   );
+      jet .push_back( leadJet  );
+      jet .push_back( tightPtJet              );
+      jet .push_back( tightPtJet   && leadJet );
+      jet .push_back( tightEtaJet             );
+      jet .push_back( tightEtaJet  && leadJet );
+      jet .push_back( tightMassJet            );
+      jet .push_back( tightMassJet && leadJet );
+      jet .push_back( svPtJet    [isv*m_nJSVpt .size()  ]            );
+      jet .push_back( svPtJet    [isv*m_nJSVpt .size()  ] && leadJet );
+      jet .push_back( svNjtrkJet [isv*m_nJSVtrk.size()  ]            );
+      jet .push_back( svNjtrkJet [isv*m_nJSVtrk.size()  ] && leadJet );
+      jet .push_back( svPtJet    [isv*m_nJSVpt .size()+1]            );
+      jet .push_back( svPtJet    [isv*m_nJSVpt .size()+1] && leadJet );
+      jet .push_back( svNjtrkJet [isv*m_nJSVtrk.size()+1]            );
+      jet .push_back( svNjtrkJet [isv*m_nJSVtrk.size()+1] && leadJet );
+    } 
   }
-  // --> n-sv pt cuts
-  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvP4Jets ) {
-    for ( const auto& svp4j : svPtJet ) {
-      jet .push_back( svp4j            );
-      jet .push_back( svp4j && leadJet );
-    }
-  }
-  // --> n-sv sum-pt cuts
-  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvPtJets ) {
-    for ( const auto& svptj : svSumPtJet ) {
-      jet .push_back( svptj            );
-      jet .push_back( svptj && leadJet );
-    }
-  }
-  // --> n-sv sum-Ht cuts
-  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvHtJets ) {
-    for ( const auto& svhtj : svSumHtJet ) {
-      jet .push_back( svhtj            );
-      jet .push_back( svhtj && leadJet );
-    }
-  }
-  // --> n-sv sum-H cuts
-  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvHJets ) {
-    for ( const auto& svhj : svSumHJet ) {
-      jet .push_back( svhj            );
-      jet .push_back( svhj && leadJet );
-    }
-  }
-  // --> n-sv ntrk cuts
-  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvNtrkJets ) {
-    for ( const auto& svntj : svNtrkJet ) {
-      jet .push_back( svntj            );
-      jet .push_back( svntj && leadJet );
-    }
-  }
-  // --> n-sv njtrk cuts
-  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvNjtrkJets ) {
-    for ( const auto& svnjtj : svNjtrkJet ) {
-      jet .push_back( svnjtj            );
-      jet .push_back( svnjtj && leadJet );
-    }
-  }
-  // --> n-sv-trk cuts
-  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvTrkJets ) {
-    for ( const auto& svtj : svTrkJet ) {
-      jet .push_back( svtj            );
-      jet .push_back( svtj && leadJet );
-    }
-  }
-  // --> n-sv cuts
-  if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvJets ) { // || doEJCuts ?? --> wait for EJ cut decisions...
-    for ( const auto& svj : svJet ) {
-      jet .push_back( svj            );
-      jet .push_back( svj && leadJet );
-    }
-  }
-  // --> combo cuts
-  if ( tightPtJet && tightEtaJet && tightMassJet ) tightJet = 1;
-  if ( m_histoInfoSwitch->m_comboJets && doCombos && !doEJCuts ) {
+  else {
+    jet   .push_back( allJet   );
+    jet   .push_back( leadJet  );
+    // --> tight cuts
     if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_tightJets ) {
-      jet .push_back( tightJet                );
-      jet .push_back( tightJet     && leadJet );
+      jet   .push_back( tightPtJet               );
+      jet   .push_back( tightPtJet    && leadJet );
+      jet   .push_back( tightEtaJet              );
+      jet   .push_back( tightEtaJet   && leadJet );
+      jet   .push_back( tightMassJet             );
+      jet   .push_back( tightMassJet  && leadJet );
     }
-    if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvP4Jets    ) )
-      for ( const auto& svPtJ    : svPtJet    ) {
-	jet .push_back( svPtJ    && tightJet            );
-	jet .push_back( svPtJ    && tightJet && leadJet );
+    // --> n-sv pt cuts
+    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvP4Jets ) {
+      for ( const auto& svp4j : svPtJet ) {
+	jet .push_back( svp4j            );
+	jet .push_back( svp4j && leadJet );
       }
-    if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvPtJets    ) )
-      for ( const auto& svSumPtJ : svSumPtJet ) {
-	jet .push_back( svSumPtJ && tightJet            );
-	jet .push_back( svSumPtJ && tightJet && leadJet );
+    }
+    // --> n-sv sum-pt cuts
+    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvPtJets ) {
+      for ( const auto& svptj : svSumPtJet ) {
+	jet .push_back( svptj            );
+	jet .push_back( svptj && leadJet );
       }
-    if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvHtJets    ) )
-      for ( const auto& svSumHtJ : svSumHtJet ) {
-	jet .push_back( svSumHtJ && tightJet            );
-	jet .push_back( svSumHtJ && tightJet && leadJet );
+    }
+    // --> n-sv sum-Ht cuts
+    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvHtJets ) {
+      for ( const auto& svhtj : svSumHtJet ) {
+	jet .push_back( svhtj            );
+	jet .push_back( svhtj && leadJet );
       }
-    if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvHJets     ) )
-      for ( const auto& svSumHJ  : svSumHJet  ) {
-	jet .push_back( svSumHJ  && tightJet            );
-	jet .push_back( svSumHJ  && tightJet && leadJet );
+    }
+    // --> n-sv sum-H cuts
+    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvHJets ) {
+      for ( const auto& svhj : svSumHJet ) {
+	jet .push_back( svhj            );
+	jet .push_back( svhj && leadJet );
       }
-    if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvNtrkJets  ) )
-      for ( const auto& svNtrkJ  : svNtrkJet  ) {
-	jet .push_back( svNtrkJ  && tightJet            );
-	jet .push_back( svNtrkJ  && tightJet && leadJet );
+    }
+    // --> n-sv ntrk cuts
+    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvNtrkJets ) {
+      for ( const auto& svntj : svNtrkJet ) {
+	jet .push_back( svntj            );
+	jet .push_back( svntj && leadJet );
       }
-    if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvNjtrkJets ) )
-      for ( const auto& svNjtrkJ : svNjtrkJet ) {
-	jet .push_back( svNjtrkJ && tightJet            );
-	jet .push_back( svNjtrkJ && tightJet && leadJet );
+    }
+    // --> n-sv njtrk cuts
+    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvNjtrkJets ) {
+      for ( const auto& svnjtj : svNjtrkJet ) {
+	jet .push_back( svnjtj            );
+	jet .push_back( svnjtj && leadJet );
       }
-    if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvTrkJets   ) )
-      for ( const auto& svTrkJ   : svTrkJet   ) {
-	jet .push_back( svTrkJ   && tightJet            );
-	jet .push_back( svTrkJ   && tightJet && leadJet );
+    }
+    // --> n-sv-trk cuts
+    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvTrkJets ) {
+      for ( const auto& svtj : svTrkJet ) {
+	jet .push_back( svtj            );
+	jet .push_back( svtj && leadJet );
       }
-    if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvJets      ) )
-      for ( const auto& svJ      : svJet      ) {
-	jet .push_back( svJ      && tightJet            );
-	jet .push_back( svJ      && tightJet && leadJet );
-      }	
+    }
+    // --> n-sv cuts
+    if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_nsvJets ) { 
+      for ( const auto& svj : svJet ) {
+	jet .push_back( svj            );
+	jet .push_back( svj && leadJet );
+      }
+    }
+    // --> combo cuts
+    if ( tightPtJet && tightEtaJet && tightMassJet ) tightJet = 1;
+    if ( m_histoInfoSwitch->m_comboJets && doCombos ) {
+      if ( m_histoInfoSwitch->m_typeJets || m_histoInfoSwitch->m_tightJets ) {
+	jet .push_back( tightJet                );
+	jet .push_back( tightJet     && leadJet );
+      }
+      if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvP4Jets    ) )
+	for ( const auto& svPtJ    : svPtJet    ) {
+	  jet .push_back( svPtJ    && tightJet            );
+	  jet .push_back( svPtJ    && tightJet && leadJet );
+	}
+      if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvPtJets    ) )
+	for ( const auto& svSumPtJ : svSumPtJet ) {
+	  jet .push_back( svSumPtJ && tightJet            );
+	  jet .push_back( svSumPtJ && tightJet && leadJet );
+	}
+      if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvHtJets    ) )
+	for ( const auto& svSumHtJ : svSumHtJet ) {
+	  jet .push_back( svSumHtJ && tightJet            );
+	  jet .push_back( svSumHtJ && tightJet && leadJet );
+	}
+      if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvHJets     ) )
+	for ( const auto& svSumHJ  : svSumHJet  ) {
+	  jet .push_back( svSumHJ  && tightJet            );
+	  jet .push_back( svSumHJ  && tightJet && leadJet );
+	}
+      if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvNtrkJets  ) )
+	for ( const auto& svNtrkJ  : svNtrkJet  ) {
+	  jet .push_back( svNtrkJ  && tightJet            );
+	  jet .push_back( svNtrkJ  && tightJet && leadJet );
+	}
+      if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvNjtrkJets ) )
+	for ( const auto& svNjtrkJ : svNjtrkJet ) {
+	  jet .push_back( svNjtrkJ && tightJet            );
+	  jet .push_back( svNjtrkJ && tightJet && leadJet );
+	}
+      if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvTrkJets   ) )
+	for ( const auto& svTrkJ   : svTrkJet   ) {
+	  jet .push_back( svTrkJ   && tightJet            );
+	  jet .push_back( svTrkJ   && tightJet && leadJet );
+	}
+      if ( m_histoInfoSwitch->m_typeJets || ( m_histoInfoSwitch->m_tightJets && m_histoInfoSwitch->m_nsvJets      ) )
+	for ( const auto& svJ      : svJet      ) {
+	  jet .push_back( svJ      && tightJet            );
+	  jet .push_back( svJ      && tightJet && leadJet );
+	}	
+    }
   }
 
-  // // --> "emerging" jets (update)
-  // bool emergingJet     =  allJet && tightJet && ngoodsv2Jet; // --> 1 good SV ??
-  // bool leadEmergingJet = leadJet && emergingJet;
-  // if ( doEJ ) {
-  //   jet .push_back(     emergingJet );
-  //   jet .push_back( leadEmergingJet );
-  // }
+  // --> "emerging" jets
+  if ( doEJ )
+    for ( size_t isv = 0; isv != svSumP4.size(); ++isv ) {
+      bool looseEmergingJet = allJet && tightPtJet && tightEtaJet && tightMassJet &&
+	svPtJet [isv*m_nJSVpt.size()] && svNjtrkJet [isv*m_nJSVtrk.size()];
+      bool tightEmergingJet = allJet && tightPtJet && tightEtaJet && tightMassJet &&
+	svPtJet [isv*m_nJSVpt.size()  ] && svNjtrkJet [isv*m_nJSVtrk.size()  ] &&
+	svPtJet [isv*m_nJSVpt.size()+1] && svNjtrkJet [isv*m_nJSVtrk.size()+1];
+      jet .push_back( looseEmergingJet            );
+      jet .push_back( looseEmergingJet && leadJet );
+      jet .push_back( tightEmergingJet            );
+      jet .push_back( tightEmergingJet && leadJet );
+    }
 
-  // truth matching (to dark jets) --> UPDATE: add dark-pt cut; require QCD jets NOT be matched to dark jets (not just failing dark-match cuts)
+  // truth matching (to dark jets) --> UPDATE: add dark-jet-pt cut
   bool darkJet    = false;
   bool nomatchJet = false;
   if ( m_mc ) {
     // require dark + truth jet match
     if ( m_jet_isDark ->at(jet_index) && m_jet_isTruth ->at(jet_index) ) {
       int truthIx = m_jet_truthIndex ->at(jet_index);
+      int darkIx  = m_jet_darkIndex  ->at(jet_index);
       // require matched dark + truth jet also matched to one another
       if ( m_jet_darkID ->at(jet_index) == m_truthJet_darkID ->at(truthIx) )
-	// require lead parton = down quark
-	if ( m_jet_partonID ->at(jet_index) == 1 )
-	  darkJet = true;
+	// require matched dark jet to pass pt quality cut
+	if ( m_darkJet_pt ->at(darkIx) > 30 )
+	  // require lead parton = down quark
+	  if ( m_jet_partonID ->at(jet_index) == 1 )
+	    darkJet = true;
     }
     if ( !darkJet ) nomatchJet = true;
     if ( m_histoInfoSwitch->m_jetTruth ) {
@@ -12400,10 +12544,6 @@ void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, con
       dv .push_back( dv_bynjet );
     }
   }
-
-  // ADD COMBOS -- add doCombos option to override individual cuts (so cut-DVs include all previous cuts, i.e. ksmDVs contain cuts on material veto, fiducial volume, and k-short mass
-  // --> add material veto to everything (i.e. fiducDV = baseDV && matvetoDV && fiducDV)
-  // --> add cutflow bins for track cleaning and material map (i.e. if doGoodCuts dv.push_back())
 
   // --> "good" DVs
   bool looseGoodDV = baseDV && matmapDV && fiducDV && chi2DV && ksmDV;

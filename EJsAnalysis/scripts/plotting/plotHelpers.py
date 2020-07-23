@@ -479,7 +479,7 @@ def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False, doSvBStr = F
                     legend_string += " "
                 legend_string += "unmatched"
             if not legend_string or len(legend_string) > 100:
-                legend_string = hname.split('_')[1]
+                legend_string = hname
             else:
                 legend_string += " DV"
     elif hvar == histVarType.DV_NTRK:
@@ -497,8 +497,8 @@ def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False, doSvBStr = F
         if "lead"      .lower() in hname.lower():
             if legend_string:
                 legend_string += " "
-            legend_string += "lead"
-        if "darkMatch" .lower() in hname.lower():
+            legend_string += "N-lead"
+        if "darkmatch" .lower() in hname.lower():
             if legend_string:
                 legend_string += " "
             legend_string += "dark-matched"
@@ -506,10 +506,13 @@ def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False, doSvBStr = F
             if legend_string:
                 legend_string += " "
             legend_string += "unmatched"
-        if not legend_string:
-            legend_string = hname.split('_')[1]
-        else:
-            legend_string += " jet"
+        #if not legend_string:
+        #    legend_string = hname
+        #else:
+        #    legend_string += " jet"
+        if legend_string:
+            legend_string += " "
+        legend_string += "jet"
     elif hvar == histVarType.TRK:
         if "desc" not in hname.lower():
             if   "reco" in hname.lower():
@@ -625,6 +628,12 @@ def configText( titleStr, region ):
         regstr = "SEARCH REGION"
     elif ( region == "valid" ):
         regstr = "VALIDATION REGION"
+    elif ( region == "jz4w-slice-search-minus-one" ):
+        regstr = "JZ4W-SLICE-SEARCH-MINUS-ONE REGION"
+    elif ( region == "jz4w-slice-search" ):
+        regstr = "JZ4W-SLICE-SEARCH REGION"
+    elif ( region == "jz4w-slice-validation" ):
+        regstr = "JZ4W-SLICE-VALIDATION REGION"
     regtxt = ROOT.TLatex( xltxt, ytxt - sytxt, regstr )
     regtxt  .SetTextSize( ttxt )
     regtxt  .SetNDC( ROOT.kTRUE )

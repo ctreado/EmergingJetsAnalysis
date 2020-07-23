@@ -1915,10 +1915,7 @@ class EJsHistogramManager : public HistogramManager
 
 
   // CUTFLOWS
-  std::vector<std::vector<TH1F*>>               h_evt_testCutflow_jet;                      //!
-  std::vector<std::vector<TH1F*>>               h_evt_testCutflow_leadjet;                  //!
-  std::vector<std::vector<TH1F*>>               h_evt_testCutflowEfficiency_jet;            //!
-  std::vector<std::vector<TH1F*>>               h_evt_testCutflowEfficiency_leadjet;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_jet;                      //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svP4Jet;                  //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svPtJet;                  //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svHtJet;                  //!
@@ -1927,6 +1924,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svNjtrkJet;               //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svTrkJet;                 //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_svNJet;                   //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadJet;                  //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvP4Jet;              //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvPtJet;              //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvHtJet;              //!
@@ -1935,6 +1933,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvNjtrkJet;           //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvTrkJet;             //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflow_leadSvNJet;               //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_jet;            //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svP4Jet;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svPtJet;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svHtJet;        //!
@@ -1943,6 +1942,7 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svNjtrkJet;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svTrkJet;       //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_svNJet;         //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadJet;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvP4Jet;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvPtJet;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvHtJet;    //!
@@ -1951,10 +1951,10 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvNjtrkJet; //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvTrkJet;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_testCutflowEfficiency_leadSvNJet;     //!
-  std::vector<std::vector<TH1F*>>               h_evt_cutflow_jet;                          //!
-  std::vector<std::vector<TH1F*>>               h_evt_cutflow_leadjet;                      //!
-  std::vector<std::vector<TH1F*>>               h_evt_cutflowEfficiency_jet;                //!
-  std::vector<std::vector<TH1F*>>               h_evt_cutflowEfficiency_leadjet;            //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflow_emergingJet;                  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflow_leadEmergingJet;              //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflowEfficiency_emergingJet;        //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflowEfficiency_leadEmergingJet;    //!
   // --> add n base, loose-good SV cuts (add loose-good DVs, too -- w/o (pt), d0/z0 cuts)
   // --> test cut on matched track min-d0 ??
   // --> test cuts on n SV tracks ??

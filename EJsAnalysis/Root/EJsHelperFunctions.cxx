@@ -52,10 +52,13 @@ namespace EJsHelper {
   {
     std::string     regionName = region_name;
     enum RegionType regionType;
-    if      ( regionName == "search-minus-one" || regionName == "srch-1"   ) regionType = SEARCH_MINUS_ONE;
-    else if ( regionName == "search"           || regionName == "srch"     ) regionType = SEARCH;
-    else if ( regionName == "signal"           || regionName == "sgnl"     ) regionType = SIGNAL;
-    else if ( regionName == "validation"       || regionName == "valid"    ) regionType = VALIDATION;
+    if      ( regionName == "search-minus-one"            || regionName == "srch-1"      ) regionType = SEARCH_MINUS_ONE;
+    else if ( regionName == "search"                      || regionName == "srch"        ) regionType = SEARCH;
+    else if ( regionName == "signal"                      || regionName == "sgnl"        ) regionType = SIGNAL;
+    else if ( regionName == "validation"                  || regionName == "valid"       ) regionType = VALIDATION;
+    else if ( regionName == "jz4w-slice-search-minus-one" || regionName == "jz4w-srch-1" ) regionType = JZ4W_SLICE_SEARCH_MINUS_ONE;
+    else if ( regionName == "jz4w-slice-search"           || regionName == "jz4w-srch"   ) regionType = JZ4W_SLICE_SEARCH;
+    else if ( regionName == "jz4w-slice-validation"       || regionName == "jz4w-valid"  ) regionType = JZ4W_SLICE_VALIDATION;
     else {
       regionName = "all";
       regionType = ALL; // default

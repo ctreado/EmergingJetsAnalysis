@@ -8,20 +8,130 @@
 # Colleen Treado                                       #
 ########################################################
 
+# TO RUN ON LOCAL MACHINE (NOT CERNVM) NEED TO RUN W/ PYTHON3 --> make compatible with both python versions...
+# --> also need to source root directory: 'source /usr/local/Cellar/root/6.16.00/bin/thisroot.sh'
+# --> also need to set EJ_PATH in EmergingJetsAnalysis repo when running outside athena: 'export EJ_PATH=$(pwd)'
+# --> also need to run with 'python3'
+
 # don't forget to lumi-scale data !!
 
 import os
 
 def main():
+
+    # initialize jets
+    # --> tight jets
+    #tightJs    = [ "TightPt",  "TightEta",  "TightMass",  "TightPtEta",   "Tight" ]
+    #tightJts   = [ "tight-pt", "tight-eta", "tight-mass", "tight-pt-eta", "tight" ]
+    #tightJs    = [ "TightPt",  "TightEta",  "TightMass"  ]
+    #tightJts   = [ "tight-pt", "tight-eta", "tight-mass" ]
+    tightJs    = []
+    tightJts   = []
+    # --> nsv jets
+    baseJSV    = "Clean"
+    baseJSVt   = "clean"
+    jsvs       = [ baseJSV,  "Loose", "Mid", "Tight" ]
+    jsvts      = [ baseJSVt, "loose", "mid", "tight" ]
+    jsvpts     = [ "Low", "Mid", "High" ]
+    njsvtrks   = [ "2", "4", "6", "8" ]
+    njsvs      = [ "1", "2" ]
+    bJSVs,  p4JSVs,  ptJSVs,  htJSVs,  hJSVs,  ntrkJSVs,  njtrkJSVs,  trkJSVs,  nJSVs  = [], [], [], [], [], [], [], [], []
+    bJSVts, p4JSVts, ptJSVts, htJSVts, hJSVts, ntrkJSVts, njtrkJSVts, trkJSVts, nJSVts = [], [], [], [], [], [], [], [], []
+    for ijsv, jsv in enumerate( jsvs ):
+        bJSVs          .append( jsv +  "SV" )
+        bJSVts         .append( "" )
+    for ijsv, jsv in enumerate( jsvs ):
+        p4JSVs         .append( jsv + "SVP4" )
+        p4JSVts        .append( "" )
+        #for jsvpt in jsvpts:
+        #    p4JSVs     .append( jsv + "SV" + jsvpt + "P4" )
+        #    p4JSVts    .append( jsvpt + "-" + jsvts[ijsv] + "-SV-pt" )
+    for ijsv, jsv in enumerate( jsvs ):
+        ptJSVs         .append( jsv + "SVPt" )
+        ptJSVts        .append( "" )
+        #for jsvpt in jsvpts:
+        #    ptJSVs     .append( jsv + "SV" + jsvpt + "Pt" )
+        #    ptJSVts    .append( jsvpt + "-" + jsvts[ijsv] + "-SV-sum-pt" )
+    for ijsv, jsv in enumerate( jsvs ):
+        htJSVs         .append( jsv + "SVHt" )
+        htJSVts        .append( "" )
+        #for jsvpt in jsvpts:
+        #    htJSVs     .append( jsv + "SV" + jsvpt + "Ht" )
+        #    htJSVts    .append( jsvpt + "-" + jsvts[ijsv] + "-SV-Ht" )
+    for ijsv, jsv in enumerate( jsvs ):
+        hJSVs          .append( jsv + "SVH" )
+        hJSVts         .append( "" )
+        #for jsvpt in jsvpts:
+        #    hJSVs      .append( jsv + "SV" + jsvpt + "H" )
+        #    hJSVts     .append( jsvpt + "-" + jsvts[ijsv] + "-SV-H" )
+    for ijsv, jsv in enumerate( jsvs ):
+        ntrkJSVs       .append( jsv + "SVNtrk" )
+        ntrkJSVts      .append( "" )
+        #for njsvtrk in njsvtrks:
+        #    ntrkJSVs   .append( jsv + "SVNtrk"  + njsvtrk )
+        #    ntrkJSVts  .append( njsvtrk + "-" + jsvts[ijsv] + "-SV-Ntrk"  )
+    for ijsv, jsv in enumerate( jsvs ):
+        njtrkJSVs      .append( jsv + "SVNjtrk" )
+        njtrkJSVts     .append( "" )
+        #for njsvtrk in njsvtrks:
+        #    njtrkJSVs  .append( jsv + "SVNjtrk" + njsvtrk )
+        #    njtrkJSVts .append( njsvtrk + "-" + jsvts[ijsv] + "-SV-Njtrk" )
+    for ijsv, jsv in enumerate( jsvs ):
+        trkJSVs        .append( jsv + "SVTrk" )
+        trkJSVts       .append( "" )
+        #for njsvtrk in njsvtrks:
+        #    trkJSVs    .append( jsv + "SVTrk"   + njsvtrk )
+        #    trkJSVts   .append( njsvtrk + "-" + jsvts[ijsv] + "-SV-trk"    )
+    #for ijsv, jsv in enumerate( jsvs ):
+    #    for njsv    in njsvs:
+    #        nJSVs     .append( jsv + "SV"      + njsv    )
+    #        nJSVts    .append( njsv    + "-" + jsvts[ijsv] + "-SV"        )
+    # --> nsv tight jets
+    ntrktJSVs,  njtrktJSVs,  trktJSVs,  ntJSVs  = [], [], [], []
+    ntrktJSVts, njtrktJSVts, trktJSVts, ntJSVts = [], [], [], []
+    #for intrkjsv,  ntrkjsv  in enumerate( ntrkJSVs  ):
+    #    ntrktJSVs   .append( ntrkjsv               +  "Tight" )
+    #    ntrktJSVts  .append( ntrkJSVts [intrkjsv]  + " tight" )
+    #for injtrkjsv, njtrkjsv in enumerate( njtrkJSVs ):
+    #    njtrktJSVs  .append( njtrkjsv              +  "Tight" )
+    #    njtrktJSVts .append( njtrkJSVts[injtrkjsv] + " tight" )
+    #for itrkjsv,   trkjsv   in enumerate( trkJSVs   ):
+    #    trktJSVs    .append( trkjsv                +  "Tight" )
+    #    trktJSVts   .append( trkJSVts  [itrkjsv]   + " tight" )
+    #for injsv,     njsv     in enumerate( nJSVs     ):
+    #    ntJSVs      .append( njsv                  +  "Tight" )
+    #    ntJSVts     .append( nJSVts    [injsv]     + " tight" )
+    # --> emerging jets
+    # --> set jet-cut type, title, exclusion lists
+    jetCuts, jetTitles, exclCuts = [], [], []
+    jetCuts   = tightJs  + bJSVs  + p4JSVs  + ptJSVs  + htJSVs  + hJSVs  + ntrkJSVs  + njtrkJSVs  + trkJSVs  + nJSVs  \
+      + ntrktJSVs  + njtrktJSVs  + trktJSVs  + ntJSVs
+    jetTitles = tightJts + bJSVts + p4JSVts + ptJSVts + htJSVts + hJSVts + ntrkJSVts + njtrkJSVts + trkJSVts + nJSVts \
+      + ntrktJSVts + njtrktJSVts + trktJSVts + ntJSVts
+    exclCuts  = tightJs  + bJSVs  + p4JSVs  + ptJSVs  + htJSVs  + hJSVs  + ntrkJSVs  + njtrkJSVs  + trkJSVs  + nJSVs  \
+      + ntrktJSVs  + njtrktJSVs  + trktJSVs  + ntJSVs
+    #jetCuts   = []
+    #jetTitles = []
+    #exclCuts  = []
+    jetTypes, exclJetTypes = [], []
+    for iC, cut in enumerate( jetCuts ):
+        lowcut     = cut         [0].lower() + cut         [1:]
+        lowexclcut = exclCuts[iC][0].lower() + exclCuts[iC][1:]
+        jetTypes     .append( lowcut     )
+        exclJetTypes .append( lowexclcut )
+        
     
     ## --- initialize plotting commands --- ##
     # --> change when needed
     #inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-01_n1/EJsNtupToHistOutput/"
     #inDir   = os.getenv('EJ_PATH') + "/../output/localOutput/tmp_search-minus-one/EJsNtupToHistOutput/"
-    inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
+    #inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
+    inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/EJsNtupToHistOutput/jetTestCutflows/"
+    outDir  = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/plots/jetTestCutflows/"
+    #inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
     pscript = os.getenv('EJ_PATH') + "/EJsAnalysis/scripts/plotting/plotEJsHistograms.py"
-    command = "python " + pscript + " --inDir " + inDir
-
+    command = "python "  + pscript + " --inDir " + inDir + " --outDir " + outDir
+    #command = "python3 " + pscript + " --inDir " + inDir # + " --outDir " + outDir # for running outside of athena
 
     # signal
     s_ab         = " --sgnlType 312008,312028"                      # ab benchmark test
@@ -77,83 +187,24 @@ def main():
 
 
     ## --- update plotting commands --- ##
-    command_S  = " --regionDir search"
-    command_S1 = " --regionDir search-minus-one"
-    command_V  = " --regionDir valid"
+    command_S   = " --regionDir search"
+    command_S1  = " --regionDir search-minus-one"
+    command_V   = " --regionDir valid"
+    command_SJ  = " --regionDir jz4w-slice-search"
+    command_S1J = " --regionDir jz4w-slice-search-minus-one"
+    command_VJ  = " --regionDir jz4w-slice-validation"
 
-    
-
-    
-    
-    # initialize jets
-    # --> tight jets
-    tightJs    = [ "TightPt",  "TightEta",  "TightMass",  "TightPtEta",   "Tight" ]
-    tightJts   = [ "tight-pt", "tight-eta", "tight-mass", "tight-pt-eta", "tight" ]
-    # --> nsv jets
-    baseJSV    = "Bare"
-    baseJSVt   = "bare"
-    jsvs       = [ baseJSV,  "LooseGood",  "MidGood",  "TightGood"  ]
-    jsvts      = [ baseJSVt, "loose-good", "mid-good", "tight-good" ]
-    njsvtrks   = [ "2", "4", "6", "8" ]
-    njsvs      = [ "1", "2" ]
-    ntrkJSVs,  njtrkJSVs,  trkJSVs,  nJSVs  = [], [], [], []
-    ntrkJSVts, njtrkJSVts, trkJSVts, nJSVts = [], [], [], []
-    for ijsv, jsv in enumerate( jsvs ):
-        for njsvtrk in njsvtrks:
-            ntrkJSVs   .append( jsv + "SVNtrk"  + njsvtrk )
-            ntrkJSVts  .append( njsvtrk + "-" + jsvts[ijsv] + "-SV-Ntrk"  )
-    for ijsv, jsv in enumerate( jsvs ):
-        for njsvtrk in njsvtrks:
-            njtrkJSVs  .append( jsv + "SVNjtrk" + njsvtrk )
-            njtrkJSVts .append( njsvtrk + "-" + jsvts[ijsv] + "-SV-Njtrk" )
-    for ijsv, jsv in enumerate( jsvs ):
-        for njsvtrk in njsvtrks:
-            trkJSVs   .append( jsv + "SVTrk"   + njsvtrk )
-            trkJSVts  .append( njsvtrk + "-" + jsvts[ijsv] + "-SV-trk"    )
-    for ijsv, jsv in enumerate( jsvs ):
-        for njsv    in njsvs:
-            nJSVs     .append( jsv + "SV"      + njsv    )
-            nJSVts    .append( njsv    + "-" + jsvts[ijsv] + "-SV"        )
-    # --> nsv tight jets
-    ntrktJSVs,  njtrktJSVs,  trktJSVs,  ntJSVs  = [], [], [], []
-    ntrktJSVts, njtrktJSVts, trktJSVts, ntJSVts = [], [], [], []
-    for intrkjsv,  ntrkjsv  in enumerate( ntrkJSVs  ):
-        ntrktJSVs   .append( ntrkjsv               +  "Tight" )
-        ntrktJSVts  .append( ntrkJSVts [intrkjsv]  + " tight" )
-    for injtrkjsv, njtrkjsv in enumerate( njtrkJSVs ):
-        njtrktJSVs  .append( njtrkjsv              +  "Tight" )
-        njtrktJSVts .append( njtrkJSVts[injtrkjsv] + " tight" )
-    for itrkjsv,   trkjsv   in enumerate( trkJSVs   ):
-        trktJSVs    .append( trkjsv                +  "Tight" )
-        trktJSVts   .append( trkJSVts  [itrkjsv]   + " tight" )
-    for injsv,     njsv     in enumerate( nJSVs     ):
-        ntJSVs      .append( njsv                  +  "Tight" )
-        ntJSVts     .append( nJSVts    [injsv]     + " tight" )
-    # --> emerging jets
-    # --> set jet-cut type, title, exclusion lists
-    jetCuts, jetTitles, exclCuts = [], [], []
-    #jetCuts   = tightJs
-    #jetTitles = tightJts
-    jetCuts   = tightJs  + ntrkJSVs  + njtrkJSVs  + trkJSVs  + nJSVs  + ntrktJSVs  + njtrktJSVs  + trktJSVs  + ntJSVs
-    jetTitles = tightJts + ntrkJSVts + njtrkJSVts + trkJSVts + nJSVts + ntrktJSVts + njtrktJSVts + trktJSVts + ntJSVts
-    exclCuts  = tightJs  + ntrkJSVs  + njtrkJSVs  + trkJSVs  + nJSVs  + ntrktJSVs  + njtrktJSVs  + trktJSVs  + ntJSVs
-    jetTypes, exclJetTypes = [], []
-    for iC, cut in enumerate( jetCuts ):
-        lowcut     = cut         [0].lower() + cut         [1:]
-        lowexclcut = exclCuts[iC][0].lower() + exclCuts[iC][1:]
-        jetTypes     .append( lowcut     )
-        exclJetTypes .append( lowexclcut )
     
     # 1d plots -- comparing same jet histos over different samples
     histList_1d   = "jet+cutflow=_jj_=_Nj_=NJet=SV_maxDR:DV=darkMatch=nomatch=jet0=jet1=jet1=jet3"
     command_1d_j  = []
-    command_1d    = " --draw1D --outSubdir 1d_jet --legLenEnum 5"
+    command_1d    = " --draw1D --drawSOverB --outSubdir 1d_jet --legLenEnum 5"
     command_1d_l1 = " --lxint 0.006 --lyint 0.025" # for s vs b
     command_1d_l2 = " --lxint 0.015 --lyint 0.040" # for b vs d
     # --> loop over jet types and configure plotting script
     jtype = [ "jet", "leadJet" ]
     for jt, jett in enumerate(jetTypes):
-        jtype.append( jett                 + "Jet" )
+        jtype.append(                 jett + "Jet" )
         jtype.append( "lead" + jetCuts[jt] + "Jet" )
     for ij, j in enumerate( jtype ):
         hlist = j
@@ -168,21 +219,22 @@ def main():
                     hlist += "=" + ejt
         command_1d_j.append( command_1d + " --histList " + hlist + " --histVars " + j )
     # --> complete commands
-    command_sb_ab_1d_S, command_sb_ab_1d_S1 = [], [] # --> AB benchmark test
-    command_sb_14_1d_S, command_sb_14_1d_S1 = [], [] # --> xdm-1400 signal vs background
-    command_sb_10_1d_S, command_sb_10_1d_S1 = [], [] # --> xdm-1000 signal vs background
-    command_sb_06_1d_S, command_sb_06_1d_S1 = [], [] # --> xdm-600  signal vs background
-    command_bd_1d_V                         = []     # --> background vs data
+    command_sb_ab_1d_S, command_sb_ab_1d_SJ = [], [] # --> AB benchmark test
+    command_sb_14_1d_S, command_sb_14_1d_SJ = [], [] # --> xdm-1400 signal vs background
+    command_sb_10_1d_S, command_sb_10_1d_SJ = [], [] # --> xdm-1000 signal vs background
+    command_sb_06_1d_S, command_sb_06_1d_SJ = [], [] # --> xdm-600  signal vs background
+    command_bd_1d_V,    command_bd_1d_VJ    = [], [] # --> background vs data
     for iC, command in enumerate( command_1d_j ):
         command_sb_ab_1d_S .append( command_sb_ab + command + command_1d_l1 + command_S  )
-        command_sb_ab_1d_S1.append( command_sb_ab + command + command_1d_l1 + command_S1 )
+        command_sb_ab_1d_SJ.append( command_sb_ab + command + command_1d_l1 + command_SJ )
         command_sb_14_1d_S .append( command_sb_14 + command + command_1d_l1 + command_S  )
-        command_sb_14_1d_S1.append( command_sb_14 + command + command_1d_l1 + command_S1 )
+        command_sb_14_1d_SJ.append( command_sb_14 + command + command_1d_l1 + command_SJ )
         command_sb_10_1d_S .append( command_sb_10 + command + command_1d_l1 + command_S  )
-        command_sb_10_1d_S1.append( command_sb_10 + command + command_1d_l1 + command_S1 )
+        command_sb_10_1d_SJ.append( command_sb_10 + command + command_1d_l1 + command_SJ )
         command_sb_06_1d_S .append( command_sb_06 + command + command_1d_l1 + command_S  )
-        command_sb_06_1d_S1.append( command_sb_06 + command + command_1d_l1 + command_S1 )
+        command_sb_06_1d_SJ.append( command_sb_06 + command + command_1d_l1 + command_SJ )
         command_bd_1d_V    .append( command_bd    + command + command_1d_l2 + command_V  )
+        command_bd_1d_VJ   .append( command_bd    + command + command_1d_l2 + command_VJ )
 
 
     # 2d plots -- one jet histo per plot
@@ -261,7 +313,7 @@ def main():
     # multi-hist multi-sample 1d plots -- comparing different jet-type histos over different samples
     histList_multismpl  = "jet:DV=_jj_=_Nj_=assoctrk=seltrk=LRTtrk"
     command_multismpl   = []
-    command_multismpl1d = " --drawMulti1D --doMultiSmpl --doTruthSvB --outSubdir multismpl_jet --legLenEnum 3 --lxint 0.007 --lyint 0.027"
+    command_multismpl1d = " --drawMulti1D --drawSOverB --doMultiSmpl --doTruthSvB --outSubdir multismpl_jet --legLenEnum 6 --lxint 0.050 --lyint 0.035 --lxl 0.500"
     # --> set hist vars, titles for given jet types
     j1  = [ "darkMatchJet" ]
     j2  = [ "jet"          ]
@@ -269,21 +321,21 @@ def main():
     jt2 = [ ""             ]
     hvars, httls = [], []
     for ij in range( len(j1) ):
-        #hvars.append( j1[ij] + "," + j2[ij] )
+        hvars.append( j1[ij] + "," + j2[ij] )
         if jt1[ij]: jt1[ij] += " "
         if jt2[ij]: jt2[ij] += " "
-        #httls.append( "'" + jt1[ij] + "signal vs " + jt2[ij] + "background'" )
-        getLeadMultiSmpl( j1[ij], j2[ij], jt1[ij], jt2[ij], hvars, httls )
+        httls.append( "'" + jt1[ij] + "signal vs " + jt2[ij] + "background'" )
+        getLeadMultiSmpl( j1[ij], j2[ij], jt1[ij], jt2[ij], hvars, httls, jsvs )
         for jt, jetType in enumerate( jetTypes ):
             upj1 = j1[ij][0].upper() + j1[ij][1:]
             upj2 = j2[ij][0].upper() + j2[ij][1:]
-            #hvars.append( jetType + upj1 + "," + jetType + upj2 )
+            hvars.append( jetType + upj1 + "," + jetType + upj2 )
             jttl1 = jetTitles[jt] + " "
             jttl2 = jetTitles[jt] + " "
             if jt1[ij]: jttl1 += jt1[ij]
             if jt2[ij]: jttl2 += jt2[ij]
-            #httls.append( "'" + jttl1 + "signal vs " + jttl2 + "background'" )
-            getLeadMultiSmpl( jetType + upj1, jetType + upj2, jttl1, jttl2, hvars, httls )
+            httls.append( "'" + jttl1 + "signal vs " + jttl2 + "background'" )
+            getLeadMultiSmpl( jetType + upj1, jetType + upj2, jttl1, jttl2, hvars, httls, jsvs )
     # --> loop over hist vars and configure plotting script
     for iVar, var in enumerate( hvars ):
         histList = var
@@ -297,43 +349,48 @@ def main():
         command_multismpl.append( command_multismpl1d + " --histVars " + var + " --sbdVars " + var + \
                                       " --histList " + histList + " --histTitle " + httls[iVar] + " --varEnum 3" )
     # --> complete commands
-    command_sb_ab_multismpl_S, command_sb_ab_multismpl_S1 = [], [] # --> ab benchmark test
-    command_sb_14_multismpl_S, command_sb_14_multismpl_S1 = [], []
-    command_sb_10_multismpl_S, command_sb_10_multismpl_S1 = [], []
-    command_sb_06_multismpl_S, command_sb_06_multismpl_S1 = [], []
+    command_sb_ab_multismpl_S, command_sb_ab_multismpl_SJ = [], [] # --> ab benchmark test
+    command_sb_14_multismpl_S, command_sb_14_multismpl_SJ = [], []
+    command_sb_10_multismpl_S, command_sb_10_multismpl_SJ = [], []
+    command_sb_06_multismpl_S, command_sb_06_multismpl_SJ = [], []
     for iC, command in enumerate( command_multismpl ):
-        command_sb_ab_multismpl_S  .append( command_sb_ab + command + command_S  )
-        command_sb_ab_multismpl_S1 .append( command_sb_ab + command + command_S1 )
-        command_sb_14_multismpl_S  .append( command_sb_14 + command + command_S  )
-        command_sb_14_multismpl_S1 .append( command_sb_14 + command + command_S1 )
-        command_sb_10_multismpl_S  .append( command_sb_10 + command + command_S  )
-        command_sb_10_multismpl_S1 .append( command_sb_10 + command + command_S1 )
-        command_sb_06_multismpl_S  .append( command_sb_06 + command + command_S  )
-        command_sb_06_multismpl_S1 .append( command_sb_06 + command + command_S1 )
+        htitle_14 = "'X_{dm} = 1400 GeV '" + httls[iC]
+        htitle_10 = "'X_{dm} = 1000 GeV '" + httls[iC]
+        htitle_06 = "'X_{dm} = 600 GeV '"  + httls[iC]
+        command_sb_ab_multismpl_S  .append( command_sb_ab + command + command_S  + " --histTitle " + htitle_10 )
+        command_sb_ab_multismpl_SJ .append( command_sb_ab + command + command_SJ + " --histTitle " + htitle_10 )
+        command_sb_14_multismpl_S  .append( command_sb_14 + command + command_S  + " --histTitle " + htitle_14 )
+        command_sb_14_multismpl_SJ .append( command_sb_14 + command + command_SJ + " --histTitle " + htitle_14 )
+        command_sb_10_multismpl_S  .append( command_sb_10 + command + command_S  + " --histTitle " + htitle_10 )
+        command_sb_10_multismpl_SJ .append( command_sb_10 + command + command_SJ + " --histTitle " + htitle_10 )
+        command_sb_06_multismpl_S  .append( command_sb_06 + command + command_S  + " --histTitle " + htitle_06 )
+        command_sb_06_multismpl_SJ .append( command_sb_06 + command + command_SJ + " --histTitle " + htitle_06 )
 
 
     ## --- run plotting jobs --- ##
 
     ## 1d: signal vs background
-    for c_sbabS  in command_sb_ab_1d_S: # ab benchmark test
-        os.system( c_sbabS  )
-    #for c_sbabS1 in command_sb_ab_1d_S1:
-    #    os.system( c_sbabS1 )
+    #for c_sbabS  in command_sb_ab_1d_S: # ab benchmark test
+    #    os.system( c_sbabS  )
+    #for c_sbabSJ in command_sb_ab_1d_SJ:
+    #    os.system( c_sbabSJ )
     #for c_sb14S  in command_sb_14_1d_S: # xdm-1400
     #    os.system( c_sb14S  )
-    #for c_sb14S1 in command_sb_14_1d_S1:
-    #    os.system( c_sb14S1 )
+    #for c_sb14SJ in command_sb_14_1d_SJ:
+    #    os.system( c_sb14SJ )
     #for c_sb10S  in command_sb_10_1d_S: # xdm-1000
     #    os.system( c_sb10S  )
-    #for c_sb10S1 in command_sb_10_1d_S1:
-    #    os.system( c_sb10S1 )
+    #for c_sb10SJ in command_sb_10_1d_SJ:
+    #    os.system( c_sb10SJ )
     #for c_sb06S  in command_sb_06_1d_S: # xdm-600
     #    os.system( c_sb06S  )
-    #for c_sb06S1 in command_sb_06_1d_S1:
-    #    os.system( c_sb06S1 )
-    ### 1d: background vs data
+    #for c_sb06SJ in command_sb_06_1d_SJ:
+    #    os.system( c_sb06SJ )
+    ## 1d: background vs data
     #for c_bdV in command_bd_1d_V:
     #    os.system( c_bdV )
+    #for c_bdVJ in command_bd_1d_VJ:
+    #    os.system( c_bdVJ )
 
     ### 2d: signal
     #os.system( command_s_ab_2d_S  ) # ab benchmark test
@@ -376,20 +433,20 @@ def main():
     ## multi-sample 1d
     #for cms_sbabS  in command_sb_ab_multismpl_S:
     #    os.system( cms_sbabS  )
-    #for cms_sbabS1 in command_sb_ab_multismpl_S1:
-    #    os.system( cms_sbabS1 )
+    #for cms_sbabSJ in command_sb_ab_multismpl_SJ:
+    #    os.system( cms_sbabSJ )
     #for cms_sb14S  in command_sb_14_multismpl_S:
     #    os.system( cms_sb14S  )
-    #for cms_sb14S1 in command_sb_14_multismpl_S1:
-    #    os.system( cms_sb14S1 )
+    for cms_sb14SJ in command_sb_14_multismpl_SJ:
+        os.system( cms_sb14SJ )
     #for cms_sb10S  in command_sb_10_multismpl_S:
     #    os.system( cms_sb10S  )
-    #for cms_sb10S1 in command_sb_10_multismpl_S1:
-    #    os.system( cms_sb10S1 )
+    for cms_sb10SJ in command_sb_10_multismpl_SJ:
+        os.system( cms_sb10SJ )
     #for cms_sb06S  in command_sb_06_multismpl_S:
     #    os.system( cms_sb06S  )
-    #for cms_sb06S1 in command_sb_06_multismpl_S1:
-    #    os.system( cms_sb06S1 )
+    for cms_sb06SJ in command_sb_06_multismpl_SJ:
+        os.system( cms_sb06SJ )
 
 
 
@@ -407,9 +464,15 @@ def getLeadMulti( jet1, jet2, jetout, hvars, httls, onames ):
         httls .append( htitle                   )
         onames.append( "lead" + upjetout + njet )
 
-def getLeadMultiSmpl( jet1, jet2, jetTitle1, jetTitle2, hvars, httls ):
-    upjet1 = jet1[0].upper() + jet1[1:]
+def getLeadMultiSmpl( jet1, jet2, jetTitle1, jetTitle2, hvars, httls, jsvs ):
+    jsv_cuts = [ "SV", "SVP4", "SVPt", "SVHt", "SVH", "SVNtrk", "SVNjtrk", "SVTrk" ]
+    upjet1 = jet1[0].upper() + jet1[1:] 
     upjet2 = jet2[0].upper() + jet2[1:]
+    if "Jet" in upjet1:
+        upjet1 = upjet1.split("Jet")[0]
+        upjet2 = upjet2.split("Jet")[0]
+        jet1   =   jet1.split("Jet")[0]
+        jet2   =   jet2.split("Jet")[0]
     #for ijet in range(5):
     for ijet in range(1):
         njet = str(ijet-1)
@@ -422,9 +485,14 @@ def getLeadMultiSmpl( jet1, jet2, jetTitle1, jetTitle2, hvars, httls ):
             elif njet == "2": hnjet = "3rd"
             elif njet == "3": hnjet = "4th"
             htitle += hnjet + " "
-        htitle += "leading "
+        htitle += "N-leading "
         htitle += jetTitle1 + "signal vs " + jetTitle2 + "background'"
-        hvars.append( "lead" + upjet1 + njet + ",lead" + upjet2 + njet )
+        swapOrder = False
+        for jsv in jsvs:
+            for jsvc in jsv_cuts:
+                if upjet2 == jsv + jsvc: swapOrder = True
+        if swapOrder: hvars.append( jet1   + "LeadJet"      + njet + ","     + jet2   + "LeadJet" + njet )
+        else:         hvars.append( "lead" + upjet1 + "Jet" + njet + ",lead" + upjet2 + "Jet"     + njet )
         httls.append( htitle )
 
     

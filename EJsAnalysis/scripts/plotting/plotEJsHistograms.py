@@ -260,7 +260,7 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, histNames, hists ):
         if args.draw1D:
             plot1D(     hists, name, sampleNames, sampleTypes, sampleDicts )
             if not isinstance( hists[0], ROOT.TH2 ):
-                if "eff" not in name.lower() and "accept" not in name.lower():
+                if "eff" not in name.lower() and "accept" not in name.lower() or "cutflow" in name.lower():
                     plot1D( hists, name, sampleNames, sampleTypes, sampleDicts, True        ) # log-y
                 else:
                     plot1D( hists, name, sampleNames, sampleTypes, sampleDicts, False, True ) # log-x
@@ -268,7 +268,7 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, histNames, hists ):
             if args.drawSOverB:
                 plot1D(     hists, name, sampleNames, sampleTypes, sampleDicts, False, False, True )
                 if not isinstance( hists[0], ROOT.TH2 ):
-                    if "eff" not in name.lower() and "accept" not in name.lower():
+                    if "eff" not in name.lower() and "accept" not in name.lower() or "cutflow" in name.lower():
                         plot1D( hists, name, sampleNames, sampleTypes, sampleDicts, True,  False, True ) # log-y
                     else:
                         plot1D( hists, name, sampleNames, sampleTypes, sampleDicts, False, True,  True ) # log-x
@@ -318,7 +318,7 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, histNames, hists ):
 
 ## --- DRAW 1D STACK PLOTS --- ##
 def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = False, doLogx = False, doSOverB = False ):
-
+    
     iBkgd = -1
     for iS, stype in enumerate( sampleTypes ):
         if stype == plotHelpers.sampleType.BKGD:
@@ -329,10 +329,19 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     # set stack
     hs = ROOT.THStack( histName, "" )
     # set legend
-    l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value, args.lxint, args.lyint )
+    xlover = None
+    if doSOverB: xlover = args.lxl
+    l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value, args.lxint, args.lyint, [], xlover )
+
+    if "testCutflow" in histName and "jet" in histName.lower():
+        if hists[0].GetNbinsX() > 20:
+            c.SetCanvasSize( 1000, 400 )
 
     if doSOverB:
         c.SetCanvasSize( 400, 400 )
+        if "testCutflow" in histName and "jet" in histName.lower():
+            if hists[0].GetNbinsX() > 20:
+                c.SetCanvasSize( 600, 400 )
         p1 = ROOT.TPad( "p1", "p1", 0,  0.3, 1,   1 )
         p2 = ROOT.TPad( "p2", "p2", 0, 0.01, 1, 0.3 )
         p1.Draw()
@@ -375,12 +384,14 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
         max_scale      = 1.2
         max_scale_log  = len( hists )
         max_scale_logx = max_scale
-        if "Vtx" in histName or "Trk" in histName:
-            if "avgMu" in histName or "phi" in histName or "eta" in histName or "score" in histName or \
-                ( isProfileX and "resid" in histName or "desc" in histName ):
-                max_scale       = 1.5
-            if "recoeff_r" in histName.lower() or "seedeff_r" in histName.lower() or ( "nSelDesc" in histName and "eff" in histName.lower() ):
-                max_scale_log_x = 1.5
+        #if "Vtx" in histName or "Trk" in histName:
+        #    if "avgMu" in histName or "phi" in histName or "eta" in histName or "score" in histName or \
+        #        ( isProfileX and "resid" in histName or "desc" in histName ):
+        #        max_scale       = 1.5
+        #    if "recoeff_r" in histName.lower() or "seedeff_r" in histName.lower() or \
+        #      "stdeff_r" in histName.lower() or "lrteff_r" in histName.lower() or \
+        #      ( "nSelDesc" in histName and "eff" in histName.lower() ):
+        #        max_scale_logx = 1.5
         if len( hists ) > 12:
             if "_dR" in histName or "eta" in histName or "rapid" in histName or "phi" in histName or "pt_s" in histName:
                 max_scale_log *= 7
@@ -388,8 +399,9 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
                     max_scale += len( hists ) * 0.05
         
         maxy = hist.GetMaximum()
-        if doLogy: maxy *= max_scale_log
-        else:      maxy *= max_scale
+        if   doLogy: maxy *= max_scale_log
+        elif doLogx: maxy *= max_scale_logx
+        else:        maxy *= max_scale
         hist.SetMaximum( maxy )
 
         # add legend entry
@@ -405,12 +417,18 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     
     # draw stack
     hs.Draw( args.drawOpt1D )
+
+    if "Vtx" in histName:
+        if "accept" in histName.lower() or "algeff" in histName.lower() or \
+            "coreeff" in histName.lower() or "seedeff" in histName.lower() or "recoeff" in histName.lower():
+            hs.SetMaximum(  1.60 )
+            hs.SetMinimum( -0.25 )
     
     # draw legend
     l.Draw()
 
     # set axes
-    if "cutflow" not in histName or "_N" in histName:
+    if "cutflow" not in histName.lower() or "_N" in histName:
         xtitle = plotHelpers.setXaxisTitle( hist, True, args.histTitle, varType( args.varEnum ).value ).lstrip()
         hs.GetXaxis().SetTitle( xtitle    ) 
         hs.GetXaxis().SetTitleSize( 0.03  )
@@ -460,8 +478,10 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
         obj = ""
         if "DV" in histName:
             obj = "DV"
-        elif "Jet" in histName or "jet" in histName:
+        elif "jet" in histName.lower():
             obj = "jet"
+            if "lead" in histName.lower():
+                obj = "N-lead jet"
         ytitle = " of overall " + obj + "s in all events"
         if "Efficiency" in histName:
             ytitle = "fraction" + ytitle
@@ -577,6 +597,9 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     c.Clear()
     c.Close()
     del c
+    if doSOverB:
+        del p1
+        del p2
     
 
 
@@ -810,8 +833,8 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
         for iSBD, sbd in enumerate( sbdVars.split(',') ):
             if stype == iSBD+1:
                 doPlotType = True
-        if doSOverB and stype == plotHelpers.sampleType.BKGD:
-            doPlotType = False
+        #if doSOverB and stype == plotHelpers.sampleType.BKGD:
+        #    doPlotType = False
         doPlotTypes.append( doPlotType )
 
     # set canvas
@@ -822,8 +845,15 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
     l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value,
                                    args.lxint, args.lyint, doPlotTypes, args.lxl )
 
+    if "testCutflow" in baseName and "jet" in hists[0].GetName().lower():
+        if hists[0].GetNbinsX() > 20:
+            c.SetCanvasSize( 1000, 400 )
+
     if doSOverB:
         c.SetCanvasSize( 400, 400 )
+        if "testCutflow" in baseName and "jet" in hists[0].GetName().lower():
+            if hists[0].GetNbinsX() > 20:
+                c.SetCanvasSize( 600, 400 )
         p1 = ROOT.TPad( "p1", "p1", 0,  0.3, 1,   1 )
         p2 = ROOT.TPad( "p2", "p2", 0, 0.01, 1, 0.3 )
         p1.Draw()
@@ -869,7 +899,10 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
         hist.SetMaximum( maxy )
 
         # add legend entry
-        l.AddEntry( hist, plotHelpers.setMultiLegStr( hist.GetName().split('_')[1],
+        lstr = hist.GetName().split('_')[1]
+        if "_evt" in hist.GetName():
+            lstr = hist.GetName().split('_')[3]
+        l.AddEntry( hist, plotHelpers.setMultiLegStr( lstr,
               sampleTypes[int(iH/len(args.histVars.split(',')))], sampleDicts[int(iH/len(args.histVars.split(',')))],
               varType( args.varEnum ).value, True, args.doTruthSvB, legStrLen( args.legLenEnum ).value ) ).SetTextColor( lcolor )
 
@@ -887,7 +920,7 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
     l.Draw()
 
     # set titles and axes
-    if "cutflow" not in baseName or "_N" in baseName:
+    if "cutflow" not in baseName.lower() or "_N" in baseName:
         hs.GetXaxis().SetTitle( plotHelpers.setXaxisTitle( hist, True, "", varType( args.varEnum ).value ) )
         hs.GetXaxis().SetTitleSize( 0.03  )
         hs.GetXaxis().SetTitleOffset( 1.4 )
@@ -895,8 +928,10 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
         obj = ""
         if "DV" in hist.GetName():
             obj = "DV"
-        elif "Jet" in hist.GetName() or "jet" in hist.GetName():
+        elif "jet" in hist.GetName().lower():
             obj = "jet"
+            if "lead" in hist.GetName().lower():
+                obj = "N-lead jet"
         ytitle = " of overall " + obj + "s in all events"
         if "Efficiency" in baseName:
             ytitle = "fraction" + ytitle
@@ -928,6 +963,15 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
             # skip empty histograms
             if not rhist.GetEntries():
                 continue
+
+            # skip histograms not corresponding to given sbdVar, sampleType
+            sampleHistMatch = False
+            for iSBD, sbd in enumerate( sbdVars.split(',') ):
+                if sampleTypes[int(iH/len(args.histVars.split(',')))] == iSBD+1:
+                    #if sbd and sbd.lower() in rhist.GetName().lower():
+                    if sbd and sbd in rhist.GetName(): # --> check this works! may have to change back or make sure sbd case sensitive
+                        sampleHistMatch = True
+            if not sampleHistMatch: continue
             
             # set line attributes
             lcolor = sampleDicts[int(iH/len(args.histVars.split(',')))]["lcolor"]
@@ -1047,6 +1091,9 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
     c.Clear()
     c.Close()
     del c
+    if doSOverB:
+        del p1
+        del p2
 
 
 

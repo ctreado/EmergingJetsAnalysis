@@ -71,7 +71,8 @@ def main():
     command_V  = " --regionDir valid"
 
     # 1d plots -- comparing same efficiencies across different samples
-    histList_1d = "darkpion+trk=vtx:kshort=dv=jet"
+    #histList_1d = "darkpion+trk=vtx:kshort=dv=jet"
+    histList_1d = "darkpion+vtx+eff=accept:kshort=dv=jet"
     command_1d  = " --draw1D --drawOpt1D 'nostack e1' --outSubdir 1d_trkdveff --histList " + histList_1d + " --doProfileX"
     # -- CONSIDER ALTERNATE DRAW OPTIONS (e0?)
     # --> xdm-1400 signal
@@ -166,18 +167,18 @@ def main():
     ## --- run plotting jobs --- ##
 
     # 1d: comparing signal samples
-    #os.system( command_s_14_1d_S1 ) # xdm-1400
-    #os.system( command_s_10_1d_S1 ) # xdm-1000
-    #os.system( command_s_06_1d_S1 ) # xdm-600
-    #os.system( command_s_a_1d_S1  ) # model a
-    #os.system( command_s_b_1d_S1  ) # model b
-    #os.system( command_s_c_1d_S1  ) # model c
-    #os.system( command_s_d_1d_S1  ) # model d
-    #os.system( command_s_e_1d_S1  ) # model e
+    os.system( command_s_14_1d_S1 ) # xdm-1400
+    os.system( command_s_10_1d_S1 ) # xdm-1000
+    os.system( command_s_06_1d_S1 ) # xdm-600
+    os.system( command_s_a_1d_S1  ) # model a
+    os.system( command_s_b_1d_S1  ) # model b
+    os.system( command_s_c_1d_S1  ) # model c
+    os.system( command_s_d_1d_S1  ) # model d
+    os.system( command_s_e_1d_S1  ) # model e
 
     # multi-1d: comparing histos across same sample
-    for cm_sS1 in command_s_multi_S1:
-        os.system( cm_sS1 ) # signal
+    #for cm_sS1 in command_s_multi_S1:
+    #    os.system( cm_sS1 ) # signal
 
 
 
