@@ -494,10 +494,10 @@ def setMultiLegStr( hname, stype, sdict, hvar, doMultiSmpl = False, doSvBStr = F
         else:
             legend_string = hname.split('_')[1]
     elif hvar == histVarType.JET:
-        if "lead"      .lower() in hname.lower():
-            if legend_string:
-                legend_string += " "
-            legend_string += "N-lead"
+        #if "lead"      .lower() in hname.lower():
+        #    if legend_string:
+        #        legend_string += " "
+        #    legend_string += "N-lead"
         if "darkmatch" .lower() in hname.lower():
             if legend_string:
                 legend_string += " "

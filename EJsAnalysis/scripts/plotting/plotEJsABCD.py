@@ -61,6 +61,8 @@ parser.add_argument( "--dataType", dest = "dataType", default = "",
 parser.add_argument( "--histDir", dest = "histDir", default = "EJsHists",
                          help = "Input file sub-directory where histograms are stored. \
                          Default 'EJsHists' set by EJsNtupleToHists algorithm." )
+parser.add_argument( "--validDir", dest = "validDir", default = "valid", help = "Validation region sub-directory." )
+parser.add_argument( "--searchDir", dest = "searchDir", default = "search", help = "Search region sub-directory." )
 parser.add_argument( "--histTree", dest = "histTree", default = "nominal",
                          help = "Nominal / systematics tree containing histograms to run over." )
 parser.add_argument( "--histList", dest = "histList", default = "ABCD:darkPion=kshort=nomatch",
@@ -88,8 +90,12 @@ parser.add_argument( "--doABCD_shift", dest = "doABCD_shift", action = "store_tr
 parser.add_argument( "--drawABCD", dest = "drawABCD", action = "store_true", default = False, help = "Draw ABCD plane plots." )
 parser.add_argument( "--drawNoCutABCD", dest = "drawNoCutABCD", action = "store_true", default = False,
                          help = "Draw ABCD plane plots without lines/regions defined by x/y cuts." )
-parser.add_argument( "--xCutABCD", dest = "xCutABCD", type = float, default = 1385, help = "x-axis cut for defining ABCD regions." )
+parser.add_argument( "--xCutABCD", dest = "xCutABCD", type = float, default = 1385, help = "x-axis cut for defining ABCD regions." ) # change to enum to select cut from range of values; set different arrays off cut values for different x-axis variables; make first (0th) enum value = 0
 parser.add_argument( "--yCutABCD", dest = "yCutABCD", type = float, default = 2, help = "y-axis cut for defining ABCD regions." )
+parser.add_argument( "--validOff", dest = "validOff", action = "store_true", default = False,
+                         help = "Turn validation region plots off." )
+parser.add_argument( "--searchOff", dest = "searchOff", action = "store_true", default = False,
+                         help = "Turn search region plots off." )
 parser.add_argument( "--unblind", dest = "unblind", action = "store_true", default = False, help = "Unblind data." )
 parser.add_argument( "--searchEnum", dest = "searchEnum", type = int, default = 1,
                          help = "Enumerator for sample types to plot against each other in ABCD search-region plane." )
@@ -163,9 +169,9 @@ def getSampleHistos():
     if not args.inBkgdDir: args.inBkgdDir = args.inDir
     if not args.inDataDir: args.inDataDir = args.inDir
 
-    histDir    = os.path.join( args.histDir, args.histTree )
-    valid_dir  = os.path.join(      histDir,      "valid"  )
-    search_dir = os.path.join(      histDir,      "search" )
+    histDir    = os.path.join( args.histDir, args.histTree  )
+    valid_dir  = os.path.join(      histDir, args.validDir  )
+    search_dir = os.path.join(      histDir, args.searchDir )
 
     # get samples
     sampleNames, sampleTypes, sampleDicts, sampleFiles = plotHelpers.getSamples(
@@ -223,34 +229,36 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, validHistNames, validHist
     # may be able to do in single loop...
     
     # --> validation region
-    for iName, name in enumerate( validHistNames ):
-        hists = newValidHists[iName]
-        if isinstance( hists[0], ROOT.TH2 ) and "ABCD" in name:
-            # draw ABCD plots
-            if args.drawABCD or args.drawNoCutABCD:
-                plotABCD( hists, name, sampleTypes, sampleDicts, "valid", plotTypes( args.validEnum ) )
+    if not args.validOff:
+        for iName, name in enumerate( validHistNames ):
+            hists = newValidHists[iName]
+            if isinstance( hists[0], ROOT.TH2 ) and "ABCD" in name:
+                # draw ABCD plots
+                if args.drawABCD or args.drawNoCutABCD:
+                    plotABCD( hists, name, sampleTypes, sampleDicts, "valid", plotTypes( args.validEnum ) )
                 
     # --> search region
-    for iName, name in enumerate( searchHistNames ):
-        hists = newSearchHists[iName]
-        if isinstance( hists[0], ROOT.TH2 ) and "ABCD" in name:
-            # do ABCD calculations
-            if args.doABCD: # or args.doABCD_shift -- may need to do separately since working with multiple regions and shifted data...come back to this...
-                # get ABCD region event counts
-                nSearch, effSearch = countABCD( hists, metaEventHists, metaWeightHists, sampleTypes, "search", dataScale )
-                # use standard ABCD method to estimate background in A
-                estA_search, errA_search, zA_search = estimateABCD( nSearch )
-                # get significance
-                sb0_search, sb1_search, sb2_search, sb3_search = significanceABCD( nSearch, estA_search, sampleTypes )
+    if not args.searchOff:
+        for iName, name in enumerate( searchHistNames ):
+            hists = newSearchHists[iName]
+            if isinstance( hists[0], ROOT.TH2 ) and "ABCD" in name:
+                # do ABCD calculations
+                if args.doABCD:
+                    # get ABCD region event counts
+                    nSearch, effSearch = countABCD( hists, metaEventHists, metaWeightHists, sampleTypes, args.searchDir, dataScale )
+                    # use standard ABCD method to estimate background in A
+                    estA_search, errA_search, zA_search = estimateABCD( nSearch )
+                    # get significance
+                    sb0_search, sb1_search, sb2_search, sb3_search = significanceABCD( nSearch, estA_search, sampleTypes )
+                # do shifted ABCD calculations -- need separate function to handle multiple regions and shift data, or use original function with pre-shifted histograms (whatever is fastest -- come back to)
 
-                
-            # write out ABCD info
-            if args.doABCD: # or shift
-                writeABCD( hists, name, sampleNames, sampleTypes, nSearch, effSearch, estA_search, errA_search, zA_search,
+                # write out ABCD info
+                if args.doABCD: # or shift
+                    writeABCD( hists, name, sampleNames, sampleTypes, nSearch, effSearch, estA_search, errA_search, zA_search,
                                sb0_search, sb1_search, sb2_search, sb3_search )
-            # draw ABCD plots
-            if args.drawABCD or args.drawNoCutABCD:
-                plotABCD( hists, name, sampleTypes, sampleDicts, "search", plotTypes( args.searchEnum ) )
+                # draw ABCD plots
+                if args.drawABCD or args.drawNoCutABCD:
+                    plotABCD( hists, name, sampleTypes, sampleDicts, args.searchDir, plotTypes( args.searchEnum ) )
 
 
 
@@ -285,7 +293,7 @@ def countABCD( hists, metaEventHists, metaWeightHists, sampleTypes, region, data
         effD_iH = nD_iH / scale / metaEventHists[iH].GetBinContent(3)
 
         # blind data
-        if sampleTypes[iH] == plotHelpers.sampleType.DATA  and region == "search" and not args.unblind:
+        if sampleTypes[iH] == plotHelpers.sampleType.DATA  and region == args.searchDir and not args.unblind:
             nA_iH   = -999
             nB_iH   = -999
             nC_iH   = -999
@@ -470,7 +478,7 @@ def plotABCD( hists, histName, sampleTypes, sampleDicts, region, plotType ):
         if not doPlotTypes[iH]: continue                
                 
         # blind data
-        if sampleTypes[iH] == plotHelpers.sampleType.DATA  and region == "search" and not args.unblind:
+        if sampleTypes[iH] == plotHelpers.sampleType.DATA  and region == args.searchDir and not args.unblind:
             continue
         
         # draw palette
@@ -484,7 +492,7 @@ def plotABCD( hists, histName, sampleTypes, sampleDicts, region, plotType ):
         hist.SetLineColor( sampleDicts[iH]["lcolor"] )
         hist.SetLineStyle( sampleDicts[iH]["lstyle"] )
         hist.SetLineWidth(3)
-        hist.SetContour(10)
+        hist.SetContour(20) # 5? 10? 20? play around with, and make configurable
 
         # draw histogram
         hist.DrawNormalized( "cont0 same" ) # surface colors
@@ -557,8 +565,12 @@ def plotABCD( hists, histName, sampleTypes, sampleDicts, region, plotType ):
     tp = ROOT.TPaveText( 0.13, 0.80, 0.25, 0.87 )
     if   ( region == "search" ):
         tp.AddText( "SEARCH REGION" )
+    elif ( region == "jz4w-slice-search" ):
+        tp.AddText( "JZ4W-SLICE SEARCH REGION" )
     elif ( region == "valid" ):
         tp.AddText( "VALIDATION REGION" )
+    elif ( region == "jz4w-slice-validation" ):
+        tp.AddText( "JZ4W-SLICE VALIDATION REGION" )
     tp.Draw()
 
     # print plot
@@ -599,4 +611,5 @@ def plotABCD( hists, histName, sampleTypes, sampleDicts, region, plotType ):
 if __name__ == "__main__":
     sampleNames, sampleTypes, sampleDicts, validHistNames, validHists, searchHistNames, searchHists, dataScale = getSampleHistos()
     plotHistos( sampleNames, sampleTypes, sampleDicts, validHistNames, validHists, searchHistNames, searchHists, dataScale )
-    abcd_file.close()
+    if args.doABCD or args.doABCD_shift:
+        abcd_file.close()

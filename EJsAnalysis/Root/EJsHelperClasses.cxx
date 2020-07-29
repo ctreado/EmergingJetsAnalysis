@@ -82,7 +82,11 @@ namespace EJsHelperClasses {
     m_d0z0ErrJetVerts = has_exact( "d0z0ErrJetVerts" );
     m_jetVtxTruth     = has_exact( "jetVtxTruth"     );
     m_dijets          = has_exact( "dijets"          );
+    m_dijetTrks       = has_exact( "dijetTrks"       );
+    m_dijetVerts      = has_exact( "dijetVerts"      );
     m_njets           = has_exact( "njets"           );
+    m_njetTrks        = has_exact( "njetTrks"        );
+    m_njetVerts       = has_exact( "njetVerts"       );
     m_typeJets        = has_exact( "typeJets"        );
     m_tightJets       = has_exact( "tightJets"       );
     m_nsvP4Jets       = has_exact( "nsvP4Jets"       );
@@ -94,6 +98,7 @@ namespace EJsHelperClasses {
     m_nsvTrkJets      = has_exact( "nsvTrkJets"      );
     m_nsvJets         = has_exact( "nsvJets"         );
     m_comboJets       = has_exact( "comboJets"       );
+    m_emergingJets    = has_exact( "emergingJets"    );
     m_vertices        = has_exact( "vertices"        );
     m_baseVerts       = has_exact( "baseVerts"       );
     m_matmapVerts     = has_exact( "matmapVerts"     );
@@ -118,6 +123,7 @@ namespace EJsHelperClasses {
     m_llpRecoEff      = has_exact( "llpRecoEff"      );
     m_llpvtxRecoEff   = has_exact( "llpvtxRecoEff"   );
     m_llptrkRecoEff   = has_exact( "llptrkRecoEff"   );
+    m_vrshift         = has_exact( "vrshift"         );
 
     m_numLeadingJets  = 0;
     m_numVtxTrks      = 0;

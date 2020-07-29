@@ -134,7 +134,7 @@ class EJsHistogramManager : public HistogramManager
   double m_trigJetEta = 3.1;
   
   // ABCD VR shift values
-  double m_VRshift_njetHt = 4./3;
+  double m_VRshift_njet = 4./3;
   
   // nDV test cuts
   int m_ndv = 7;
@@ -145,6 +145,35 @@ class EJsHistogramManager : public HistogramManager
   std::vector<double>      m_nJSVh   = {   6.5,  10.0,   13.5 };
   std::vector<int>         m_nJSVtrk = { 2, 4, 6, 8 };
   std::vector<int>         m_nJSV    = { 1, 2 };
+
+  // njetx cuts
+  std::vector<double> m_njetht_cut         = { 0, 1200, 1250, 1275, 1300, 1325, 1350, 1375, 1385, 1400, 1410, 1425, 1450, 1475, 1500 };
+  std::vector<double> m_njetpt_cut         = { 0,  100,  110,  120,  130,  140,  150,  155,  160,  165,  170,  175,  180,  190,  200 };
+  std::vector<double> m_njetsm_cut         = { 0,  120,  130,  135,  140,  145,  150,  152,  155,  157,  160,  162,  165,  170,  175 };
+  std::vector<double> m_njetjj_pt_cut      = { 0,  350,  400,  425,  450,  475,  500,  525,  550,  575,  585,  600,  625,  650,  700 };
+  std::vector<double> m_njetjj_m_cut       = { 0,  500,  600,  650,  675,  700,  725,  750,  775,  800,  825,  850,  875,  900, 1000 };
+  std::vector<double> m_njetjjpt_pt_cut    = { 0,  300,  350,  400,  425,  450,  475,  500,  510,  525,  535,  550,  575,  600,  650 };
+  std::vector<double> m_njetjjpt_m_cut     = { 0,  500,  600,  650,  700,  750,  800,  850,  875,  900,  925,  950, 1000, 1100, 1200 };
+  std::vector<double> m_njetjjdr_pt_cut    = { 0,  300,  350,  400,  425,  435,  450,  475,  485,  500,  510,  525,  550,  575,  600 };
+  std::vector<double> m_njetjjdr_m_cut     = { 0,  500,  600,  650,  675,  700,  725,  750,  775,  800,  825,  850,  900,  950, 1000 };
+  std::vector<double> m_avgnjetjj_pt_cut   = { 0,  350,  375,  400,  410,  425,  435,  450,  460,  475,  485,  490,  500,  510,  525 };
+  std::vector<double> m_avgnjetjj_m_cut    = { 0,  700,  750,  800,  825,  850,  875,  900,  925,  950,  975, 1000, 1025, 1050, 1100 };
+  std::vector<double> m_maxnjetjj_pt_cut   = { 0,  200,  300,  350,  375,  400,  410,  425,  435,  450,  475,  500,  525,  550,  600 };
+  std::vector<double> m_maxnjetjj_m_cut    = { 0,  900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200 };
+  std::vector<double> m_maxnjetjj_ht_cut   = { 0,  750,  800,  850,  900,  925,  950,  975, 1000, 1025, 1050, 1075, 1100, 1150, 1200 };
+  std::vector<double> m_maxnjetjj_sm_cut   = { 0,   60,   70,   75,   80,   85,   90,   95,   98,  100,  103,  105,  110,  115,  125 };
+  std::vector<double> m_minnjetjj_pt_cut   = { 0,  400,  500,  550,  575,  600,  625,  650,  660,  675,  685,  700,  725,  750,  800 };
+  std::vector<double> m_minnjetjj_m_cut    = { 0,  200,  250,  300,  325,  350,  360,  375,  385,  400,  410,  425,  435,  450,  500 };
+  std::vector<double> m_minnjetjj_ht_cut   = { 0,  500,  550,  575,  600,  625,  650,  675,  685,  700,  710,  725,  735,  750,  800 };
+  std::vector<double> m_minnjetjj_sm_cut   = { 0,   50,   60,   65,   67,   70,   72,   75,   77,   80,   82,   85,   90,   95,  100 };
+  std::vector<double> m_maxptnjetjj_pt_cut = { 0,  500,  550,  575,  600,  625,  650,  660,  675,  685,  700,  710,  725,  750,  800 };
+  std::vector<double> m_maxptnjetjj_m_cut  = { 0,  500,  550,  600,  650,  700,  750,  800,  825,  850,  875,  900,  950, 1000, 1100 };
+  std::vector<double> m_maxptnjetjj_ht_cut = { 0,  600,  650,  700,  725,  750,  775,  800,  825,  850,  875,  900,  925,  950, 1000 };
+  std::vector<double> m_maxptnjetjj_sm_cut = { 0,   50,   60,   70,   72,   75,   77,   80,   82,   85,   87,   90,   92,   95,  100 };
+  std::vector<double> m_minptnjetjj_pt_cut = { 0,  200,  225,  250,  275,  285,  300,  310,  325,  335,  350,  360,  375,  385,  400 };
+  std::vector<double> m_minptnjetjj_m_cut  = { 0,  500,  600,  700,  800,  900,  950, 1000, 1050, 1100, 1150, 1200, 1250, 1300, 1400 };
+  std::vector<double> m_minptnjetjj_ht_cut = { 0,  500,  600,  700,  725,  750,  775,  800,  825,  850,  875,  900,  925,  950, 1000 };
+  std::vector<double> m_minptnjetjj_sm_cut = { 0,   50,   60,   70,   75,   80,   82,   85,   87,   90,   92,   95,  100,  105,  110 };
 
 
   // --- BRANCHES --- //
@@ -590,10 +619,6 @@ class EJsHistogramManager : public HistogramManager
   std::vector<TH1F*> h_pv_r;    //!
   std::vector<TH1F*> h_pv_phi;  //!
   std::vector<TH1F*> h_pv_ntrk; //!
-  // leading N-jet Ht
-  std::vector<TH1F*> h_NJetHt;      //!
-  std::vector<TH1F*> h_NJetHt_vrsh; //!
-  // --> add event-level NDV --> DV either dark pion LLP decay (truth only) or good DV
   // orphan pt
   std::vector<TH1F*> h_evt_truthPartPtSum;            //!
   std::vector<TH1F*> h_evt_truthPartDarkPtSum;        //!
@@ -908,24 +933,28 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_dijet_phi;         //!
   std::vector<std::vector<TH1F*>> h_dijet_m;           //!
   std::vector<std::vector<TH1F*>> h_dijet_sumPt;       //!
+  std::vector<std::vector<TH1F*>> h_dijet_sumM;        //!
   std::vector<std::vector<TH1F*>> h_dijet_dR;          //!
   std::vector<std::vector<TH1F*>> h_dijet_avgp4_pt;    //!
   std::vector<std::vector<TH1F*>> h_dijet_avgp4_eta;   //!
   std::vector<std::vector<TH1F*>> h_dijet_avgp4_phi;   //!
   std::vector<std::vector<TH1F*>> h_dijet_avgp4_m;     //!
   std::vector<std::vector<TH1F*>> h_dijet_avgp4_sumPt; //!
+  std::vector<std::vector<TH1F*>> h_dijet_avgp4_sumM;  //!
   std::vector<std::vector<TH1F*>> h_dijet_avgp4_dR;    //!
   std::vector<std::vector<TH1F*>> h_dijet_maxp4_pt;    //!
   std::vector<std::vector<TH1F*>> h_dijet_maxp4_eta;   //!
   std::vector<std::vector<TH1F*>> h_dijet_maxp4_phi;   //!
   std::vector<std::vector<TH1F*>> h_dijet_maxp4_m;     //!
   std::vector<std::vector<TH1F*>> h_dijet_maxp4_sumPt; //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxp4_sumM;  //!
   std::vector<std::vector<TH1F*>> h_dijet_maxp4_dR;    //!
   std::vector<std::vector<TH1F*>> h_dijet_minp4_pt;    //!
   std::vector<std::vector<TH1F*>> h_dijet_minp4_eta;   //!
   std::vector<std::vector<TH1F*>> h_dijet_minp4_phi;   //!
   std::vector<std::vector<TH1F*>> h_dijet_minp4_m;     //!
   std::vector<std::vector<TH1F*>> h_dijet_minp4_sumPt; //!
+  std::vector<std::vector<TH1F*>> h_dijet_minp4_sumM;  //!
   std::vector<std::vector<TH1F*>> h_dijet_minp4_dR;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk;       //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk_pt;    //!
@@ -933,29 +962,34 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk_phi;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk_m;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk_sumPt; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_ntrk_sumM;  //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk;       //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk_pt;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk_eta;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk_phi;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk_m;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk_sumPt; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_ntrk_sumM;  //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv_pt;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv_eta;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv_phi;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv_m;      //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv_sumPt;  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxp4_nsv_sumM;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv_pt;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv_eta;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv_phi;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv_m;      //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv_sumPt;  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minp4_nsv_sumM;   //!
   std::vector<std::vector<TH1F*>> h_dijet_maxpt_pt;    //!
   std::vector<std::vector<TH1F*>> h_dijet_maxpt_eta;   //!
   std::vector<std::vector<TH1F*>> h_dijet_maxpt_phi;   //!
   std::vector<std::vector<TH1F*>> h_dijet_maxpt_m;     //!
   std::vector<std::vector<TH1F*>> h_dijet_maxpt_sumPt; //!
+  std::vector<std::vector<TH1F*>> h_dijet_maxpt_sumM;  //!
   std::vector<std::vector<TH1F*>> h_dijet_maxpt_dR;    //!
   std::vector<std::vector<TH1F*>> h_dijet_minpt_pt;    //!
   std::vector<std::vector<TH1F*>> h_dijet_minpt_eta;   //!
@@ -963,30 +997,35 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_dijet_minpt_m;     //!
   std::vector<std::vector<TH1F*>> h_dijet_minpt_sumPt; //!
   std::vector<std::vector<TH1F*>> h_dijet_minpt_dR;    //!
+  std::vector<std::vector<TH1F*>> h_dijet_minpt_sumM;  //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk;       //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk_pt;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk_eta;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk_phi;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk_m;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk_sumPt; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_ntrk_sumM;  //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk;       //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk_pt;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk_eta;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk_phi;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk_m;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk_sumPt; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_ntrk_sumM;  //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv_pt;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv_eta;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv_phi;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv_m;      //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv_sumPt;  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_maxpt_nsv_sumM;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv_pt;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv_eta;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv_phi;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv_m;      //!
   std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv_sumPt;  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_dijet_minpt_nsv_sumM;   //!
   
   // N jets (all jets in event)
   std::vector<std::vector<TH1F*>> h_njet_pt;    //!
@@ -994,30 +1033,106 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<TH1F*>> h_njet_phi;   //!
   std::vector<std::vector<TH1F*>> h_njet_m;     //!
   std::vector<std::vector<TH1F*>> h_njet_sumPt; //!
+  std::vector<std::vector<TH1F*>> h_njet_sumM;  //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk;       //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk_pt;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk_eta;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk_phi;   //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk_m;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk_sumPt; //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_ntrk_sumM;  //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv;        //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_pt;     //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_eta;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_phi;    //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_m;      //!
   std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_sumPt;  //!
+  std::vector<std::vector<std::vector<TH1F*>> > h_njet_nsv_sumM;   //!
 
-  // leading N-jet dijet invariant mass (avg of dijet pairs w/ min diff invM b/w them)
-  std::vector<TH1F*> h_NJetJJ_pt;         //!
-  std::vector<TH1F*> h_NJetJJ_eta;        //!
-  std::vector<TH1F*> h_NJetJJ_phi;        //!
-  std::vector<TH1F*> h_NJetJJ_m;          //!
-  std::vector<TH1F*> h_NJetJJ_ptDiff;     //!
-  std::vector<TH1F*> h_NJetJJ_etaDiff;    //!
-  std::vector<TH1F*> h_NJetJJ_phiDiff;    //!
-  std::vector<TH1F*> h_NJetJJ_mDiff;      //!
-  std::vector<TH1F*> h_NJetJJ_sumPt;      //!
-  std::vector<TH1F*> h_NJetJJ_dR;         //!
+  // leading N-jet 
+  std::vector<TH1F*> h_NJetHt;               //!
+  std::vector<TH1F*> h_NJetPt;               //!
+  std::vector<TH1F*> h_NJetEta;              //!
+  std::vector<TH1F*> h_NJetPhi;              //!
+  std::vector<TH1F*> h_NJetM;                //!
+  std::vector<TH1F*> h_NJetSumM;             //!
+  // leading N-jet min-diff-invM dijet (avg of dijet pairs w/ min diff invM b/w them)
+  std::vector<TH1F*> h_NJetJJ_pt;            //!
+  std::vector<TH1F*> h_NJetJJ_eta;           //!
+  std::vector<TH1F*> h_NJetJJ_phi;           //!
+  std::vector<TH1F*> h_NJetJJ_m;             //!
+  std::vector<TH1F*> h_NJetJJ_ptDiff;        //!
+  std::vector<TH1F*> h_NJetJJ_etaDiff;       //!
+  std::vector<TH1F*> h_NJetJJ_phiDiff;       //!
+  std::vector<TH1F*> h_NJetJJ_mDiff;         //!
+  std::vector<TH1F*> h_NJetJJ_sumPt;         //!
+  std::vector<TH1F*> h_NJetJJ_sumM;          //!
+  std::vector<TH1F*> h_NJetJJ_dR;            //!
+  std::vector<TH1F*> h_NJetJJ_dRjj;          //!
+  // leading N-jet min-diff-pt dijet (avg of dijet pairs w/ min diff pT b/w them)
+  std::vector<TH1F*> h_NJetJJmindpt_pt;      //!
+  std::vector<TH1F*> h_NJetJJmindpt_eta;     //!
+  std::vector<TH1F*> h_NJetJJmindpt_phi;     //!
+  std::vector<TH1F*> h_NJetJJmindpt_m;       //!
+  std::vector<TH1F*> h_NJetJJmindpt_ptDiff;  //!
+  std::vector<TH1F*> h_NJetJJmindpt_etaDiff; //!
+  std::vector<TH1F*> h_NJetJJmindpt_phiDiff; //!
+  std::vector<TH1F*> h_NJetJJmindpt_mDiff;   //!
+  std::vector<TH1F*> h_NJetJJmindpt_sumPt;   //!
+  std::vector<TH1F*> h_NJetJJmindpt_sumM;    //!
+  std::vector<TH1F*> h_NJetJJmindpt_dR;      //!
+  std::vector<TH1F*> h_NJetJJmindpt_dRjj;    //!
+  // leading N-jet max-dR dijet (avg of dijet pairs w/ max dR b/w them)
+  std::vector<TH1F*> h_NJetJJmaxdr_pt;       //!
+  std::vector<TH1F*> h_NJetJJmaxdr_eta;      //!
+  std::vector<TH1F*> h_NJetJJmaxdr_phi;      //!
+  std::vector<TH1F*> h_NJetJJmaxdr_m;        //!
+  std::vector<TH1F*> h_NJetJJmaxdr_ptDiff;   //!
+  std::vector<TH1F*> h_NJetJJmaxdr_etaDiff;  //!
+  std::vector<TH1F*> h_NJetJJmaxdr_phiDiff;  //!
+  std::vector<TH1F*> h_NJetJJmaxdr_mDiff;    //!
+  std::vector<TH1F*> h_NJetJJmaxdr_sumPt;    //!
+  std::vector<TH1F*> h_NJetJJmaxdr_sumM;     //!
+  std::vector<TH1F*> h_NJetJJmaxdr_dR;       //!
+  std::vector<TH1F*> h_NJetJJmaxdr_dRjj;     //!
+  // leading N-jet average dijet (avg of all dijets)
+  std::vector<TH1F*> h_avgNJetJJ_pt;         //!
+  std::vector<TH1F*> h_avgNJetJJ_eta;        //!
+  std::vector<TH1F*> h_avgNJetJJ_phi;        //!
+  std::vector<TH1F*> h_avgNJetJJ_m;          //!
+  std::vector<TH1F*> h_avgNJetJJ_dR;         //!
+  // leading N-jet max dijet (max-invM of all dijets)
+  std::vector<TH1F*> h_maxNJetJJ_pt;         //!
+  std::vector<TH1F*> h_maxNJetJJ_eta;        //!
+  std::vector<TH1F*> h_maxNJetJJ_phi;        //!
+  std::vector<TH1F*> h_maxNJetJJ_m;          //!
+  std::vector<TH1F*> h_maxNJetJJ_sumPt;      //!
+  std::vector<TH1F*> h_maxNJetJJ_sumM;       //!
+  std::vector<TH1F*> h_maxNJetJJ_dR;         //!
+  // leading N-jet min dijet (min-invM of all dijets)
+  std::vector<TH1F*> h_minNJetJJ_pt;         //!
+  std::vector<TH1F*> h_minNJetJJ_eta;        //!
+  std::vector<TH1F*> h_minNJetJJ_phi;        //!
+  std::vector<TH1F*> h_minNJetJJ_m;          //!
+  std::vector<TH1F*> h_minNJetJJ_sumPt;      //!
+  std::vector<TH1F*> h_minNJetJJ_sumM;       //!
+  std::vector<TH1F*> h_minNJetJJ_dR;         //!
+  // leading N-jet maxpt dijet (max-pt of all dijets)
+  std::vector<TH1F*> h_maxptNJetJJ_pt;       //!
+  std::vector<TH1F*> h_maxptNJetJJ_eta;      //!
+  std::vector<TH1F*> h_maxptNJetJJ_phi;      //!
+  std::vector<TH1F*> h_maxptNJetJJ_m;        //!
+  std::vector<TH1F*> h_maxptNJetJJ_sumPt;    //!
+  std::vector<TH1F*> h_maxptNJetJJ_sumM;     //!
+  std::vector<TH1F*> h_maxptNJetJJ_dR;       //!
+  // leading N-jet minpt dijet (min-pt of all dijets)
+  std::vector<TH1F*> h_minptNJetJJ_pt;       //!
+  std::vector<TH1F*> h_minptNJetJJ_eta;      //!
+  std::vector<TH1F*> h_minptNJetJJ_phi;      //!
+  std::vector<TH1F*> h_minptNJetJJ_m;        //!
+  std::vector<TH1F*> h_minptNJetJJ_sumPt;    //!
+  std::vector<TH1F*> h_minptNJetJJ_sumM;     //!
+  std::vector<TH1F*> h_minptNJetJJ_dR;       //!
 
 
   // TRUTH PARTICLE HISTOS
@@ -1977,13 +2092,90 @@ class EJsHistogramManager : public HistogramManager
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflow_ntrkNDV;                //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflowEfficiency_ntrkNDV;      //!
   std::vector<std::vector<std::vector<TH1F*>> > h_evt_cutflowTotalEfficiency_ntrkNDV; //!
-  // --> test other potential "good" (n-1, w/o d0/z0, etc.) DV cuts
   // --> run on vertices with various track cleaning / trimming (need to update code to recalculate kinematic variables)
 
-  // --> add event-level jet cuts + cutflows
-  // --> --> test cut on dR between jets, jet pairs in dijet systems
-  // --> --> tighten invariant mass difference requirement for singular dijet system
-  // --> --> use NJetPt, NJetEta, Mjj variables for ABCD plane; add to cutflow (i.e. N jets w/ some criteria + NJetPt) --> calculate before and after requiring nEJs
+  std::vector<TH1F*> h_evt_cutflow_NJetHt;                           //!
+  std::vector<TH1F*> h_evt_cutflow_NJetPt;                           //!
+  std::vector<TH1F*> h_evt_cutflow_NJetSumM;                         //!
+  std::vector<TH1F*> h_evt_cutflow_NJetJJ_pt;                        //!
+  std::vector<TH1F*> h_evt_cutflow_NJetJJ_m;                         //!
+  std::vector<TH1F*> h_evt_cutflow_NJetJJmindpt_pt;                  //!
+  std::vector<TH1F*> h_evt_cutflow_NJetJJmindpt_m;                   //!
+  std::vector<TH1F*> h_evt_cutflow_NJetJJmaxdr_pt;                   //!
+  std::vector<TH1F*> h_evt_cutflow_NJetJJmaxdr_m;                    //!
+  std::vector<TH1F*> h_evt_cutflow_avgNJetJJ_pt;                     //!
+  std::vector<TH1F*> h_evt_cutflow_avgNJetJJ_m;                      //!
+  std::vector<TH1F*> h_evt_cutflow_maxNJetJJ_pt;                     //!
+  std::vector<TH1F*> h_evt_cutflow_maxNJetJJ_m;                      //!
+  std::vector<TH1F*> h_evt_cutflow_maxNJetJJ_sumPt;                  //!
+  std::vector<TH1F*> h_evt_cutflow_maxNJetJJ_sumM;                   //!
+  std::vector<TH1F*> h_evt_cutflow_minNJetJJ_pt;                     //!
+  std::vector<TH1F*> h_evt_cutflow_minNJetJJ_m;                      //!
+  std::vector<TH1F*> h_evt_cutflow_minNJetJJ_sumPt;                  //!
+  std::vector<TH1F*> h_evt_cutflow_minNJetJJ_sumM;                   //!
+  std::vector<TH1F*> h_evt_cutflow_maxptNJetJJ_pt;                   //!
+  std::vector<TH1F*> h_evt_cutflow_maxptNJetJJ_m;                    //!
+  std::vector<TH1F*> h_evt_cutflow_maxptNJetJJ_sumPt;                //!
+  std::vector<TH1F*> h_evt_cutflow_maxptNJetJJ_sumM;                 //!
+  std::vector<TH1F*> h_evt_cutflow_minptNJetJJ_pt;                   //!
+  std::vector<TH1F*> h_evt_cutflow_minptNJetJJ_m;                    //!
+  std::vector<TH1F*> h_evt_cutflow_minptNJetJJ_sumPt;                //!
+  std::vector<TH1F*> h_evt_cutflow_minptNJetJJ_sumM;                 //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_NJetHt;                 //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_NJetPt;                 //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_NJetSumM;               //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_NJetJJ_pt;              //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_NJetJJ_m;               //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_NJetJJmindpt_pt;        //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_NJetJJmindpt_m;         //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_NJetJJmaxdr_pt;         //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_NJetJJmaxdr_m;          //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_avgNJetJJ_pt;           //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_avgNJetJJ_m;            //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_maxNJetJJ_pt;           //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_maxNJetJJ_m;            //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_maxNJetJJ_sumPt;        //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_maxNJetJJ_sumM;         //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_minNJetJJ_pt;           //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_minNJetJJ_m;            //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_minNJetJJ_sumPt;        //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_minNJetJJ_sumM;         //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_maxptNJetJJ_pt;         //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_maxptNJetJJ_m;          //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_maxptNJetJJ_sumPt;      //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_maxptNJetJJ_sumM;       //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_minptNJetJJ_pt;         //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_minptNJetJJ_m;          //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_minptNJetJJ_sumPt;      //!
+  std::vector<TH1F*> h_evt_cutflowEfficiency_minptNJetJJ_sumM;       //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_NJetHt;            //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_NJetPt;            //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_NJetSumM;          //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_NJetJJ_pt;         //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_NJetJJ_m;          //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_NJetJJmindpt_pt;   //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_NJetJJmindpt_m;    //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_NJetJJmaxdr_pt;    //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_NJetJJmaxdr_m;     //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_avgNJetJJ_pt;      //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_avgNJetJJ_m;       //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_maxNJetJJ_pt;      //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_maxNJetJJ_m;       //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_maxNJetJJ_sumPt;   //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_maxNJetJJ_sumM;    //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_minNJetJJ_pt;      //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_minNJetJJ_m;       //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_minNJetJJ_sumPt;   //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_minNJetJJ_sumM;    //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_maxptNJetJJ_pt;    //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_maxptNJetJJ_m;     //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_maxptNJetJJ_sumPt; //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_maxptNJetJJ_sumM;  //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_minptNJetJJ_pt;    //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_minptNJetJJ_m;     //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_minptNJetJJ_sumPt; //!
+  std::vector<TH1F*> h_evt_cutflowTotalEfficiency_minptNJetJJ_sumM;  //!         
+
   // ... add full event cutflow (i.e. for nDV > x, nEJ > y, other potential event-level cuts)
   
   
@@ -1994,17 +2186,33 @@ class EJsHistogramManager : public HistogramManager
 
 
   // 2D EVENT HISTOS -- ABCD PLANE TESTS
-  // --> weighted standard
-  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetHt;          //!
-  //std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetPt;          //!
-  //std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetMjj;         //!
-  // --> weighted shifted
-  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetHt_vrsh;     //!
-  // --> raw standard
-  std::vector<std::vector<TH2F*>> h_abcd_raw_nDV_NJetHt;      //!
-  // --> raw shifted
-  std::vector<std::vector<TH2F*>> h_abcd_raw_nDV_NJetHt_vrsh; //!
-  
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetHt;            //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetPt;            //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetSumM;          //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetJJ_pt;         //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetJJ_m;          //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetJJmindpt_pt;   //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetJJmindpt_m;    //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetJJmaxdr_pt;    //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_NJetJJmaxdr_m;     //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_avgNJetJJ_pt;      //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_avgNJetJJ_m;       //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_maxNJetJJ_pt;      //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_maxNJetJJ_m;       //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_maxNJetJJ_sumPt;   //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_maxNJetJJ_sumM;    //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_minNJetJJ_pt;      //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_minNJetJJ_m;       //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_minNJetJJ_sumPt;   //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_minNJetJJ_sumM;    //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_maxptNJetJJ_pt;    //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_maxptNJetJJ_m;     //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_maxptNJetJJ_sumPt; //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_maxptNJetJJ_sumM;  //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_minptNJetJJ_pt;    //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_minptNJetJJ_m;     //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_minptNJetJJ_sumPt; //!
+  std::vector<std::vector<TH2F*>> h_abcd_nDV_minptNJetJJ_sumM;  //!
 };
 
 #endif // EJsAnalysis_EJsHistogramManager_H

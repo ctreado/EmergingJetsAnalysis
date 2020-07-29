@@ -330,8 +330,11 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     hs = ROOT.THStack( histName, "" )
     # set legend
     xlover = None
-    if doSOverB: xlover = args.lxl
-    l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value, args.lxint, args.lyint, [], xlover )
+    ylint  = args.lyint
+    if doSOverB:
+        xlover  = args.lxl
+        ylint  -= 0.004
+    l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value, args.lxint, ylint, [], xlover )
 
     if "testCutflow" in histName and "jet" in histName.lower():
         if hists[0].GetNbinsX() > 20:
@@ -842,8 +845,13 @@ def plotMultiSmpl1D( hists, baseName, sampleTypes, sampleDicts, sbdVars, htitle,
     # set stack
     hs = ROOT.THStack( baseName, "" )
     # set legend
+    xlover = args.lxl
+    ylint  = args.lyint
+    #if doSOverB:
+    #    xlover += 0.025
+    #    ylint  -= 0.005
     l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value,
-                                   args.lxint, args.lyint, doPlotTypes, args.lxl )
+                                   args.lxint, ylint, doPlotTypes, xlover )
 
     if "testCutflow" in baseName and "jet" in hists[0].GetName().lower():
         if hists[0].GetNbinsX() > 20:

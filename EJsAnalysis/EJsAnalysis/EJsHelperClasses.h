@@ -120,7 +120,11 @@ namespace EJsHelperClasses {
     bool m_d0z0ErrJetVerts;
     bool m_jetVtxTruth;
     bool m_dijets;
+    bool m_dijetTrks;
+    bool m_dijetVerts;
     bool m_njets;
+    bool m_njetTrks;
+    bool m_njetVerts;
     bool m_typeJets;
     bool m_tightJets;
     bool m_nsvP4Jets;
@@ -132,6 +136,7 @@ namespace EJsHelperClasses {
     bool m_nsvTrkJets;
     bool m_nsvJets;
     bool m_comboJets;
+    bool m_emergingJets;
     bool m_vertices;
     bool m_baseVerts;
     bool m_matmapVerts;
@@ -156,6 +161,7 @@ namespace EJsHelperClasses {
     bool m_llpRecoEff;
     bool m_llpvtxRecoEff;
     bool m_llptrkRecoEff;
+    bool m_vrshift;
 
     int m_numLeadingJets; // n leading jets
     int m_numVtxTrks;     // n vertex tracks

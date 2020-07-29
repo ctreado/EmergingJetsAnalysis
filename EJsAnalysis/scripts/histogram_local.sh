@@ -38,8 +38,8 @@ intags_data="data"
 #runEJsHistogrammer.py --inDir ${input_grid_up} --outDir ${output_grid_up} --inTags ${intags_66}   --renameAndMove --mergeDatasets
 #runEJsHistogrammer.py --inDir ${input_grid_up} --outDir ${output_grid_up} --inTags ${intags_75}   --renameAndMove --mergeDatasets
 #runEJsHistogrammer.py --inDir ${input_grid_up} --outDir ${output_grid_up} --inTags ${intags_80}   --renameAndMove --mergeDatasets
-#runEJsHistogrammer.py --inDir ${input_grid_up} --outDir ${output_grid_up} --inTags ${intags_mc}   --renameAndMove --mergeDatasets
-#runEJsHistogrammer.py --inDir ${input_grid}    --outDir ${output_grid_up} --inTags ${intags_mc}   --renameAndMove --mergeDatasets
+runEJsHistogrammer.py --inDir ${input_grid_up} --outDir ${output_grid_up} --inTags ${intags_mc}   --renameAndMove --mergeDatasets
+runEJsHistogrammer.py --inDir ${input_grid}    --outDir ${output_grid_up} --inTags ${intags_mc}   --renameAndMove --mergeDatasets
 #runEJsHistogrammer.py --inDir ${input_grid}    --outDir ${output_grid_up} --inTags ${intags_data} --renameAndMove --mergeDatasets
 
 # run over SUB-SET of trees
@@ -65,7 +65,7 @@ output_test="$EJ_PATH/../run/test.histos/"
 #runEJsHistogrammer.py --inDir ${input_bench}   --outDir ${output_test} --inTags ${intags_17}   --mergeDatasets --renameAndMove --nevents -1
 
 #runEJsHistogrammer.py --inDir ${input_grid_up} --outDir ${output_test} --inTags ${intags_08}   --mergeDatasets --renameAndMove --nevents -1
-runEJsHistogrammer.py --inDir ${input_grid_up} --outDir ${output_test} --inTags ${intags_28}   --mergeDatasets --renameAndMove --nevents 1000
+#runEJsHistogrammer.py --inDir ${input_grid_up} --outDir ${output_test} --inTags ${intags_28}   --mergeDatasets --renameAndMove --nevents 1000
 #runEJsHistogrammer.py --inDir ${input_grid_up} --outDir ${output_test} --inTags ${intags_39}   --mergeDatasets --renameAndMove --nevents 1000
 #runEJsHistogrammer.py --inDir ${input_grid_up} --outDir ${output_test} --inTags ${intags_60}   --mergeDatasets --renameAndMove --nevents 1000
 #runEJsHistogrammer.py --inDir ${input_grid}    --outDir ${output_test} --inTags ${intags_bkgd} --mergeDatasets --renameAndMove --nevents -1
