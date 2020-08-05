@@ -21,14 +21,16 @@ def main():
 
     ## --- initialize plotting commands --- ##
     # --> change when needed
-    inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/EJsNtupToHistOutput/njetx_abcd/"
-    outDir  = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/plots/njetx_abcd/"
-    #inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
-    pscript = os.getenv('EJ_PATH') + "/EJsAnalysis/scripts/plotting/plotEJsABCD.py"
-    command = "python "  + pscript + " --inDir " + inDir + " --outDir " + outDir
-    #command = "python3 " + pscript + " --inDir " + inDir + " --outDir " + outDir # for running outside of athena
+    inDir      = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/EJsNtupToHistOutput/njetx_abcd/"
+    outDir     = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/plots/njetx_abcd/"
+    outTextDir = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/text_files/njetx_abcd/"
+    #inDir      = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
+    pscript    = os.getenv('EJ_PATH') + "/EJsAnalysis/scripts/plotting/plotEJsABCD.py"
+    #command    = "python "  + pscript + " --inDir " + inDir + " --outDir " + outDir + " --outTextDir " + outTextDir
+    command    = "python3 " + pscript + " --inDir " + inDir + " --outDir " + outDir + " --outTextDir " + outTextDir # for running outside of athena
 
     # signal
+    s_sub15    = " --sgnlType 312004,312008,312017,312022,312028,312031,312039,312046,312052,312060,312066,312067,312075,312080,312090"
     s_abcde_14 = " --sgnlType 312004,312022,312039,312060,312075"
     s_abcde_10 = " --sgnlType 312008,312028,312046,312066,312080"
     s_abcde_06 = " --sgnlType 312017,312031,312052,312067,312090"
@@ -67,33 +69,36 @@ def main():
     command_sbd           = command
     command_sbd          += b
     #command_sbd          += d
+    # all sub-15 signal samples
+    command_sbd_sub15     = command_sbd + s_sub15
+    command_sbd_sub15    += " --outSgnlName sub15"
     # Models A, B, C, D, and E; Xdm-1400
     command_sbd_abcde_14  = command_sbd + s_abcde_14
-    command_sbd_abcde_14 += " --outSgnlName ModABCDE_Xdm14"
+    command_sbd_abcde_14 += " --outSgnlName ModABCDE_Xdm-14"
     # Models A, B, C, D, and E; Xdm-1000
     command_sbd_abcde_10  = command_sbd + s_abcde_10
-    command_sbd_abcde_10 += " --outSgnlName ModABCDE_Xdm10"
+    command_sbd_abcde_10 += " --outSgnlName ModABCDE_Xdm-10"
     # Models A, B, C, D, and E; Xdm-600
     command_sbd_abcde_06  = command_sbd + s_abcde_06
-    command_sbd_abcde_06 += " --outSgnlName ModABCDE_Xdm06"
+    command_sbd_abcde_06 += " --outSgnlName ModABCDE_Xdm-06"
     # Models A and B; Xdm-1400
     command_sbd_ab_14     = command_sbd + s_ab_14
-    command_sbd_ab_14    += " --outSgnlName ModAB_Xdm14"
+    command_sbd_ab_14    += " --outSgnlName ModAB_Xdm-14"
     # Models A and B; Xdm-1000
     command_sbd_ab_10     = command_sbd + s_ab_10
-    command_sbd_ab_10    += " --outSgnlName ModAB_Xdm10"
+    command_sbd_ab_10    += " --outSgnlName ModAB_Xdm-10"
     # Models A and B; Xdm-600
     command_sbd_ab_06     = command_sbd + s_ab_06
-    command_sbd_ab_06    += " --outSgnlName ModAB_Xdm6"
+    command_sbd_ab_06    += " --outSgnlName ModAB_Xdm-6"
     # Models C, D, and E; Xdm-1400
     command_sbd_cde_14    = command_sbd + s_cde_14
-    command_sbd_cde_14   += " --outSgnlName ModCDE_Xdm14"
+    command_sbd_cde_14   += " --outSgnlName ModCDE_Xdm-14"
     # Models C, D, and E; Xdm-1000
     command_sbd_cde_10    = command_sbd + s_cde_10
-    command_sbd_cde_10   += " --outSgnlName ModCDE_Xdm10"
+    command_sbd_cde_10   += " --outSgnlName ModCDE_Xdm-10"
     # Models C, D, and E; Xdm-600
     command_sbd_cde_06    = command_sbd + s_cde_06
-    command_sbd_cde_06   += " --outSgnlName ModCDE_Xdm6"
+    command_sbd_cde_06   += " --outSgnlName ModCDE_Xdm-6"
     # Model A
     command_sbd_a         = command_sbd + s_a
     command_sbd_a        += " --outSgnlName ModA"
@@ -163,157 +168,179 @@ def main():
     command_VJ = " --validDir jz4w-slice-validation"
     
     # abcd plots
-    command_abcd        = " --drawABCD --drawNoCutABCD --validOff" # no cuts/counts; plots only w/o lines
+    #command_abcd        = " --drawABCD --drawNoCutABCD --validOff" # no cuts/counts; plots only w/o lines
+    command_abcd        = " --drawABCD --validOff"
     #command_abcd        = " --doABCD --drawABCD"
-    command_abcd_noplot = " --doABCD"
+    command_abcd_noplot = " --doABCD" # change output text files to reflect cut values
 
-    command_sbd_abcde_14_S  = command_sbd_abcde_14 + command_abcd + command_S
-    command_sbd_abcde_14_SJ = command_sbd_abcde_14 + command_abcd + command_SJ
-    command_sbd_abcde_10_S  = command_sbd_abcde_10 + command_abcd + command_S
-    command_sbd_abcde_10_SJ = command_sbd_abcde_10 + command_abcd + command_SJ
-    command_sbd_abcde_06_S  = command_sbd_abcde_06 + command_abcd + command_S
-    command_sbd_abcde_06_SJ = command_sbd_abcde_06 + command_abcd + command_SJ
-    command_sbd_ab_14_S     = command_sbd_ab_14    + command_abcd + command_S
-    command_sbd_ab_14_SJ    = command_sbd_ab_14    + command_abcd + command_SJ
-    command_sbd_ab_10_S     = command_sbd_ab_10    + command_abcd + command_S
-    command_sbd_ab_10_SJ    = command_sbd_ab_10    + command_abcd + command_SJ
-    command_sbd_ab_06_S     = command_sbd_ab_06    + command_abcd + command_S
-    command_sbd_ab_06_SJ    = command_sbd_ab_06    + command_abcd + command_SJ
-    command_sbd_cde_14_S    = command_sbd_cde_14   + command_abcd + command_S
-    command_sbd_cde_14_SJ   = command_sbd_cde_14   + command_abcd + command_SJ
-    command_sbd_cde_10_S    = command_sbd_cde_10   + command_abcd + command_S
-    command_sbd_cde_10_SJ   = command_sbd_cde_10   + command_abcd + command_SJ
-    command_sbd_cde_06_S    = command_sbd_cde_06   + command_abcd + command_S
-    command_sbd_cde_06_SJ   = command_sbd_cde_06   + command_abcd + command_SJ
-    command_sbd_a_S         = command_sbd_a        + command_abcd + command_S
-    command_sbd_a_SJ        = command_sbd_a        + command_abcd + command_SJ
-    command_sbd_b_S         = command_sbd_b        + command_abcd + command_S
-    command_sbd_b_SJ        = command_sbd_b        + command_abcd + command_SJ
-    command_sbd_c_S         = command_sbd_c        + command_abcd + command_S
-    command_sbd_c_SJ        = command_sbd_c        + command_abcd + command_SJ
-    command_sbd_d_S         = command_sbd_d        + command_abcd + command_S
-    command_sbd_d_SJ        = command_sbd_d        + command_abcd + command_SJ
-    command_sbd_e_S         = command_sbd_e        + command_abcd + command_S
-    command_sbd_e_SJ        = command_sbd_e        + command_abcd + command_SJ
-    command_sbd_04_S        = command_sbd_04       + command_abcd + command_S
-    command_sbd_04_SJ       = command_sbd_04       + command_abcd + command_SJ
-    command_sbd_08_S        = command_sbd_08       + command_abcd + command_S
-    command_sbd_08_SJ       = command_sbd_08       + command_abcd + command_SJ
-    command_sbd_17_S        = command_sbd_17       + command_abcd + command_S
-    command_sbd_17_SJ       = command_sbd_17       + command_abcd + command_SJ
-    command_sbd_22_S        = command_sbd_22       + command_abcd + command_S
-    command_sbd_22_SJ       = command_sbd_22       + command_abcd + command_SJ
-    command_sbd_28_S        = command_sbd_28       + command_abcd + command_S
-    command_sbd_28_SJ       = command_sbd_28       + command_abcd + command_SJ
-    command_sbd_31_S        = command_sbd_31       + command_abcd + command_S
-    command_sbd_31_SJ       = command_sbd_31       + command_abcd + command_SJ
-    command_sbd_39_S        = command_sbd_31       + command_abcd + command_S
-    command_sbd_39_SJ       = command_sbd_31       + command_abcd + command_SJ
-    command_sbd_46_S        = command_sbd_46       + command_abcd + command_S
-    command_sbd_46_SJ       = command_sbd_46       + command_abcd + command_SJ
-    command_sbd_52_S        = command_sbd_52       + command_abcd + command_S
-    command_sbd_52_SJ       = command_sbd_52       + command_abcd + command_SJ
-    command_sbd_60_S        = command_sbd_60       + command_abcd + command_S
-    command_sbd_60_SJ       = command_sbd_60       + command_abcd + command_SJ
-    command_sbd_66_S        = command_sbd_66       + command_abcd + command_S
-    command_sbd_66_SJ       = command_sbd_66       + command_abcd + command_SJ
-    command_sbd_67_S        = command_sbd_67       + command_abcd + command_S
-    command_sbd_67_SJ       = command_sbd_67       + command_abcd + command_SJ
-    command_sbd_75_S        = command_sbd_75       + command_abcd + command_S
-    command_sbd_75_SJ       = command_sbd_75       + command_abcd + command_SJ
-    command_sbd_80_S        = command_sbd_80       + command_abcd + command_S
-    command_sbd_80_SJ       = command_sbd_80       + command_abcd + command_SJ
-    command_sbd_90_S        = command_sbd_90       + command_abcd + command_S
-    command_sbd_90_SJ       = command_sbd_90       + command_abcd + command_SJ
+    command_abcd_S     = command_abcd        + command_S
+    command_abcd_SJ    = command_abcd        + command_SJ
+    command_abcd_np_S  = command_abcd_noplot + command_S
+    command_abcd_np_SJ = command_abcd_noplot + command_SJ
+
+    command_sbd_sub15_S,    command_sbd_sub15_SJ    = [], []
+    command_sbd_abcde_14_S, command_sbd_abcde_14_SJ = [], []
+    command_sbd_abcde_10_S, command_sbd_abcde_10_SJ = [], []
+    command_sbd_abcde_06_S, command_sbd_abcde_06_SJ = [], []
+    command_sbd_ab_14_S,    command_sbd_ab_14_SJ    = [], []
+    command_sbd_ab_10_S,    command_sbd_ab_10_SJ    = [], []
+    command_sbd_ab_06_S,    command_sbd_ab_06_SJ    = [], []
+    command_sbd_cde_14_S,   command_sbd_cde_14_SJ   = [], []
+    command_sbd_cde_10_S,   command_sbd_cde_10_SJ   = [], []
+    command_sbd_cde_06_S,   command_sbd_cde_06_SJ   = [], []
+    command_sbd_a_S,        command_sbd_a_SJ        = [], []
+    command_sbd_b_S,        command_sbd_b_SJ        = [], []
+    command_sbd_c_S,        command_sbd_c_SJ        = [], []
+    command_sbd_d_S,        command_sbd_d_SJ        = [], []
+    command_sbd_e_S,        command_sbd_e_SJ        = [], []
+    command_sbd_04_S,       command_sbd_04_SJ       = [], []
+    command_sbd_08_S,       command_sbd_08_SJ       = [], []
+    command_sbd_17_S,       command_sbd_17_SJ       = [], []
+    command_sbd_22_S,       command_sbd_22_SJ       = [], []
+    command_sbd_28_S,       command_sbd_28_SJ       = [], []
+    command_sbd_31_S,       command_sbd_31_SJ       = [], []
+    command_sbd_39_S,       command_sbd_39_SJ       = [], []
+    command_sbd_46_S,       command_sbd_46_SJ       = [], []
+    command_sbd_52_S,       command_sbd_52_SJ       = [], []
+    command_sbd_60_S,       command_sbd_60_SJ       = [], []
+    command_sbd_66_S,       command_sbd_66_SJ       = [], []
+    command_sbd_67_S,       command_sbd_67_SJ       = [], []
+    command_sbd_75_S,       command_sbd_75_SJ       = [], []
+    command_sbd_80_S,       command_sbd_80_SJ       = [], []
+    command_sbd_90_S,       command_sbd_90_SJ       = [], []
+    for i in range(1,15): # x cuts
+        for j in range(2,5): # y cuts
+            xycut = " --xCutABCDEnum " + str(i) + " --yCutABCDEnum " + str(j)
+            command_sbd_sub15_S     .append( command_sbd_sub15    + command_abcd_np_S  + xycut )
+            command_sbd_sub15_SJ    .append( command_sbd_sub15    + command_abcd_np_SJ + xycut )
+            command_sbd_abcde_14_S  .append( command_sbd_abcde_14 + command_abcd_S     + xycut )
+            command_sbd_abcde_14_SJ .append( command_sbd_abcde_14 + command_abcd_SJ    + xycut )
+            command_sbd_abcde_10_S  .append( command_sbd_abcde_10 + command_abcd_S     + xycut )
+            command_sbd_abcde_10_SJ .append( command_sbd_abcde_10 + command_abcd_SJ    + xycut )
+            command_sbd_abcde_06_S  .append( command_sbd_abcde_06 + command_abcd_S     + xycut )
+            command_sbd_abcde_06_SJ .append( command_sbd_abcde_06 + command_abcd_SJ    + xycut )
+            command_sbd_ab_14_S     .append( command_sbd_ab_14    + command_abcd_S     + xycut )
+            command_sbd_ab_14_SJ    .append( command_sbd_ab_14    + command_abcd_SJ    + xycut )
+            command_sbd_ab_10_S     .append( command_sbd_ab_10    + command_abcd_S     + xycut )
+            command_sbd_ab_10_SJ    .append( command_sbd_ab_10    + command_abcd_SJ    + xycut )
+            command_sbd_ab_06_S     .append( command_sbd_ab_06    + command_abcd_S     + xycut )
+            command_sbd_ab_06_SJ    .append( command_sbd_ab_06    + command_abcd_SJ    + xycut )
+            command_sbd_cde_14_S    .append( command_sbd_cde_14   + command_abcd_S     + xycut )
+            command_sbd_cde_14_SJ   .append( command_sbd_cde_14   + command_abcd_SJ    + xycut )
+            command_sbd_cde_10_S    .append( command_sbd_cde_10   + command_abcd_S     + xycut )
+            command_sbd_cde_10_SJ   .append( command_sbd_cde_10   + command_abcd_SJ    + xycut )
+            command_sbd_cde_06_S    .append( command_sbd_cde_06   + command_abcd_S     + xycut )
+            command_sbd_cde_06_SJ   .append( command_sbd_cde_06   + command_abcd_SJ    + xycut )
+            command_sbd_a_S         .append( command_sbd_a        + command_abcd_S     + xycut )
+            command_sbd_a_SJ        .append( command_sbd_a        + command_abcd_SJ    + xycut )
+            command_sbd_b_S         .append( command_sbd_b        + command_abcd_S     + xycut )
+            command_sbd_b_SJ        .append( command_sbd_b        + command_abcd_SJ    + xycut )
+            command_sbd_c_S         .append( command_sbd_c        + command_abcd_S     + xycut )
+            command_sbd_c_SJ        .append( command_sbd_c        + command_abcd_SJ    + xycut )
+            command_sbd_d_S         .append( command_sbd_d        + command_abcd_S     + xycut )
+            command_sbd_d_SJ        .append( command_sbd_d        + command_abcd_SJ    + xycut )
+            command_sbd_e_S         .append( command_sbd_e        + command_abcd_S     + xycut )
+            command_sbd_e_SJ        .append( command_sbd_e        + command_abcd_SJ    + xycut )
+            command_sbd_04_S        .append( command_sbd_04       + command_abcd_S     + xycut )
+            command_sbd_04_SJ       .append( command_sbd_04       + command_abcd_SJ    + xycut )
+            command_sbd_08_S        .append( command_sbd_08       + command_abcd_S     + xycut )
+            command_sbd_08_SJ       .append( command_sbd_08       + command_abcd_SJ    + xycut )
+            command_sbd_17_S        .append( command_sbd_17       + command_abcd_S     + xycut )
+            command_sbd_17_SJ       .append( command_sbd_17       + command_abcd_SJ    + xycut )
+            command_sbd_22_S        .append( command_sbd_22       + command_abcd_S     + xycut )
+            command_sbd_22_SJ       .append( command_sbd_22       + command_abcd_SJ    + xycut )
+            command_sbd_28_S        .append( command_sbd_28       + command_abcd_S     + xycut )
+            command_sbd_28_SJ       .append( command_sbd_28       + command_abcd_SJ    + xycut )
+            command_sbd_31_S        .append( command_sbd_31       + command_abcd_S     + xycut )
+            command_sbd_31_SJ       .append( command_sbd_31       + command_abcd_SJ    + xycut )
+            command_sbd_39_S        .append( command_sbd_39       + command_abcd_S     + xycut )
+            command_sbd_39_SJ       .append( command_sbd_39       + command_abcd_SJ    + xycut )
+            command_sbd_46_S        .append( command_sbd_46       + command_abcd_S     + xycut )
+            command_sbd_46_SJ       .append( command_sbd_46       + command_abcd_SJ    + xycut )
+            command_sbd_52_S        .append( command_sbd_52       + command_abcd_S     + xycut )
+            command_sbd_52_SJ       .append( command_sbd_52       + command_abcd_SJ    + xycut )  
+            command_sbd_60_S        .append( command_sbd_60       + command_abcd_S     + xycut )
+            command_sbd_60_SJ       .append( command_sbd_60       + command_abcd_SJ    + xycut )
+            command_sbd_66_S        .append( command_sbd_66       + command_abcd_S     + xycut )
+            command_sbd_66_SJ       .append( command_sbd_66       + command_abcd_SJ    + xycut )
+            command_sbd_67_S        .append( command_sbd_67       + command_abcd_S     + xycut )
+            command_sbd_67_SJ       .append( command_sbd_67       + command_abcd_SJ    + xycut )
+            command_sbd_75_S        .append( command_sbd_75       + command_abcd_S     + xycut )
+            command_sbd_75_SJ       .append( command_sbd_75       + command_abcd_SJ    + xycut )
+            command_sbd_80_S        .append( command_sbd_80       + command_abcd_S     + xycut )
+            command_sbd_80_SJ       .append( command_sbd_80       + command_abcd_SJ    + xycut )
+            command_sbd_90_S        .append( command_sbd_90       + command_abcd_S     + xycut )
+            command_sbd_90_SJ       .append( command_sbd_90       + command_abcd_SJ    + xycut )
 
 
     ## --- run jobs --- ##
     # signal vs background
-    # --> Models A, B, C, D, and E; Xdm-1400
-    os.system( command_sbd_abcde_14_S  )
-    os.system( command_sbd_abcde_14_SJ )
-    os.system( command_sbd_abcde_10_S  )
-    os.system( command_sbd_abcde_10_SJ )
-    os.system( command_sbd_abcde_06_S  )
-    os.system( command_sbd_abcde_06_SJ )
-    # --> Models A and B; Xdm-1400
-    os.system( command_sbd_ab_14_S     )
-    os.system( command_sbd_ab_14_SJ    )
-    # --> Models A and B; Xdm-1000
-    os.system( command_sbd_ab_10_S     )
-    os.system( command_sbd_ab_10_SJ    )
-    # --> Models A and B; Xdm-600
-    os.system( command_sbd_ab_06_S     )
-    os.system( command_sbd_ab_06_SJ    )
-    # --> Models C, D, and E; Xdm-1400
-    os.system( command_sbd_cde_14_S    )
-    os.system( command_sbd_cde_14_SJ   )
-    # --> Models C, D, and E; Xdm-1000
-    os.system( command_sbd_cde_10_S    )
-    os.system( command_sbd_cde_10_SJ   )
-    # --> Models C, D, and E; Xdm-600
-    os.system( command_sbd_cde_06_S    )
-    os.system( command_sbd_cde_06_SJ   )
-    # --> Model A
-    os.system( command_sbd_a_S         )
-    os.system( command_sbd_a_SJ        )
-    # --> Model B
-    os.system( command_sbd_b_S         )
-    os.system( command_sbd_b_SJ        )
-    # --> Model C
-    os.system( command_sbd_c_S         )
-    os.system( command_sbd_c_SJ        )
-    # --> Model D
-    os.system( command_sbd_d_S         )
-    os.system( command_sbd_d_SJ        )
-    # --> Model E
-    os.system( command_sbd_e_S         )
-    os.system( command_sbd_e_SJ        )
-    # --> 312004
-    os.system( command_sbd_04_S        )
-    os.system( command_sbd_04_SJ       )
-    # --> 312008
-    os.system( command_sbd_08_S        )
-    os.system( command_sbd_08_SJ       )
-    # --> 312017
-    os.system( command_sbd_17_S        )
-    os.system( command_sbd_17_SJ       )
-    # --> 312022
-    os.system( command_sbd_22_S        )
-    os.system( command_sbd_22_SJ       )
-    # --> 312028
-    os.system( command_sbd_28_S        )
-    os.system( command_sbd_28_SJ       )
-    # --> 312031
-    os.system( command_sbd_31_S        )
-    os.system( command_sbd_31_SJ       )
-    # --> 312039
-    os.system( command_sbd_39_S        )
-    os.system( command_sbd_39_SJ       )
-    # --> 312046
-    os.system( command_sbd_46_S        )
-    os.system( command_sbd_46_SJ       )
-    # --> 312052
-    os.system( command_sbd_52_S        )
-    os.system( command_sbd_52_SJ       )
-    # --> 312060
-    os.system( command_sbd_60_S        )
-    os.system( command_sbd_60_SJ       )
-    # --> 312066
-    os.system( command_sbd_66_S        )
-    os.system( command_sbd_66_SJ       )
-    # --> 312067
-    os.system( command_sbd_67_S        )
-    os.system( command_sbd_67_SJ       )
-    # --> 312075
-    os.system( command_sbd_75_S        )
-    os.system( command_sbd_75_SJ       )
-    # --> 312080
-    os.system( command_sbd_80_S        )
-    os.system( command_sbd_80_SJ       )
-    # --> 312090
-    os.system( command_sbd_90_S        )
-    os.system( command_sbd_90_SJ       )
+    for ic, cmnd in enumerate( command_sbd_sub15_S ):
+        os.system( command_sbd_sub15_S    [ic] )
+        os.system( command_sbd_sub15_SJ   [ic] )
+        # --> Models A, B, C, D, and E
+        os.system( command_sbd_abcde_14_S [ic] ) # Xdm-1400
+        os.system( command_sbd_abcde_14_SJ[ic] )
+        os.system( command_sbd_abcde_10_S [ic] ) # Xdm-1000
+        os.system( command_sbd_abcde_10_SJ[ic] )
+        os.system( command_sbd_abcde_06_S [ic] ) # Xdm-600
+        os.system( command_sbd_abcde_06_SJ[ic] )
+        ## --> Models A and B
+        #os.system( command_sbd_ab_14_S    [ic] ) # Xdm-1400
+        #os.system( command_sbd_ab_14_SJ   [ic] )
+        #os.system( command_sbd_ab_10_S    [ic] ) # Xdm-1000
+        #os.system( command_sbd_ab_10_SJ   [ic] )
+        #os.system( command_sbd_ab_06_S    [ic] ) # Xdm-600
+        #os.system( command_sbd_ab_06_SJ   [ic] )
+        ## --> Models C, D, and E
+        #os.system( command_sbd_cde_14_S   [ic] ) # Xdm-1400
+        #os.system( command_sbd_cde_14_SJ  [ic] )
+        #os.system( command_sbd_cde_10_S   [ic] ) # Xdm-1000
+        #os.system( command_sbd_cde_10_SJ  [ic] )
+        #os.system( command_sbd_cde_06_S   [ic] ) # Xdm-600
+        #os.system( command_sbd_cde_06_SJ  [ic] )
+        ## --> individual models
+        #os.system( command_sbd_a_S        [ic] ) # Model A
+        #os.system( command_sbd_a_SJ       [ic] )
+        #os.system( command_sbd_b_S        [ic] ) # Model B
+        #os.system( command_sbd_b_SJ       [ic] )
+        #os.system( command_sbd_c_S        [ic] ) # Model C
+        #os.system( command_sbd_c_SJ       [ic] )
+        #os.system( command_sbd_d_S        [ic] ) # Model D
+        #os.system( command_sbd_d_SJ       [ic] )
+        #os.system( command_sbd_e_S        [ic] ) # Model E
+        #os.system( command_sbd_e_SJ       [ic] )
+        ## --> individual signal points
+        #os.system( command_sbd_04_S       [ic] ) # 312004
+        #os.system( command_sbd_04_SJ      [ic] )
+        #os.system( command_sbd_08_S       [ic] ) # 312008
+        #os.system( command_sbd_08_SJ      [ic] )
+        #os.system( command_sbd_17_S       [ic] ) # 312017
+        #os.system( command_sbd_17_SJ      [ic] )
+        #os.system( command_sbd_22_S       [ic] ) # 312022
+        #os.system( command_sbd_22_SJ      [ic] )
+        #os.system( command_sbd_28_S       [ic] ) # 312028
+        #os.system( command_sbd_28_SJ      [ic] )
+        #os.system( command_sbd_31_S       [ic] ) # 312031
+        #os.system( command_sbd_31_SJ      [ic] )
+        #os.system( command_sbd_39_S       [ic] ) # 312039
+        #os.system( command_sbd_39_SJ      [ic] )
+        #os.system( command_sbd_46_S       [ic] ) # 312046
+        #os.system( command_sbd_46_SJ      [ic] ) 
+        #os.system( command_sbd_52_S       [ic] ) # 312052
+        #os.system( command_sbd_52_SJ      [ic] )
+        #os.system( command_sbd_60_S       [ic] ) # 312060
+        #os.system( command_sbd_60_SJ      [ic] )
+        #os.system( command_sbd_66_S       [ic] ) # 312066
+        #os.system( command_sbd_66_SJ      [ic] )
+        #os.system( command_sbd_67_S       [ic] ) # 312067
+        #os.system( command_sbd_67_SJ      [ic] )
+        #os.system( command_sbd_75_S       [ic] ) # 312075
+        #os.system( command_sbd_75_SJ      [ic] )
+        #os.system( command_sbd_80_S       [ic] ) # 312080
+        #os.system( command_sbd_80_SJ      [ic] )
+        #os.system( command_sbd_90_S       [ic] ) # 312090
+        #os.system( command_sbd_90_SJ      [ic] )
     
 
 

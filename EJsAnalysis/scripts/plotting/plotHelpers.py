@@ -257,7 +257,7 @@ def getHists( sname, stype, flist, hlist, subdir, scaleData = False, metadir = N
 ## --- REARRANGE HISTOGRAM LISTS --- ##
 # --> for plotting same histograms from different samples against each other
 def getNewHists( stypes, histNames, hists ):
-    
+
     newHists = []
     for iName, name in enumerate( histNames ):
         newHists.append( [] )

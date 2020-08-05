@@ -1,5 +1,6 @@
 #include <TFile.h>
 #include <TTree.h>
+#include <TKey.h>
 
 #include <EventLoop/Job.h>
 #include <EventLoop/StatusCode.h>
@@ -72,6 +73,19 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
   }
   else
     ANA_MSG_INFO( "No MetaData_EventCount information available." );
+
+  // get ntuple cutflows
+
+  std::vector<TH1F*> m_ntupleCutflows;
+  if ( inFile->GetListOfKeys()->Contains( "cutflow" ) ) {
+    TIter nextkey ( inFile->GetListOfKeys() );
+    TKey *key;
+    while ( ( key = (TKey*) nextkey() ) )
+      if ( strstr( key->GetName(), "cutflow" ) ) {
+	TH1F* ntuple_cutflow = (TH1F*) inFile->Get( key->GetName() );
+	m_ntupleCutflows .push_back( ntuple_cutflow );
+      }
+  }
   
   // get metadata weights from input text file for corresponding mc channel number
   if ( m_isMC ) {
@@ -162,7 +176,8 @@ EL::StatusCode EJsNtupleToHists :: histInitialize ()
 
   if ( m_truthLevelOnly ) m_detailStr += " truthOnly";
   // declare histogram manager class + add histograms to ouput
-  m_plots = new EJsHistogramManager ( m_name, m_detailStr, m_jetStr, m_metadata, m_lumi, m_debug, m_isMC, m_unblind );
+  m_plots = new EJsHistogramManager ( m_name, m_detailStr, m_jetStr, m_metadata, m_ntupleCutflows,
+				      m_lumi, m_debug, m_isMC, m_unblind );
   ANA_CHECK( m_plots ->initialize( outFileName, m_regions, m_jetHistoName, m_baseDV ) );
   m_plots->record( wk() );
 

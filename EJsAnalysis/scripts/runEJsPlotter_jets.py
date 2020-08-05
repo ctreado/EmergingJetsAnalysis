@@ -25,13 +25,15 @@ def main():
     #hardJts     = [ "hard-pt", "hard-eta", "hard-mass", "hard-pt-eta", "hard" ]
     #hardJs      = [ "HardPt",  "HardEta",  "HardMass"  ]
     #hardJts     = [ "hard-pt", "hard-eta", "hard-mass" ]
-    hardJs      = [ "Hard" ] # change to "Hard"
+    hardJs      = [ "Hard" ]
     hardJts     = [ "hard" ]
     # --> emerging jets
     baseJSV     = "Clean"
     baseJSVt    = "clean"
-    jsvs        = [ baseJSV,  "Loose", "Mid", "Tight" ]
-    jsvts       = [ baseJSVt, "loose", "mid", "tight" ] 
+    #jsvs        = [ baseJSV,  "Loose", "Mid", "Tight" ]
+    #jsvts       = [ baseJSVt, "loose", "mid", "tight" ]
+    jsvs        = [ "Loose", "Mid", "Tight" ]
+    jsvts       = [ "loose", "mid", "tight" ]
     emergingJs  = []
     emergingJts = []
     for ijsv, jsv in enumerate( jsvs ):
@@ -142,8 +144,8 @@ def main():
     outDir  = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/plots/njetx_abcd/"
     #inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
     pscript = os.getenv('EJ_PATH') + "/EJsAnalysis/scripts/plotting/plotEJsHistograms.py"
-    command = "python "  + pscript + " --inDir " + inDir + " --outDir " + outDir
-    #command = "python3 " + pscript + " --inDir " + inDir + " --outDir " + outDir # for running outside of athena
+    #command = "python "  + pscript + " --inDir " + inDir + " --outDir " + outDir
+    command = "python3 " + pscript + " --inDir " + inDir + " --outDir " + outDir # for running outside of athena
 
     # signal
     s_ab         = " --sgnlType 312008,312028"                      # ab benchmark test
@@ -392,16 +394,16 @@ def main():
     #    os.system( c_sbabS  )
     #for c_sbabSJ in command_sb_ab_1d_SJ:
     #    os.system( c_sbabSJ )
-    #for c_sb14S  in command_sb_14_1d_S: # xdm-1400
-    #    os.system( c_sb14S  )
+    for c_sb14S  in command_sb_14_1d_S: # xdm-1400
+        os.system( c_sb14S  )
     for c_sb14SJ in command_sb_14_1d_SJ:
         os.system( c_sb14SJ )
-    #for c_sb10S  in command_sb_10_1d_S: # xdm-1000
-    #    os.system( c_sb10S  )
+    for c_sb10S  in command_sb_10_1d_S: # xdm-1000
+        os.system( c_sb10S  )
     for c_sb10SJ in command_sb_10_1d_SJ:
         os.system( c_sb10SJ )
-    #for c_sb06S  in command_sb_06_1d_S: # xdm-600
-    #    os.system( c_sb06S  )
+    for c_sb06S  in command_sb_06_1d_S: # xdm-600
+        os.system( c_sb06S  )
     for c_sb06SJ in command_sb_06_1d_SJ:
         os.system( c_sb06SJ )
     ## 1d: background vs data

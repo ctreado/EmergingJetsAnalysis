@@ -36,8 +36,10 @@ parser.add_argument( "--inBkgdDir", dest = "inBkgdDir", default = None,
 parser.add_argument( "--inDataDir", dest = "inDataDir", default = None,
                          help = "Input directory containing all data histogram root files." )
 parser.add_argument( "--outDir", dest = "outDir", default = "", help = "Output directory where plots will be stored. \
-                         Default is 'plots' subdirectory of inDir parent directory" )
+                         Default is 'plots' subdirectory of inDir parent directory." )
 parser.add_argument( "--outSubdir", dest = "outSubdir", default = "abcd", help = "Output subdirectory for storing plots." )
+parser.add_argument( "--outTextDir", dest = "outTextDir", default = "", help = "Output directory where text files will be stored. \
+                         Default is 'text_files' subdirectory of inDir parent directory." )
 parser.add_argument( "--outName", dest = "outName", default = "", help = "Output tag for augmenting plot names \
                          with sample information." )
 parser.add_argument( "--outSgnlName", dest = "outSgnlName", default = "", help = "Output signal tag for augmenting plot names \
@@ -90,8 +92,10 @@ parser.add_argument( "--doABCD_shift", dest = "doABCD_shift", action = "store_tr
 parser.add_argument( "--drawABCD", dest = "drawABCD", action = "store_true", default = False, help = "Draw ABCD plane plots." )
 parser.add_argument( "--drawNoCutABCD", dest = "drawNoCutABCD", action = "store_true", default = False,
                          help = "Draw ABCD plane plots without lines/regions defined by x/y cuts." )
-parser.add_argument( "--xCutABCD", dest = "xCutABCD", type = float, default = 1385, help = "x-axis cut for defining ABCD regions." ) # change to enum to select cut from range of values; set different arrays off cut values for different x-axis variables; make first (0th) enum value = 0
-parser.add_argument( "--yCutABCD", dest = "yCutABCD", type = float, default = 2, help = "y-axis cut for defining ABCD regions." )
+parser.add_argument( "--xCutABCDEnum", dest = "xCutABCDEnum", type = int, default = 7,
+                         help = "Enumerator for x-cut value to apply to define ABCD regions." )
+parser.add_argument( "--yCutABCDEnum", dest = "yCutABCDEnum", type = int, default = 2,
+                         help = "Enumerator for y-cut value to apply to define ABCD regions." )
 parser.add_argument( "--validOff", dest = "validOff", action = "store_true", default = False,
                          help = "Turn validation region plots off." )
 parser.add_argument( "--searchOff", dest = "searchOff", action = "store_true", default = False,
@@ -112,34 +116,6 @@ args = parser.parse_args()
 
 ## -- SET GLOBAL VARIABLES -- ##
 
-# --> output directory
-parentDir = args.inDir + "../"
-outSubdir = time.strftime( "%Y.%m.%d_%Hh", time.localtime() )
-if args.outSubdir:
-    outSubdir = args.outSubdir + "_" + outSubdir  
-outDir = args.outDir
-if not outDir:
-    outDir = os.path.join( parentDir, "plots" )
-outDir = os.path.join( outDir, outSubdir )
-if not os.path.exists( outDir ):
-    os.makedirs( outDir )
-    
-# --> output plot file format
-if not args.format.startswith('.'):
-    args.format = '.' + args.format
-
-# --> output text file with ABCD calculations
-if args.doABCD or args.doABCD_shift:
-    outTextDir = os.path.join( parentDir, "text_files", outSubdir )
-    if not os.path.exists( outTextDir ):
-        os.makedirs( outTextDir )
-    outName = args.outName
-    if outName:          outName += "."
-    if args.outSgnlName: outName += args.outSgnlName + "."
-    if args.outBkgdName: outName += args.outBkgdName + "."
-    if args.outDataName: outName += args.outDataName + "."
-    abcd_file = open( os.path.join( outTextDir, "abcd." + outName + "txt" ), "w+" ) # --> make file name configurable...
-
 # --> enumerators
 # --> --> sample types to plot against one another
 class plotTypes( Enum ):
@@ -159,6 +135,64 @@ class legStrLen( Enum ):
     MID2_SM = 8
     MID3    = 9
     SHORT   = 10
+# --> --> cut values
+class xcutValues( Enum ):
+    CUT0    = 0 # 0-14 = range of potential x-cut values
+    CUT1    = 1
+    CUT2    = 2
+    CUT3    = 3
+    CUT4    = 4
+    CUT5    = 5
+    CUT6    = 6
+    CUT7    = 7
+    CUT8    = 8
+    CUT9    = 9
+    CUT10   = 10
+    CUT11   = 11
+    CUT12   = 12
+    CUT13   = 13
+    CUT14   = 14
+    CUTLOW  = 15 # low, mid, high = range of best cuts
+    CUTMID  = 16
+    CUTHIGH = 17
+class ycutValues( Enum ):
+    CUT0    = 0 # range of potential y-cut values
+    CUT1    = 1
+    CUT2    = 2
+    CUT3    = 3
+    CUT4    = 4
+    
+
+# --> output directory
+parentDir = args.inDir + "../"
+outSubdir = time.strftime( "%Y.%m.%d_%Hh", time.localtime() )
+if args.outSubdir:
+    outSubdir = args.outSubdir + "_" + outSubdir  
+outDir = args.outDir
+if not outDir:
+    outDir = os.path.join( parentDir, "plots" )
+outDir = os.path.join( outDir, outSubdir )
+if not os.path.exists( outDir ):
+    os.makedirs( outDir )
+    
+# --> output plot file format
+if not args.format.startswith('.'):
+    args.format = '.' + args.format
+
+# --> output text file with ABCD calculations
+if args.doABCD or args.doABCD_shift:
+    outTextDir = args.outTextDir
+    if not outTextDir:
+        outTextDir = os.path.join( parentDir, "text_files", outSubdir )
+    if not os.path.exists( outTextDir ):
+        os.makedirs( outTextDir )
+    outName = args.outName
+    if outName:          outName += "."
+    if args.outSgnlName: outName += args.outSgnlName + "."
+    if args.outBkgdName: outName += args.outBkgdName + "."
+    if args.outDataName: outName += args.outDataName + "."
+    outName  += "X" + xcutValues(args.xCutABCDEnum).name + "-Y" + ycutValues( args.yCutABCDEnum ).name + "."
+    abcd_file = open( os.path.join( outTextDir, "abcd." + outName + "txt" ), "w+" )
 
 
 
@@ -245,17 +279,19 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, validHistNames, validHist
                 # do ABCD calculations
                 if args.doABCD:
                     # get ABCD region event counts
-                    nSearch, effSearch = countABCD( hists, metaEventHists, metaWeightHists, sampleTypes, args.searchDir, dataScale )
+                    nSearch, effSearch, effscaleSearch = countABCD( hists, metaEventHists, metaWeightHists, sampleTypes, args.searchDir, dataScale )
                     # use standard ABCD method to estimate background in A
                     estA_search, errA_search, zA_search = estimateABCD( nSearch )
                     # get significance
-                    sb0_search, sb1_search, sb2_search, sb3_search = significanceABCD( nSearch, estA_search, sampleTypes )
+                    sb0_search, sb1_search, sb2_search, sb3_search, sb0_true_search, sb1_true_search, sb2_true_search, sb3_true_search = \
+                      significanceABCD( nSearch, estA_search, sampleTypes )
                 # do shifted ABCD calculations -- need separate function to handle multiple regions and shift data, or use original function with pre-shifted histograms (whatever is fastest -- come back to)
 
                 # write out ABCD info
                 if args.doABCD: # or shift
                     writeABCD( hists, name, sampleNames, sampleTypes, nSearch, effSearch, estA_search, errA_search, zA_search,
-                               sb0_search, sb1_search, sb2_search, sb3_search )
+                               sb0_search, sb1_search, sb2_search, sb3_search,
+                               sb0_true_search, sb1_true_search, sb2_true_search, sb3_true_search, effscaleSearch )
                 # draw ABCD plots
                 if args.drawABCD or args.drawNoCutABCD:
                     plotABCD( hists, name, sampleTypes, sampleDicts, args.searchDir, plotTypes( args.searchEnum ) )
@@ -265,20 +301,17 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, validHistNames, validHist
 ## --- COUNT ABCD REGION EVENTS --- ##
 def countABCD( hists, metaEventHists, metaWeightHists, sampleTypes, region, dataScale ):
     
-    count, efficiency = [], []
+    count, efficiency, effscale = [], [], []
     for iH, hist in enumerate( hists ):
         # get bins defining regions
-        xbin = hist.GetXaxis().FindBin( args.xCutABCD )
-        ybin = hist.GetYaxis().FindBin( args.yCutABCD )
-
-        # add raw capabilities (dedicated "raw" abcd histograms) -- scale = 1, efficiency denominator = initial n events
+        xbin = hist.GetXaxis().FindBin( getXCut( hist ) )
+        ybin = hist.GetYaxis().FindBin( getYCut( hist ) )
         
         # count events in each region
         nA_iH = hist.Integral( xbin,     -1, ybin,     -1 )
         nB_iH = hist.Integral( xbin,     -1,   -1, ybin-1 )
         nC_iH = hist.Integral( -1,   xbin-1, ybin,     -1 )
         nD_iH = hist.Integral( -1,   xbin-1,   -1, ybin-1 )
-        # --> get raw counts, too ??
 
         # calculate efficiencies in each region
         scale = 1
@@ -303,8 +336,9 @@ def countABCD( hists, metaEventHists, metaWeightHists, sampleTypes, region, data
 
         count     .append( [ nA_iH,   nB_iH,   nC_iH,   nD_iH   ] )
         efficiency.append( [ effA_iH, effB_iH, effC_iH, effD_iH ] )
+        effscale  .append( scale * metaEventHists[iH].GetBinContent(3) )
 
-    return count, efficiency
+    return count, efficiency, effscale
 
 
 ## --- ESTIMATE EVENTS IN A WITH STANDARD ABCD METHOD --- ##
@@ -314,7 +348,7 @@ def estimateABCD( count ):
     for c in count:
         # do ABCD method to estimate number of events in A
         if c[3]: estA = c[1] * c[2] / c[3]
-        else:    estA = c[1] * c[2] # what else can we do when c[3] = 0 ??
+        else:    estA = c[1] * c[2] / 0.1 # if nD = 0, set to arbitrary small value (0.01 ??)
         
         # calculate statistical uncertainty
         estA_statErr = 0
@@ -347,76 +381,92 @@ def estimateABCD( count ):
 
 ## --- CALCULATE SIGNIFICANCE IN A --- ##
 def significanceABCD( count, A_est, sampleTypes ):
-    # pass boolean or string or enum saying whether to use MC background or data as b...
     # also may want way to decide to use standard ABCD or shifted ABCD estimate (or just pass in the one we want to use without caring what it is)
 
-    b = 0
+    b      = 0
+    b_true = 0
     for iS, stype in enumerate( sampleTypes ):
-        if stype == plotHelpers.sampleType.BKGD:
+        if ( plotTypes( args.searchEnum ) == plotTypes.SGNL_BKGD and stype == plotHelpers.sampleType.BKGD ) or \
+           ( plotTypes( args.searchEnum ) == plotTypes.SGNL_DATA and stype == plotHelpers.sampleType.DATA ): # can add other options...
             b      = A_est[iS]    # ABCD estimated value
             b_true = count[iS][0] # true value
+    if b      == 0: b      = 0.1 # 0.01 ??
+    if b_true == 0: b_true = 0.1
 
-    signif_v0, signif_v1, signif_v2, signif_v3 = [], [], [], []
+    signif_v0,      signif_v1,      signif_v2,      signif_v3      = [], [], [], []
+    signif_v0_true, signif_v1_true, signif_v2_true, signif_v3_true = [], [], [], []
     for iC, c in enumerate( count ):
         if sampleTypes[iC] == plotHelpers.sampleType.SGNL:
             s = c[0]
-            signif_v0.append( s/b                  )
-            signif_v1.append( s/(b + 0.1*b)        )
-            signif_v2.append( s/(b + pow(0.1*b,2)) )
-            signif_v3.append( s/math.sqrt(b)       )
+            signif_v0     .append( s/b                            )
+            signif_v1     .append( s/(b + 0.1*b)                  )
+            signif_v2     .append( s/(b + pow(0.1*b,2))           )
+            signif_v3     .append( s/math.sqrt(b)                 )
+            signif_v0_true.append( s/b_true                       )
+            signif_v1_true.append( s/(b_true + 0.1*b_true)        )
+            signif_v2_true.append( s/(b_true + pow(0.1*b_true,2)) )
+            signif_v3_true.append( s/math.sqrt(b_true)            )
 
-    return signif_v0, signif_v1, signif_v2, signif_v3
+    return signif_v0, signif_v1, signif_v2, signif_v3, signif_v0_true, signif_v1_true, signif_v2_true, signif_v3_true
         
     
 
 
 ## --- WRITE OUT ABCD INFO TO TEXT FILE --- ##
-def writeABCD( hists, histName, sampleNames, sampleTypes, count, efficiency, A_est, A_err, A_z, sb0, sb1, sb2, sb3 ):
-    # add "onlyA" argument; if true, only output values for A; make this argparse and update text file name accordingly
-    # set number of decimal points? turn certain output on/off?
-    ## --> consider using histName to write out more meaningful string (i.e. "n bare DVs vs N-jet Ht"), removing "ABCD_"...
-    abcd_file.write( "------------------------------------------------------- \n" )
+def writeABCD( hists, histName, sampleNames, sampleTypes, count, efficiency, A_est, A_err, A_z,
+               sb0, sb1, sb2, sb3, sb0_true, sb1_true, sb2_true, sb3_true, scale ):
+
+    abcd_file.write( "----------------------------------------------------------------------------------------------- \n" )
     abcd_file.write( "ABCD HISTOGRAM: " + histName + " --> \n" )
-    # print x/y cuts
     abcd_file.write( "\n" )
+
+    bstr = "b"
+    if   plotTypes( args.searchEnum ) == plotTypes.SGNL_BKGD: bstr = "mc "   + bstr
+    elif plotTypes( args.searchEnum ) == plotTypes.SGNL_DATA: bstr = "data " + bstr
 
     isig = 0
     abcd_string = [ "A", "B", "C", "D" ]
     for iH, hist in enumerate( hists ):
-        # skip data for now...
-        #if sampleTypes[iH] == plotHelpers.sampleType.DATA:
-        #    continue
-        
+        sample_str = "SAMPLE: "
+        if   sampleTypes[iH] == plotHelpers.sampleType.SGNL:
+            sample_str = "SIGNAL "     + sample_str + "    "
+        elif sampleTypes[iH] == plotHelpers.sampleType.BKGD:
+            sample_str = "BACKGROUND " + sample_str
+        elif sampleType[iH] == plotHelpers.sampleType.DATA:
+            sample_str = "DATA "       + sample_str + "      "
         abcd_file.write( "SAMPLE: " + sampleNames[iH] + "\n" ) # add sample type ??
-        
-        abcd_file.write( "########## ABCD counts ##################### \n" )
+
+        abcd_file.write( "######################################### ABCD counts ######################################### \n" )
         for i in range(len(abcd_string)):
-            abcd_file.write( "n events in " + abcd_string[i] + ": " + str(count[iH][i]) + "\n" )
-        # --> add raw (unweighted) yields ?? -->
-        # --> --> print "Raw / Weighted Yield in A:", nAi, nAi / ( xsec[iH] * genFiltEff[iH] * lumi[iH] / initSumw[iH] )
+            abcd_file.write( "n events in "   + abcd_string[i] + ":           " f'{count     [iH][i]:16.8f}' + "\n" )
         
-        abcd_file.write( "########## ABCD efficiencies ############### \n" )
+        abcd_file.write( "######################################### ABCD efficiencies ################################### \n" )
         for i in range(len(abcd_string)):
-            abcd_file.write( "efficiency in " + abcd_string[i] + ": " + str(efficiency[iH][i]) + "\n" )
+            abcd_file.write( "efficiency in " + abcd_string[i] + ":         "   f'{efficiency[iH][i]:16.8f}' + "\n" )
             
-        abcd_file.write( "########## ABCD method ##################### \n" )
+        abcd_file.write( "######################################### ABCD method ######################################### \n" )
+        
         a_err = math.sqrt(abs(count[iH][0]))
         if count[iH][0] == -999: a_err = -999
-        abcd_file.write( "Region A estimate: " + str(A_est[iH]) + " +- " +
-                             str(A_err[iH][0]) + " (stat) +- " + str(A_err[iH][1]) + " (syst) \n" )
-        abcd_file.write( "True value: " + str(count[iH][0]) + " +- " + str(a_err) + "\n" )
-        abcd_file.write( "Standardized difference: " + str(A_z[iH]) + "\n" )
-
+        abcd_file.write( "Region A estimate:       " + f'{A_est[iH]:16.8f}'    + " +- " + f'{A_err[iH][0]:16.8f}'
+                                     + " (stat) +- " + f'{A_err[iH][1]:16.8f}' +                    " (syst) \n" )
+        abcd_file.write( "True value:              " + f'{count[iH][0]:16.8f}' + " +- " + f'{a_err:16.8f}' + "\n" )
+        abcd_file.write( "Standardized difference: " + f'{A_z[iH]:16.8f}'                                 + "\n" )
+        
         # scaled ABCD estimates
 
         # significances
-        # --> add "expected signal (s), expected background (b) in A"
         if sampleTypes[iH] == plotHelpers.sampleType.SGNL:
-            abcd_file.write( "########## ABCD significances ########## \n" )
-            abcd_file.write( "s/b: "               + str(sb0[isig]) + "\n" )
-            abcd_file.write( "s/(b + 0.1*b): "     + str(sb1[isig]) + "\n" )
-            abcd_file.write( "s/(b + (0.1*b)^2): " + str(sb2[isig]) + "\n" )
-            abcd_file.write( "s/sqrt(b): "         + str(sb3[isig]) + "\n" )
+            abcd_file.write( "######################################### ABCD significances (est " + bstr + ") ####################### \n" )
+            abcd_file.write( "s/b:                     " + f'{sb0     [isig]:16.8f}' + "\n" )
+            abcd_file.write( "s/(b + 0.1*b):           " + f'{sb1     [isig]:16.8f}' + "\n" )
+            abcd_file.write( "s/(b + (0.1*b)^2):       " + f'{sb2     [isig]:16.8f}' + "\n" )
+            abcd_file.write( "s/sqrt(b):               " + f'{sb3     [isig]:16.8f}' + "\n" )
+            abcd_file.write( "######################################### ABCD significances (true " + bstr + ") ###################### \n" )
+            abcd_file.write( "s/b:                     " + f'{sb0_true[isig]:16.8f}' + "\n" )
+            abcd_file.write( "s/(b + 0.1*b):           " + f'{sb1_true[isig]:16.8f}' + "\n" )
+            abcd_file.write( "s/(b + (0.1*b)^2):       " + f'{sb2_true[isig]:16.8f}' + "\n" )
+            abcd_file.write( "s/sqrt(b):               " + f'{sb3_true[isig]:16.8f}' + "\n" )
             isig += 1
 
         abcd_file.write( "\n" )
@@ -424,17 +474,20 @@ def writeABCD( hists, histName, sampleNames, sampleTypes, count, efficiency, A_e
     abcd_file.write( "\n" )
 
     isig = 0
-    abcd_file.write( "SIGNAL EFFICIENCY AND S/B: \n" )
+    abcd_file.write( "SIGNAL EFFICIENCY AND S/B (est " + bstr + " + true " + bstr + "): \n" )
     for iS, stype in enumerate( sampleTypes ):
         if stype == plotHelpers.sampleType.SGNL:
-            abcd_file.write( sampleNames[iS] + ": " + str(efficiency[iS][0]) + " | " + str(sb0[isig]) + "\n" )
+            abcd_file.write( sampleNames[iS] + ": " + f'{efficiency[iS][0]:16.8f}' + " | "
+                                                    + f'{sb0[isig]:16.8f}'         + " | " + f'{sb0_true[isig]:16.8f}' + "\n" )
             isig += 1
     abcd_file.write( "\n" )
-    abcd_file.write( "BACKGROUND REJECTION: \n" )
+    abcd_file.write( "BACKGROUND REJECTION (est " + bstr + " + true " + bstr + "): \n" )
     for iS, stype in enumerate( sampleTypes ):
-        if stype == plotHelpers.sampleType.BKGD:
-            abcd_file.write( sampleNames[iS] + ": " +str(1-efficiency[iS][0]) + "\n" ) # should we estimated value of A instead of true value? YES! need to calculate efficiency of expected value (and return and pass in here) when doing estimate above...
-        # add data ...
+        if stype == plotHelpers.sampleType.BKGD or stype == plotHelpers.sampleType.DATA:
+            est_eff = A_est[iS] / scale[iS]
+            est_rej = 1-est_eff
+            if A_est[iS] == -999: est_rej = -999
+            abcd_file.write( sampleNames[iS] + ": " + f'{est_rej:16.8f}' + " | " f'{1-efficiency[iS][0]:16.8f}' + "\n" )
     abcd_file.write( "\n" )
 
                 
@@ -528,8 +581,11 @@ def plotABCD( hists, histName, sampleTypes, sampleDicts, region, plotType ):
     if not args.drawNoCutABCD:
         nxbin = hist.GetNbinsX()
         nybin = hist.GetNbinsY()
-        xbin  = hist.GetXaxis().FindBin( args.xCutABCD )
-        ybin  = hist.GetYaxis().FindBin( args.yCutABCD )
+        #xbin  = hist.GetXaxis().FindBin( args.xCutABCD )
+        #ybin  = hist.GetYaxis().FindBin( args.yCutABCD )
+        print( hist.GetName(), getXCut( hist ) )
+        xbin  = hist.GetXaxis().FindBin( getXCut( hist ) )
+        ybin  = hist.GetYaxis().FindBin( getYCut( hist ) )
         xcut  = hist.GetXaxis().GetBinLowEdge( xbin ) # --> cut at low edge of x-bin containing input x-cut
         ycut  = hist.GetYaxis().GetBinLowEdge( ybin ) # --> cut at low edge of y-bin containing input y-cut
         edge  = 0.1
@@ -584,6 +640,7 @@ def plotABCD( hists, histName, sampleTypes, sampleDicts, region, plotType ):
         outName += args.outBkgdName + "."
     if args.outDataName and "data" in str(plotType).split('.')[-1].lower():
         outName += args.outDataName + "."
+    outName += "X" + xcutValues(args.xCutABCDEnum).name + "-Y" + ycutValues( args.yCutABCDEnum ).name + "."
     outName = str(plotType).split('.')[-1].lower() + "." + outName + region
     cname = "abcd." + histName + "." + outName
     # --> set output subdirectory
@@ -598,6 +655,115 @@ def plotABCD( hists, histName, sampleTypes, sampleDicts, region, plotType ):
     c.Clear()
     c.Close()
     del c
+
+
+
+## --- GET CUT VALUES --- ##
+def getXCut( hist ):
+    # change good cut values accordingly
+    xcutVals, xcutGoodVals = [], []
+    if   "NJetHt"            in hist.GetName():
+        xcutVals     = [    0, 1200, 1250, 1275, 1300, 1325, 1350, 1375, 1385, 1400, 1410, 1425, 1450, 1475, 1500 ]
+        xcutGoodVals = [ 1350, 1375, 1385 ]
+    elif "NJetPt"            in hist.GetName():
+        xcutVals     = [    0,  100,  110,  120,  130,  140,  150,  155,  160,  165,  170,  175,  180,  190,  200 ]
+        xcutGoodVals = [  150,  155,  160 ]
+    elif "NJetSumM"          in hist.GetName():
+        xcutVals     = [    0,  120,  130,  135,  140,  145,  150,  152,  155,  157,  160,  162,  165,  170,  175 ]
+        xcutGoodVals = [  150,  152,  155 ]
+    elif "NJetJJ_pt"         in hist.GetName() and "avg" not in hist.GetName() and "min" not in hist.GetName() and "max" not in hist.GetName():
+        xcutVals     = [    0,  350,  400,  425,  450,  475,  500,  525,  550,  575,  585,  600,  625,  650,  700 ]
+        xcutGoodVals = [  500,  525,  550 ]
+    elif "NJetJJ_m"          in hist.GetName() and "avg" not in hist.GetName() and "min" not in hist.GetName() and "max" not in hist.GetName():
+        xcutVals     = [    0,  500,  600,  650,  675,  700,  725,  750,  775,  800,  825,  850,  875,  900, 1000 ]
+        xcutGoodVals = [  725,  750,  775 ]
+    elif "NJetJJmindpt_pt"   in hist.GetName():
+        xcutVals     = [    0,  300,  350,  400,  425,  450,  475,  500,  510,  525,  535,  550,  575,  600,  650 ]
+        xcutGoodVals = [  475,  500,  525 ]
+    elif "NJetJJmindpt_m"    in hist.GetName():
+        xcutVals     = [    0,  500,  600,  650,  700,  750,  800,  850,  875,  900,  925,  950, 1000, 1100, 1200 ]
+        xcutGoodVals = [  800,  850,  875 ]
+    elif "NJetJJmaxdr_pt"    in hist.GetName():
+        xcutVals     = [    0,  300,  350,  400,  425,  435,  450,  475,  485,  500,  510,  525,  550,  575,  600 ]
+        xcutGoodVals = [  450,  475,  485 ]
+    elif "NJetJJmaxdr_m"     in hist.GetName():
+        xcutVals     = [    0,  500,  600,  650,  675,  700,  725,  750,  775,  800,  825,  850,  900,  950, 1000 ]
+        xcutGoodVals = [  725,  750,  775 ]
+    elif "avgNJetJJ_pt"      in hist.GetName():
+        xcutVals     = [    0,  350,  375,  400,  410,  425,  435,  450,  460,  475,  485,  490,  500,  510,  525 ]
+        xcutGoodVals = [  435,  450,  460 ]
+    elif "avgNJetJJ_m"       in hist.GetName():
+        xcutVals     = [    0,  700,  750,  800,  825,  850,  875,  900,  925,  950,  975, 1000, 1025, 1050, 1100 ]
+        xcutGoodVals = [  875,  900,  925 ]
+    elif "maxNJetJJ_pt"      in hist.GetName():
+        xcutVals     = [    0,  200,  300,  350,  375,  400,  410,  425,  435,  450,  475,  500,  525,  550,  600 ]
+        xcutGoodVals = [  410,  425,  435 ]
+    elif "maxNJetJJ_m"       in hist.GetName():
+        xcutVals     = [    0,  900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200 ]
+        xcutGoodVals = [ 1400, 1500, 1600 ]
+    elif "maxNJetJJ_sumPt"   in hist.GetName():
+        xcutVals     = [    0,  750,  800,  850,  900,  925,  950,  975, 1000, 1025, 1050, 1075, 1100, 1150, 1200 ]
+        xcutGoodVals = [  950,  975, 1000 ]
+    elif "maxNJetJJ_sumM"    in hist.GetName():
+        xcutVals     = [    0,   60,   70,   75,   80,   85,   90,   95,   98,  100,  103,  105,  110,  115,  125 ]
+        xcutGoodVals = [   90,   95,   98 ]
+    elif "minNJetJJ_pt"      in hist.GetName():
+        xcutVals     = [    0,  400,  500,  550,  575,  600,  625,  650,  660,  675,  685,  700,  725,  750,  800 ]
+        xcutGoodVals = [  625,  650,  660 ]
+    elif "minNJetJJ_m"       in hist.GetName():
+        xcutVals     = [    0,  200,  250,  300,  325,  350,  360,  375,  385,  400,  410,  425,  435,  450,  500 ]
+        xcutGoodVals = [  360,  375,  385 ]
+    elif "minNJetJJ_sumPt"   in hist.GetName():
+        xcutVals     = [    0,  500,  550,  575,  600,  625,  650,  675,  685,  700,  710,  725,  735,  750,  800 ]
+        xcutGoodVals = [  650,  675,  685 ]
+    elif "minNJetJJ_sumM"    in hist.GetName():
+        xcutVals     = [    0,   50,   60,   65,   67,   70,   72,   75,   77,   80,   82,   85,   90,   95,  100 ]
+        xcutGoodVals = [   72,  75,   77 ]
+    elif "maxptNJetJJ_pt"    in hist.GetName():
+        xcutVals     = [    0,  500,  550,  575,  600,  625,  650,  660,  675,  685,  700,  710,  725,  750,  800 ]
+        xcutGoodVals = [  650,  660,  675 ]
+    elif "maxptNJetJJ_m"     in hist.GetName():
+        xcutVals     = [    0,  500,  550,  600,  650,  700,  750,  800,  825,  850,  875,  900,  950, 1000, 1100 ]
+        xcutGoodVals = [  750,  800,  825 ]
+    elif "maxptNJetJJ_sumPt" in hist.GetName():
+        xcutVals     = [    0,  600,  650,  700,  725,  750,  775,  800,  825,  850,  875,  900,  925,  950, 1000 ]
+        xcutGoodVals = [  775,  800,  825 ]
+    elif "maxptNJetJJ_sumM"  in hist.GetName():
+        xcutVals     = [    0,   50,   60,   70,   72,   75,   77,   80,   82,   85,   87,   90,   92,   95,  100 ]
+        xcutGoodVals = [   77,   80,   82 ]
+    elif "minptNJetJJ_pt"    in hist.GetName():
+        xcutVals     = [    0,  200,  225,  250,  275,  285,  300,  310,  325,  335,  350,  360,  375,  385,  400 ]
+        xcutGoodVals = [  300,  310,  325 ]
+    elif "minptNJetJJ_m"     in hist.GetName():
+        xcutVals     = [    0,  500,  600,  700,  800,  900,  950, 1000, 1050, 1100, 1150, 1200, 1250, 1300, 1400 ]
+        xcutGoodVals = [  950, 1000, 1050 ]
+    elif "minptNJetJJ_sumPt" in hist.GetName():
+        xcutVals     = [    0,  500,  600,  700,  725,  750,  775,  800,  825,  850,  875,  900,  925,  950, 1000 ]
+        xcutGoodVals = [  775,  800,  825 ]
+    elif "minptNJetJJ_sumM"  in hist.GetName():
+        xcutVals     = [    0,   50,   60,   70,   75,   80,   82,   85,   87,   90,   92,   95,  100,  105,  110 ]
+        xcutGoodVals = [   82,   85,   87 ]
+    else:
+        xcutVals     = [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 ]
+        xcutGoodVals = [    0,    0,    0 ]
+
+    xcut = 0
+    xcutval = xcutValues( args.xCutABCDEnum ).value
+    if   xcutval < len(xcutVals):
+        xcut = xcutVals    [xcutval]
+    elif xcutval - len(xcutVals) < len(xcutGoodVals):
+        xcut = xcutGoodVals[xcutval-len(xcutVals)]
+    return xcut
+
+
+def getYCut( hist ):
+    # add if statements for using other variables on y-axis as necessary...
+    ycutVals = [ 0, 1, 2, 3, 4 ]
+    cut = 0
+    ycutval = ycutValues( args.yCutABCDEnum ).value
+    if ycutval < len(ycutVals):
+        ycut = ycutVals [ycutval]
+    return ycut
 
 
 
