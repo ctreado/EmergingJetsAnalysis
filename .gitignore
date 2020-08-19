@@ -2,7 +2,7 @@
 EJsAnalysis/scripts/plotting/*_cxx*
 EJsAnalysis/scripts/plotting/AutoDict*__.cxx
 EJsAnalysis/scripts/plotting/*.pyc
-EJsAnalsis/scripts/plotting/__pycache__/
+EJsAnalysis/scripts/plotting/__pycache__/
 EJsAnalysis/config/*.pyc
 *.DS_Store
 tmp/
