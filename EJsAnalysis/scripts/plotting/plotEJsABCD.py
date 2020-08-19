@@ -92,6 +92,7 @@ parser.add_argument( "--doABCD_shift", dest = "doABCD_shift", action = "store_tr
 parser.add_argument( "--drawABCD", dest = "drawABCD", action = "store_true", default = False, help = "Draw ABCD plane plots." )
 parser.add_argument( "--drawNoCutABCD", dest = "drawNoCutABCD", action = "store_true", default = False,
                          help = "Draw ABCD plane plots without lines/regions defined by x/y cuts." )
+parser.add_argument( "--ncontours", dest = "ncontours", type = int, default = 20, help = "Number of contours to draw." )
 parser.add_argument( "--xCutABCDEnum", dest = "xCutABCDEnum", type = int, default = 7,
                          help = "Enumerator for x-cut value to apply to define ABCD regions." )
 parser.add_argument( "--yCutABCDEnum", dest = "yCutABCDEnum", type = int, default = 2,
@@ -109,6 +110,8 @@ parser.add_argument( "--legLenEnum", dest = "legLenEnum", type = int, default = 
                          help = "Enumerator for legend entry string length. Input must be integer." )
 parser.add_argument( "--lxint", dest = "lxint", type = float, default = 0.008, help = "Legend x-length per entry string length." )
 parser.add_argument( "--lyint", dest = "lyint", type = float, default = 0.030, help = "Legend y-length per entry." )
+parser.add_argument( "--lxl", dest = "lxl", type = float, default = None, help = "Legend left x-pos override." )
+parser.add_argument( "--lxr", dest = "lxr", type = float, default = None, help = "Legend right x-pos override." )
 parser.add_argument( "--format", dest = "format", default = "pdf", help = "File format to save plots in." )
 
 args = parser.parse_args()
@@ -184,6 +187,8 @@ if args.doABCD or args.doABCD_shift:
     outTextDir = args.outTextDir
     if not outTextDir:
         outTextDir = os.path.join( parentDir, "text_files", outSubdir )
+    else:
+        outTextDir = os.path.join( outTextDir, outSubdir )
     if not os.path.exists( outTextDir ):
         os.makedirs( outTextDir )
     outName = args.outName
@@ -192,6 +197,13 @@ if args.doABCD or args.doABCD_shift:
     if args.outBkgdName: outName += args.outBkgdName + "."
     if args.outDataName: outName += args.outDataName + "."
     outName  += "X" + xcutValues(args.xCutABCDEnum).name + "-Y" + ycutValues( args.yCutABCDEnum ).name + "."
+    regionDir = ""
+    if not args.searchOff: regionDir += args.searchDir + "."
+    if not args.validOff:  regionDir += args.validDir  + "."
+    if regionDir.endswith('.'): regionDir = regionDir[:-1]
+    outTextDir = os.path.join( outTextDir, "abcd." + outName + regionDir )
+    if not os.path.exists( outTextDir ):
+        os.makedirs( outTextDir )
     abcd_file = open( os.path.join( outTextDir, "abcd." + outName + "txt" ), "w+" )
 
 
@@ -267,9 +279,19 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, validHistNames, validHist
         for iName, name in enumerate( validHistNames ):
             hists = newValidHists[iName]
             if isinstance( hists[0], ROOT.TH2 ) and "ABCD" in name:
+                # do ABCD validation calculations
+                if args.doABCD:
+                    # get ABCD validation region event counts
+                    nValid, effValid, effscaleValid = countABCD( hists, metaEventHists, metaWeightHists, sampleTypes, args.validDir, dataScale )
+                    # use standard ABCD method to estimate background in A
+                    estA_valid, errA_valid, zA_valid = estimateABCD( nValid )
+                    # write out ABCD info
+                    writeABCD( hists, name, sampleNames, sampleTypes, nValid, effValid, estA_valid, errA_valid, zA_valid,
+                               [], [], [], [], [], [], [], [], effscaleValid, args.validDir )
+                    
                 # draw ABCD plots
                 if args.drawABCD or args.drawNoCutABCD:
-                    plotABCD( hists, name, sampleTypes, sampleDicts, "valid", plotTypes( args.validEnum ) )
+                    plotABCD( hists, name, sampleTypes, sampleDicts, args.validDir, plotTypes( args.validEnum ) )
                 
     # --> search region
     if not args.searchOff:
@@ -291,7 +313,7 @@ def plotHistos( sampleNames, sampleTypes, sampleDicts, validHistNames, validHist
                 if args.doABCD: # or shift
                     writeABCD( hists, name, sampleNames, sampleTypes, nSearch, effSearch, estA_search, errA_search, zA_search,
                                sb0_search, sb1_search, sb2_search, sb3_search,
-                               sb0_true_search, sb1_true_search, sb2_true_search, sb3_true_search, effscaleSearch )
+                               sb0_true_search, sb1_true_search, sb2_true_search, sb3_true_search, effscaleSearch, args.searchDir )
                 # draw ABCD plots
                 if args.drawABCD or args.drawNoCutABCD:
                     plotABCD( hists, name, sampleTypes, sampleDicts, args.searchDir, plotTypes( args.searchEnum ) )
@@ -353,13 +375,16 @@ def estimateABCD( count ):
         # calculate statistical uncertainty
         estA_statErr = 0
         estA_systErr = 0
+        estA_relErr  = 0
         estA_z = 0
         if c[0] and c[1] and c[2] and c[3]:
             estA_statErr = math.sqrt( estA )
             estA_systErr = estA * math.sqrt( abs(1./c[1]) + abs(1./c[2]) + abs(1./c[3]) )
             # --> dA = |A| * sqrt( (dB/B)^2 + (dC/C)^2 + (dD/D)^2 ); dN = sqrt(N)
-            estA_z       = ( c[0] - estA ) / math.sqrt( pow(estA_statErr,2) + pow(estA_systErr,2) )
-            # --> z = (M-mu) / SE
+            estA_relErr  = abs( estA - c[0] ) / estA
+            # --> rel uncert = abs uncert / meas val = obs - est / est
+            estA_z       = ( estA - c[0] ) / math.sqrt( pow(estA_statErr,2) + pow(estA_systErr,2) )
+            # --> z = (M-mu) / SE --> z-score = number of standard deviations from mean
 
         # placeholders for blinded search region data
         if c[0] == -999 or c[1] == -999 or c[2] == -999 or c[3] == -999:
@@ -369,7 +394,7 @@ def estimateABCD( count ):
             estA_z       = -999
 
         A_estimate.append( estA )
-        A_errors  .append( [ estA_statErr, estA_systErr ] )
+        A_errors  .append( [ estA_statErr, estA_systErr, estA_relErr ] )
         A_z       .append( estA_z )
 
     return A_estimate, A_errors, A_z
@@ -414,10 +439,11 @@ def significanceABCD( count, A_est, sampleTypes ):
 
 ## --- WRITE OUT ABCD INFO TO TEXT FILE --- ##
 def writeABCD( hists, histName, sampleNames, sampleTypes, count, efficiency, A_est, A_err, A_z,
-               sb0, sb1, sb2, sb3, sb0_true, sb1_true, sb2_true, sb3_true, scale ):
+               sb0, sb1, sb2, sb3, sb0_true, sb1_true, sb2_true, sb3_true, scale, region ):
 
     abcd_file.write( "----------------------------------------------------------------------------------------------- \n" )
     abcd_file.write( "ABCD HISTOGRAM: " + histName + " --> \n" )
+    abcd_file.write( region.upper() + " REGION \n" )
     abcd_file.write( "\n" )
 
     bstr = "b"
@@ -432,9 +458,9 @@ def writeABCD( hists, histName, sampleNames, sampleTypes, count, efficiency, A_e
             sample_str = "SIGNAL "     + sample_str + "    "
         elif sampleTypes[iH] == plotHelpers.sampleType.BKGD:
             sample_str = "BACKGROUND " + sample_str
-        elif sampleType[iH] == plotHelpers.sampleType.DATA:
+        elif sampleTypes[iH] == plotHelpers.sampleType.DATA:
             sample_str = "DATA "       + sample_str + "      "
-        abcd_file.write( "SAMPLE: " + sampleNames[iH] + "\n" ) # add sample type ??
+        abcd_file.write( "SAMPLE: " + sampleNames[iH] + "\n" )
 
         abcd_file.write( "######################################### ABCD counts ######################################### \n" )
         for i in range(len(abcd_string)):
@@ -450,13 +476,14 @@ def writeABCD( hists, histName, sampleNames, sampleTypes, count, efficiency, A_e
         if count[iH][0] == -999: a_err = -999
         abcd_file.write( "Region A estimate:       " + f'{A_est[iH]:16.8f}'    + " +- " + f'{A_err[iH][0]:16.8f}'
                                      + " (stat) +- " + f'{A_err[iH][1]:16.8f}' +                    " (syst) \n" )
-        abcd_file.write( "True value:              " + f'{count[iH][0]:16.8f}' + " +- " + f'{a_err:16.8f}' + "\n" )
+        abcd_file.write( "True value:              " + f'{count[iH][0]:16.8f}' + " +- " + f'{a_err:16.8f}'+ "\n" )
         abcd_file.write( "Standardized difference: " + f'{A_z[iH]:16.8f}'                                 + "\n" )
+        abcd_file.write( "Relative uncertainty:    " + f'{A_err[iH][2]:16.8f}'                            + "\n" )
         
         # scaled ABCD estimates
 
         # significances
-        if sampleTypes[iH] == plotHelpers.sampleType.SGNL:
+        if sampleTypes[iH] == plotHelpers.sampleType.SGNL and sb0:
             abcd_file.write( "######################################### ABCD significances (est " + bstr + ") ####################### \n" )
             abcd_file.write( "s/b:                     " + f'{sb0     [isig]:16.8f}' + "\n" )
             abcd_file.write( "s/(b + 0.1*b):           " + f'{sb1     [isig]:16.8f}' + "\n" )
@@ -474,21 +501,22 @@ def writeABCD( hists, histName, sampleNames, sampleTypes, count, efficiency, A_e
     abcd_file.write( "\n" )
 
     isig = 0
-    abcd_file.write( "SIGNAL EFFICIENCY AND S/B (est " + bstr + " + true " + bstr + "): \n" )
-    for iS, stype in enumerate( sampleTypes ):
-        if stype == plotHelpers.sampleType.SGNL:
-            abcd_file.write( sampleNames[iS] + ": " + f'{efficiency[iS][0]:16.8f}' + " | "
-                                                    + f'{sb0[isig]:16.8f}'         + " | " + f'{sb0_true[isig]:16.8f}' + "\n" )
-            isig += 1
-    abcd_file.write( "\n" )
-    abcd_file.write( "BACKGROUND REJECTION (est " + bstr + " + true " + bstr + "): \n" )
-    for iS, stype in enumerate( sampleTypes ):
-        if stype == plotHelpers.sampleType.BKGD or stype == plotHelpers.sampleType.DATA:
-            est_eff = A_est[iS] / scale[iS]
-            est_rej = 1-est_eff
-            if A_est[iS] == -999: est_rej = -999
-            abcd_file.write( sampleNames[iS] + ": " + f'{est_rej:16.8f}' + " | " f'{1-efficiency[iS][0]:16.8f}' + "\n" )
-    abcd_file.write( "\n" )
+    if sb0:
+        abcd_file.write( "SIGNAL EFFICIENCY AND S/B (est " + bstr + " + true " + bstr + "): \n" )
+        for iS, stype in enumerate( sampleTypes ):
+            if stype == plotHelpers.sampleType.SGNL:
+                abcd_file.write( sampleNames[iS] + ": " + f'{efficiency[iS][0]:16.8f}' + " | "
+                                                        + f'{sb0[isig]:16.8f}'         + " | " + f'{sb0_true[isig]:16.8f}' + "\n" )
+                isig += 1
+        abcd_file.write( "\n" )
+        abcd_file.write( "BACKGROUND REJECTION (est " + bstr + " + true " + bstr + "): \n" )
+        for iS, stype in enumerate( sampleTypes ):
+            if stype == plotHelpers.sampleType.BKGD or stype == plotHelpers.sampleType.DATA:
+                est_eff = A_est[iS] / scale[iS]
+                est_rej = 1-est_eff
+                if A_est[iS] == -999: est_rej = -999
+                abcd_file.write( sampleNames[iS] + ": " + f'{est_rej:16.8f}' + " | " f'{1-efficiency[iS][0]:16.8f}' + "\n" )
+        abcd_file.write( "\n" )
 
                 
 
@@ -513,7 +541,7 @@ def plotABCD( hists, histName, sampleTypes, sampleDicts, region, plotType ):
     c = ROOT.TCanvas( histName, histName ) # 1100,800 ??
 
     # set legend
-    l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value, args.lxint, args.lyint, doPlotTypes )
+    l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value, args.lxint, args.lyint, doPlotTypes, args.lxl, args.lxr )
 
     ROOT.gPad.SetTicks(1,1)
     ROOT.gStyle.SetOptStat(0)
@@ -545,7 +573,7 @@ def plotABCD( hists, histName, sampleTypes, sampleDicts, region, plotType ):
         hist.SetLineColor( sampleDicts[iH]["lcolor"] )
         hist.SetLineStyle( sampleDicts[iH]["lstyle"] )
         hist.SetLineWidth(3)
-        hist.SetContour(20) # 5? 10? 20? play around with, and make configurable
+        hist.SetContour(args.ncontours)
 
         # draw histogram
         hist.DrawNormalized( "cont0 same" ) # surface colors

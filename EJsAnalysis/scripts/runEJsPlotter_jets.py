@@ -122,9 +122,9 @@ def main():
     #  + ntrktJSVts + njtrktJSVts + trktJSVts + ntJSVts
     #exclCuts  = hardJs  + bJSVs  + p4JSVs  + ptJSVs  + htJSVs  + hJSVs  + ntrkJSVs  + njtrkJSVs  + trkJSVs  + nJSVs  \
     #  + ntrktJSVs  + njtrktJSVs  + trktJSVs  + ntJSVs
-    #jetCuts   = emergingJs
-    #jetTitles = emergingJts
-    #exclCuts  = emergingJs
+    jetCuts   = emergingJs
+    jetTitles = emergingJts
+    exclCuts  = emergingJs
     jetTypes, exclJetTypes = [], []
     for iC, cut in enumerate( jetCuts ):
         lowcut     = cut         [0].lower() + cut         [1:]
@@ -211,7 +211,7 @@ def main():
     
     # 1d plots -- comparing same jet histos over different samples
     #histList_1d     = "jet+cutflow=_jj_=_Nj_=NJet:DV=darkMatch=nomatch=jet0=jet1=jet1=jet3=_truthJet"
-    histList_1d     = "jet+NJet:DV=darkMatch=nomatch=truthJet=darkJet=jet0=jet1=jet1=jet3=_SV"
+    histList_1d     = "jet+NJet=cutflow:DV=darkMatch=nomatch=truthJet=darkJet=jet0=jet1=jet1=jet3=_SV"
     command_1d_j    = []
     command_1d      = " --draw1D --drawSOverB --outSubdir 1d_jet --legLenEnum 5"
     if doFillBkgd:
@@ -277,7 +277,7 @@ def main():
     # multi-hist 1d plots -- comparing dark-matched to unmatched jets in same sample
     histList_multi = "jet:DV"
     command_multi  = []
-    command_multi1d = " --drawMulti1D --outSubdir multi_jet --legLenEnum 5 --lxint 0.007 --lyint 0.027 --lxl 0.700"
+    command_multi1d = " --drawMulti1D --outSubdir multi_jet --legLenEnum 5 --lxint 0.007 --lyint 0.027" # --lxl 0.600"
     # --> set hist vars for given jet types
     jet1   = [ "darkMatchJet" ]
     jet2   = [ "nomatchJet"   ]

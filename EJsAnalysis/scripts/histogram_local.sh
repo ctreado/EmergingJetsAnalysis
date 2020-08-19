@@ -54,8 +54,8 @@ intags_data="data"
 #runEJsHistogrammer.py --inDir ${input_grid}    --outDir ${output_grid_up} --inTags ${intags_data} --renameAndMove --mergeDatasets
 
 # run over ALL LATEST LOCAL MC or DATA trees on lxplus
-runEJsHistogrammer.py --inDir ${input_grid_lxp_c} --outDir ${output_grid_up} --inTags ${intags_04} --renameAndMove --mergeDatasets # --nevents 10000 #9956
-runEJsHistogrammer.py --inDir ${input_grid_lxp_c} --outDir ${output_grid_up} --inTags ${intags_08} --renameAndMove --mergeDatasets # --nevents 10000 #9788
+#runEJsHistogrammer.py --inDir ${input_grid_lxp_c} --outDir ${output_grid_up} --inTags ${intags_04} --renameAndMove --mergeDatasets # --nevents 10000 #9956
+#runEJsHistogrammer.py --inDir ${input_grid_lxp_c} --outDir ${output_grid_up} --inTags ${intags_08} --renameAndMove --mergeDatasets # --nevents 10000 #9788
 runEJsHistogrammer.py --inDir ${input_grid_lxp_c} --outDir ${output_grid_up} --inTags ${intags_17} --renameAndMove --mergeDatasets # --nevents 12000 #11831
 runEJsHistogrammer.py --inDir ${input_grid_lxp_c} --outDir ${output_grid_up} --inTags ${intags_22} --renameAndMove --mergeDatasets # --nevents 10000 #9944
 runEJsHistogrammer.py --inDir ${input_grid_lxp_c} --outDir ${output_grid_up} --inTags ${intags_28} --renameAndMove --mergeDatasets # --nevents 12000 #11941
@@ -70,6 +70,7 @@ runEJsHistogrammer.py --inDir ${input_grid_lxp_k} --outDir ${output_grid_up} --i
 runEJsHistogrammer.py --inDir ${input_grid_lxp_k} --outDir ${output_grid_up} --inTags ${intags_80} --renameAndMove --mergeDatasets # --nevents 30000 #27518
 runEJsHistogrammer.py --inDir ${input_grid_lxp_k} --outDir ${output_grid_up} --inTags ${intags_90} --renameAndMove --mergeDatasets # --nevents 12000 #11874
 runEJsHistogrammer.py --inDir ${input_grid_lxp_o} --outDir ${output_grid_up} --inTags ${intags_mc} --renameAndMove --mergeDatasets # --nevents 110000 #106079
+runEJsHistogrammer.py --inDir ${input_grid_lxp_o} --outDir ${output_grid_up} --inTags ${intags_data} --renameAndMove --mergeDatasets
 
 # run over SUB-SET of trees
 #runEJsHistogrammer.py --inDir ${input_grid_up} --outDir ${output_grid_up} --inTags ${intags_08}     --renameAndMove --mergeDatasets

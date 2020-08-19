@@ -14261,9 +14261,9 @@ void EJsHistogramManager :: getDVTypes ( int dv_index, std::vector<int>& dv, con
   bool tightGoodDV = baseDV && matmapDV && fiducDV && chi2DV && ksmDV && ptDV && mind0DV && minz0DV && minsqerrd0DV && minsqerrz0DV;
   if ( doGood ) {
     if      ( !jetDV && !skipJetCuts ) {
-      dv .push_back( looseGoodDV && byJetDV ); // byNJetDV
-      dv .push_back(   midGoodDV && byJetDV );
-      dv .push_back( tightGoodDV && byJetDV );
+      dv .push_back( looseGoodDV && byNJetDV ); // test with bNJetDV ??
+      dv .push_back(   midGoodDV && byNJetDV );
+      dv .push_back( tightGoodDV && byNJetDV );
     }
     else if (  jetDV || skipJetCuts ) {
       dv .push_back( looseGoodDV );

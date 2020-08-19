@@ -109,6 +109,7 @@ parser.add_argument( "--legLenEnum", dest = "legLenEnum", type = int, default = 
 parser.add_argument( "--lxint", dest = "lxint", type = float, default = 0.008, help = "Legend x-length per entry string length." )
 parser.add_argument( "--lyint", dest = "lyint", type = float, default = 0.030, help = "Legend y-length per entry." )
 parser.add_argument( "--lxl", dest = "lxl", type = float, default = 0.600, help = "Legend left x-pos (override for multivariate plots)." )
+parser.add_argument( "--lxr", dest = "lxr", type = float, default = 0.870, help = "Legend right x-pos override." )
 parser.add_argument( "--format", dest = "format", default = "pdf", help = "File format to save plots in." )
 parser.add_argument( "--lstyleEnum", dest = "lstyleEnum", type = int, default = 1,
                          help = "Enumerator for changing default line colors and styles based on types of signal points being \
@@ -330,11 +331,14 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     hs = ROOT.THStack( histName, "" )
     # set legend
     xlover = None
+    xrover = None
     ylint  = args.lyint
+    if "cutflow" in histName.lower() and "signal" in histName:
+        xrover  = args.lxr
     if doSOverB:
         xlover  = args.lxl
         ylint  -= 0.004
-    l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value, args.lxint, ylint, [], xlover )
+    l = plotHelpers.configLeg( sampleTypes, sampleDicts, legStrLen( args.legLenEnum ).value, args.lxint, ylint, [], xlover, xrover )
 
     if "testCutflow" in histName and "jet" in histName.lower():
         if hists[0].GetNbinsX() > 20:
@@ -431,7 +435,8 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
     l.Draw()
 
     # set axes
-    if "cutflow" not in histName.lower() or "_N" in histName:
+    if "cutflow" not in histName.lower() or "_N" in histName and "_NJetHt" not in histName and \
+      "_NJetPt" not in histName and "_NJetSumM" not in histName and "_NJetJJ" not in histName:
         xtitle = plotHelpers.setXaxisTitle( hist, True, args.histTitle, varType( args.varEnum ).value ).lstrip()
         hs.GetXaxis().SetTitle( xtitle    ) 
         hs.GetXaxis().SetTitleSize( 0.03  )
@@ -478,14 +483,33 @@ def plot1D( hists, histName, sampleNames, sampleTypes, sampleDicts, doLogy = Fal
             ytitle = "average " + ytitle
             hs.GetYaxis().SetTitle( ytitle )
     else:
-        obj = ""
-        if "DV" in histName:
-            obj = "DV"
-        elif "jet" in histName.lower():
-            obj = "jet"
-            if "lead" in histName.lower():
-                obj = "N-lead jet"
-        ytitle = " of overall " + obj + "s in all events"
+        if "cutflow" in histName.lower() and \
+          ( "_NJetHt" in histName or "_NJetPt" in histName or "_NJetSumM" in histName or "NJetJJ" in histName ):
+            if "signal" in histName:
+                ytitle = " of signal events"
+                label_size = 0.035
+                if   "maxNJetJJ_sumPt"   in histName: label_size  = 0.028
+                elif "maxNJetJJ_sumM"    in histName: label_size  = 0.030
+                elif "minNJetJJ_sumPt"   in histName: label_size  = 0.028
+                elif "minNJetJJ_sumM"    in histName: label_size  = 0.030
+                elif "maxptNJetJJ_pt"    in histName: label_size  = 0.033
+                elif "maxptNJetJJ_sumPt" in histName: label_size  = 0.028
+                elif "maxptNJetJJ_sumM"  in histName: label_size  = 0.028
+                elif "NJetJJmaxdr_pt"    in histName: label_size  = 0.033
+                if "Region" in histName:
+                    if "NJetJJ"          in histName: label_size -= 0.005
+                hs.GetXaxis().SetLabelSize( label_size )
+            else:
+                ytitle = " of events with " + '_'.join( histName.split('_')[2:] ) + " over threshold"
+        else:
+            obj = ""
+            if "DV" in histName:
+                obj = "DV"
+            elif "jet" in histName.lower():
+                obj = "jet"
+                if "lead" in histName.lower():
+                    obj = "N-lead jet"
+            ytitle = " of overall " + obj + "s in all events"
         if "Efficiency" in histName:
             ytitle = "fraction" + ytitle
         else:

@@ -333,7 +333,7 @@ def doNorm( hist, norm_factor = 1 ):
 
 
 ## --- CONFIGURE LEGEND --- ##
-def configLeg( stypes, sdicts, lslen, xint = 0.008, yint = 0.030, doPlotTypes = [], xl_override = None ):
+def configLeg( stypes, sdicts, lslen, xint = 0.008, yint = 0.030, doPlotTypes = [], xl_override = None, xr_override = None ):
     
     max_len  = 0
     nEntries = 0
@@ -346,6 +346,8 @@ def configLeg( stypes, sdicts, lslen, xint = 0.008, yint = 0.030, doPlotTypes = 
         nEntries += 1
 
     xr   = 0.870
+    if xr_override:
+        xr = xr_override
     yt   = 0.870
     xl   = xr - xint * max_len
     yb   = yt - yint * nEntries

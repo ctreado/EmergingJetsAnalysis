@@ -43,13 +43,15 @@ def main():
     #inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-01_n1/EJsNtupToHistOutput/"
     #inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/EJsNtupToHistOutput/" + baseDV + "DVs/"
     #outDir  = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/plots/" + baseDV + "DVs/"
-    inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/EJsNtupToHistOutput/byJetCleanDVs/"
-    outDir  = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/plots/byJetCleanDVs/"
+    #inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/EJsNtupToHistOutput/byJetCleanDVs/"
+    #outDir  = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/plots/byJetCleanDVs/"
+    inDir   = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/EJsNtupToHistOutput/njetx_abcd_byJetDV/"
+    outDir  = os.getenv('EJ_PATH') + "/../output/gridOutput/v0_2020-06_mod/plots/njetx_abcd_byJetDV/"
     #inDir   = os.getenv('EJ_PATH') + "/../output/localOutput/tmp_search-minus-one/EJsNtupToHistOutput/"
     #inDir   = os.getenv('EJ_PATH') + "/../run/test.histos/EJsNtupToHistOutput/"
     pscript = os.getenv('EJ_PATH') + "/EJsAnalysis/scripts/plotting/plotEJsHistograms.py"
-    command = "python " + pscript + " --inDir " + inDir + " --outDir " + outDir
-    #command = "python3 " + pscript + " --inDir " + inDir + " --outDir " + outDir # for running outside of athena
+    #command = "python " + pscript + " --inDir " + inDir + " --outDir " + outDir
+    command = "python3 " + pscript + " --inDir " + inDir + " --outDir " + outDir # for running outside of athena
 
     
     # signal
@@ -108,11 +110,13 @@ def main():
     ## --- update plotting commands --- ##
     command_S  = " --regionDir search"
     command_S1 = " --regionDir search-minus-one"
+    command_SJ = " --regionDir jz4w-slice-search"
     command_V  = " --regionDir valid"
 
 
     # 1d plots -- comparing same DV histos over different samples
-    histList_1d   = "assoctrk=cutflow=count=efficiency:darkPion=kshort=nomatch=matchcut=test"
+    #histList_1d   = "assoctrk=cutflow=count=efficiency:darkPion=kshort=nomatch=matchcut=test"
+    histList_1d   = "cutflow:signal"
     command_1d    = " --draw1D --outSubdir 1d_dv --lstyleEnum 1 --legLenEnum 5 --drawSOverB --histList DV+" + histList_1d + " --histVars " + baseDV + "DV"
     if doFillBkgd:
         command_1d += " --fillBkgd"
@@ -126,14 +130,17 @@ def main():
     command_sb_14_1d    = command_sb_14    + command_1d + command_1d_l1
     command_sb_14_1d_S  = command_sb_14_1d + command_S
     command_sb_14_1d_S1 = command_sb_14_1d + command_S1
+    command_sb_14_1d_SJ = command_sb_14_1d + command_SJ
     # --> xdm-1000 signal vs background
     command_sb_10_1d    = command_sb_10    + command_1d + command_1d_l1
     command_sb_10_1d_S  = command_sb_10_1d + command_S
     command_sb_10_1d_S1 = command_sb_10_1d + command_S1
+    command_sb_10_1d_SJ = command_sb_10_1d + command_SJ
     # --> xdm-600 signal vs background
     command_sb_06_1d    = command_sb_06    + command_1d + command_1d_l1
     command_sb_06_1d_S  = command_sb_06_1d + command_S
     command_sb_06_1d_S1 = command_sb_06_1d + command_S1
+    command_sb_06_1d_SJ = command_sb_06_1d + command_SJ
     # --> background vs data
     command_bd_1d       = command_bd       + command_1d + command_1d_l2
     command_bd_1d_V     = command_bd_1d    + command_V
@@ -302,12 +309,15 @@ def main():
     ## 1d: signal vs background
     #os.system( command_sb_ab_1d_S  ) # ab benchmark test
     #os.system( command_sb_ab_1d_S1 )
-    ##os.system( command_sb_14_1d_S  ) # xdm-1400
+    os.system( command_sb_14_1d_S  ) # xdm-1400
     os.system( command_sb_14_1d_S1 )
-    ##os.system( command_sb_10_1d_S  ) # xdm-1000
+    os.system( command_sb_14_1d_SJ )
+    os.system( command_sb_10_1d_S  ) # xdm-1000
     os.system( command_sb_10_1d_S1 )
-    ##os.system( command_sb_06_1d_S  ) # xdm-600
+    os.system( command_sb_10_1d_SJ )
+    os.system( command_sb_06_1d_S  ) # xdm-600
     os.system( command_sb_06_1d_S1 )
+    os.system( command_sb_06_1d_SJ )
     ## 1d: background vs data
     #os.system( command_bd_1d_V     )
 
@@ -356,16 +366,16 @@ def main():
     #    os.system( cms_sbabS1 )
     #for cms_sb14S  in command_sb_14_multismpl_S:
     #    os.system( cms_sb14S  )
-    for cms_sb14S1 in command_sb_14_multismpl_S1:
-        os.system( cms_sb14S1 )
+    #for cms_sb14S1 in command_sb_14_multismpl_S1:
+    #    os.system( cms_sb14S1 )
     #for cms_sb10S  in command_sb_10_multismpl_S:
     #    os.system( cms_sb10S  )
-    for cms_sb10S1 in command_sb_10_multismpl_S1:
-        os.system( cms_sb10S1 )
+    #for cms_sb10S1 in command_sb_10_multismpl_S1:
+    #    os.system( cms_sb10S1 )
     #for cms_sb06S  in command_sb_06_multismpl_S:
     #    os.system( cms_sb06S  )
-    for cms_sb06S1 in command_sb_06_multismpl_S1:
-        os.system( cms_sb06S1 )
+    #for cms_sb06S1 in command_sb_06_multismpl_S1:
+    #    os.system( cms_sb06S1 )
    
 
 
